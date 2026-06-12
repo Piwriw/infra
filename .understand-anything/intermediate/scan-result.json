@@ -1,7 +1,10 @@
 {
   "name": "infra",
-  "description": "E2B Infrastructure 是为开源云平台 E2B (e2b.dev) 提供支持的后端基础设施,专注于 AI 代码解释场景。系统通过 Firecracker microVM 提供沙盒化执行环境,并基于 GCP 平台使用 Terraform 和 Nomad 完成 IaC 与编排部署。核心服务包含 API 网关、Orchestrator 编排器、Envd VM 守护进程、Client Proxy 边缘路由与 PostgreSQL/ClickHouse/Redis 数据层。Note: this project has over 100 source files; consider scoping analysis to a subdirectory for faster results.",
+  "description": "E2B 基础设施：基于 Firecracker microVM 的开源 AI 代码解释执行平台后端，在 GCP 上使用 Terraform 与 Nomad 进行部署，包含 API、Orchestrator、Envd、Client Proxy 等多个 Go 微服务。注：此项目源文件超过 100 个，建议聚焦子目录以获得更快的结果。",
   "languages": [
+    "awk",
+    "conf",
+    "config",
     "dockerfile",
     "go",
     "hcl",
@@ -10,37 +13,45 @@
     "json",
     "makefile",
     "markdown",
+    "mod",
     "protobuf",
     "shell",
     "sql",
+    "sum",
     "terraform",
     "toml",
     "typescript",
+    "unknown",
+    "work",
+    "xml",
     "yaml"
   ],
   "frameworks": [
     "Gin",
-    "chi",
     "Connect RPC",
+    "gRPC",
     "OpenTelemetry",
-    "sqlc",
-    "oapi-codegen",
-    "mockery",
-    "goose",
+    "Grafana Loki",
+    "Grafana Tempo",
+    "Prometheus",
+    "ClickHouse",
+    "PostgreSQL",
+    "Redis",
+    "Consul",
+    "Firecracker",
     "Terraform",
     "Nomad",
-    "Firecracker",
     "Docker",
-    "Docker Compose",
     "GitHub Actions",
-    "PostgreSQL",
-    "ClickHouse",
-    "Redis",
-    "GCS",
-    "Supabase",
     "LaunchDarkly",
-    "gRPC",
-    "Protobuf"
+    "oapi-codegen",
+    "sqlc",
+    "goose",
+    "testify",
+    "testcontainers",
+    "mockery",
+    "Zap",
+    "pgx"
   ],
   "files": [
     {
@@ -146,6 +157,12 @@
       "fileCategory": "script"
     },
     {
+      "path": ".github/workflows/build-and-upload-images.yml",
+      "language": "yaml",
+      "sizeLines": 98,
+      "fileCategory": "infra"
+    },
+    {
       "path": ".github/workflows/deploy-base-template.yml",
       "language": "yaml",
       "sizeLines": 56,
@@ -196,13 +213,19 @@
     {
       "path": ".github/workflows/pr-tests-arm64.yml",
       "language": "yaml",
-      "sizeLines": 231,
+      "sizeLines": 248,
       "fileCategory": "infra"
     },
     {
       "path": ".github/workflows/pr-tests.yml",
       "language": "yaml",
       "sizeLines": 182,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".github/workflows/promote-envd.yml",
+      "language": "yaml",
+      "sizeLines": 252,
       "fileCategory": "infra"
     },
     {
@@ -260,10 +283,28 @@
       "fileCategory": "config"
     },
     {
-      "path": ".understand-anything/tmp/gen-ignore.cjs",
-      "language": "javascript",
-      "sizeLines": 21,
-      "fileCategory": "code"
+      "path": ".understand-anything/fingerprints.json",
+      "language": "json",
+      "sizeLines": 226846,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".understand-anything/intermediate/scan-result.json",
+      "language": "json",
+      "sizeLines": 24748,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".understand-anything/knowledge-graph.json",
+      "language": "json",
+      "sizeLines": 0,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".understand-anything/meta.json",
+      "language": "json",
+      "sizeLines": 5,
+      "fileCategory": "config"
     },
     {
       "path": "AGENTS.md",
@@ -305,6 +346,60 @@
       "path": "DEV.md",
       "language": "markdown",
       "sizeLines": 19,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/clickhouse-package.md",
+      "language": "markdown",
+      "sizeLines": 619,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/docker-reverse-proxy.md",
+      "language": "markdown",
+      "sizeLines": 565,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/envd-module.md",
+      "language": "markdown",
+      "sizeLines": 352,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/envd-package.md",
+      "language": "markdown",
+      "sizeLines": 928,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/orchestrator-module.md",
+      "language": "markdown",
+      "sizeLines": 828,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/README_zh.md",
+      "language": "markdown",
+      "sizeLines": 387,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/sandbox-lifecycle.md",
+      "language": "markdown",
+      "sizeLines": 189,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/SCHEMA.md",
+      "language": "markdown",
+      "sizeLines": 410,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-06-09-errors-as-type-migration.md",
+      "language": "markdown",
+      "sizeLines": 850,
       "fileCategory": "docs"
     },
     {
@@ -1342,7 +1437,7 @@
     {
       "path": "Makefile",
       "language": "makefile",
-      "sizeLines": 223,
+      "sizeLines": 219,
       "fileCategory": "infra"
     },
     {
@@ -1414,7 +1509,7 @@
     {
       "path": "packages/api/internal/api/api.gen.go",
       "language": "go",
-      "sizeLines": 13672,
+      "sizeLines": 13841,
       "fileCategory": "code"
     },
     {
@@ -1438,7 +1533,7 @@
     {
       "path": "packages/api/internal/api/spec_test.go",
       "language": "go",
-      "sizeLines": 147,
+      "sizeLines": 217,
       "fileCategory": "code"
     },
     {
@@ -1510,13 +1605,13 @@
     {
       "path": "packages/api/internal/cfg/model_test.go",
       "language": "go",
-      "sizeLines": 75,
+      "sizeLines": 86,
       "fileCategory": "code"
     },
     {
       "path": "packages/api/internal/cfg/model.go",
       "language": "go",
-      "sizeLines": 164,
+      "sizeLines": 245,
       "fileCategory": "code"
     },
     {
@@ -1840,7 +1935,7 @@
     {
       "path": "packages/api/internal/handlers/store.go",
       "language": "go",
-      "sizeLines": 398,
+      "sizeLines": 448,
       "fileCategory": "code"
     },
     {
@@ -1900,7 +1995,7 @@
     {
       "path": "packages/api/internal/handlers/template_layer_files_upload.go",
       "language": "go",
-      "sizeLines": 64,
+      "sizeLines": 75,
       "fileCategory": "code"
     },
     {
@@ -1948,7 +2043,7 @@
     {
       "path": "packages/api/internal/handlers/volume_create.go",
       "language": "go",
-      "sizeLines": 191,
+      "sizeLines": 200,
       "fileCategory": "code"
     },
     {
@@ -1960,7 +2055,7 @@
     {
       "path": "packages/api/internal/handlers/volume_get_test.go",
       "language": "go",
-      "sizeLines": 66,
+      "sizeLines": 67,
       "fileCategory": "code"
     },
     {
@@ -1978,7 +2073,7 @@
     {
       "path": "packages/api/internal/handlers/volume_token.go",
       "language": "go",
-      "sizeLines": 46,
+      "sizeLines": 63,
       "fileCategory": "code"
     },
     {
@@ -2266,7 +2361,7 @@
     {
       "path": "packages/api/internal/orchestrator/pause_instance.go",
       "language": "go",
-      "sizeLines": 170,
+      "sizeLines": 177,
       "fileCategory": "code"
     },
     {
@@ -2350,7 +2445,7 @@
     {
       "path": "packages/api/internal/orchestrator/snapshot_template.go",
       "language": "go",
-      "sizeLines": 187,
+      "sizeLines": 195,
       "fileCategory": "code"
     },
     {
@@ -2686,7 +2781,7 @@
     {
       "path": "packages/api/main.go",
       "language": "go",
-      "sizeLines": 627,
+      "sizeLines": 633,
       "fileCategory": "code"
     },
     {
@@ -2770,13 +2865,13 @@
     {
       "path": "packages/auth/pkg/auth/middleware_test.go",
       "language": "go",
-      "sizeLines": 28,
+      "sizeLines": 80,
       "fileCategory": "code"
     },
     {
       "path": "packages/auth/pkg/auth/middleware.go",
       "language": "go",
-      "sizeLines": 250,
+      "sizeLines": 274,
       "fileCategory": "code"
     },
     {
@@ -2902,7 +2997,7 @@
     {
       "path": "packages/clickhouse/go.mod",
       "language": "mod",
-      "sizeLines": 111,
+      "sizeLines": 114,
       "fileCategory": "config"
     },
     {
@@ -2926,7 +3021,7 @@
     {
       "path": "packages/clickhouse/Makefile",
       "language": "makefile",
-      "sizeLines": 79,
+      "sizeLines": 82,
       "fileCategory": "infra"
     },
     {
@@ -3094,7 +3189,7 @@
     {
       "path": "packages/clickhouse/pkg/clickhouse.go",
       "language": "go",
-      "sizeLines": 63,
+      "sizeLines": 79,
       "fileCategory": "code"
     },
     {
@@ -3106,7 +3201,7 @@
     {
       "path": "packages/clickhouse/pkg/events/delivery.go",
       "language": "go",
-      "sizeLines": 161,
+      "sizeLines": 165,
       "fileCategory": "code"
     },
     {
@@ -3118,13 +3213,19 @@
     {
       "path": "packages/clickhouse/pkg/hoststats/delivery.go",
       "language": "go",
-      "sizeLines": 150,
+      "sizeLines": 157,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "language": "go",
+      "sizeLines": 136,
       "fileCategory": "code"
     },
     {
       "path": "packages/clickhouse/pkg/hoststats/hoststats.go",
       "language": "go",
-      "sizeLines": 58,
+      "sizeLines": 113,
       "fileCategory": "code"
     },
     {
@@ -3142,7 +3243,7 @@
     {
       "path": "packages/clickhouse/pkg/team.go",
       "language": "go",
-      "sizeLines": 174,
+      "sizeLines": 182,
       "fileCategory": "code"
     },
     {
@@ -3292,7 +3393,7 @@
     {
       "path": "packages/dashboard-api/internal/api/api.gen.go",
       "language": "go",
-      "sizeLines": 1479,
+      "sizeLines": 1481,
       "fileCategory": "code"
     },
     {
@@ -3316,7 +3417,7 @@
     {
       "path": "packages/dashboard-api/internal/cfg/model_test.go",
       "language": "go",
-      "sizeLines": 301,
+      "sizeLines": 294,
       "fileCategory": "code"
     },
     {
@@ -3346,7 +3447,7 @@
     {
       "path": "packages/dashboard-api/internal/handlers/admin_users_bootstrap.go",
       "language": "go",
-      "sizeLines": 76,
+      "sizeLines": 86,
       "fileCategory": "code"
     },
     {
@@ -3394,7 +3495,7 @@
     {
       "path": "packages/dashboard-api/internal/handlers/team_handlers_test.go",
       "language": "go",
-      "sizeLines": 1539,
+      "sizeLines": 1566,
       "fileCategory": "code"
     },
     {
@@ -3442,7 +3543,7 @@
     {
       "path": "packages/dashboard-api/internal/handlers/utils_team_provisioning.go",
       "language": "go",
-      "sizeLines": 506,
+      "sizeLines": 573,
       "fileCategory": "code"
     },
     {
@@ -3470,12 +3571,6 @@
       "fileCategory": "code"
     },
     {
-      "path": "packages/dashboard-api/internal/teamprovision/creator_context.go",
-      "language": "go",
-      "sizeLines": 107,
-      "fileCategory": "code"
-    },
-    {
       "path": "packages/dashboard-api/internal/teamprovision/factory_test.go",
       "language": "go",
       "sizeLines": 68,
@@ -3484,7 +3579,7 @@
     {
       "path": "packages/dashboard-api/internal/teamprovision/factory.go",
       "language": "go",
-      "sizeLines": 47,
+      "sizeLines": 46,
       "fileCategory": "code"
     },
     {
@@ -3496,7 +3591,7 @@
     {
       "path": "packages/dashboard-api/internal/teamprovision/http_sink.go",
       "language": "go",
-      "sizeLines": 250,
+      "sizeLines": 231,
       "fileCategory": "code"
     },
     {
@@ -3512,39 +3607,39 @@
       "fileCategory": "code"
     },
     {
-      "path": "packages/dashboard-api/internal/userprofile/dual_test.go",
+      "path": "packages/dashboard-api/internal/userprofile/creator_context.go",
       "language": "go",
-      "sizeLines": 226,
-      "fileCategory": "code"
-    },
-    {
-      "path": "packages/dashboard-api/internal/userprofile/dual.go",
-      "language": "go",
-      "sizeLines": 67,
+      "sizeLines": 53,
       "fileCategory": "code"
     },
     {
       "path": "packages/dashboard-api/internal/userprofile/mode.go",
       "language": "go",
-      "sizeLines": 31,
+      "sizeLines": 28,
       "fileCategory": "code"
     },
     {
       "path": "packages/dashboard-api/internal/userprofile/ory_test.go",
       "language": "go",
-      "sizeLines": 131,
+      "sizeLines": 170,
       "fileCategory": "code"
     },
     {
       "path": "packages/dashboard-api/internal/userprofile/ory.go",
       "language": "go",
-      "sizeLines": 275,
+      "sizeLines": 348,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/dashboard-api/internal/userprofile/provider_test.go",
+      "language": "go",
+      "sizeLines": 67,
       "fileCategory": "code"
     },
     {
       "path": "packages/dashboard-api/internal/userprofile/provider.go",
       "language": "go",
-      "sizeLines": 46,
+      "sizeLines": 43,
       "fileCategory": "code"
     },
     {
@@ -3556,13 +3651,13 @@
     {
       "path": "packages/dashboard-api/internal/userprofile/supabase_test.go",
       "language": "go",
-      "sizeLines": 75,
+      "sizeLines": 121,
       "fileCategory": "code"
     },
     {
       "path": "packages/dashboard-api/internal/userprofile/supabase.go",
       "language": "go",
-      "sizeLines": 169,
+      "sizeLines": 175,
       "fileCategory": "code"
     },
     {
@@ -3574,7 +3669,7 @@
     {
       "path": "packages/dashboard-api/main.go",
       "language": "go",
-      "sizeLines": 431,
+      "sizeLines": 430,
       "fileCategory": "code"
     },
     {
@@ -4250,6 +4345,12 @@
       "fileCategory": "data"
     },
     {
+      "path": "packages/db/migrations/20260609120000_cluster_name.sql",
+      "language": "sql",
+      "sizeLines": 10,
+      "fileCategory": "data"
+    },
+    {
       "path": "packages/db/pkg/auth/client.go",
       "language": "go",
       "sizeLines": 89,
@@ -4762,7 +4863,7 @@
     {
       "path": "packages/db/pkg/testutils/queries/models.go",
       "language": "go",
-      "sizeLines": 249,
+      "sizeLines": 250,
       "fileCategory": "code"
     },
     {
@@ -4882,13 +4983,13 @@
     {
       "path": "packages/db/queries/create_new_snapshot.sql.go",
       "language": "go",
-      "sizeLines": 178,
+      "sizeLines": 180,
       "fileCategory": "code"
     },
     {
       "path": "packages/db/queries/create_snapshot_template_env.sql.go",
       "language": "go",
-      "sizeLines": 67,
+      "sizeLines": 69,
       "fileCategory": "code"
     },
     {
@@ -4948,7 +5049,7 @@
     {
       "path": "packages/db/queries/get_active_clusters.sql.go",
       "language": "go",
-      "sizeLines": 47,
+      "sizeLines": 48,
       "fileCategory": "code"
     },
     {
@@ -5092,7 +5193,7 @@
     {
       "path": "packages/db/queries/models.go",
       "language": "go",
-      "sizeLines": 109,
+      "sizeLines": 110,
       "fileCategory": "code"
     },
     {
@@ -5440,19 +5541,19 @@
     {
       "path": "packages/envd/go.mod",
       "language": "mod",
-      "sizeLines": 89,
+      "sizeLines": 75,
       "fileCategory": "config"
     },
     {
       "path": "packages/envd/go.sum",
       "language": "sum",
-      "sizeLines": 307,
+      "sizeLines": 298,
       "fileCategory": "config"
     },
     {
       "path": "packages/envd/internal/api/api.gen.go",
       "language": "go",
-      "sizeLines": 756,
+      "sizeLines": 759,
       "fileCategory": "code"
     },
     {
@@ -5548,7 +5649,7 @@
     {
       "path": "packages/envd/internal/api/init.go",
       "language": "go",
-      "sizeLines": 571,
+      "sizeLines": 570,
       "fileCategory": "code"
     },
     {
@@ -5570,15 +5671,21 @@
       "fileCategory": "code"
     },
     {
+      "path": "packages/envd/internal/api/upload_metadata_test.go",
+      "language": "go",
+      "sizeLines": 73,
+      "fileCategory": "code"
+    },
+    {
       "path": "packages/envd/internal/api/upload_test.go",
       "language": "go",
-      "sizeLines": 254,
+      "sizeLines": 317,
       "fileCategory": "code"
     },
     {
       "path": "packages/envd/internal/api/upload.go",
       "language": "go",
-      "sizeLines": 351,
+      "sizeLines": 426,
       "fileCategory": "code"
     },
     {
@@ -5776,7 +5883,7 @@
     {
       "path": "packages/envd/internal/services/filesystem/service_test.go",
       "language": "go",
-      "sizeLines": 14,
+      "sizeLines": 20,
       "fileCategory": "code"
     },
     {
@@ -5806,19 +5913,25 @@
     {
       "path": "packages/envd/internal/services/filesystem/utils.go",
       "language": "go",
-      "sizeLines": 107,
+      "sizeLines": 145,
       "fileCategory": "code"
     },
     {
       "path": "packages/envd/internal/services/filesystem/watch_sync.go",
       "language": "go",
-      "sizeLines": 205,
+      "sizeLines": 222,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/envd/internal/services/filesystem/watch_test.go",
+      "language": "go",
+      "sizeLines": 166,
       "fileCategory": "code"
     },
     {
       "path": "packages/envd/internal/services/filesystem/watch.go",
       "language": "go",
-      "sizeLines": 151,
+      "sizeLines": 155,
       "fileCategory": "code"
     },
     {
@@ -5968,7 +6081,7 @@
     {
       "path": "packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
       "language": "go",
-      "sizeLines": 1847,
+      "sizeLines": 1908,
       "fileCategory": "code"
     },
     {
@@ -6040,13 +6153,13 @@
     {
       "path": "packages/envd/main.go",
       "language": "go",
-      "sizeLines": 300,
+      "sizeLines": 298,
       "fileCategory": "code"
     },
     {
       "path": "packages/envd/Makefile",
       "language": "makefile",
-      "sizeLines": 65,
+      "sizeLines": 83,
       "fileCategory": "infra"
     },
     {
@@ -6076,13 +6189,13 @@
     {
       "path": "packages/envd/spec/envd.yaml",
       "language": "yaml",
-      "sizeLines": 432,
+      "sizeLines": 457,
       "fileCategory": "config"
     },
     {
       "path": "packages/envd/spec/filesystem/filesystem.proto",
       "language": "protobuf",
-      "sizeLines": 135,
+      "sizeLines": 147,
       "fileCategory": "data"
     },
     {
@@ -6190,7 +6303,7 @@
     {
       "path": "packages/nomad-nodepool-apm/Makefile",
       "language": "makefile",
-      "sizeLines": 34,
+      "sizeLines": 37,
       "fileCategory": "infra"
     },
     {
@@ -6314,9 +6427,51 @@
       "fileCategory": "code"
     },
     {
+      "path": "packages/orchestrator/cmd/inspect-build/inspect.go",
+      "language": "go",
+      "sizeLines": 172,
+      "fileCategory": "code"
+    },
+    {
       "path": "packages/orchestrator/cmd/inspect-build/main.go",
       "language": "go",
-      "sizeLines": 317,
+      "sizeLines": 236,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/orchestrator/cmd/inspect-build/render_human.go",
+      "language": "go",
+      "sizeLines": 925,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/orchestrator/cmd/inspect-build/render_json.go",
+      "language": "go",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/orchestrator/cmd/inspect-build/report_test.go",
+      "language": "go",
+      "sizeLines": 559,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/orchestrator/cmd/inspect-build/report.go",
+      "language": "go",
+      "sizeLines": 806,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/orchestrator/cmd/inspect-build/validate_test.go",
+      "language": "go",
+      "sizeLines": 79,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/orchestrator/cmd/inspect-build/validate.go",
+      "language": "go",
+      "sizeLines": 376,
       "fileCategory": "code"
     },
     {
@@ -6332,6 +6487,12 @@
       "fileCategory": "code"
     },
     {
+      "path": "packages/orchestrator/cmd/internal/cmdutil/template.go",
+      "language": "go",
+      "sizeLines": 83,
+      "fileCategory": "code"
+    },
+    {
       "path": "packages/orchestrator/cmd/mount-build-rootfs/main.go",
       "language": "go",
       "sizeLines": 232,
@@ -6340,7 +6501,7 @@
     {
       "path": "packages/orchestrator/cmd/resume-build/fph_bench.go",
       "language": "go",
-      "sizeLines": 194,
+      "sizeLines": 196,
       "fileCategory": "code"
     },
     {
@@ -6466,13 +6627,13 @@
     {
       "path": "packages/orchestrator/go.mod",
       "language": "mod",
-      "sizeLines": 333,
+      "sizeLines": 334,
       "fileCategory": "config"
     },
     {
       "path": "packages/orchestrator/go.sum",
       "language": "sum",
-      "sizeLines": 1837,
+      "sizeLines": 1840,
       "fileCategory": "config"
     },
     {
@@ -6490,25 +6651,25 @@
     {
       "path": "packages/orchestrator/Makefile",
       "language": "makefile",
-      "sizeLines": 168,
+      "sizeLines": 174,
       "fileCategory": "infra"
     },
     {
       "path": "packages/orchestrator/orchestrator.proto",
       "language": "protobuf",
-      "sizeLines": 192,
+      "sizeLines": 194,
       "fileCategory": "data"
     },
     {
       "path": "packages/orchestrator/pkg/cfg/model_test.go",
       "language": "go",
-      "sizeLines": 82,
+      "sizeLines": 189,
       "fileCategory": "code"
     },
     {
       "path": "packages/orchestrator/pkg/cfg/model.go",
       "language": "go",
-      "sizeLines": 170,
+      "sizeLines": 199,
       "fileCategory": "code"
     },
     {
@@ -6544,7 +6705,7 @@
     {
       "path": "packages/orchestrator/pkg/chrooted/fs.go",
       "language": "go",
-      "sizeLines": 190,
+      "sizeLines": 192,
       "fileCategory": "code"
     },
     {
@@ -6574,7 +6735,7 @@
     {
       "path": "packages/orchestrator/pkg/events/events.go",
       "language": "go",
-      "sizeLines": 87,
+      "sizeLines": 94,
       "fileCategory": "code"
     },
     {
@@ -6592,7 +6753,7 @@
     {
       "path": "packages/orchestrator/pkg/factories/run.go",
       "language": "go",
-      "sizeLines": 900,
+      "sizeLines": 1003,
       "fileCategory": "code"
     },
     {
@@ -6820,7 +6981,7 @@
     {
       "path": "packages/orchestrator/pkg/nfsproxy/proxy_test.go",
       "language": "go",
-      "sizeLines": 282,
+      "sizeLines": 300,
       "fileCategory": "code"
     },
     {
@@ -6958,13 +7119,31 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "language": "go",
-      "sizeLines": 1142,
+      "sizeLines": 1183,
       "fileCategory": "code"
     },
     {
       "path": "packages/orchestrator/pkg/sandbox/block/cache.go",
       "language": "go",
-      "sizeLines": 825,
+      "sizeLines": 717,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "language": "go",
+      "sizeLines": 591,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "language": "go",
+      "sizeLines": 298,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "language": "go",
+      "sizeLines": 488,
       "fileCategory": "code"
     },
     {
@@ -7012,7 +7191,7 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/block/memfd.go",
       "language": "go",
-      "sizeLines": 422,
+      "sizeLines": 427,
       "fileCategory": "code"
     },
     {
@@ -7054,13 +7233,13 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
       "language": "go",
-      "sizeLines": 587,
+      "sizeLines": 597,
       "fileCategory": "code"
     },
     {
       "path": "packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
       "language": "go",
-      "sizeLines": 432,
+      "sizeLines": 431,
       "fileCategory": "code"
     },
     {
@@ -7090,7 +7269,7 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/build_upload_v4.go",
       "language": "go",
-      "sizeLines": 179,
+      "sizeLines": 180,
       "fileCategory": "code"
     },
     {
@@ -7168,7 +7347,7 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/envd/envd.gen.go",
       "language": "go",
-      "sizeLines": 218,
+      "sizeLines": 221,
       "fileCategory": "code"
     },
     {
@@ -7210,7 +7389,7 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
       "language": "go",
-      "sizeLines": 434,
+      "sizeLines": 435,
       "fileCategory": "code"
     },
     {
@@ -7228,7 +7407,7 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/fc/memory.go",
       "language": "go",
-      "sizeLines": 156,
+      "sizeLines": 157,
       "fileCategory": "code"
     },
     {
@@ -7348,7 +7527,7 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go",
       "language": "go",
-      "sizeLines": 123,
+      "sizeLines": 124,
       "fileCategory": "code"
     },
     {
@@ -7450,13 +7629,13 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/sandbox.go",
       "language": "go",
-      "sizeLines": 1519,
+      "sizeLines": 1569,
       "fileCategory": "code"
     },
     {
       "path": "packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
       "language": "go",
-      "sizeLines": 110,
+      "sizeLines": 112,
       "fileCategory": "code"
     },
     {
@@ -7480,13 +7659,25 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/template/cache.go",
       "language": "go",
-      "sizeLines": 350,
+      "sizeLines": 351,
       "fileCategory": "code"
     },
     {
       "path": "packages/orchestrator/pkg/sandbox/template/file.go",
       "language": "go",
       "sizeLines": 8,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "language": "go",
+      "sizeLines": 107,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
+      "language": "go",
+      "sizeLines": 97,
       "fileCategory": "code"
     },
     {
@@ -7546,13 +7737,13 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/template/peerclient/seekable_test.go",
       "language": "go",
-      "sizeLines": 226,
+      "sizeLines": 196,
       "fileCategory": "code"
     },
     {
       "path": "packages/orchestrator/pkg/sandbox/template/peerclient/seekable.go",
       "language": "go",
-      "sizeLines": 213,
+      "sizeLines": 195,
       "fileCategory": "code"
     },
     {
@@ -7564,7 +7755,7 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/template/peerclient/storage.go",
       "language": "go",
-      "sizeLines": 311,
+      "sizeLines": 324,
       "fileCategory": "code"
     },
     {
@@ -7660,7 +7851,7 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/template/storage.go",
       "language": "go",
-      "sizeLines": 164,
+      "sizeLines": 166,
       "fileCategory": "code"
     },
     {
@@ -7678,7 +7869,7 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/uffd/memory_backend.go",
       "language": "go",
-      "sizeLines": 23,
+      "sizeLines": 30,
       "fileCategory": "code"
     },
     {
@@ -7708,13 +7899,25 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/uffd/noop.go",
       "language": "go",
-      "sizeLines": 89,
+      "sizeLines": 96,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/prefetch/metrics.go",
+      "language": "go",
+      "sizeLines": 49,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/prefetch/prefetcher_test.go",
+      "language": "go",
+      "sizeLines": 127,
       "fileCategory": "code"
     },
     {
       "path": "packages/orchestrator/pkg/sandbox/uffd/prefetch/prefetcher.go",
       "language": "go",
-      "sizeLines": 262,
+      "sizeLines": 316,
       "fileCategory": "code"
     },
     {
@@ -7756,7 +7959,7 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/uffd/uffd.go",
       "language": "go",
-      "sizeLines": 283,
+      "sizeLines": 303,
       "fileCategory": "code"
     },
     {
@@ -7768,7 +7971,7 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/close_race_test.go",
       "language": "go",
-      "sizeLines": 121,
+      "sizeLines": 122,
       "fileCategory": "code"
     },
     {
@@ -7832,6 +8035,18 @@
       "fileCategory": "code"
     },
     {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/metrics_test.go",
+      "language": "go",
+      "sizeLines": 314,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/metrics.go",
+      "language": "go",
+      "sizeLines": 229,
+      "fileCategory": "code"
+    },
+    {
       "path": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/missing_test.go",
       "language": "go",
       "sizeLines": 259,
@@ -7846,7 +8061,7 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/prefault.go",
       "language": "go",
-      "sizeLines": 88,
+      "sizeLines": 141,
       "fileCategory": "code"
     },
     {
@@ -7870,7 +8085,7 @@
     {
       "path": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/userfaultfd.go",
       "language": "go",
-      "sizeLines": 688,
+      "sizeLines": 752,
       "fileCategory": "code"
     },
     {
@@ -7906,7 +8121,7 @@
     {
       "path": "packages/orchestrator/pkg/scheduling/metadata.go",
       "language": "go",
-      "sizeLines": 104,
+      "sizeLines": 103,
       "fileCategory": "code"
     },
     {
@@ -7924,7 +8139,7 @@
     {
       "path": "packages/orchestrator/pkg/server/main.go",
       "language": "go",
-      "sizeLines": 189,
+      "sizeLines": 228,
       "fileCategory": "code"
     },
     {
@@ -8284,13 +8499,13 @@
     {
       "path": "packages/shared/go.mod",
       "language": "mod",
-      "sizeLines": 406,
+      "sizeLines": 407,
       "fileCategory": "config"
     },
     {
       "path": "packages/shared/go.sum",
       "language": "sum",
-      "sizeLines": 1254,
+      "sizeLines": 1257,
       "fileCategory": "config"
     },
     {
@@ -9322,7 +9537,7 @@
     {
       "path": "packages/shared/pkg/featureflags/flags.go",
       "language": "go",
-      "sizeLines": 541,
+      "sizeLines": 549,
       "fileCategory": "code"
     },
     {
@@ -9346,13 +9561,31 @@
     {
       "path": "packages/shared/pkg/filesystem/entry.go",
       "language": "go",
-      "sizeLines": 119,
+      "sizeLines": 136,
       "fileCategory": "code"
     },
     {
       "path": "packages/shared/pkg/filesystem/model.go",
       "language": "go",
-      "sizeLines": 30,
+      "sizeLines": 31,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/shared/pkg/filesystem/xattr_metadata_test.go",
+      "language": "go",
+      "sizeLines": 210,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/shared/pkg/filesystem/xattr_test.go",
+      "language": "go",
+      "sizeLines": 91,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/shared/pkg/filesystem/xattr.go",
+      "language": "go",
+      "sizeLines": 175,
       "fileCategory": "code"
     },
     {
@@ -9382,7 +9615,7 @@
     {
       "path": "packages/shared/pkg/grpc/envd/filesystem/filesystem.pb.go",
       "language": "go",
-      "sizeLines": 1847,
+      "sizeLines": 1907,
       "fileCategory": "code"
     },
     {
@@ -9472,7 +9705,7 @@
     {
       "path": "packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go",
       "language": "go",
-      "sizeLines": 2182,
+      "sizeLines": 2195,
       "fileCategory": "code"
     },
     {
@@ -9904,7 +10137,7 @@
     {
       "path": "packages/shared/pkg/proxy/proxy_test.go",
       "language": "go",
-      "sizeLines": 1125,
+      "sizeLines": 1172,
       "fileCategory": "code"
     },
     {
@@ -10102,13 +10335,13 @@
     {
       "path": "packages/shared/pkg/storage/compress_frame_table.go",
       "language": "go",
-      "sizeLines": 359,
+      "sizeLines": 398,
       "fileCategory": "code"
     },
     {
       "path": "packages/shared/pkg/storage/compress_upload_test.go",
       "language": "go",
-      "sizeLines": 457,
+      "sizeLines": 459,
       "fileCategory": "code"
     },
     {
@@ -10162,7 +10395,7 @@
     {
       "path": "packages/shared/pkg/storage/header/header.go",
       "language": "go",
-      "sizeLines": 317,
+      "sizeLines": 341,
       "fileCategory": "code"
     },
     {
@@ -10192,7 +10425,7 @@
     {
       "path": "packages/shared/pkg/storage/header/serialization_test.go",
       "language": "go",
-      "sizeLines": 1032,
+      "sizeLines": 1031,
       "fileCategory": "code"
     },
     {
@@ -10222,7 +10455,7 @@
     {
       "path": "packages/shared/pkg/storage/header/serialization.go",
       "language": "go",
-      "sizeLines": 146,
+      "sizeLines": 153,
       "fileCategory": "code"
     },
     {
@@ -10348,7 +10581,7 @@
     {
       "path": "packages/shared/pkg/storage/storage_cache_seekable_test.go",
       "language": "go",
-      "sizeLines": 766,
+      "sizeLines": 767,
       "fileCategory": "code"
     },
     {
@@ -10372,13 +10605,13 @@
     {
       "path": "packages/shared/pkg/storage/storage_fs.go",
       "language": "go",
-      "sizeLines": 341,
+      "sizeLines": 342,
       "fileCategory": "code"
     },
     {
       "path": "packages/shared/pkg/storage/storage_google.go",
       "language": "go",
-      "sizeLines": 690,
+      "sizeLines": 691,
       "fileCategory": "code"
     },
     {
@@ -10390,7 +10623,7 @@
     {
       "path": "packages/shared/pkg/storage/storage.go",
       "language": "go",
-      "sizeLines": 284,
+      "sizeLines": 278,
       "fileCategory": "code"
     },
     {
@@ -10468,7 +10701,7 @@
     {
       "path": "packages/shared/pkg/telemetry/meters.go",
       "language": "go",
-      "sizeLines": 560,
+      "sizeLines": 586,
       "fileCategory": "code"
     },
     {
@@ -10778,22 +11011,10 @@
       "fileCategory": "script"
     },
     {
-      "path": "scripts/increment-version.sh",
-      "language": "shell",
-      "sizeLines": 6,
-      "fileCategory": "script"
-    },
-    {
       "path": "scripts/remove-row-level-security.sql",
       "language": "sql",
       "sizeLines": 87,
       "fileCategory": "data"
-    },
-    {
-      "path": "scripts/semver.sh",
-      "language": "shell",
-      "sizeLines": 52,
-      "fileCategory": "script"
     },
     {
       "path": "scripts/start-service.sh",
@@ -10804,13 +11025,13 @@
     {
       "path": "self-host.md",
       "language": "markdown",
-      "sizeLines": 245,
+      "sizeLines": 244,
       "fileCategory": "docs"
     },
     {
       "path": "spec/openapi-dashboard.yml",
       "language": "yaml",
-      "sizeLines": 1390,
+      "sizeLines": 1394,
       "fileCategory": "config"
     },
     {
@@ -10828,7 +11049,7 @@
     {
       "path": "spec/openapi.yml",
       "language": "yaml",
-      "sizeLines": 3626,
+      "sizeLines": 3714,
       "fileCategory": "config"
     },
     {
@@ -10882,7 +11103,7 @@
     {
       "path": "tests/integration/internal/api/generated.go",
       "language": "go",
-      "sizeLines": 11073,
+      "sizeLines": 11077,
       "fileCategory": "code"
     },
     {
@@ -10900,7 +11121,7 @@
     {
       "path": "tests/integration/internal/envd/generated.go",
       "language": "go",
-      "sizeLines": 1619,
+      "sizeLines": 1622,
       "fileCategory": "code"
     },
     {
@@ -11032,7 +11253,7 @@
     {
       "path": "tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
       "language": "go",
-      "sizeLines": 578,
+      "sizeLines": 580,
       "fileCategory": "code"
     },
     {
@@ -11176,7 +11397,7 @@
     {
       "path": "tests/integration/internal/tests/envd/process_test.go",
       "language": "go",
-      "sizeLines": 274,
+      "sizeLines": 290,
       "fileCategory": "code"
     },
     {
@@ -11206,13 +11427,13 @@
     {
       "path": "tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
       "language": "go",
-      "sizeLines": 181,
+      "sizeLines": 186,
       "fileCategory": "code"
     },
     {
       "path": "tests/integration/internal/tests/orchestrator/sandbox_object_not_found_test.go",
       "language": "go",
-      "sizeLines": 72,
+      "sizeLines": 75,
       "fileCategory": "code"
     },
     {
@@ -11224,7 +11445,7 @@
     {
       "path": "tests/integration/internal/tests/proxies/auto_resume_test.go",
       "language": "go",
-      "sizeLines": 309,
+      "sizeLines": 310,
       "fileCategory": "code"
     },
     {
@@ -11236,7 +11457,7 @@
     {
       "path": "tests/integration/internal/tests/proxies/mask_request_host_test.go",
       "language": "go",
-      "sizeLines": 98,
+      "sizeLines": 94,
       "fileCategory": "code"
     },
     {
@@ -11248,7 +11469,7 @@
     {
       "path": "tests/integration/internal/tests/proxies/traffic_access_token_test.go",
       "language": "go",
-      "sizeLines": 365,
+      "sizeLines": 367,
       "fileCategory": "code"
     },
     {
@@ -11382,15 +11603,9 @@
       "language": "javascript",
       "sizeLines": 13,
       "fileCategory": "code"
-    },
-    {
-      "path": "VERSION",
-      "language": "unknown",
-      "sizeLines": 0,
-      "fileCategory": "code"
     }
   ],
-  "totalFiles": 1891,
+  "totalFiles": 1925,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "importMap": {
@@ -11411,6 +11626,7 @@
     ".github/actions/host-init/init-client.sh": [],
     ".github/actions/start-services/action.yml": [],
     ".github/scripts/setup-arm64-runner.sh": [],
+    ".github/workflows/build-and-upload-images.yml": [],
     ".github/workflows/deploy-base-template.yml": [],
     ".github/workflows/fc-test.yml": [],
     ".github/workflows/integration_tests.yml": [],
@@ -11421,6 +11637,7 @@
     ".github/workflows/pr-no-generated-changes.yml": [],
     ".github/workflows/pr-tests-arm64.yml": [],
     ".github/workflows/pr-tests.yml": [],
+    ".github/workflows/promote-envd.yml": [],
     ".github/workflows/pull-request.yml": [],
     ".github/workflows/push-main.yml": [],
     ".github/workflows/validate-iac.yml": [],
@@ -11430,7 +11647,10 @@
     ".tool-versions": [],
     ".understand-anything/.understandignore": [],
     ".understand-anything/config.json": [],
-    ".understand-anything/tmp/gen-ignore.cjs": [],
+    ".understand-anything/fingerprints.json": [],
+    ".understand-anything/intermediate/scan-result.json": [],
+    ".understand-anything/knowledge-graph.json": [],
+    ".understand-anything/meta.json": [],
     "AGENTS.md": [],
     "CLAUDE.md": [],
     "codecov.yml": [],
@@ -11438,6 +11658,15 @@
     "CONTRIBUTING.md": [],
     "DEV-LOCAL.md": [],
     "DEV.md": [],
+    "docs/clickhouse-package.md": [],
+    "docs/docker-reverse-proxy.md": [],
+    "docs/envd-module.md": [],
+    "docs/envd-package.md": [],
+    "docs/orchestrator-module.md": [],
+    "docs/README_zh.md": [],
+    "docs/sandbox-lifecycle.md": [],
+    "docs/SCHEMA.md": [],
+    "docs/superpowers/plans/2026-06-09-errors-as-type-migration.md": [],
     "fixtures/ory/identity.v1.schema.json": [],
     "go.work": [],
     "iac/modules/job-api/jobs/api.hcl": [],
@@ -12749,6 +12978,10 @@
     ],
     "packages/api/internal/handlers/volume_test.go": [],
     "packages/api/internal/handlers/volume_token.go": [
+      "packages/api/internal/api/api.gen.go",
+      "packages/api/internal/api/error.go",
+      "packages/api/internal/api/generate.go",
+      "packages/api/internal/api/spec_test.go",
       "packages/api/internal/cfg/model_test.go",
       "packages/api/internal/cfg/model.go"
     ],
@@ -14032,7 +14265,10 @@
     "packages/auth/pkg/auth/legacy/config.go": [],
     "packages/auth/pkg/auth/legacy/legacy_test.go": [],
     "packages/auth/pkg/auth/legacy/legacy.go": [],
-    "packages/auth/pkg/auth/middleware_test.go": [],
+    "packages/auth/pkg/auth/middleware_test.go": [
+      "packages/auth/pkg/types/limits.go",
+      "packages/auth/pkg/types/teams.go"
+    ],
     "packages/auth/pkg/auth/middleware.go": [
       "packages/auth/pkg/types/limits.go",
       "packages/auth/pkg/types/teams.go"
@@ -14140,6 +14376,7 @@
       "packages/clickhouse/pkg/batcher/batcher_test.go",
       "packages/clickhouse/pkg/batcher/batcher.go"
     ],
+    "packages/clickhouse/pkg/hoststats/hoststats_test.go": [],
     "packages/clickhouse/pkg/hoststats/hoststats.go": [],
     "packages/clickhouse/pkg/mock.go": [],
     "packages/clickhouse/pkg/sandbox.go": [],
@@ -14197,22 +14434,22 @@
     "packages/dashboard-api/internal/api/generate.go": [],
     "packages/dashboard-api/internal/api/route_conflict_test.go": [],
     "packages/dashboard-api/internal/cfg/model_test.go": [
-      "packages/dashboard-api/internal/userprofile/dual_test.go",
-      "packages/dashboard-api/internal/userprofile/dual.go",
+      "packages/dashboard-api/internal/userprofile/creator_context.go",
       "packages/dashboard-api/internal/userprofile/mode.go",
       "packages/dashboard-api/internal/userprofile/ory_test.go",
       "packages/dashboard-api/internal/userprofile/ory.go",
+      "packages/dashboard-api/internal/userprofile/provider_test.go",
       "packages/dashboard-api/internal/userprofile/provider.go",
       "packages/dashboard-api/internal/userprofile/providers.go",
       "packages/dashboard-api/internal/userprofile/supabase_test.go",
       "packages/dashboard-api/internal/userprofile/supabase.go"
     ],
     "packages/dashboard-api/internal/cfg/model.go": [
-      "packages/dashboard-api/internal/userprofile/dual_test.go",
-      "packages/dashboard-api/internal/userprofile/dual.go",
+      "packages/dashboard-api/internal/userprofile/creator_context.go",
       "packages/dashboard-api/internal/userprofile/mode.go",
       "packages/dashboard-api/internal/userprofile/ory_test.go",
       "packages/dashboard-api/internal/userprofile/ory.go",
+      "packages/dashboard-api/internal/userprofile/provider_test.go",
       "packages/dashboard-api/internal/userprofile/provider.go",
       "packages/dashboard-api/internal/userprofile/providers.go",
       "packages/dashboard-api/internal/userprofile/supabase_test.go",
@@ -14222,18 +14459,17 @@
       "packages/dashboard-api/internal/api/api.gen.go",
       "packages/dashboard-api/internal/api/generate.go",
       "packages/dashboard-api/internal/api/route_conflict_test.go",
-      "packages/dashboard-api/internal/userprofile/dual_test.go",
-      "packages/dashboard-api/internal/userprofile/dual.go",
+      "packages/dashboard-api/internal/userprofile/creator_context.go",
       "packages/dashboard-api/internal/userprofile/mode.go",
       "packages/dashboard-api/internal/userprofile/ory_test.go",
       "packages/dashboard-api/internal/userprofile/ory.go",
+      "packages/dashboard-api/internal/userprofile/provider_test.go",
       "packages/dashboard-api/internal/userprofile/provider.go",
       "packages/dashboard-api/internal/userprofile/providers.go",
       "packages/dashboard-api/internal/userprofile/supabase_test.go",
       "packages/dashboard-api/internal/userprofile/supabase.go"
     ],
     "packages/dashboard-api/internal/handlers/admin_teams_bootstrap_test.go": [
-      "packages/dashboard-api/internal/teamprovision/creator_context.go",
       "packages/dashboard-api/internal/teamprovision/factory_test.go",
       "packages/dashboard-api/internal/teamprovision/factory.go",
       "packages/dashboard-api/internal/teamprovision/http_sink_test.go",
@@ -14285,18 +14521,17 @@
       "packages/dashboard-api/internal/api/route_conflict_test.go",
       "packages/dashboard-api/internal/cfg/model_test.go",
       "packages/dashboard-api/internal/cfg/model.go",
-      "packages/dashboard-api/internal/teamprovision/creator_context.go",
       "packages/dashboard-api/internal/teamprovision/factory_test.go",
       "packages/dashboard-api/internal/teamprovision/factory.go",
       "packages/dashboard-api/internal/teamprovision/http_sink_test.go",
       "packages/dashboard-api/internal/teamprovision/http_sink.go",
       "packages/dashboard-api/internal/teamprovision/noop_sink.go",
       "packages/dashboard-api/internal/teamprovision/sink.go",
-      "packages/dashboard-api/internal/userprofile/dual_test.go",
-      "packages/dashboard-api/internal/userprofile/dual.go",
+      "packages/dashboard-api/internal/userprofile/creator_context.go",
       "packages/dashboard-api/internal/userprofile/mode.go",
       "packages/dashboard-api/internal/userprofile/ory_test.go",
       "packages/dashboard-api/internal/userprofile/ory.go",
+      "packages/dashboard-api/internal/userprofile/provider_test.go",
       "packages/dashboard-api/internal/userprofile/provider.go",
       "packages/dashboard-api/internal/userprofile/providers.go",
       "packages/dashboard-api/internal/userprofile/supabase_test.go",
@@ -14310,18 +14545,17 @@
     "packages/dashboard-api/internal/handlers/team_handlers_test.go": [
       "packages/dashboard-api/internal/cfg/model_test.go",
       "packages/dashboard-api/internal/cfg/model.go",
-      "packages/dashboard-api/internal/teamprovision/creator_context.go",
       "packages/dashboard-api/internal/teamprovision/factory_test.go",
       "packages/dashboard-api/internal/teamprovision/factory.go",
       "packages/dashboard-api/internal/teamprovision/http_sink_test.go",
       "packages/dashboard-api/internal/teamprovision/http_sink.go",
       "packages/dashboard-api/internal/teamprovision/noop_sink.go",
       "packages/dashboard-api/internal/teamprovision/sink.go",
-      "packages/dashboard-api/internal/userprofile/dual_test.go",
-      "packages/dashboard-api/internal/userprofile/dual.go",
+      "packages/dashboard-api/internal/userprofile/creator_context.go",
       "packages/dashboard-api/internal/userprofile/mode.go",
       "packages/dashboard-api/internal/userprofile/ory_test.go",
       "packages/dashboard-api/internal/userprofile/ory.go",
+      "packages/dashboard-api/internal/userprofile/provider_test.go",
       "packages/dashboard-api/internal/userprofile/provider.go",
       "packages/dashboard-api/internal/userprofile/providers.go",
       "packages/dashboard-api/internal/userprofile/supabase_test.go",
@@ -14363,18 +14597,17 @@
       "packages/dashboard-api/internal/api/route_conflict_test.go"
     ],
     "packages/dashboard-api/internal/handlers/utils_team_provisioning.go": [
-      "packages/dashboard-api/internal/teamprovision/creator_context.go",
       "packages/dashboard-api/internal/teamprovision/factory_test.go",
       "packages/dashboard-api/internal/teamprovision/factory.go",
       "packages/dashboard-api/internal/teamprovision/http_sink_test.go",
       "packages/dashboard-api/internal/teamprovision/http_sink.go",
       "packages/dashboard-api/internal/teamprovision/noop_sink.go",
       "packages/dashboard-api/internal/teamprovision/sink.go",
-      "packages/dashboard-api/internal/userprofile/dual_test.go",
-      "packages/dashboard-api/internal/userprofile/dual.go",
+      "packages/dashboard-api/internal/userprofile/creator_context.go",
       "packages/dashboard-api/internal/userprofile/mode.go",
       "packages/dashboard-api/internal/userprofile/ory_test.go",
       "packages/dashboard-api/internal/userprofile/ory.go",
+      "packages/dashboard-api/internal/userprofile/provider_test.go",
       "packages/dashboard-api/internal/userprofile/provider.go",
       "packages/dashboard-api/internal/userprofile/providers.go",
       "packages/dashboard-api/internal/userprofile/supabase_test.go",
@@ -14396,18 +14629,17 @@
       "packages/dashboard-api/internal/api/route_conflict_test.go"
     ],
     "packages/dashboard-api/internal/middleware/blocked_team.go": [],
-    "packages/dashboard-api/internal/teamprovision/creator_context.go": [],
     "packages/dashboard-api/internal/teamprovision/factory_test.go": [],
     "packages/dashboard-api/internal/teamprovision/factory.go": [],
     "packages/dashboard-api/internal/teamprovision/http_sink_test.go": [],
     "packages/dashboard-api/internal/teamprovision/http_sink.go": [],
     "packages/dashboard-api/internal/teamprovision/noop_sink.go": [],
     "packages/dashboard-api/internal/teamprovision/sink.go": [],
-    "packages/dashboard-api/internal/userprofile/dual_test.go": [],
-    "packages/dashboard-api/internal/userprofile/dual.go": [],
+    "packages/dashboard-api/internal/userprofile/creator_context.go": [],
     "packages/dashboard-api/internal/userprofile/mode.go": [],
     "packages/dashboard-api/internal/userprofile/ory_test.go": [],
     "packages/dashboard-api/internal/userprofile/ory.go": [],
+    "packages/dashboard-api/internal/userprofile/provider_test.go": [],
     "packages/dashboard-api/internal/userprofile/provider.go": [],
     "packages/dashboard-api/internal/userprofile/providers.go": [],
     "packages/dashboard-api/internal/userprofile/supabase_test.go": [],
@@ -14447,18 +14679,17 @@
       "packages/dashboard-api/internal/handlers/utils_templates_list.go",
       "packages/dashboard-api/internal/handlers/utils.go",
       "packages/dashboard-api/internal/middleware/blocked_team.go",
-      "packages/dashboard-api/internal/teamprovision/creator_context.go",
       "packages/dashboard-api/internal/teamprovision/factory_test.go",
       "packages/dashboard-api/internal/teamprovision/factory.go",
       "packages/dashboard-api/internal/teamprovision/http_sink_test.go",
       "packages/dashboard-api/internal/teamprovision/http_sink.go",
       "packages/dashboard-api/internal/teamprovision/noop_sink.go",
       "packages/dashboard-api/internal/teamprovision/sink.go",
-      "packages/dashboard-api/internal/userprofile/dual_test.go",
-      "packages/dashboard-api/internal/userprofile/dual.go",
+      "packages/dashboard-api/internal/userprofile/creator_context.go",
       "packages/dashboard-api/internal/userprofile/mode.go",
       "packages/dashboard-api/internal/userprofile/ory_test.go",
       "packages/dashboard-api/internal/userprofile/ory.go",
+      "packages/dashboard-api/internal/userprofile/provider_test.go",
       "packages/dashboard-api/internal/userprofile/provider.go",
       "packages/dashboard-api/internal/userprofile/providers.go",
       "packages/dashboard-api/internal/userprofile/supabase_test.go",
@@ -14628,6 +14859,7 @@
     "packages/db/migrations/20260520193000_deprecate_public_users_email.sql": [],
     "packages/db/migrations/20260521181000_drop_public_users_email.sql": [],
     "packages/db/migrations/20260603120000_add_envs_team_source_created_at_index.sql": [],
+    "packages/db/migrations/20260609120000_cluster_name.sql": [],
     "packages/db/pkg/auth/client.go": [
       "packages/db/pkg/auth/queries/create_access_token.sql.go",
       "packages/db/pkg/auth/queries/create_team_api_key.sql.go",
@@ -15680,6 +15912,7 @@
       "packages/envd/internal/utils/multipart.go",
       "packages/envd/internal/utils/rfsnotify.go"
     ],
+    "packages/envd/internal/api/upload_metadata_test.go": [],
     "packages/envd/internal/api/upload_test.go": [],
     "packages/envd/internal/api/upload.go": [
       "packages/envd/internal/execcontext/context.go",
@@ -15852,6 +16085,9 @@
       "packages/envd/internal/utils/map.go",
       "packages/envd/internal/utils/multipart.go",
       "packages/envd/internal/utils/rfsnotify.go"
+    ],
+    "packages/envd/internal/services/filesystem/watch_test.go": [
+      "packages/envd/internal/services/spec/filesystem/filesystem.pb.go"
     ],
     "packages/envd/internal/services/filesystem/watch.go": [
       "packages/envd/internal/logs/interceptor.go",
@@ -16033,6 +16269,7 @@
       "packages/envd/internal/api/secure_token_test.go",
       "packages/envd/internal/api/secure_token.go",
       "packages/envd/internal/api/store.go",
+      "packages/envd/internal/api/upload_metadata_test.go",
       "packages/envd/internal/api/upload_test.go",
       "packages/envd/internal/api/upload.go",
       "packages/envd/internal/execcontext/context.go",
@@ -16071,6 +16308,7 @@
       "packages/envd/internal/services/filesystem/utils_test.go",
       "packages/envd/internal/services/filesystem/utils.go",
       "packages/envd/internal/services/filesystem/watch_sync.go",
+      "packages/envd/internal/services/filesystem/watch_test.go",
       "packages/envd/internal/services/filesystem/watch.go",
       "packages/envd/internal/services/process/connect.go",
       "packages/envd/internal/services/process/input.go",
@@ -16183,6 +16421,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -16277,6 +16517,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -16328,6 +16570,7 @@
     "packages/orchestrator/cmd/create-build/main.go": [
       "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
       "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "packages/orchestrator/cmd/internal/cmdutil/template.go",
       "packages/orchestrator/pkg/cfg/model_test.go",
       "packages/orchestrator/pkg/cfg/model.go",
       "packages/orchestrator/pkg/cfg/service.go",
@@ -16378,6 +16621,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -16411,17 +16656,64 @@
       "packages/orchestrator/pkg/dummyserver/sandbox.go"
     ],
     "packages/orchestrator/cmd/hammer-file/main.go": [],
+    "packages/orchestrator/cmd/inspect-build/inspect.go": [
+      "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "packages/orchestrator/cmd/internal/cmdutil/template.go"
+    ],
     "packages/orchestrator/cmd/inspect-build/main.go": [
       "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
-      "packages/orchestrator/cmd/internal/cmdutil/storage.go"
+      "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "packages/orchestrator/cmd/internal/cmdutil/template.go"
+    ],
+    "packages/orchestrator/cmd/inspect-build/render_human.go": [],
+    "packages/orchestrator/cmd/inspect-build/render_json.go": [],
+    "packages/orchestrator/cmd/inspect-build/report_test.go": [],
+    "packages/orchestrator/cmd/inspect-build/report.go": [
+      "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "packages/orchestrator/cmd/internal/cmdutil/template.go"
+    ],
+    "packages/orchestrator/cmd/inspect-build/validate_test.go": [],
+    "packages/orchestrator/cmd/inspect-build/validate.go": [
+      "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "packages/orchestrator/cmd/internal/cmdutil/template.go",
+      "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "packages/orchestrator/pkg/sandbox/block/device.go",
+      "packages/orchestrator/pkg/sandbox/block/empty.go",
+      "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "packages/orchestrator/pkg/sandbox/block/iov.go",
+      "packages/orchestrator/pkg/sandbox/block/local.go",
+      "packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "packages/orchestrator/pkg/sandbox/block/metrics/main.go",
+      "packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "packages/orchestrator/pkg/sandbox/block/range.go",
+      "packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "packages/orchestrator/pkg/sandbox/block/tracker_test.go",
+      "packages/orchestrator/pkg/sandbox/block/tracker.go"
     ],
     "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go": [],
     "packages/orchestrator/cmd/internal/cmdutil/storage.go": [],
+    "packages/orchestrator/cmd/internal/cmdutil/template.go": [],
     "packages/orchestrator/cmd/mount-build-rootfs/main.go": [
       "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
       "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "packages/orchestrator/cmd/internal/cmdutil/template.go",
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -16454,6 +16746,7 @@
     "packages/orchestrator/cmd/resume-build/fph_bench.go": [
       "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
       "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "packages/orchestrator/cmd/internal/cmdutil/template.go",
       "packages/orchestrator/pkg/sandbox/build_upload_test.go",
       "packages/orchestrator/pkg/sandbox/build_upload_v3.go",
       "packages/orchestrator/pkg/sandbox/build_upload_v4.go",
@@ -16483,11 +16776,15 @@
     "packages/orchestrator/cmd/resume-build/main.go": [
       "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
       "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "packages/orchestrator/cmd/internal/cmdutil/template.go",
       "packages/orchestrator/pkg/cfg/model_test.go",
       "packages/orchestrator/pkg/cfg/model.go",
       "packages/orchestrator/pkg/cfg/service.go",
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -16561,6 +16858,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -16621,7 +16920,8 @@
     ],
     "packages/orchestrator/cmd/show-build-diff/main.go": [
       "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
-      "packages/orchestrator/cmd/internal/cmdutil/storage.go"
+      "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "packages/orchestrator/cmd/internal/cmdutil/template.go"
     ],
     "packages/orchestrator/cmd/simulate-gcs-traffic/csv.go": [],
     "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go": [],
@@ -16700,6 +17000,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -16855,6 +17157,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -17331,6 +17635,9 @@
       "packages/orchestrator/pkg/sandbox/uffd/testutils/pagemap.go"
     ],
     "packages/orchestrator/pkg/sandbox/block/cache.go": [],
+    "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go": [],
+    "packages/orchestrator/pkg/sandbox/block/dedup_test.go": [],
+    "packages/orchestrator/pkg/sandbox/block/dedup.go": [],
     "packages/orchestrator/pkg/sandbox/block/device.go": [],
     "packages/orchestrator/pkg/sandbox/block/empty.go": [],
     "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go": [],
@@ -17402,6 +17709,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -17431,6 +17740,9 @@
     "packages/orchestrator/pkg/sandbox/fc/memory.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -17474,6 +17786,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -17504,6 +17818,9 @@
     "packages/orchestrator/pkg/sandbox/nbd/devicehelper.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -17537,6 +17854,9 @@
     "packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -17562,6 +17882,9 @@
     "packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -17587,6 +17910,9 @@
     "packages/orchestrator/pkg/sandbox/nbd/path_direct.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -17608,6 +17934,9 @@
     "packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -17629,6 +17958,9 @@
     "packages/orchestrator/pkg/sandbox/nbd/testutils/logger_overlay.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -17655,6 +17987,9 @@
     "packages/orchestrator/pkg/sandbox/nbd/testutils/zero_device.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -17687,6 +18022,9 @@
     "packages/orchestrator/pkg/sandbox/rootfs/direct.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -17707,6 +18045,9 @@
     "packages/orchestrator/pkg/sandbox/rootfs/nbd.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -17738,6 +18079,9 @@
       "packages/orchestrator/pkg/cfg/service.go",
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -17793,6 +18137,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -17802,6 +18148,8 @@
       "packages/orchestrator/pkg/sandbox/template/template.go",
       "packages/orchestrator/pkg/sandbox/uffd/memory_backend.go",
       "packages/orchestrator/pkg/sandbox/uffd/noop.go",
+      "packages/orchestrator/pkg/sandbox/uffd/prefetch/metrics.go",
+      "packages/orchestrator/pkg/sandbox/uffd/prefetch/prefetcher_test.go",
       "packages/orchestrator/pkg/sandbox/uffd/prefetch/prefetcher.go",
       "packages/orchestrator/pkg/sandbox/uffd/uffd.go",
       "packages/orchestrator/pkg/scheduling/metadata.go",
@@ -17814,6 +18162,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -17842,10 +18192,15 @@
       "packages/orchestrator/pkg/template/metadata/template_metadata.go"
     ],
     "packages/orchestrator/pkg/sandbox/template/file.go": [],
+    "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go": [],
+    "packages/orchestrator/pkg/sandbox/template/header_metrics.go": [],
     "packages/orchestrator/pkg/sandbox/template/local_file.go": [],
     "packages/orchestrator/pkg/sandbox/template/local_template.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -17869,6 +18224,9 @@
     "packages/orchestrator/pkg/sandbox/template/mask_template.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -17893,6 +18251,9 @@
     "packages/orchestrator/pkg/sandbox/template/mocks/mocktemplate.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -17912,6 +18273,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -17940,6 +18303,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -17957,6 +18322,9 @@
     "packages/orchestrator/pkg/sandbox/template/peerserver/header.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -17992,6 +18360,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -18004,6 +18374,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -18018,6 +18390,9 @@
     "packages/orchestrator/pkg/sandbox/template/peerserver/resolve.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18046,6 +18421,9 @@
       "packages/orchestrator/pkg/cfg/service.go",
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18074,6 +18452,9 @@
     "packages/orchestrator/pkg/sandbox/template/template.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18098,6 +18479,9 @@
     "packages/orchestrator/pkg/sandbox/uffd/memory_backend.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18125,11 +18509,35 @@
       "packages/orchestrator/pkg/sandbox/fc/mmds.go",
       "packages/orchestrator/pkg/sandbox/fc/process.go",
       "packages/orchestrator/pkg/sandbox/fc/script_builder_test.go",
-      "packages/orchestrator/pkg/sandbox/fc/script_builder.go"
+      "packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/async_wp_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/close_race_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/counter_reporter.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd_helpers_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_child_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/helpers_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/hooks_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/invoke.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/metrics.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/missing_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/missing_write_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/prefault.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/race_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/remove_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/rpc_services_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/userfaultfd.go"
     ],
     "packages/orchestrator/pkg/sandbox/uffd/memory/mapping_host_virt_test.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18151,6 +18559,9 @@
     "packages/orchestrator/pkg/sandbox/uffd/memory/mapping.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18172,6 +18583,9 @@
     "packages/orchestrator/pkg/sandbox/uffd/noop.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18199,11 +18613,62 @@
       "packages/orchestrator/pkg/sandbox/fc/mmds.go",
       "packages/orchestrator/pkg/sandbox/fc/process.go",
       "packages/orchestrator/pkg/sandbox/fc/script_builder_test.go",
-      "packages/orchestrator/pkg/sandbox/fc/script_builder.go"
+      "packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/async_wp_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/close_race_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/counter_reporter.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd_helpers_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_child_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/helpers_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/hooks_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/invoke.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/metrics.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/missing_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/missing_write_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/prefault.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/race_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/remove_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/rpc_services_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/userfaultfd.go"
+    ],
+    "packages/orchestrator/pkg/sandbox/uffd/prefetch/metrics.go": [],
+    "packages/orchestrator/pkg/sandbox/uffd/prefetch/prefetcher_test.go": [
+      "packages/orchestrator/pkg/sandbox/uffd/memory_backend.go",
+      "packages/orchestrator/pkg/sandbox/uffd/noop.go",
+      "packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/async_wp_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/close_race_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/counter_reporter.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd_helpers_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_child_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/helpers_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/hooks_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/invoke.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/metrics.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/missing_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/missing_write_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/prefault.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/race_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/remove_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/rpc_services_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/userfaultfd.go"
     ],
     "packages/orchestrator/pkg/sandbox/uffd/prefetch/prefetcher.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18223,6 +18688,27 @@
       "packages/orchestrator/pkg/sandbox/uffd/memory_backend.go",
       "packages/orchestrator/pkg/sandbox/uffd/noop.go",
       "packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/async_wp_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/close_race_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/counter_reporter.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd_helpers_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_child_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/helpers_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/hooks_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/invoke.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/metrics.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/missing_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/missing_write_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/prefault.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/race_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/remove_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/rpc_services_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/userfaultfd.go",
       "packages/orchestrator/pkg/template/metadata/prefetch.go",
       "packages/orchestrator/pkg/template/metadata/template_metadata_test.go",
       "packages/orchestrator/pkg/template/metadata/template_metadata.go"
@@ -18236,6 +18722,9 @@
     "packages/orchestrator/pkg/sandbox/uffd/uffd.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18281,6 +18770,8 @@
       "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/helpers_test.go",
       "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/hooks_test.go",
       "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/invoke.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/metrics.go",
       "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/missing_test.go",
       "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/missing_write_test.go",
       "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/prefault.go",
@@ -18309,6 +18800,9 @@
     "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18335,6 +18829,9 @@
     "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/helpers_test.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18360,11 +18857,16 @@
     ],
     "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/hooks_test.go": [],
     "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/invoke.go": [],
+    "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/metrics_test.go": [],
+    "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/metrics.go": [],
     "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/missing_test.go": [],
     "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/missing_write_test.go": [],
     "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/prefault.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18385,6 +18887,9 @@
     "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/race_test.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18409,6 +18914,9 @@
     "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/rpc_services_test.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18437,6 +18945,9 @@
     "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/userfaultfd.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18467,6 +18978,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -18480,6 +18993,9 @@
     "packages/orchestrator/pkg/sandbox/uploads.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18499,6 +19015,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -18579,6 +19097,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -18719,6 +19239,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -18875,6 +19397,9 @@
     "packages/orchestrator/pkg/template/metadata/prefetch.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18896,6 +19421,9 @@
     "packages/orchestrator/pkg/template/metadata/template_metadata.go": [
       "packages/orchestrator/pkg/sandbox/block/cache_test.go",
       "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "packages/orchestrator/pkg/sandbox/block/dedup.go",
       "packages/orchestrator/pkg/sandbox/block/device.go",
       "packages/orchestrator/pkg/sandbox/block/empty.go",
       "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
@@ -18946,6 +19474,8 @@
       "packages/orchestrator/pkg/sandbox/template/cache_test.go",
       "packages/orchestrator/pkg/sandbox/template/cache.go",
       "packages/orchestrator/pkg/sandbox/template/file.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "packages/orchestrator/pkg/sandbox/template/header_metrics.go",
       "packages/orchestrator/pkg/sandbox/template/local_file.go",
       "packages/orchestrator/pkg/sandbox/template/local_template.go",
       "packages/orchestrator/pkg/sandbox/template/mask_template.go",
@@ -22570,6 +23100,9 @@
     "packages/shared/pkg/filesystem/entry_test.go": [],
     "packages/shared/pkg/filesystem/entry.go": [],
     "packages/shared/pkg/filesystem/model.go": [],
+    "packages/shared/pkg/filesystem/xattr_metadata_test.go": [],
+    "packages/shared/pkg/filesystem/xattr_test.go": [],
+    "packages/shared/pkg/filesystem/xattr.go": [],
     "packages/shared/pkg/ginutils/body.go": [
       "packages/shared/pkg/telemetry/cloud_trace_propagator_test.go",
       "packages/shared/pkg/telemetry/cloud_trace_propagator.go",
@@ -23839,9 +24372,7 @@
     "scripts/fix-tracers.sh": [],
     "scripts/get-latest-migration.sh": [],
     "scripts/golang-dependencies-integrity.sh": [],
-    "scripts/increment-version.sh": [],
     "scripts/remove-row-level-security.sql": [],
-    "scripts/semver.sh": [],
     "scripts/start-service.sh": [],
     "self-host.md": [],
     "spec/openapi-dashboard.yml": [],
@@ -24465,6 +24996,8 @@
       "tests/integration/internal/utils/user.go"
     ],
     "tests/integration/internal/tests/envd/process_test.go": [
+      "tests/integration/internal/api/generate.go",
+      "tests/integration/internal/api/generated.go",
       "tests/integration/internal/setup/api_client.go",
       "tests/integration/internal/setup/constants.go",
       "tests/integration/internal/setup/db_client.go",
@@ -24743,7 +25276,6 @@
     ],
     "tests/periodic-test/utils.ts": [],
     "tests/test_e2b.sh": [],
-    "tests/test.js": [],
-    "VERSION": []
+    "tests/test.js": []
   }
 }
