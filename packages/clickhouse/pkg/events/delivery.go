@@ -31,9 +31,11 @@ const InsertSandboxEventQuery = `INSERT INTO sandbox_events
     event_data,
     type,
     version,
-    id
+    id,
+    events_ttl_days
 )
 VALUES (
+    ?,
     ?,
     ?,
     ?,
@@ -49,6 +51,12 @@ VALUES (
 type ClickhouseDelivery struct {
 	batcher *batcher.Batcher[SandboxEvent]
 	conn    driver.Conn
+}
+
+type GatedClickhouseDelivery struct {
+	*ClickhouseDelivery
+
+	ff *featureflags.Client
 }
 
 var tracer = otel.Tracer("github.com/e2b-dev/infra/packages/clickhouse/pkg/events")
@@ -75,6 +83,10 @@ func NewDefaultClickhouseSandboxEventsDelivery(ctx context.Context, conn driver.
 	)
 }
 
+func NewGatedDelivery(inner *ClickhouseDelivery, featureFlags *featureflags.Client) *GatedClickhouseDelivery {
+	return &GatedClickhouseDelivery{ClickhouseDelivery: inner, ff: featureFlags}
+}
+
 func NewClickhouseSandboxEventsDelivery(ctx context.Context, conn driver.Conn, opts batcher.BatcherOptions) (*ClickhouseDelivery, error) {
 	var err error
 
@@ -99,6 +111,14 @@ func (c *ClickhouseDelivery) Publish(_ context.Context, _ string, event events.S
 
 	eventData := string(eventDataJson)
 
+	ttlDays := event.EventsTTLDays
+	if ttlDays <= 0 {
+		ttlDays = events.DefaultEventsTTLDays
+	}
+	if ttlDays > 365 {
+		ttlDays = 365
+	}
+
 	return c.batcher.Push(SandboxEvent{
 		Version:   event.Version,
 		ID:        event.ID,
@@ -111,10 +131,19 @@ func (c *ClickhouseDelivery) Publish(_ context.Context, _ string, event events.S
 		SandboxBuildID:     event.SandboxBuildID,
 		SandboxTeamID:      event.SandboxTeamID,
 		SandboxExecutionID: event.SandboxExecutionID,
+		EventsTTLDays:      ttlDays,
 	})
 }
 
-// Close waits for queued items to flush.
+func (c *GatedClickhouseDelivery) Publish(ctx context.Context, key string, event events.SandboxEvent) error {
+	if c.ff != nil && c.ff.BoolFlag(ctx, featureflags.ClickhouseWriteFanoutFlag) {
+		return c.ClickhouseDelivery.Publish(ctx, key, event)
+	}
+
+	return nil
+}
+
+// Close drains the batcher. ctx is ignored to avoid leaking the flush goroutine.
 func (c *ClickhouseDelivery) Close(_ context.Context) error {
 	return c.batcher.Stop()
 }
@@ -145,6 +174,7 @@ func (c *ClickhouseDelivery) batchInserter(ctx context.Context, events []Sandbox
 			event.Type,
 			event.Version,
 			event.ID,
+			event.EventsTTLDays,
 		)
 		if err != nil {
 			span.RecordError(err)
