@@ -1,0 +1,1636 @@
+{
+  "nodes": [
+    {
+      "id": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "type": "file",
+      "name": "sandbox_auto_pause_test.go",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "summary": "集成测试：验证沙箱的自动暂停（auto-pause）、恢复（resume）与持久化行为，以及关闭 auto-pause 时的语义。",
+      "tags": [
+        "test",
+        "integration-test",
+        "sandbox",
+        "auto-pause",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "type": "file",
+      "name": "sandbox_connect_test.go",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "summary": "集成测试：验证沙箱连接/重连流程，包括跨团队访问运行中与已暂停沙箱的权限语义。",
+      "tags": [
+        "test",
+        "integration-test",
+        "sandbox",
+        "connect",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "type": "file",
+      "name": "sandbox_detail_test.go",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "summary": "集成测试：验证 GET 沙箱详情接口，覆盖运行中、已暂停、暂停中等生命周期状态以及网络配置与生命周期元数据。",
+      "tags": [
+        "test",
+        "integration-test",
+        "sandbox",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "type": "file",
+      "name": "sandbox_fuse_test.go",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "summary": "集成测试：验证沙箱内 FUSE 设备权限以及非 root 用户的 FUSE 访问能力。",
+      "tags": [
+        "test",
+        "integration-test",
+        "sandbox",
+        "fuse",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "type": "file",
+      "name": "sandbox_internet_test.go",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "summary": "集成测试：验证沙箱的网络出口策略，包括默认无网络访问、按模板配置的互联网访问以及恢复沙箱后的网络行为。",
+      "tags": [
+        "test",
+        "integration-test",
+        "sandbox",
+        "network",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "type": "file",
+      "name": "sandbox_kill_test.go",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "summary": "集成测试：验证沙箱的删除/kill 流程，包括删除不存在的沙箱、删除运行中沙箱及其级联清理。",
+      "tags": [
+        "test",
+        "integration-test",
+        "sandbox",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "type": "file",
+      "name": "sandbox_list_test.go",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "summary": "集成测试：全面验证沙箱列表接口（v1/v2），覆盖过滤、分页、按状态排序、元数据返回以及跨运行/暂停状态的混合查询。",
+      "tags": [
+        "test",
+        "integration-test",
+        "sandbox",
+        "list",
+        "pagination",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go:TestSandboxAutoPausePauseResume",
+      "type": "function",
+      "name": "TestSandboxAutoPausePauseResume",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "lineRange": [
+        17,
+        54
+      ],
+      "summary": "验证沙箱在 auto-pause 启用时的暂停与恢复完整流程。",
+      "tags": [
+        "test",
+        "sandbox",
+        "auto-pause",
+        "resume"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go:TestSandboxAutoPauseResumePersisted",
+      "type": "function",
+      "name": "TestSandboxAutoPauseResumePersisted",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "lineRange": [
+        56,
+        141
+      ],
+      "summary": "验证 auto-pause 沙箱恢复后保持之前的运行时持久化状态（文件、进程）。",
+      "tags": [
+        "test",
+        "sandbox",
+        "auto-pause",
+        "persistence"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go:TestSandboxNotAutoPause",
+      "type": "function",
+      "name": "TestSandboxNotAutoPause",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "lineRange": [
+        143,
+        169
+      ],
+      "summary": "验证未启用 auto-pause 的沙箱在超时后直接被销毁，而非进入暂停状态。",
+      "tags": [
+        "test",
+        "sandbox",
+        "auto-pause",
+        "edge-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go:TestSandboxConnect",
+      "type": "function",
+      "name": "TestSandboxConnect",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "lineRange": [
+        17,
+        182
+      ],
+      "summary": "端到端验证沙箱连接、暂停后重连、进程持久化以及多次重连的行为一致性。",
+      "tags": [
+        "test",
+        "sandbox",
+        "connect",
+        "persistence"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go:TestSandboxConnect_CrossTeamAccess_Paused",
+      "type": "function",
+      "name": "TestSandboxConnect_CrossTeamAccess_Paused",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "lineRange": [
+        184,
+        206
+      ],
+      "summary": "验证跨团队访问已暂停沙箱的鉴权与拒绝行为。",
+      "tags": [
+        "test",
+        "sandbox",
+        "connect",
+        "authorization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go:TestSandboxConnect_CrossTeamAccess_Running",
+      "type": "function",
+      "name": "TestSandboxConnect_CrossTeamAccess_Running",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "lineRange": [
+        208,
+        227
+      ],
+      "summary": "验证跨团队访问运行中沙箱的鉴权与拒绝行为。",
+      "tags": [
+        "test",
+        "sandbox",
+        "connect",
+        "authorization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go:TestSandboxDetailRunning",
+      "type": "function",
+      "name": "TestSandboxDetailRunning",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "lineRange": [
+        18,
+        35
+      ],
+      "summary": "验证运行中沙箱详情接口返回正确的状态与元数据。",
+      "tags": [
+        "test",
+        "sandbox",
+        "detail"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go:TestSandboxDetailReturnsLifecycleAndNetworkConfig",
+      "type": "function",
+      "name": "TestSandboxDetailReturnsLifecycleAndNetworkConfig",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "lineRange": [
+        37,
+        88
+      ],
+      "summary": "验证沙箱详情接口返回生命周期字段（运行/暂停）与网络配置（出口策略）。",
+      "tags": [
+        "test",
+        "sandbox",
+        "detail",
+        "lifecycle",
+        "network"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go:TestSandboxDetailPaused",
+      "type": "function",
+      "name": "TestSandboxDetailPaused",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "lineRange": [
+        90,
+        107
+      ],
+      "summary": "验证已暂停沙箱详情接口返回的状态字段。",
+      "tags": [
+        "test",
+        "sandbox",
+        "detail",
+        "paused"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go:TestSandboxDetailPausingSandbox",
+      "type": "function",
+      "name": "TestSandboxDetailPausingSandbox",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "lineRange": [
+        109,
+        141
+      ],
+      "summary": "验证暂停过渡（pausing）状态沙箱详情接口的返回结构。",
+      "tags": [
+        "test",
+        "sandbox",
+        "detail",
+        "pausing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go:TestFuseDevicePermissions",
+      "type": "function",
+      "name": "TestFuseDevicePermissions",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "lineRange": [
+        14,
+        32
+      ],
+      "summary": "验证沙箱内 FUSE 设备的权限配置正确。",
+      "tags": [
+        "test",
+        "sandbox",
+        "fuse",
+        "permissions"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go:TestFuseNonRootAccess",
+      "type": "function",
+      "name": "TestFuseNonRootAccess",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "lineRange": [
+        34,
+        51
+      ],
+      "summary": "验证非 root 用户在沙箱内可以访问 FUSE 设备。",
+      "tags": [
+        "test",
+        "sandbox",
+        "fuse",
+        "permissions"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go:TestInternetAccess",
+      "type": "function",
+      "name": "TestInternetAccess",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "lineRange": [
+        14,
+        51
+      ],
+      "summary": "验证沙箱默认无互联网出口，且按模板配置的互联网访问策略被正确执行。",
+      "tags": [
+        "test",
+        "sandbox",
+        "network",
+        "internet"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go:TestInternetAccessResumedSbx",
+      "type": "function",
+      "name": "TestInternetAccessResumedSbx",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "lineRange": [
+        53,
+        101
+      ],
+      "summary": "验证已恢复的沙箱在网络访问策略上与新建沙箱保持一致。",
+      "tags": [
+        "test",
+        "sandbox",
+        "network",
+        "resume"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go:TestSandboxKill",
+      "type": "function",
+      "name": "TestSandboxKill",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "lineRange": [
+        15,
+        143
+      ],
+      "summary": "全面验证沙箱删除/kill 流程：包括删除不存在的沙箱、删除运行中沙箱、并发删除、删除后查询状态以及级联清理。",
+      "tags": [
+        "test",
+        "sandbox",
+        "kill",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:pauseSandbox",
+      "type": "function",
+      "name": "pauseSandbox",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "lineRange": [
+        21,
+        28
+      ],
+      "summary": "测试辅助函数：通过 POST pause 接口暂停指定沙箱。",
+      "tags": [
+        "test-helper",
+        "sandbox",
+        "pause"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxList",
+      "type": "function",
+      "name": "TestSandboxList",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "lineRange": [
+        30,
+        54
+      ],
+      "summary": "验证 v2 沙箱列表基础接口的返回结构。",
+      "tags": [
+        "test",
+        "sandbox",
+        "list"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListWithFilter",
+      "type": "function",
+      "name": "TestSandboxListWithFilter",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "lineRange": [
+        56,
+        78
+      ],
+      "summary": "验证 v2 沙箱列表接口的过滤参数（template、team 等）。",
+      "tags": [
+        "test",
+        "sandbox",
+        "list",
+        "filter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListRunning",
+      "type": "function",
+      "name": "TestSandboxListRunning",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "lineRange": [
+        80,
+        109
+      ],
+      "summary": "验证 v2 列表接口正确返回 running 状态沙箱。",
+      "tags": [
+        "test",
+        "sandbox",
+        "list",
+        "running"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListPausing",
+      "type": "function",
+      "name": "TestSandboxListPausing",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "lineRange": [
+        165,
+        219
+      ],
+      "summary": "验证 v2 列表接口正确返回 pausing 过渡状态沙箱。",
+      "tags": [
+        "test",
+        "sandbox",
+        "list",
+        "pausing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListPaginationRunning",
+      "type": "function",
+      "name": "TestSandboxListPaginationRunning",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "lineRange": [
+        243,
+        312
+      ],
+      "summary": "验证 v2 列表接口在 running 状态下的分页行为。",
+      "tags": [
+        "test",
+        "sandbox",
+        "list",
+        "pagination"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListPaginationRunningLargerLimit",
+      "type": "function",
+      "name": "TestSandboxListPaginationRunningLargerLimit",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "lineRange": [
+        314,
+        394
+      ],
+      "summary": "验证 v2 列表接口在较大 limit 下的分页边界行为。",
+      "tags": [
+        "test",
+        "sandbox",
+        "list",
+        "pagination",
+        "edge-case"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListPaginationPaused",
+      "type": "function",
+      "name": "TestSandboxListPaginationPaused",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "lineRange": [
+        396,
+        444
+      ],
+      "summary": "验证 v2 列表接口在 paused 状态下的分页行为。",
+      "tags": [
+        "test",
+        "sandbox",
+        "list",
+        "pagination",
+        "paused"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListPaginationRunningAndPaused",
+      "type": "function",
+      "name": "TestSandboxListPaginationRunningAndPaused",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "lineRange": [
+        446,
+        495
+      ],
+      "summary": "验证 v2 列表接口同时混合 running 与 paused 状态时的分页行为。",
+      "tags": [
+        "test",
+        "sandbox",
+        "list",
+        "pagination"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListRunningV1",
+      "type": "function",
+      "name": "TestSandboxListRunningV1",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "lineRange": [
+        498,
+        528
+      ],
+      "summary": "验证 v1 列表接口对 running 状态沙箱的兼容行为。",
+      "tags": [
+        "test",
+        "sandbox",
+        "list",
+        "v1"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListSortedV1",
+      "type": "function",
+      "name": "TestSandboxListSortedV1",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "lineRange": [
+        550,
+        580
+      ],
+      "summary": "验证 v1 列表接口的排序字段返回。",
+      "tags": [
+        "test",
+        "sandbox",
+        "list",
+        "v1",
+        "sorting"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/envd/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/envd/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/envd/types.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go:TestSandboxAutoPausePauseResume",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go:TestSandboxAutoPausePauseResume",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go:TestSandboxAutoPauseResumePersisted",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go:TestSandboxAutoPauseResumePersisted",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go:TestSandboxNotAutoPause",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go:TestSandboxNotAutoPause",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go:TestSandboxConnect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go:TestSandboxConnect",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go:TestSandboxConnect_CrossTeamAccess_Paused",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go:TestSandboxConnect_CrossTeamAccess_Paused",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go:TestSandboxConnect_CrossTeamAccess_Running",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go:TestSandboxConnect_CrossTeamAccess_Running",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go:TestSandboxDetailRunning",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go:TestSandboxDetailRunning",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go:TestSandboxDetailReturnsLifecycleAndNetworkConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go:TestSandboxDetailReturnsLifecycleAndNetworkConfig",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go:TestSandboxDetailPaused",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go:TestSandboxDetailPaused",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go:TestSandboxDetailPausingSandbox",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go:TestSandboxDetailPausingSandbox",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go:TestFuseDevicePermissions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go:TestFuseDevicePermissions",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go:TestFuseNonRootAccess",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go:TestFuseNonRootAccess",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go:TestInternetAccess",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go:TestInternetAccess",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go:TestInternetAccessResumedSbx",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go:TestInternetAccessResumedSbx",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go:TestSandboxKill",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go:TestSandboxKill",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:pauseSandbox",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:pauseSandbox",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxList",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxList",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListWithFilter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListWithFilter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListRunning",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListRunning",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListPausing",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListPausing",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListPaginationRunning",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListPaginationRunning",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListPaginationRunningLargerLimit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListPaginationRunningLargerLimit",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListPaginationPaused",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListPaginationPaused",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListPaginationRunningAndPaused",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListPaginationRunningAndPaused",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListRunningV1",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListRunningV1",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListSortedV1",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go:TestSandboxListSortedV1",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

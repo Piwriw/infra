@@ -1,0 +1,42 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/db/Makefile",
+      "type": "file",
+      "name": "Makefile",
+      "filePath": "packages/db/Makefile",
+      "summary": "db 包的 Makefile，封装了 goose 数据库迁移、sqlc 代码生成、本地数据库播种以及单元测试等常用命令。",
+      "tags": ["build-system", "database", "migration", "sqlc", "infrastructure"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/go.mod",
+      "type": "file",
+      "name": "go.mod",
+      "filePath": "packages/db/go.mod",
+      "summary": "db 包的 Go 模块定义文件，使用 Go 1.26.3，声明 goose、sqlc 等代码生成工具，并依赖 pgx、testcontainers、OpenTelemetry 等运行时包。",
+      "tags": ["go-module", "dependency", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/go.sum",
+      "type": "file",
+      "name": "go.sum",
+      "filePath": "packages/db/go.sum",
+      "summary": "db 包所有传递依赖的校验和文件，由 Go 工具链自动生成，用于保证依赖内容的一致性与可复现性。",
+      "tags": ["go-module", "checksum", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/sqlc.yaml",
+      "type": "file",
+      "name": "sqlc.yaml",
+      "filePath": "packages/db/sqlc.yaml",
+      "summary": "sqlc 代码生成器配置，定义 PostgreSQL 类型映射（uuid、timestamptz、numeric、jsonb）以及 queries、dashboard、auth、testutils 四组 schema 到 Go 代码的生成路径与包名。",
+      "tags": ["sqlc", "code-generation", "configuration", "database"],
+      "complexity": "moderate",
+      "languageNotes": "使用 sqlc v2 配置语法：通过 overrides 将 PostgreSQL 列类型映射为自定义 Go 类型（如 env_builds.status → BuildStatus）。"
+    }
+  ],
+  "edges": []
+}

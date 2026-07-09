@@ -1,0 +1,1537 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/api/internal/sandbox/sandboxtypes/storage.go",
+      "type": "file",
+      "name": "storage.go",
+      "filePath": "packages/api/internal/sandbox/sandboxtypes/storage.go",
+      "summary": "sandbox \u5b58\u50a8\u4e0e reservation \u5b58\u50a8\u7684\u63a5\u53e3\u5b9a\u4e49",
+      "tags": [
+        "interface",
+        "storage",
+        "sandbox",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/api/internal/sandbox/storage/redis/items.go",
+      "type": "file",
+      "name": "items.go",
+      "filePath": "packages/api/internal/sandbox/storage/redis/items.go",
+      "summary": "\u904d\u5386\u5df2\u5230\u671f sandbox \u5e76\u89e6\u53d1\u8fc7\u671f\u56de\u6536",
+      "tags": [
+        "expiration",
+        "redis",
+        "sandbox",
+        "storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/api/internal/sandbox/storage/redis/lock.go",
+      "type": "file",
+      "name": "lock.go",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock.go",
+      "summary": "\u57fa\u4e8e Redis \u5206\u5e03\u5f0f\u9501 + PubSub \u901a\u77e5\u7684\u7ec6\u7c92\u5ea6\u9501\u539f\u8bed",
+      "tags": [
+        "distributed-lock",
+        "redis",
+        "pubsub",
+        "storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "type": "file",
+      "name": "lock_test.go",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "summary": "\u9488\u5bf9 storageLocker \u83b7\u53d6/\u91ca\u653e\u4e0e\u6296\u52a8\u9000\u907f\u7684\u5355\u5143\u6d4b\u8bd5",
+      "tags": [
+        "test",
+        "distributed-lock",
+        "redis"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/api/internal/sandbox/storage/redis/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/api/internal/sandbox/storage/redis/main.go",
+      "summary": "Redis-backed sandbox \u5b58\u50a8\uff1aCRUD\u3001\u72b6\u6001\u8f6c\u6362\u3001\u9501\u3001\u8ba2\u9605\u3001\u53d1\u5e03",
+      "tags": [
+        "redis",
+        "storage",
+        "sandbox",
+        "service"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/api/internal/sandbox/storage/redis/notifier.go",
+      "type": "file",
+      "name": "notifier.go",
+      "filePath": "packages/api/internal/sandbox/storage/redis/notifier.go",
+      "summary": "\u5305\u88c5 PubSub \u53d1\u5e03/\u8ba2\u9605\u7684 notifier \u62bd\u8c61",
+      "tags": [
+        "notifier",
+        "pubsub",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/api/internal/sandbox/storage/redis/operations.go",
+      "type": "file",
+      "name": "operations.go",
+      "filePath": "packages/api/internal/sandbox/storage/redis/operations.go",
+      "summary": "sandbox \u5b9e\u4f53\u7684 Redis CRUD \u4e0e\u96c6\u5408\u64cd\u4f5c",
+      "tags": [
+        "crud",
+        "redis",
+        "storage",
+        "sandbox"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/api/internal/sandbox/storage/redis/publisher.go",
+      "type": "file",
+      "name": "publisher.go",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher.go",
+      "summary": "\u5e26\u53cd\u538b\u4e0e\u6307\u6807\u7684\u5f02\u6b65 Redis PubSub \u53d1\u5e03\u5668",
+      "tags": [
+        "publisher",
+        "pubsub",
+        "redis",
+        "backpressure"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "type": "file",
+      "name": "publisher_test.go",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "summary": "\u9488\u5bf9 publisher \u4e0e storage \u5173\u95ed/\u53d1\u5e03\u8def\u5f84\u7684\u5355\u5143\u6d4b\u8bd5",
+      "tags": [
+        "test",
+        "publisher",
+        "pubsub"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/api/internal/sandbox/sandboxtypes/storage.go:Storage",
+      "type": "class",
+      "name": "Storage",
+      "filePath": "packages/api/internal/sandbox/sandboxtypes/storage.go",
+      "lineRange": [
+        14,
+        27
+      ],
+      "summary": "Storage \u7c7b\u578b\u5b9a\u4e49",
+      "tags": [
+        "type-definition"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/api/internal/sandbox/sandboxtypes/storage.go:ReservationStorage",
+      "type": "class",
+      "name": "ReservationStorage",
+      "filePath": "packages/api/internal/sandbox/sandboxtypes/storage.go",
+      "lineRange": [
+        31,
+        34
+      ],
+      "summary": "ReservationStorage \u7c7b\u578b\u5b9a\u4e49",
+      "tags": [
+        "type-definition"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/items.go:ExpiredItems",
+      "type": "function",
+      "name": "ExpiredItems",
+      "filePath": "packages/api/internal/sandbox/storage/redis/items.go",
+      "lineRange": [
+        20,
+        139
+      ],
+      "summary": "ExpiredItems \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/api/internal/sandbox/storage/redis/lock.go:storageLocker",
+      "type": "class",
+      "name": "storageLocker",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock.go",
+      "lineRange": [
+        13,
+        19
+      ],
+      "summary": "storageLocker \u7c7b\u578b\u5b9a\u4e49",
+      "tags": [
+        "type-definition"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/api/internal/sandbox/storage/redis/lock.go:storageLock",
+      "type": "class",
+      "name": "storageLock",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock.go",
+      "lineRange": [
+        33,
+        37
+      ],
+      "summary": "storageLock \u7c7b\u578b\u5b9a\u4e49",
+      "tags": [
+        "type-definition"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/lock.go:newStorageLocker",
+      "type": "function",
+      "name": "newStorageLocker",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock.go",
+      "lineRange": [
+        21,
+        31
+      ],
+      "summary": "newStorageLocker \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/lock.go:Release",
+      "type": "function",
+      "name": "Release",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock.go",
+      "lineRange": [
+        39,
+        48
+      ],
+      "summary": "Release \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/lock.go:Obtain",
+      "type": "function",
+      "name": "Obtain",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock.go",
+      "lineRange": [
+        50,
+        87
+      ],
+      "summary": "Obtain \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:TestStorageLocker_ObtainAfterReleaseNotification",
+      "type": "function",
+      "name": "TestStorageLocker_ObtainAfterReleaseNotification",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "lineRange": [
+        23,
+        51
+      ],
+      "summary": "TestStorageLocker_ObtainAfterReleaseNotification \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:TestStorageLocker_ObtainTimesOutWhenHeld",
+      "type": "function",
+      "name": "TestStorageLocker_ObtainTimesOutWhenHeld",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "lineRange": [
+        53,
+        70
+      ],
+      "summary": "TestStorageLocker_ObtainTimesOutWhenHeld \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:TestStorageLocker_ObtainUsesProvidedContext",
+      "type": "function",
+      "name": "TestStorageLocker_ObtainUsesProvidedContext",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "lineRange": [
+        72,
+        98
+      ],
+      "summary": "TestStorageLocker_ObtainUsesProvidedContext \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:TestStorageLocker_ObtainReturnsContextCancellation",
+      "type": "function",
+      "name": "TestStorageLocker_ObtainReturnsContextCancellation",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "lineRange": [
+        100,
+        117
+      ],
+      "summary": "TestStorageLocker_ObtainReturnsContextCancellation \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:TestStorageLocker_ObtainFallsBackWhenNotificationMissed",
+      "type": "function",
+      "name": "TestStorageLocker_ObtainFallsBackWhenNotificationMissed",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "lineRange": [
+        119,
+        147
+      ],
+      "summary": "TestStorageLocker_ObtainFallsBackWhenNotificationMissed \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:TestStorageLock_ReleaseUsesProvidedContext",
+      "type": "function",
+      "name": "TestStorageLock_ReleaseUsesProvidedContext",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "lineRange": [
+        149,
+        170
+      ],
+      "summary": "TestStorageLock_ReleaseUsesProvidedContext \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:TestStorageLocker_IgnoresUnrelatedNotification",
+      "type": "function",
+      "name": "TestStorageLocker_IgnoresUnrelatedNotification",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "lineRange": [
+        184,
+        221
+      ],
+      "summary": "TestStorageLocker_IgnoresUnrelatedNotification \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:setupTestLocker",
+      "type": "function",
+      "name": "setupTestLocker",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "lineRange": [
+        237,
+        257
+      ],
+      "summary": "setupTestLocker \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:waitForLockWaiter",
+      "type": "function",
+      "name": "waitForLockWaiter",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "lineRange": [
+        259,
+        275
+      ],
+      "summary": "waitForLockWaiter \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:requireNoErrorFromChannel",
+      "type": "function",
+      "name": "requireNoErrorFromChannel",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "lineRange": [
+        277,
+        290
+      ],
+      "summary": "requireNoErrorFromChannel \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:requirePubSubPayload",
+      "type": "function",
+      "name": "requirePubSubPayload",
+      "filePath": "packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "lineRange": [
+        292,
+        304
+      ],
+      "summary": "requirePubSubPayload \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/api/internal/sandbox/storage/redis/main.go:Storage",
+      "type": "class",
+      "name": "Storage",
+      "filePath": "packages/api/internal/sandbox/storage/redis/main.go",
+      "lineRange": [
+        33,
+        38
+      ],
+      "summary": "Storage \u7c7b\u578b\u5b9a\u4e49",
+      "tags": [
+        "type-definition"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/main.go:NewStorage",
+      "type": "function",
+      "name": "NewStorage",
+      "filePath": "packages/api/internal/sandbox/storage/redis/main.go",
+      "lineRange": [
+        42,
+        60
+      ],
+      "summary": "NewStorage \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/main.go:Start",
+      "type": "function",
+      "name": "Start",
+      "filePath": "packages/api/internal/sandbox/storage/redis/main.go",
+      "lineRange": [
+        64,
+        73
+      ],
+      "summary": "Start \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/main.go:Close",
+      "type": "function",
+      "name": "Close",
+      "filePath": "packages/api/internal/sandbox/storage/redis/main.go",
+      "lineRange": [
+        76,
+        79
+      ],
+      "summary": "Close \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/main.go:Reconcile",
+      "type": "function",
+      "name": "Reconcile",
+      "filePath": "packages/api/internal/sandbox/storage/redis/main.go",
+      "lineRange": [
+        82,
+        162
+      ],
+      "summary": "Reconcile \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/api/internal/sandbox/storage/redis/notifier.go:Notifier",
+      "type": "class",
+      "name": "Notifier",
+      "filePath": "packages/api/internal/sandbox/storage/redis/notifier.go",
+      "lineRange": [
+        8,
+        11
+      ],
+      "summary": "Notifier \u7c7b\u578b\u5b9a\u4e49",
+      "tags": [
+        "type-definition"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/notifier.go:Subscribe",
+      "type": "function",
+      "name": "Subscribe",
+      "filePath": "packages/api/internal/sandbox/storage/redis/notifier.go",
+      "lineRange": [
+        17,
+        19
+      ],
+      "summary": "Subscribe \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/notifier.go:Publish",
+      "type": "function",
+      "name": "Publish",
+      "filePath": "packages/api/internal/sandbox/storage/redis/notifier.go",
+      "lineRange": [
+        23,
+        25
+      ],
+      "summary": "Publish \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/notifier.go:Notifier",
+      "type": "function",
+      "name": "Notifier",
+      "filePath": "packages/api/internal/sandbox/storage/redis/notifier.go",
+      "lineRange": [
+        28,
+        30
+      ],
+      "summary": "Notifier \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/operations.go:Add",
+      "type": "function",
+      "name": "Add",
+      "filePath": "packages/api/internal/sandbox/storage/redis/operations.go",
+      "lineRange": [
+        22,
+        55
+      ],
+      "summary": "Add \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/operations.go:Get",
+      "type": "function",
+      "name": "Get",
+      "filePath": "packages/api/internal/sandbox/storage/redis/operations.go",
+      "lineRange": [
+        58,
+        75
+      ],
+      "summary": "Get \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/operations.go:Remove",
+      "type": "function",
+      "name": "Remove",
+      "filePath": "packages/api/internal/sandbox/storage/redis/operations.go",
+      "lineRange": [
+        78,
+        108
+      ],
+      "summary": "Remove \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/operations.go:TeamItems",
+      "type": "function",
+      "name": "TeamItems",
+      "filePath": "packages/api/internal/sandbox/storage/redis/operations.go",
+      "lineRange": [
+        111,
+        164
+      ],
+      "summary": "TeamItems \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/operations.go:Update",
+      "type": "function",
+      "name": "Update",
+      "filePath": "packages/api/internal/sandbox/storage/redis/operations.go",
+      "lineRange": [
+        167,
+        227
+      ],
+      "summary": "Update \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/operations.go:TeamsWithSandboxCount",
+      "type": "function",
+      "name": "TeamsWithSandboxCount",
+      "filePath": "packages/api/internal/sandbox/storage/redis/operations.go",
+      "lineRange": [
+        229,
+        291
+      ],
+      "summary": "TeamsWithSandboxCount \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/api/internal/sandbox/storage/redis/publisher.go:publisher",
+      "type": "class",
+      "name": "publisher",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher.go",
+      "lineRange": [
+        45,
+        60
+      ],
+      "summary": "publisher \u7c7b\u578b\u5b9a\u4e49",
+      "tags": [
+        "type-definition"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/api/internal/sandbox/storage/redis/publisher.go:publisherMetrics",
+      "type": "class",
+      "name": "publisherMetrics",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher.go",
+      "lineRange": [
+        62,
+        74
+      ],
+      "summary": "publisherMetrics \u7c7b\u578b\u5b9a\u4e49",
+      "tags": [
+        "type-definition"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher.go:newPublisher",
+      "type": "function",
+      "name": "newPublisher",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher.go",
+      "lineRange": [
+        89,
+        103
+      ],
+      "summary": "newPublisher \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher.go:initMetrics",
+      "type": "function",
+      "name": "initMetrics",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher.go",
+      "lineRange": [
+        105,
+        143
+      ],
+      "summary": "initMetrics \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher.go:Publish",
+      "type": "function",
+      "name": "Publish",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher.go",
+      "lineRange": [
+        148,
+        163
+      ],
+      "summary": "Publish \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher.go:drop",
+      "type": "function",
+      "name": "drop",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher.go",
+      "lineRange": [
+        165,
+        177
+      ],
+      "summary": "drop \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher.go:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher.go",
+      "lineRange": [
+        182,
+        212
+      ],
+      "summary": "run \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher.go:drainOnShutdown",
+      "type": "function",
+      "name": "drainOnShutdown",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher.go",
+      "lineRange": [
+        230,
+        245
+      ],
+      "summary": "drainOnShutdown \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher.go:publishOne",
+      "type": "function",
+      "name": "publishOne",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher.go",
+      "lineRange": [
+        247,
+        268
+      ],
+      "summary": "publishOne \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher.go:close",
+      "type": "function",
+      "name": "close",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher.go",
+      "lineRange": [
+        270,
+        285
+      ],
+      "summary": "close \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/api/internal/sandbox/storage/redis/publisher_test.go:blockingPublisher",
+      "type": "class",
+      "name": "blockingPublisher",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "lineRange": [
+        341,
+        345
+      ],
+      "summary": "blockingPublisher \u7c7b\u578b\u5b9a\u4e49",
+      "tags": [
+        "type-definition"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestPublisher_PublishEnqueuesAndDrainsToRedis",
+      "type": "function",
+      "name": "TestPublisher_PublishEnqueuesAndDrainsToRedis",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "lineRange": [
+        42,
+        79
+      ],
+      "summary": "TestPublisher_PublishEnqueuesAndDrainsToRedis \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestPublisher_PublishNeverBlocks",
+      "type": "function",
+      "name": "TestPublisher_PublishNeverBlocks",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "lineRange": [
+        84,
+        108
+      ],
+      "summary": "TestPublisher_PublishNeverBlocks \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestPublisher_DropOnClosed",
+      "type": "function",
+      "name": "TestPublisher_DropOnClosed",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "lineRange": [
+        112,
+        135
+      ],
+      "summary": "TestPublisher_DropOnClosed \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestPublisher_RunExitsOnContextCancel",
+      "type": "function",
+      "name": "TestPublisher_RunExitsOnContextCancel",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "lineRange": [
+        139,
+        154
+      ],
+      "summary": "TestPublisher_RunExitsOnContextCancel \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestPublisher_CloseDrainsPending",
+      "type": "function",
+      "name": "TestPublisher_CloseDrainsPending",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "lineRange": [
+        158,
+        194
+      ],
+      "summary": "TestPublisher_CloseDrainsPending \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestStorageLock_ReleaseUsesNotifier",
+      "type": "function",
+      "name": "TestStorageLock_ReleaseUsesNotifier",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "lineRange": [
+        199,
+        224
+      ],
+      "summary": "TestStorageLock_ReleaseUsesNotifier \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:Publish",
+      "type": "function",
+      "name": "Publish",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "lineRange": [
+        230,
+        230
+      ],
+      "summary": "Publish \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestStorage_CloseBeforeStartDoesNotDeadlock",
+      "type": "function",
+      "name": "TestStorage_CloseBeforeStartDoesNotDeadlock",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "lineRange": [
+        249,
+        267
+      ],
+      "summary": "TestStorage_CloseBeforeStartDoesNotDeadlock \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestPublisher_CloseBeforeRunDoesNotDeadlock",
+      "type": "function",
+      "name": "TestPublisher_CloseBeforeRunDoesNotDeadlock",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "lineRange": [
+        272,
+        289
+      ],
+      "summary": "TestPublisher_CloseBeforeRunDoesNotDeadlock \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestPublisher_ConcurrentProducers",
+      "type": "function",
+      "name": "TestPublisher_ConcurrentProducers",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "lineRange": [
+        295,
+        337
+      ],
+      "summary": "TestPublisher_ConcurrentProducers \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:Publish",
+      "type": "function",
+      "name": "Publish",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "lineRange": [
+        347,
+        356
+      ],
+      "summary": "Publish \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestPublisher_DrainOnShutdownRespectsBudget",
+      "type": "function",
+      "name": "TestPublisher_DrainOnShutdownRespectsBudget",
+      "filePath": "packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "lineRange": [
+        361,
+        390
+      ],
+      "summary": "TestPublisher_DrainOnShutdownRespectsBudget \u51fd\u6570\u5b9e\u73b0",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/api/internal/sandbox/sandboxtypes/storage.go",
+      "target": "class:packages/api/internal/sandbox/sandboxtypes/storage.go:Storage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/sandboxtypes/storage.go",
+      "target": "class:packages/api/internal/sandbox/sandboxtypes/storage.go:ReservationStorage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/items.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/items.go:ExpiredItems",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock.go",
+      "target": "class:packages/api/internal/sandbox/storage/redis/lock.go:storageLocker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock.go",
+      "target": "class:packages/api/internal/sandbox/storage/redis/lock.go:storageLock",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/lock.go:newStorageLocker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/lock.go:Release",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/lock.go:Obtain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:TestStorageLocker_ObtainAfterReleaseNotification",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:TestStorageLocker_ObtainTimesOutWhenHeld",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:TestStorageLocker_ObtainUsesProvidedContext",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:TestStorageLocker_ObtainReturnsContextCancellation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:TestStorageLocker_ObtainFallsBackWhenNotificationMissed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:TestStorageLock_ReleaseUsesProvidedContext",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:TestStorageLocker_IgnoresUnrelatedNotification",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:setupTestLocker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:waitForLockWaiter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:requireNoErrorFromChannel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/lock_test.go:requirePubSubPayload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/main.go",
+      "target": "class:packages/api/internal/sandbox/storage/redis/main.go:Storage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/main.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/main.go:NewStorage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/main.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/main.go:Start",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/main.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/main.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/main.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/main.go:Reconcile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/notifier.go",
+      "target": "class:packages/api/internal/sandbox/storage/redis/notifier.go:Notifier",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/notifier.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/notifier.go:Subscribe",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/notifier.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/notifier.go:Publish",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/notifier.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/notifier.go:Notifier",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/operations.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/operations.go:Add",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/operations.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/operations.go:Get",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/operations.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/operations.go:Remove",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/operations.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/operations.go:TeamItems",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/operations.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/operations.go:Update",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/operations.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/operations.go:TeamsWithSandboxCount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher.go",
+      "target": "class:packages/api/internal/sandbox/storage/redis/publisher.go:publisher",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher.go",
+      "target": "class:packages/api/internal/sandbox/storage/redis/publisher.go:publisherMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher.go:newPublisher",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher.go:initMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher.go:Publish",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher.go:drop",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher.go:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher.go:drainOnShutdown",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher.go:publishOne",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher.go:close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "target": "class:packages/api/internal/sandbox/storage/redis/publisher_test.go:blockingPublisher",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestPublisher_PublishEnqueuesAndDrainsToRedis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestPublisher_PublishNeverBlocks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestPublisher_DropOnClosed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestPublisher_RunExitsOnContextCancel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestPublisher_CloseDrainsPending",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestStorageLock_ReleaseUsesNotifier",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:Publish",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestStorage_CloseBeforeStartDoesNotDeadlock",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestPublisher_CloseBeforeRunDoesNotDeadlock",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestPublisher_ConcurrentProducers",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "target": "function:packages/api/internal/sandbox/storage/redis/publisher_test.go:TestPublisher_DrainOnShutdownRespectsBudget",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/items.go",
+      "target": "file:packages/api/internal/sandbox/sandboxtypes/errors.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/items.go",
+      "target": "file:packages/api/internal/sandbox/sandboxtypes/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/items.go",
+      "target": "file:packages/api/internal/sandbox/sandboxtypes/states_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/items.go",
+      "target": "file:packages/api/internal/sandbox/sandboxtypes/states.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/items.go",
+      "target": "file:packages/api/internal/sandbox/sandboxtypes/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/main.go",
+      "target": "file:packages/api/internal/sandbox/sandboxtypes/errors.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/main.go",
+      "target": "file:packages/api/internal/sandbox/sandboxtypes/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/main.go",
+      "target": "file:packages/api/internal/sandbox/sandboxtypes/states_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/main.go",
+      "target": "file:packages/api/internal/sandbox/sandboxtypes/states.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/main.go",
+      "target": "file:packages/api/internal/sandbox/sandboxtypes/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/operations.go",
+      "target": "file:packages/api/internal/sandbox/sandboxtypes/errors.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/operations.go",
+      "target": "file:packages/api/internal/sandbox/sandboxtypes/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/operations.go",
+      "target": "file:packages/api/internal/sandbox/sandboxtypes/states_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/operations.go",
+      "target": "file:packages/api/internal/sandbox/sandboxtypes/states.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/operations.go",
+      "target": "file:packages/api/internal/sandbox/sandboxtypes/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/notifier.go",
+      "target": "file:packages/api/internal/sandbox/reservations/redis/reservation_pubsub_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock.go",
+      "target": "file:packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/notifier.go",
+      "target": "file:packages/api/internal/sandbox/storage/redis/lock_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/publisher.go",
+      "target": "file:packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/main.go",
+      "target": "file:packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/lock.go",
+      "target": "file:packages/api/internal/sandbox/storage/redis/publisher_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/main.go",
+      "target": "file:packages/api/internal/sandbox/storage/redis/state_change_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/api/internal/sandbox/storage/redis/main.go",
+      "target": "file:packages/api/internal/sandbox/storage/redis/subscription_manager_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

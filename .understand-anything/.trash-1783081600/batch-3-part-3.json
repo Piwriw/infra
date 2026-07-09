@@ -1,0 +1,1442 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/api/internal/handlers/store.go",
+      "type": "file",
+      "name": "store.go",
+      "filePath": "packages/api/internal/handlers/store.go",
+      "summary": "APIStore 是 E2B API 服务的核心类型，承载所有 handler 共享的数据库/Redis/缓存/集群池/feature flag 等依赖，并实现多个 auth 中间件方法。",
+      "tags": [
+        "service",
+        "api-handler",
+        "state",
+        "auth",
+        "middleware"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/api/internal/handlers/team_metrics.go",
+      "type": "file",
+      "name": "team_metrics.go",
+      "filePath": "packages/api/internal/handlers/team_metrics.go",
+      "summary": "返回团队在指定时间范围内的 sandbox 聚合指标数据（CPU/内存使用等）。",
+      "tags": [
+        "api-handler",
+        "team",
+        "metrics",
+        "aggregation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/api/internal/handlers/team_metrics_max.go",
+      "type": "file",
+      "name": "team_metrics_max.go",
+      "filePath": "packages/api/internal/handlers/team_metrics_max.go",
+      "summary": "返回团队中所有 sandbox 任意时刻的峰值指标值（max gauge），用于计费/限额展示。",
+      "tags": [
+        "api-handler",
+        "team",
+        "metrics",
+        "aggregation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/api/internal/handlers/teams.go",
+      "type": "file",
+      "name": "teams.go",
+      "filePath": "packages/api/internal/handlers/teams.go",
+      "summary": "获取当前用户所属的所有团队列表，并为每个团队返回一个 CLI/API key。",
+      "tags": [
+        "api-handler",
+        "team",
+        "auth",
+        "api-key"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/api/internal/handlers/template_alias.go",
+      "type": "file",
+      "name": "template_alias.go",
+      "filePath": "packages/api/internal/handlers/template_alias.go",
+      "summary": "通过短别名（alias）解析为完整模板 ID，处理跨团队可见性与重定向逻辑。",
+      "tags": [
+        "api-handler",
+        "template",
+        "alias",
+        "resolution"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/store.go:newInClusterKubeClient",
+      "type": "function",
+      "name": "newInClusterKubeClient",
+      "filePath": "packages/api/internal/handlers/store.go",
+      "lineRange": [
+        52,
+        63
+      ],
+      "summary": "在 K8s 集群内基于 in-cluster ServiceAccount token 构造 Kubernetes 客户端。",
+      "tags": [
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/store.go:NewAPIStore",
+      "type": "function",
+      "name": "NewAPIStore",
+      "filePath": "packages/api/internal/handlers/store.go",
+      "lineRange": [
+        91,
+        278
+      ],
+      "summary": "构造 APIStore：初始化 sqlc/auth DB、Redis、缓存、PostHog、feature flag、集群池等核心依赖。",
+      "tags": [
+        "exported"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/store.go:Close",
+      "type": "function",
+      "name": "Close",
+      "filePath": "packages/api/internal/handlers/store.go",
+      "lineRange": [
+        280,
+        331
+      ],
+      "summary": "关闭 APIStore，优雅释放后台资源并等待进行中的请求结束。",
+      "tags": [
+        "exported"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/store.go:dbThrottleLimit",
+      "type": "function",
+      "name": "dbThrottleLimit",
+      "filePath": "packages/api/internal/handlers/store.go",
+      "lineRange": [
+        335,
+        341
+      ],
+      "summary": "从 LaunchDarkly 标志读取 DB 限流阈值。",
+      "tags": [
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/store.go:updateDBThrottleLimits",
+      "type": "function",
+      "name": "updateDBThrottleLimits",
+      "filePath": "packages/api/internal/handlers/store.go",
+      "lineRange": [
+        344,
+        358
+      ],
+      "summary": "基于 feature flag 重新计算可调信号量（snapshot/list/build）的上限。",
+      "tags": [
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/store.go:sendAPIStoreError",
+      "type": "function",
+      "name": "sendAPIStoreError",
+      "filePath": "packages/api/internal/handlers/store.go",
+      "lineRange": [
+        361,
+        363
+      ],
+      "summary": "统一的错误响应输出辅助函数。",
+      "tags": [
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/store.go:GetHealth",
+      "type": "function",
+      "name": "GetHealth",
+      "filePath": "packages/api/internal/handlers/store.go",
+      "lineRange": [
+        365,
+        373
+      ],
+      "summary": "健康检查 HTTP 入口。",
+      "tags": [
+        "exported",
+        "getter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/store.go:GetTeamFromAPIKey",
+      "type": "function",
+      "name": "GetTeamFromAPIKey",
+      "filePath": "packages/api/internal/handlers/store.go",
+      "lineRange": [
+        375,
+        380
+      ],
+      "summary": "从 API key header 中解析团队身份（handler auth 中间件）。",
+      "tags": [
+        "exported",
+        "getter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/store.go:GetUserFromAccessToken",
+      "type": "function",
+      "name": "GetUserFromAccessToken",
+      "filePath": "packages/api/internal/handlers/store.go",
+      "lineRange": [
+        382,
+        387
+      ],
+      "summary": "从 access token 中解析用户身份。",
+      "tags": [
+        "exported",
+        "getter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/store.go:GetUserIDFromAuthProviderToken",
+      "type": "function",
+      "name": "GetUserIDFromAuthProviderToken",
+      "filePath": "packages/api/internal/handlers/store.go",
+      "lineRange": [
+        389,
+        394
+      ],
+      "summary": "从 OIDC/Auth provider token 中解析用户 ID。",
+      "tags": [
+        "exported",
+        "getter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/store.go:GetTeamFromAuthProviderToken",
+      "type": "function",
+      "name": "GetTeamFromAuthProviderToken",
+      "filePath": "packages/api/internal/handlers/store.go",
+      "lineRange": [
+        396,
+        401
+      ],
+      "summary": "从 auth provider token 中解析所属 team ID。",
+      "tags": [
+        "exported",
+        "getter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/store.go:GetTeamFromAdminToken",
+      "type": "function",
+      "name": "GetTeamFromAdminToken",
+      "filePath": "packages/api/internal/handlers/store.go",
+      "lineRange": [
+        403,
+        450
+      ],
+      "summary": "从 admin token 中解析所属 team ID（admin 路径之一）。",
+      "tags": [
+        "exported",
+        "getter"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/store.go:GetTeamFromAdminToken",
+      "type": "function",
+      "name": "GetTeamFromAdminToken",
+      "filePath": "packages/api/internal/handlers/store.go",
+      "lineRange": [
+        452,
+        499
+      ],
+      "summary": "从 admin token 中解析所属 team ID（admin 路径之一）。",
+      "tags": [
+        "exported",
+        "getter"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/team_metrics.go:GetTeamsTeamIDMetrics",
+      "type": "function",
+      "name": "GetTeamsTeamIDMetrics",
+      "filePath": "packages/api/internal/handlers/team_metrics.go",
+      "lineRange": [
+        18,
+        71
+      ],
+      "summary": "返回指定团队在时间窗口内的聚合指标。",
+      "tags": [
+        "exported",
+        "getter",
+        "metrics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/team_metrics_max.go:GetTeamsTeamIDMetricsMax",
+      "type": "function",
+      "name": "GetTeamsTeamIDMetricsMax",
+      "filePath": "packages/api/internal/handlers/team_metrics_max.go",
+      "lineRange": [
+        18,
+        77
+      ],
+      "summary": "返回指定团队的指标峰值（max gauge）。",
+      "tags": [
+        "exported",
+        "getter",
+        "metrics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/teams.go:GetTeams",
+      "type": "function",
+      "name": "GetTeams",
+      "filePath": "packages/api/internal/handlers/teams.go",
+      "lineRange": [
+        14,
+        47
+      ],
+      "summary": "列出当前用户所属团队并为每个团队返回 CLI/API key。",
+      "tags": [
+        "exported",
+        "getter"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_alias.go:GetTemplatesAliasesAlias",
+      "type": "function",
+      "name": "GetTemplatesAliasesAlias",
+      "filePath": "packages/api/internal/handlers/template_alias.go",
+      "lineRange": [
+        18,
+        94
+      ],
+      "summary": "函数 GetTemplatesAliasesAlias（在 packages/api/internal/handlers/template_alias.go）。",
+      "tags": [
+        "exported",
+        "getter",
+        "template"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/api/internal/handlers/store.go:APIStore",
+      "type": "class",
+      "name": "APIStore",
+      "filePath": "packages/api/internal/handlers/store.go",
+      "lineRange": [
+        67,
+        89
+      ],
+      "summary": "E2B API 的核心服务对象，承载所有 handler 共享的依赖（DB/Redis/缓存/集群池/feature flag 等），并实现 api.ServerInterface。",
+      "tags": [
+        "service",
+        "state",
+        "middleware",
+        "auth"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:newInClusterKubeClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:NewAPIStore",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:NewAPIStore",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:Close",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:dbThrottleLimit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:updateDBThrottleLimits",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:sendAPIStoreError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:GetHealth",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:GetHealth",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:GetTeamFromAPIKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:GetTeamFromAPIKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:GetUserFromAccessToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:GetUserFromAccessToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:GetUserIDFromAuthProviderToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:GetUserIDFromAuthProviderToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:GetTeamFromAuthProviderToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:GetTeamFromAuthProviderToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:GetTeamFromAdminToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:GetTeamFromAdminToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:GetTeamFromAdminToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "function:packages/api/internal/handlers/store.go:GetTeamFromAdminToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/team_metrics.go",
+      "target": "function:packages/api/internal/handlers/team_metrics.go:GetTeamsTeamIDMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/team_metrics.go",
+      "target": "function:packages/api/internal/handlers/team_metrics.go:GetTeamsTeamIDMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/team_metrics_max.go",
+      "target": "function:packages/api/internal/handlers/team_metrics_max.go:GetTeamsTeamIDMetricsMax",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/team_metrics_max.go",
+      "target": "function:packages/api/internal/handlers/team_metrics_max.go:GetTeamsTeamIDMetricsMax",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/teams.go",
+      "target": "function:packages/api/internal/handlers/teams.go:GetTeams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/teams.go",
+      "target": "function:packages/api/internal/handlers/teams.go:GetTeams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "function:packages/api/internal/handlers/template_alias.go:GetTemplatesAliasesAlias",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "function:packages/api/internal/handlers/template_alias.go:GetTemplatesAliasesAlias",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "class:packages/api/internal/handlers/store.go:APIStore",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "class:packages/api/internal/handlers/store.go:APIStore",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/analytics_collector/analytics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/analytics_collector/auth.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/analytics_collector/client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/analytics_collector/collector_grpc.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/analytics_collector/collector.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/cache/snapshots/snapshot_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/cache/templates/alias_cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/cache/templates/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/cache/templates/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/cache/templates/errors_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/cache/templates/errors.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/cache/templates/template_build_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/cache/templates/template_build.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/cache/templates/template_metadata_cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/cache/templates/template_metadata_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/cfg/model_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/clusters/client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/clusters/cluster.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/clusters/clusters_sync.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/clusters/discovery/discovery.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/clusters/discovery/kubernetes.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/clusters/discovery/local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/clusters/discovery/remote_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/clusters/discovery/remote.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/clusters/discovery/static.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/clusters/instance_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/clusters/instance.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/clusters/instances_sync.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/clusters/resources_local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/clusters/resources_remote.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/clusters/resources_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/clusters/resources.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/admin.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/analytics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/autoresume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/autoresume.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/client_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/create_instance_events_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/create_instance_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/create_instance.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/delete_instance.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/discovery/discovery.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/discovery/kubernetes_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/discovery/kubernetes.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/discovery/local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/discovery/nomad.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/errors.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/keep_alive_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/keep_alive.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/lifecycle.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/list_instances.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/orchestrator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/pause_instance.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/routing_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/routing.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/snapshot_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/update_instance.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/orchestrator/update_network.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/sandbox/aliases.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/sandbox/sandbox_envd_secret.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/sandbox/store_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/sandbox/store.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/template-manager/create_template_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/template-manager/create_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/template-manager/template_manager_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/template-manager/template_manager.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/template-manager/template_status.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/template-manager/upload_template_layer_files.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/utils/counter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/utils/error_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/utils/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/utils/grpc.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/utils/messages.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/utils/pagination_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/utils/pagination.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/utils/result.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/utils/sandboxes_list_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/utils/sandboxes_list.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/utils/split_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/utils/split.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/utils/templates_list.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/store.go",
+      "target": "file:packages/api/internal/utils/writer.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/team_metrics.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/team_metrics.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/team_metrics.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/team_metrics.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/team_metrics_max.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/team_metrics_max.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/team_metrics_max.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/team_metrics_max.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/team_metrics_max.go",
+      "target": "file:packages/api/internal/metrics/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/teams.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/teams.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/teams.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/teams.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/teams.go",
+      "target": "file:packages/api/internal/team/apikeys.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/teams.go",
+      "target": "file:packages/api/internal/team/limits_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/teams.go",
+      "target": "file:packages/api/internal/team/limits.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "file:packages/api/internal/cache/templates/alias_cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "file:packages/api/internal/cache/templates/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "file:packages/api/internal/cache/templates/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "file:packages/api/internal/cache/templates/errors_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "file:packages/api/internal/cache/templates/errors.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "file:packages/api/internal/cache/templates/template_build_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "file:packages/api/internal/cache/templates/template_build.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "file:packages/api/internal/cache/templates/template_metadata_cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "file:packages/api/internal/cache/templates/template_metadata_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias.go",
+      "target": "file:packages/api/internal/handlers/template_alias_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

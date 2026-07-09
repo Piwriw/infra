@@ -1,0 +1,190 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/api/Dockerfile",
+      "language": "dockerfile",
+      "fileCategory": "infra",
+      "totalLines": 52,
+      "nonEmptyLines": 38,
+      "services": [
+        {
+          "name": "builder",
+          "image": "golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION}",
+          "ports": [],
+          "startLine": 4,
+          "endLine": 44
+        },
+        {
+          "name": "alpine",
+          "image": "alpine:${ALPINE_VERSION}",
+          "ports": [],
+          "startLine": 45,
+          "endLine": 53
+        }
+      ],
+      "steps": [
+        {
+          "name": "ARG GOLANG_VERSION=1.26.3",
+          "startLine": 1,
+          "endLine": 1
+        },
+        {
+          "name": "ARG ALPINE_VERSION=3.22",
+          "startLine": 2,
+          "endLine": 2
+        },
+        {
+          "name": "FROM golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION} AS builder",
+          "startLine": 4,
+          "endLine": 4
+        },
+        {
+          "name": "RUN apk add --no-cache make",
+          "startLine": 6,
+          "endLine": 6
+        },
+        {
+          "name": "WORKDIR /build",
+          "startLine": 9,
+          "endLine": 9
+        },
+        {
+          "name": "COPY ./shared/go.mod ./shared/go.sum ./shared/",
+          "startLine": 10,
+          "endLine": 10
+        },
+        {
+          "name": "COPY ./clickhouse/go.mod ./clickhouse/go.sum ./clickhouse/",
+          "startLine": 11,
+          "endLine": 11
+        },
+        {
+          "name": "COPY ./db/go.mod ./db/go.sum ./db/",
+          "startLine": 12,
+          "endLine": 12
+        },
+        {
+          "name": "COPY ./auth/go.mod ./auth/go.sum ./auth/",
+          "startLine": 13,
+          "endLine": 13
+        },
+        {
+          "name": "COPY ./api/go.mod ./api/go.sum ./api/",
+          "startLine": 14,
+          "endLine": 14
+        },
+        {
+          "name": "RUN cd /build/shared && go mod download && \\",
+          "startLine": 17,
+          "endLine": 17
+        },
+        {
+          "name": "WORKDIR /build",
+          "startLine": 24,
+          "endLine": 24
+        },
+        {
+          "name": "COPY ./auth/pkg ./auth/pkg",
+          "startLine": 26,
+          "endLine": 26
+        },
+        {
+          "name": "COPY ./clickhouse/pkg ./clickhouse/pkg",
+          "startLine": 27,
+          "endLine": 27
+        },
+        {
+          "name": "COPY ./shared/pkg ./shared/pkg",
+          "startLine": 28,
+          "endLine": 28
+        },
+        {
+          "name": "COPY ./db/client ./db/client",
+          "startLine": 29,
+          "endLine": 29
+        },
+        {
+          "name": "COPY ./db/queries ./db/queries",
+          "startLine": 30,
+          "endLine": 30
+        },
+        {
+          "name": "COPY ./db/pkg ./db/pkg",
+          "startLine": 31,
+          "endLine": 31
+        },
+        {
+          "name": "COPY ./api/internal ./api/internal",
+          "startLine": 33,
+          "endLine": 33
+        },
+        {
+          "name": "COPY ./api/main.go ./api/main.go",
+          "startLine": 34,
+          "endLine": 34
+        },
+        {
+          "name": "COPY ./api/Makefile ./api/Makefile",
+          "startLine": 35,
+          "endLine": 35
+        },
+        {
+          "name": "WORKDIR /build/api",
+          "startLine": 37,
+          "endLine": 37
+        },
+        {
+          "name": "ARG COMMIT_SHA",
+          "startLine": 39,
+          "endLine": 39
+        },
+        {
+          "name": "ARG EXPECTED_MIGRATION_TIMESTAMP",
+          "startLine": 40,
+          "endLine": 40
+        },
+        {
+          "name": "RUN --mount=type=cache,target=/root/.cache/go-build make build C",
+          "startLine": 41,
+          "endLine": 41
+        },
+        {
+          "name": "RUN chmod +x /build/api/bin/api",
+          "startLine": 43,
+          "endLine": 43
+        },
+        {
+          "name": "FROM alpine:${ALPINE_VERSION}",
+          "startLine": 45,
+          "endLine": 45
+        },
+        {
+          "name": "COPY --from=builder /build/api/bin/api .",
+          "startLine": 47,
+          "endLine": 47
+        },
+        {
+          "name": "ENV GIN_MODE=release",
+          "startLine": 50,
+          "endLine": 50
+        },
+        {
+          "name": "ENTRYPOINT [ \"./api\"]",
+          "startLine": 52,
+          "endLine": 52
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "serviceCount": 2,
+        "stepCount": 30
+      }
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/db/queries/snapshots/create_new_snapshot.sql",
+      "type": "file",
+      "name": "create_new_snapshot.sql",
+      "filePath": "packages/db/queries/snapshots/create_new_snapshot.sql",
+      "summary": "sqlc 查询 UpsertSnapshot：使用 CTE 在单个事务中创建/更新快照记录、关联模板环境，并新建 env_build 行（从源构建复制 CPU 信息以保持兼容性），最终返回 build_id 与 template_id。",
+      "tags": ["sql", "snapshot", "sqlc", "upsert", "database"],
+      "complexity": "complex",
+      "languageNotes": "使用 PostgreSQL CTE 编排四个写入步骤，通过 sandbox_id 唯一键实现 upsert，并通过标量子查询复制 CPU 兼容性字段。"
+    },
+    {
+      "id": "file:packages/db/queries/snapshots/create_snapshot_template_env.sql",
+      "type": "file",
+      "name": "create_snapshot_template_env.sql",
+      "filePath": "packages/db/queries/snapshots/create_snapshot_template_env.sql",
+      "summary": "sqlc 查询 CreateSnapshotTemplateEnv：在 UpsertSnapshot 之后创建 source='snapshot_template' 的持久化环境条目，并将其链接到已有 build（写入 snapshot_templates 与 env_build_assignments）。",
+      "tags": ["sql", "snapshot", "sqlc", "template", "database"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/queries/snapshots/get_last_snapshot.sql",
+      "type": "file",
+      "name": "get_last_snapshot.sql",
+      "filePath": "packages/db/queries/snapshots/get_last_snapshot.sql",
+      "summary": "sqlc 查询 GetLastSnapshot：按 sandbox_id 获取最新快照，关联最近一个 ready 状态的 build，并附带基础环境的命名空间别名列表（使用 LATERAL join + ARRAY_AGG）。",
+      "tags": ["sql", "snapshot", "sqlc", "lookup", "database"],
+      "complexity": "moderate",
+      "languageNotes": "使用 sqlc.embed 将 snapshots 与 env_builds 直接嵌入到返回结构，并使用 LATERAL 子查询获取每个 env 的最新 ready build。"
+    },
+    {
+      "id": "file:packages/db/queries/snapshots/get_snapshot_builds.sql",
+      "type": "file",
+      "name": "get_snapshot_builds.sql",
+      "filePath": "packages/db/queries/snapshots/get_snapshot_builds.sql",
+      "summary": "sqlc 查询 GetSnapshotBuilds：按 sandbox_id 与 team_id 列出快照关联的 template_id、build_id 以及 build 的 cluster_node_id。",
+      "tags": ["sql", "snapshot", "sqlc", "lookup", "database"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/queries/snapshots/list_team_snapshot_templates.sql",
+      "type": "file",
+      "name": "list_team_snapshot_templates.sql",
+      "filePath": "packages/db/queries/snapshots/list_team_snapshot_templates.sql",
+      "summary": "sqlc 查询 ListTeamSnapshotTemplates：游标分页列出某团队所有 source='snapshot_template' 的持久化快照模板，可按 sandbox_id 过滤；返回构建元数据与别名（names[0] 作为 API 标识符）。",
+      "tags": ["sql", "snapshot", "sqlc", "pagination", "database"],
+      "complexity": "complex",
+      "languageNotes": "使用 (created_at, id) 元组游标实现稳定分页；LATERAL 子查询限定每个 env 只取最新一个 status ∈ {success, uploaded, ready} 的 build。"
+    },
+    {
+      "id": "file:packages/db/queries/snapshots/update_snapshot_origin_node.sql",
+      "type": "file",
+      "name": "update_snapshot_origin_node.sql",
+      "filePath": "packages/db/queries/snapshots/update_snapshot_origin_node.sql",
+      "summary": "sqlc 查询 UpdateSnapshotOriginNode：根据 sandbox_id 将 snapshot 的 origin_node_id 重新指向某个节点，用于 resume 重试时锁定正在预热本地缓存的节点。",
+      "tags": ["sql", "snapshot", "sqlc", "update", "database"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": []
+}

@@ -1,0 +1,1152 @@
+{
+  "nodes": [
+    {
+      "id": "file:tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "type": "file",
+      "name": "fsfreeze_test.go",
+      "filePath": "tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "summary": "验证沙箱内文件系统 freeze/thaw 操作的集成测试，确保 envd 正确处理文件系统冻结与恢复。",
+      "tags": [
+        "test",
+        "integration",
+        "e2e",
+        "envd"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "type": "file",
+      "name": "hyperloop_test.go",
+      "filePath": "tests/integration/internal/tests/envd/hyperloop_test.go",
+      "summary": "测试通过 IP、域名以及禁用互联网访问三种场景下访问 hyperloop 服务的连通性。",
+      "tags": [
+        "test",
+        "integration",
+        "e2e",
+        "envd"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "type": "file",
+      "name": "auto_resume_filesystem_only_test.go",
+      "filePath": "tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "summary": "验证纯文件系统操作不会触发沙箱自动恢复（auto-resume）行为的集成测试。",
+      "tags": [
+        "test",
+        "integration",
+        "e2e",
+        "client-proxy"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "type": "file",
+      "name": "traffic_access_token_test.go",
+      "filePath": "tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "summary": "全面覆盖沙箱流量访问令牌（traffic access token）鉴权：缺失/无效 header、envd 端口豁免以及 auto-resume 时令牌校验。",
+      "tags": [
+        "test",
+        "integration",
+        "e2e",
+        "client-proxy"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "file",
+      "name": "filesystem.go",
+      "filePath": "tests/integration/internal/utils/filesystem.go",
+      "summary": "集成测试共享工具：通过 envd HTTP 客户端上传文件、构造 multipart 文本请求与创建目录等文件系统辅助函数。",
+      "tags": [
+        "test",
+        "utility",
+        "integration",
+        "filesystem"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/utils/team.go",
+      "type": "file",
+      "name": "team.go",
+      "filePath": "tests/integration/internal/utils/team.go",
+      "summary": "集成测试共享工具：创建团队、关联用户、生成 API Key 与匹配 API Key 掩码的数据库辅助函数。",
+      "tags": [
+        "test",
+        "utility",
+        "integration",
+        "team"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/envd/fsfreeze_test.go:TestFsFreezeThaw",
+      "type": "function",
+      "name": "TestFsFreezeThaw",
+      "filePath": "tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "lineRange": [
+        34,
+        102
+      ],
+      "summary": "验证沙箱内文件系统 freeze/thaw 操作并断言后续写入仍可用。",
+      "tags": [
+        "test",
+        "filesystem",
+        "envd"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/envd/hyperloop_test.go:TestAccessingHyperloopServerViaIP",
+      "type": "function",
+      "name": "TestAccessingHyperloopServerViaIP",
+      "filePath": "tests/integration/internal/tests/envd/hyperloop_test.go",
+      "lineRange": [
+        17,
+        40
+      ],
+      "summary": "测试通过 IP 直接访问沙箱内 hyperloop 服务器的连通性。",
+      "tags": [
+        "test",
+        "hyperloop",
+        "networking"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/envd/hyperloop_test.go:TestAccessingHyperloopServerViaDomain",
+      "type": "function",
+      "name": "TestAccessingHyperloopServerViaDomain",
+      "filePath": "tests/integration/internal/tests/envd/hyperloop_test.go",
+      "lineRange": [
+        42,
+        65
+      ],
+      "summary": "测试通过域名访问沙箱内 hyperloop 服务器的连通性。",
+      "tags": [
+        "test",
+        "hyperloop",
+        "networking"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/envd/hyperloop_test.go:TestAccessingHyperloopServerViaIPWithBlockedInternet",
+      "type": "function",
+      "name": "TestAccessingHyperloopServerViaIPWithBlockedInternet",
+      "filePath": "tests/integration/internal/tests/envd/hyperloop_test.go",
+      "lineRange": [
+        67,
+        90
+      ],
+      "summary": "验证禁用互联网访问后仍可通过 IP 访问 hyperloop 服务器的行为。",
+      "tags": [
+        "test",
+        "hyperloop",
+        "networking"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go:TestSandboxNoAutoResumeFilesystemOnly",
+      "type": "function",
+      "name": "TestSandboxNoAutoResumeFilesystemOnly",
+      "filePath": "tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "lineRange": [
+        22,
+        69
+      ],
+      "summary": "验证仅文件系统操作不会触发沙箱 auto-resume。",
+      "tags": [
+        "test",
+        "auto-resume",
+        "filesystem"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestSandboxWithEnabledTrafficAccessTokenButMissingHeader",
+      "type": "function",
+      "name": "TestSandboxWithEnabledTrafficAccessTokenButMissingHeader",
+      "filePath": "tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "lineRange": [
+        26,
+        80
+      ],
+      "summary": "验证启用 traffic access token 但请求缺少 header 时被拒绝。",
+      "tags": [
+        "test",
+        "traffic-access-token",
+        "auth"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestSandboxWithEnabledTrafficAccessTokenButInvalidHeader",
+      "type": "function",
+      "name": "TestSandboxWithEnabledTrafficAccessTokenButInvalidHeader",
+      "filePath": "tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "lineRange": [
+        82,
+        138
+      ],
+      "summary": "验证启用 traffic access token 但 header 无效时被拒绝。",
+      "tags": [
+        "test",
+        "traffic-access-token",
+        "auth"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestSandboxWithEnabledTrafficAccessToken",
+      "type": "function",
+      "name": "TestSandboxWithEnabledTrafficAccessToken",
+      "filePath": "tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "lineRange": [
+        140,
+        179
+      ],
+      "summary": "验证启用 traffic access token 且 header 有效时请求成功。",
+      "tags": [
+        "test",
+        "traffic-access-token",
+        "auth"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestEnvdPortIsNotAffectedByTrafficAccessToken",
+      "type": "function",
+      "name": "TestEnvdPortIsNotAffectedByTrafficAccessToken",
+      "filePath": "tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "lineRange": [
+        181,
+        209
+      ],
+      "summary": "验证 envd 端口不受 traffic access token 鉴权影响。",
+      "tags": [
+        "test",
+        "traffic-access-token",
+        "envd"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestSandboxWithTrafficAccessTokenAutoResumeViaProxy",
+      "type": "function",
+      "name": "TestSandboxWithTrafficAccessTokenAutoResumeViaProxy",
+      "filePath": "tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "lineRange": [
+        211,
+        298
+      ],
+      "summary": "验证启用 traffic access token 时 proxy 触发的 auto-resume 仍需携带有效令牌。",
+      "tags": [
+        "test",
+        "traffic-access-token",
+        "auto-resume"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestEnvdAccessTokenAutoResumeViaProxy",
+      "type": "function",
+      "name": "TestEnvdAccessTokenAutoResumeViaProxy",
+      "filePath": "tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "lineRange": [
+        300,
+        367
+      ],
+      "summary": "验证 envd access token 在 proxy 触发的 auto-resume 场景下仍生效。",
+      "tags": [
+        "test",
+        "envd",
+        "auto-resume"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/filesystem.go:UploadFile",
+      "type": "function",
+      "name": "UploadFile",
+      "filePath": "tests/integration/internal/utils/filesystem.go",
+      "lineRange": [
+        19,
+        38
+      ],
+      "summary": "通过 envd HTTP 客户端上传文件到指定路径。",
+      "tags": [
+        "utility",
+        "filesystem",
+        "upload"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/filesystem.go:CreateTextFile",
+      "type": "function",
+      "name": "CreateTextFile",
+      "filePath": "tests/integration/internal/utils/filesystem.go",
+      "lineRange": [
+        40,
+        59
+      ],
+      "summary": "构造包含给定路径与内容的 multipart 表单缓冲区。",
+      "tags": [
+        "utility",
+        "filesystem",
+        "multipart"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/team.go:CreateTeam",
+      "type": "function",
+      "name": "CreateTeam",
+      "filePath": "tests/integration/internal/utils/team.go",
+      "lineRange": [
+        18,
+        22
+      ],
+      "summary": "在数据库创建测试团队并返回团队 ID。",
+      "tags": [
+        "utility",
+        "team",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/team.go:CreateTeamWithUser",
+      "type": "function",
+      "name": "CreateTeamWithUser",
+      "filePath": "tests/integration/internal/utils/team.go",
+      "lineRange": [
+        24,
+        51
+      ],
+      "summary": "创建团队并关联到指定用户。",
+      "tags": [
+        "utility",
+        "team",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/team.go:AddUserToTeam",
+      "type": "function",
+      "name": "AddUserToTeam",
+      "filePath": "tests/integration/internal/utils/team.go",
+      "lineRange": [
+        53,
+        70
+      ],
+      "summary": "将用户加入已存在的团队。",
+      "tags": [
+        "utility",
+        "team",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/team.go:CreateAPIKey",
+      "type": "function",
+      "name": "CreateAPIKey",
+      "filePath": "tests/integration/internal/utils/team.go",
+      "lineRange": [
+        72,
+        106
+      ],
+      "summary": "为指定用户/团队生成 API Key（含密钥派生与掩码）。",
+      "tags": [
+        "utility",
+        "team",
+        "api-key"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/team.go:MatchesAPIKeyMask",
+      "type": "function",
+      "name": "MatchesAPIKeyMask",
+      "filePath": "tests/integration/internal/utils/team.go",
+      "lineRange": [
+        108,
+        110
+      ],
+      "summary": "判断 API Key 是否匹配给定前后缀掩码。",
+      "tags": [
+        "utility",
+        "team",
+        "api-key"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "target": "function:tests/integration/internal/tests/envd/fsfreeze_test.go:TestFsFreezeThaw",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "target": "function:tests/integration/internal/tests/envd/fsfreeze_test.go:TestFsFreezeThaw",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "function:tests/integration/internal/tests/envd/hyperloop_test.go:TestAccessingHyperloopServerViaIP",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "function:tests/integration/internal/tests/envd/hyperloop_test.go:TestAccessingHyperloopServerViaIP",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "function:tests/integration/internal/tests/envd/hyperloop_test.go:TestAccessingHyperloopServerViaDomain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "function:tests/integration/internal/tests/envd/hyperloop_test.go:TestAccessingHyperloopServerViaDomain",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "function:tests/integration/internal/tests/envd/hyperloop_test.go:TestAccessingHyperloopServerViaIPWithBlockedInternet",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "function:tests/integration/internal/tests/envd/hyperloop_test.go:TestAccessingHyperloopServerViaIPWithBlockedInternet",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go:TestSandboxNoAutoResumeFilesystemOnly",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go:TestSandboxNoAutoResumeFilesystemOnly",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestSandboxWithEnabledTrafficAccessTokenButMissingHeader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestSandboxWithEnabledTrafficAccessTokenButMissingHeader",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestSandboxWithEnabledTrafficAccessTokenButInvalidHeader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestSandboxWithEnabledTrafficAccessTokenButInvalidHeader",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestSandboxWithEnabledTrafficAccessToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestSandboxWithEnabledTrafficAccessToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestEnvdPortIsNotAffectedByTrafficAccessToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestEnvdPortIsNotAffectedByTrafficAccessToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestSandboxWithTrafficAccessTokenAutoResumeViaProxy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestSandboxWithTrafficAccessTokenAutoResumeViaProxy",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestEnvdAccessTokenAutoResumeViaProxy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/traffic_access_token_test.go:TestEnvdAccessTokenAutoResumeViaProxy",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/filesystem.go",
+      "target": "function:tests/integration/internal/utils/filesystem.go:UploadFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/filesystem.go",
+      "target": "function:tests/integration/internal/utils/filesystem.go:UploadFile",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/filesystem.go",
+      "target": "function:tests/integration/internal/utils/filesystem.go:CreateTextFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/filesystem.go",
+      "target": "function:tests/integration/internal/utils/filesystem.go:CreateTextFile",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "function:tests/integration/internal/utils/team.go:CreateTeam",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "function:tests/integration/internal/utils/team.go:CreateTeam",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "function:tests/integration/internal/utils/team.go:CreateTeamWithUser",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "function:tests/integration/internal/utils/team.go:CreateTeamWithUser",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "function:tests/integration/internal/utils/team.go:AddUserToTeam",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "function:tests/integration/internal/utils/team.go:AddUserToTeam",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "function:tests/integration/internal/utils/team.go:CreateAPIKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "function:tests/integration/internal/utils/team.go:CreateAPIKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "function:tests/integration/internal/utils/team.go:MatchesAPIKeyMask",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "function:tests/integration/internal/utils/team.go:MatchesAPIKeyMask",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/fsfreeze_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "file:tests/integration/internal/envd/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "file:tests/integration/internal/envd/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "file:tests/integration/internal/envd/types.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/hyperloop_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_filesystem_only_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/traffic_access_token_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/filesystem.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/filesystem.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/filesystem.go",
+      "target": "file:tests/integration/internal/envd/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/filesystem.go",
+      "target": "file:tests/integration/internal/envd/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/filesystem.go",
+      "target": "file:tests/integration/internal/envd/types.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/filesystem.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/filesystem.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/filesystem.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/filesystem.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/filesystem.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/team.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

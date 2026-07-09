@@ -1,0 +1,989 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "type": "file",
+      "name": "snapshot_latest_assignment_test.go",
+      "filePath": "packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "summary": "集成测试：最近快照分配的游标分页、标签与构建顺序行为。",
+      "tags": [
+        "test",
+        "integration",
+        "database",
+        "snapshot"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetLastSnapshot_ReturnsLatestAssignment",
+      "type": "function",
+      "name": "TestGetLastSnapshot_ReturnsLatestAssignment",
+      "filePath": "packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "lineRange": [
+        19,
+        51
+      ],
+      "summary": "验证获取最近快照分配的结果。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetLastSnapshot_OnlyReturnsSuccessBuilds",
+      "type": "function",
+      "name": "TestGetLastSnapshot_OnlyReturnsSuccessBuilds",
+      "filePath": "packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "lineRange": [
+        55,
+        82
+      ],
+      "summary": "验证仅返回成功构建对应的快照。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetSnapshotsWithCursor_ReturnsLatestAssignment",
+      "type": "function",
+      "name": "TestGetSnapshotsWithCursor_ReturnsLatestAssignment",
+      "filePath": "packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "lineRange": [
+        86,
+        120
+      ],
+      "summary": "验证游标分页下返回最近分配。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetLastSnapshot_BuildSharedWithOtherTemplate",
+      "type": "function",
+      "name": "TestGetLastSnapshot_BuildSharedWithOtherTemplate",
+      "filePath": "packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "lineRange": [
+        124,
+        157
+      ],
+      "summary": "验证构建被其他模板共享时的快照行为。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetLastSnapshot_IgnoresNonDefaultTags",
+      "type": "function",
+      "name": "TestGetLastSnapshot_IgnoresNonDefaultTags",
+      "filePath": "packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "lineRange": [
+        161,
+        191
+      ],
+      "summary": "验证忽略非默认标签的快照。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetLastSnapshot_AssignmentOrderDifferentFromBuildOrder",
+      "type": "function",
+      "name": "TestGetLastSnapshot_AssignmentOrderDifferentFromBuildOrder",
+      "filePath": "packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "lineRange": [
+        196,
+        227
+      ],
+      "summary": "验证分配顺序与构建顺序不同时的结果。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "type": "file",
+      "name": "get_exclusive_builds_for_template_deletion_test.go",
+      "filePath": "packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "summary": "集成测试：获取模板删除的独占构建集合在多种共享场景下的正确性。",
+      "tags": [
+        "test",
+        "integration",
+        "database",
+        "template-deletion"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_ExclusiveBuild",
+      "type": "function",
+      "name": "TestGetExclusiveBuildsForTemplateDeletion_ExclusiveBuild",
+      "filePath": "packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "lineRange": [
+        12,
+        30
+      ],
+      "summary": "验证仅属于当前模板的构建被返回。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_SharedBuild",
+      "type": "function",
+      "name": "TestGetExclusiveBuildsForTemplateDeletion_SharedBuild",
+      "filePath": "packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "lineRange": [
+        32,
+        55
+      ],
+      "summary": "验证与其他模板共享的构建不被返回。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_MixedBuilds",
+      "type": "function",
+      "name": "TestGetExclusiveBuildsForTemplateDeletion_MixedBuilds",
+      "filePath": "packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "lineRange": [
+        57,
+        83
+      ],
+      "summary": "验证混合场景下的正确过滤。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_NoBuilds",
+      "type": "function",
+      "name": "TestGetExclusiveBuildsForTemplateDeletion_NoBuilds",
+      "filePath": "packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "lineRange": [
+        85,
+        100
+      ],
+      "summary": "验证无构建时返回空集。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_MultipleTagsSameTemplate",
+      "type": "function",
+      "name": "TestGetExclusiveBuildsForTemplateDeletion_MultipleTagsSameTemplate",
+      "filePath": "packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "lineRange": [
+        102,
+        124
+      ],
+      "summary": "验证同一模板多个标签下的过滤。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_SharedBuildAcrossTeams",
+      "type": "function",
+      "name": "TestGetExclusiveBuildsForTemplateDeletion_SharedBuildAcrossTeams",
+      "filePath": "packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "lineRange": [
+        126,
+        150
+      ],
+      "summary": "验证跨团队共享构建的场景。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_MixedBuildsAcrossTeams",
+      "type": "function",
+      "name": "TestGetExclusiveBuildsForTemplateDeletion_MixedBuildsAcrossTeams",
+      "filePath": "packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "lineRange": [
+        152,
+        179
+      ],
+      "summary": "验证跨团队的混合构建过滤。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/queries/list_team_templates.sql.go",
+      "type": "file",
+      "name": "list_team_templates.sql.go",
+      "filePath": "packages/db/pkg/dashboard/queries/list_team_templates.sql.go",
+      "summary": "sqlc 生成的查询代码：按创建时间或更新时间升降序列出团队模板，包含参数与行结构定义。",
+      "tags": [
+        "sqlc-generated",
+        "template-query",
+        "pagination",
+        "database"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/db/pkg/dashboard/queries/list_team_templates.sql.go:ListTeamTemplatesByCreatedAtAsc",
+      "type": "function",
+      "name": "ListTeamTemplatesByCreatedAtAsc",
+      "filePath": "packages/db/pkg/dashboard/queries/list_team_templates.sql.go",
+      "lineRange": [
+        182,
+        227
+      ],
+      "summary": "按创建时间升序分页列出团队模板。",
+      "tags": [
+        "sqlc-generated",
+        "query",
+        "pagination"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/dashboard/queries/list_team_templates.sql.go:ListTeamTemplatesByCreatedAtDesc",
+      "type": "function",
+      "name": "ListTeamTemplatesByCreatedAtDesc",
+      "filePath": "packages/db/pkg/dashboard/queries/list_team_templates.sql.go",
+      "lineRange": [
+        379,
+        424
+      ],
+      "summary": "按创建时间降序分页列出团队模板。",
+      "tags": [
+        "sqlc-generated",
+        "query",
+        "pagination"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/dashboard/queries/list_team_templates.sql.go:ListTeamTemplatesByUpdatedAtAsc",
+      "type": "function",
+      "name": "ListTeamTemplatesByUpdatedAtAsc",
+      "filePath": "packages/db/pkg/dashboard/queries/list_team_templates.sql.go",
+      "lineRange": [
+        576,
+        621
+      ],
+      "summary": "按更新时间升序分页列出团队模板。",
+      "tags": [
+        "sqlc-generated",
+        "query",
+        "pagination"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/dashboard/queries/list_team_templates.sql.go:ListTeamTemplatesByUpdatedAtDesc",
+      "type": "function",
+      "name": "ListTeamTemplatesByUpdatedAtDesc",
+      "filePath": "packages/db/pkg/dashboard/queries/list_team_templates.sql.go",
+      "lineRange": [
+        773,
+        818
+      ],
+      "summary": "按更新时间降序分页列出团队模板。",
+      "tags": [
+        "sqlc-generated",
+        "query",
+        "pagination"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_latest_asc.sql.go",
+      "type": "file",
+      "name": "list_template_tag_groups_by_latest_asc.sql.go",
+      "filePath": "packages/db/pkg/dashboard/queries/list_template_tag_groups_by_latest_asc.sql.go",
+      "summary": "sqlc 生成的查询代码：按最新分配时间升序列出模板标签组。",
+      "tags": [
+        "sqlc-generated",
+        "tag-group-query",
+        "database"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_latest_asc.sql.go:ListTemplateTagGroupsByLatestAsc",
+      "type": "function",
+      "name": "ListTemplateTagGroupsByLatestAsc",
+      "filePath": "packages/db/pkg/dashboard/queries/list_template_tag_groups_by_latest_asc.sql.go",
+      "lineRange": [
+        90,
+        123
+      ],
+      "summary": "执行 sqlc 生成的 SQL，按最近分配时间升序返回模板标签组。",
+      "tags": [
+        "sqlc-generated",
+        "query"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/queries/models.go",
+      "type": "file",
+      "name": "models.go",
+      "filePath": "packages/db/pkg/dashboard/queries/models.go",
+      "summary": "sqlc 生成的模型定义：Team 和 TeamLimit 数据模型。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "database"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetLastSnapshot_ReturnsLatestAssignment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetLastSnapshot_OnlyReturnsSuccessBuilds",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetSnapshotsWithCursor_ReturnsLatestAssignment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetLastSnapshot_BuildSharedWithOtherTemplate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetLastSnapshot_IgnoresNonDefaultTags",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetLastSnapshot_AssignmentOrderDifferentFromBuildOrder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetLastSnapshot_ReturnsLatestAssignment",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetLastSnapshot_OnlyReturnsSuccessBuilds",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetSnapshotsWithCursor_ReturnsLatestAssignment",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetLastSnapshot_BuildSharedWithOtherTemplate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetLastSnapshot_IgnoresNonDefaultTags",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "function:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go:TestGetLastSnapshot_AssignmentOrderDifferentFromBuildOrder",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/pkg/testutils/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/pkg/testutils/queries.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/pkg/types/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/pkg/types/types_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/pkg/types/types.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/active_template_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/check_alias_exists.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/create_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/create_new_snapshot.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/create_snapshot_template_env.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/create_template_build_assignment.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/create_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/delete_old_aliases.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/delete_template_build_assignment.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/delete_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/exists_template_snapshots.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/finish_template_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_active_clusters.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_build_info.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_builds_paginated.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_builds_statuses.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_concurrent_template_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_exclusive_builds_for_template_deletion.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_inprogress_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_last_snapshot.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_sandbox_record.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_snapshot_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_snapshots_with_cursor.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_team_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_team_templates_with_cursor.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_team_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_template_aliases.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_template_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_template_by_id.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_template_with_build_by_tag.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_template_with_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/get_templatealias_by_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/list_team_snapshot_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/list_template_tags.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/models.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/resolve_team.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/team_members.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/update_snapshot_origin_node.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/update_template_build_status.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/update_template_spawns.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/update_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/upsert_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/validate_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/snapshot_latest_assignment_test.go",
+      "target": "file:packages/db/queries/volumes.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_ExclusiveBuild",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_SharedBuild",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_MixedBuilds",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_NoBuilds",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_MultipleTagsSameTemplate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_SharedBuildAcrossTeams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_MixedBuildsAcrossTeams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_ExclusiveBuild",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_SharedBuild",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_MixedBuilds",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_NoBuilds",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_MultipleTagsSameTemplate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_SharedBuildAcrossTeams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go:TestGetExclusiveBuildsForTemplateDeletion_MixedBuildsAcrossTeams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "target": "file:packages/db/pkg/testutils/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_exclusive_builds_for_template_deletion_test.go",
+      "target": "file:packages/db/pkg/testutils/queries.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/list_team_templates.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/list_team_templates.sql.go:ListTeamTemplatesByCreatedAtAsc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/list_team_templates.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/list_team_templates.sql.go:ListTeamTemplatesByCreatedAtDesc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/list_team_templates.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/list_team_templates.sql.go:ListTeamTemplatesByUpdatedAtAsc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/list_team_templates.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/list_team_templates.sql.go:ListTeamTemplatesByUpdatedAtDesc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/list_team_templates.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/list_team_templates.sql.go:ListTeamTemplatesByCreatedAtAsc",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/list_team_templates.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/list_team_templates.sql.go:ListTeamTemplatesByCreatedAtDesc",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/list_team_templates.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/list_team_templates.sql.go:ListTeamTemplatesByUpdatedAtAsc",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/list_team_templates.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/list_team_templates.sql.go:ListTeamTemplatesByUpdatedAtDesc",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_latest_asc.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_latest_asc.sql.go:ListTemplateTagGroupsByLatestAsc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_latest_asc.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_latest_asc.sql.go:ListTemplateTagGroupsByLatestAsc",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

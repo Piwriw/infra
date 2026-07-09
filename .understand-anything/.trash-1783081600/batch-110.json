@@ -1,0 +1,70 @@
+{
+  "nodes": [
+    {
+      "id": "service:packages/nomad-nodepool-apm/Makefile",
+      "type": "service",
+      "name": "Makefile",
+      "filePath": "packages/nomad-nodepool-apm/Makefile",
+      "summary": "Nomad NodePool APM 插件的构建脚本,负责交叉编译为 Linux amd64 静态二进制,并将其上传到 AWS S3 或 GCP Cloud Storage 的 fc-env-pipeline 桶中(支持按 commit SHA 标签归档)。",
+      "tags": ["build-system", "infrastructure", "deployment", "ci-cd", "containerization"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:packages/nomad-nodepool-apm/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "packages/nomad-nodepool-apm/README.md",
+      "summary": "Nomad NodePool APM 插件的官方说明文档,涵盖目的、构建、上传、配置以及如何在 Nomad Autoscaler 作业的扩缩策略中使用该插件查询特定节点池的 ready/eligible 节点数。",
+      "tags": ["documentation", "configuration", "autoscaling", "nomad", "plugin"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:packages/nomad-nodepool-apm/go.mod",
+      "type": "config",
+      "name": "go.mod",
+      "filePath": "packages/nomad-nodepool-apm/go.mod",
+      "summary": "Go 模块定义文件,声明该包属于 e2b-dev/infra 仓库,使用 Go 1.26.3,直接依赖 hashicorp/nomad-autoscaler、nomad/api 以及 go-hclog。",
+      "tags": ["configuration", "go-module", "build-system", "dependency-management"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:packages/nomad-nodepool-apm/go.sum",
+      "type": "config",
+      "name": "go.sum",
+      "filePath": "packages/nomad-nodepool-apm/go.sum",
+      "summary": "Go 模块校验和文件,锁定所有直接与间接依赖的版本哈希,确保跨环境构建的可重现性。",
+      "tags": ["configuration", "go-module", "dependency-management", "checksums"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:packages/nomad-nodepool-apm/Makefile",
+      "target": "config:packages/nomad-nodepool-apm/go.mod",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:packages/nomad-nodepool-apm/README.md",
+      "target": "service:packages/nomad-nodepool-apm/Makefile",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:packages/nomad-nodepool-apm/go.sum",
+      "target": "config:packages/nomad-nodepool-apm/go.mod",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/nomad-nodepool-apm/go.mod",
+      "target": "config:packages/nomad-nodepool-apm/go.sum",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

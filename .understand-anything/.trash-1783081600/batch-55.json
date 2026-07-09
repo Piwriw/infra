@@ -1,0 +1,64 @@
+{
+  "nodes": [
+    {
+      "id": "service:packages/client-proxy/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "packages/client-proxy/Dockerfile",
+      "summary": "多阶段 Dockerfile，使用 golang:1.26.3-alpine 构建器编译 client-proxy 二进制文件，最终基于 alpine 3.22 镜像产出最小化生产镜像。",
+      "tags": ["containerization", "infrastructure", "deployment", "multi-stage-build", "go"],
+      "complexity": "moderate",
+      "languageNotes": "使用 BuildKit 缓存挂载（--mount=type=cache）加速 Go 编译，并通过 TARGETARCH 实现 multi-arch 构建。"
+    },
+    {
+      "id": "service:packages/client-proxy/Dockerfile:builder",
+      "type": "service",
+      "name": "builder",
+      "filePath": "packages/client-proxy/Dockerfile",
+      "lineRange": [4, 39],
+      "summary": "构建阶段（builder）：基于 golang alpine 镜像，分别下载 shared、clickhouse、client-proxy 三个 workspace 的依赖，并调用 make build 生成 client-proxy 二进制。",
+      "tags": ["containerization", "build-stage", "go", "infrastructure"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "service:packages/client-proxy/Dockerfile:runtime",
+      "type": "service",
+      "name": "runtime",
+      "filePath": "packages/client-proxy/Dockerfile",
+      "lineRange": [40, 45],
+      "summary": "运行阶段：基于 alpine 3.22 精简镜像，仅从 builder 阶段复制编译好的 client-proxy 二进制并设为 ENTRYPOINT，产出最小化运行时镜像。",
+      "tags": ["containerization", "runtime-stage", "infrastructure", "deployment"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:packages/client-proxy/Dockerfile",
+      "target": "service:packages/client-proxy/Dockerfile:builder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/client-proxy/Dockerfile",
+      "target": "service:packages/client-proxy/Dockerfile:runtime",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/client-proxy/Dockerfile",
+      "target": "file:packages/client-proxy/main.go",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "service:packages/client-proxy/Dockerfile:runtime",
+      "target": "file:packages/client-proxy/main.go",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

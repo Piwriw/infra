@@ -1,0 +1,428 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/docker-reverse-proxy/internal/auth/validate.go",
+      "type": "file",
+      "name": "validate.go",
+      "filePath": "packages/docker-reverse-proxy/internal/auth/validate.go",
+      "summary": "认证模块，提供 API key 与 access token 校验逻辑，并从 Authorization 头中解析并提取 access token。",
+      "tags": ["auth", "validation", "token", "api-handler", "middleware"],
+      "complexity": "moderate",
+      "languageNotes": "通过 keys.VerifyKey 进行 API key 验证，使用 base64 解码与字符串切分提取 token。"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/auth/validate.go:Validate",
+      "type": "function",
+      "name": "Validate",
+      "filePath": "packages/docker-reverse-proxy/internal/auth/validate.go",
+      "lineRange": [16, 31],
+      "summary": "验证 API key 与 envID，并检查是否存在等待中的模板构建任务。",
+      "tags": ["validation", "api-key", "template"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/auth/validate.go:ValidateAccessToken",
+      "type": "function",
+      "name": "ValidateAccessToken",
+      "filePath": "packages/docker-reverse-proxy/internal/auth/validate.go",
+      "lineRange": [33, 47],
+      "summary": "通过 API key 校验 access token，并从数据库查询对应的用户 ID。",
+      "tags": ["validation", "access-token", "auth"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/auth/validate.go:ExtractAccessToken",
+      "type": "function",
+      "name": "ExtractAccessToken",
+      "filePath": "packages/docker-reverse-proxy/internal/auth/validate.go",
+      "lineRange": [49, 73],
+      "summary": "从 Authorization 头中解码并提取 access token，支持多种前缀格式的清理。",
+      "tags": ["token", "parsing", "auth"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/docker-reverse-proxy/internal/auth/validate_test.go",
+      "type": "file",
+      "name": "validate_test.go",
+      "filePath": "packages/docker-reverse-proxy/internal/auth/validate_test.go",
+      "summary": "Validate 函数的单元测试，使用 testcontainers 搭建真实数据库并验证模板构建分配的鉴权流程。",
+      "tags": ["test", "auth", "validation", "database"],
+      "complexity": "complex",
+      "languageNotes": "通过 setupValidateTest 构造 user、team、access token 与 template build assignment 等测试夹具。"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/auth/validate_test.go:TestValidate",
+      "type": "function",
+      "name": "TestValidate",
+      "filePath": "packages/docker-reverse-proxy/internal/auth/validate_test.go",
+      "lineRange": [18, 108],
+      "summary": "覆盖 Validate 多种场景的表驱动测试，包括成功与错误路径。",
+      "tags": ["test", "table-driven", "auth"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/auth/validate_test.go:setupValidateTest",
+      "type": "function",
+      "name": "setupValidateTest",
+      "filePath": "packages/docker-reverse-proxy/internal/auth/validate_test.go",
+      "lineRange": [110, 172],
+      "summary": "构造测试所需的数据库状态，包括 user、team、team membership、access token 和 template build assignment。",
+      "tags": ["test", "fixture", "database"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/docker-reverse-proxy/internal/cache/auth.go",
+      "type": "file",
+      "name": "auth.go",
+      "filePath": "packages/docker-reverse-proxy/internal/cache/auth.go",
+      "summary": "基于 ttlcache 的认证缓存，缓存 E2B token 到 Docker token 的映射以减少重复签发。",
+      "tags": ["cache", "auth", "docker", "ttl"],
+      "complexity": "moderate",
+      "languageNotes": "使用 ttlcache 实现带 TTL 的内存缓存，并启动后台清理 goroutine。"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/cache/auth.go:New",
+      "type": "function",
+      "name": "New",
+      "filePath": "packages/docker-reverse-proxy/internal/cache/auth.go",
+      "lineRange": [27, 33],
+      "summary": "创建并启动一个带默认 TTL 的 AuthCache 实例。",
+      "tags": ["factory", "cache", "constructor"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/cache/auth.go:Get",
+      "type": "function",
+      "name": "Get",
+      "filePath": "packages/docker-reverse-proxy/internal/cache/auth.go",
+      "lineRange": [36, 48],
+      "summary": "根据 E2B token 从缓存中读取已签发的 Docker token 信息。",
+      "tags": ["cache", "lookup", "auth"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/cache/auth.go:Create",
+      "type": "function",
+      "name": "Create",
+      "filePath": "packages/docker-reverse-proxy/internal/cache/auth.go",
+      "lineRange": [51, 67],
+      "summary": "为指定 templateID 生成新的 Docker token 并写入缓存，返回带过期时间的凭证。",
+      "tags": ["cache", "token", "docker"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/docker-reverse-proxy/internal/cache/auth.go:AccessTokenData",
+      "type": "class",
+      "name": "AccessTokenData",
+      "filePath": "packages/docker-reverse-proxy/internal/cache/auth.go",
+      "lineRange": [18, 21],
+      "summary": "缓存条目数据结构，保存 Docker token 与对应的 templateID。",
+      "tags": ["data-model", "cache", "struct"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/docker-reverse-proxy/internal/cache/auth.go:AuthCache",
+      "type": "class",
+      "name": "AuthCache",
+      "filePath": "packages/docker-reverse-proxy/internal/cache/auth.go",
+      "lineRange": [23, 25],
+      "summary": "封装 ttlcache 的认证缓存类型，提供 Get 与 Create 操作。",
+      "tags": ["cache", "service", "struct"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/docker-reverse-proxy/internal/constants/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/docker-reverse-proxy/internal/constants/main.go",
+      "summary": "定义 docker-reverse-proxy 所需的环境变量常量，并提供启动前的必填项校验。",
+      "tags": ["config", "constants", "env-vars", "validation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/constants/main.go:CheckRequired",
+      "type": "function",
+      "name": "CheckRequired",
+      "filePath": "packages/docker-reverse-proxy/internal/constants/main.go",
+      "lineRange": [10, 38],
+      "summary": "检查所有必需的环境变量是否已设置，缺失时返回汇总错误。",
+      "tags": ["validation", "config", "env-vars"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/docker-reverse-proxy/internal/handlers/health.go",
+      "type": "file",
+      "name": "health.go",
+      "filePath": "packages/docker-reverse-proxy/internal/handlers/health.go",
+      "summary": "返回 200 OK 的简单健康检查端点。",
+      "tags": ["health-check", "endpoint", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/docker-reverse-proxy/internal/handlers/login.go",
+      "type": "file",
+      "name": "login.go",
+      "filePath": "packages/docker-reverse-proxy/internal/handlers/login.go",
+      "summary": "处理 Docker login 请求，从 Authorization 头读取 E2B token 并在缓存缺失时返回 401。",
+      "tags": ["api-handler", "login", "docker", "auth"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/handlers/login.go:LoginWithToken",
+      "type": "function",
+      "name": "LoginWithToken",
+      "filePath": "packages/docker-reverse-proxy/internal/handlers/login.go",
+      "lineRange": [12, 24],
+      "summary": "基于缓存中的 E2B token 完成 Docker login，缺失时返回未授权响应。",
+      "tags": ["api-handler", "login", "auth"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/docker-reverse-proxy/internal/handlers/proxy.go",
+      "type": "file",
+      "name": "proxy.go",
+      "filePath": "packages/docker-reverse-proxy/internal/handlers/proxy.go",
+      "summary": "核心反向代理处理函数，将 Docker registry 请求转发至上游，并对 token、blob upload 等路径进行特殊处理。",
+      "tags": ["api-handler", "reverse-proxy", "docker", "middleware"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/handlers/proxy.go:Proxy",
+      "type": "function",
+      "name": "Proxy",
+      "filePath": "packages/docker-reverse-proxy/internal/handlers/proxy.go",
+      "lineRange": [14, 77],
+      "summary": "校验请求中的 token 后将请求转发到 Docker registry，处理 blob 上传初始化和 commit 路径重写。",
+      "tags": ["reverse-proxy", "docker", "request-routing"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/docker-reverse-proxy/internal/handlers/store.go",
+      "type": "file",
+      "name": "store.go",
+      "filePath": "packages/docker-reverse-proxy/internal/handlers/store.go",
+      "summary": "APIStore 聚合数据库连接、AuthCache 与反向代理，构成 docker-reverse-proxy 的中央依赖容器。",
+      "tags": ["store", "service", "dependency-injection", "container"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/handlers/store.go:NewStore",
+      "type": "function",
+      "name": "NewStore",
+      "filePath": "packages/docker-reverse-proxy/internal/handlers/store.go",
+      "lineRange": [27, 65],
+      "summary": "初始化 APIStore，创建 DB 客户端、AuthCache 与指向上游 registry 的反向代理。",
+      "tags": ["factory", "store", "initialization"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/handlers/store.go:ServeHTTP",
+      "type": "function",
+      "name": "ServeHTTP",
+      "filePath": "packages/docker-reverse-proxy/internal/handlers/store.go",
+      "lineRange": [67, 72],
+      "summary": "将 HTTP 请求委托给内部反向代理处理。",
+      "tags": ["http-handler", "delegate"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/docker-reverse-proxy/internal/handlers/store.go:APIStore",
+      "type": "class",
+      "name": "APIStore",
+      "filePath": "packages/docker-reverse-proxy/internal/handlers/store.go",
+      "lineRange": [20, 25],
+      "summary": "包含主 DB、auth DB、AuthCache 与反向代理的中央存储结构，作为 handlers 的接收者。",
+      "tags": ["store", "container", "struct"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/docker-reverse-proxy/internal/handlers/token.go",
+      "type": "file",
+      "name": "token.go",
+      "filePath": "packages/docker-reverse-proxy/internal/handlers/token.go",
+      "summary": "处理 Docker token 签发请求，校验 E2B access token 与 scope，并向上游 registry 申请 Docker token 后缓存。",
+      "tags": ["api-handler", "token", "docker", "auth"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/handlers/token.go:GetToken",
+      "type": "function",
+      "name": "GetToken",
+      "filePath": "packages/docker-reverse-proxy/internal/handlers/token.go",
+      "lineRange": [28, 110],
+      "summary": "解析请求 scope 与 access token，校验权限并签发或复用 Docker token 返回给客户端。",
+      "tags": ["api-handler", "token-issuance", "auth"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/handlers/token.go:getToken",
+      "type": "function",
+      "name": "getToken",
+      "filePath": "packages/docker-reverse-proxy/internal/handlers/token.go",
+      "lineRange": [113, 164],
+      "summary": "携带 service account token 向上游 Docker registry 请求真实的 Docker access token。",
+      "tags": ["http-client", "token", "docker"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/docker-reverse-proxy/internal/handlers/token.go:DockerToken",
+      "type": "class",
+      "name": "DockerToken",
+      "filePath": "packages/docker-reverse-proxy/internal/handlers/token.go",
+      "lineRange": [19, 22],
+      "summary": "表示 Docker registry 返回的 token 结构，包含 token 字符串与过期时间。",
+      "tags": ["data-model", "token", "struct"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/docker-reverse-proxy/internal/utils/authorization.go",
+      "type": "file",
+      "name": "authorization.go",
+      "filePath": "packages/docker-reverse-proxy/internal/utils/authorization.go",
+      "summary": "提供统一函数设置 Docker 401 未授权响应头及 WWW-Authenticate 挑战。",
+      "tags": ["utility", "auth", "http-headers"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/utils/authorization.go:SetDockerUnauthorizedHeaders",
+      "type": "function",
+      "name": "SetDockerUnauthorizedHeaders",
+      "filePath": "packages/docker-reverse-proxy/internal/utils/authorization.go",
+      "lineRange": [11, 17],
+      "summary": "写入 WWW-Authenticate 与服务标识头并返回 401 状态码。",
+      "tags": ["utility", "auth", "http"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/docker-reverse-proxy/internal/utils/random.go",
+      "type": "file",
+      "name": "random.go",
+      "filePath": "packages/docker-reverse-proxy/internal/utils/random.go",
+      "summary": "生成指定长度的加密随机 base64 字符串，用作 nonce 或缓存键。",
+      "tags": ["utility", "random", "crypto"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/internal/utils/random.go:GenerateRandomString",
+      "type": "function",
+      "name": "GenerateRandomString",
+      "filePath": "packages/docker-reverse-proxy/internal/utils/random.go",
+      "lineRange": [8, 16],
+      "summary": "使用 crypto/rand 生成指定长度的 URL-safe base64 随机字符串。",
+      "tags": ["utility", "random", "crypto"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/docker-reverse-proxy/internal/utils/string.go",
+      "type": "file",
+      "name": "string.go",
+      "filePath": "packages/docker-reverse-proxy/internal/utils/string.go",
+      "summary": "提供 SubstringMax 工具函数，按字节长度安全截取字符串前缀。",
+      "tags": ["utility", "string", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/docker-reverse-proxy/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/docker-reverse-proxy/main.go",
+      "summary": "docker-reverse-proxy 服务入口，配置 HTTP 路由（health、token、login、proxy）并启动 H2C HTTP 服务器。",
+      "tags": ["entry-point", "server", "http", "router"],
+      "complexity": "complex",
+      "languageNotes": "使用 httpserver.ConfigureH2C 启用 HTTP/2 cleartext，并通过 http.NewServeMux 注册路由。"
+    },
+    {
+      "id": "function:packages/docker-reverse-proxy/main.go:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "packages/docker-reverse-proxy/main.go",
+      "lineRange": [25, 113],
+      "summary": "执行启动流程：环境变量校验、构建 APIStore、注册各路径处理函数并监听端口。",
+      "tags": ["entry-point", "bootstrap", "server"],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {"source": "file:packages/docker-reverse-proxy/internal/auth/validate.go", "target": "function:packages/docker-reverse-proxy/internal/auth/validate.go:Validate", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/auth/validate.go", "target": "function:packages/docker-reverse-proxy/internal/auth/validate.go:ValidateAccessToken", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/auth/validate.go", "target": "function:packages/docker-reverse-proxy/internal/auth/validate.go:ExtractAccessToken", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/auth/validate.go", "target": "function:packages/docker-reverse-proxy/internal/auth/validate.go:Validate", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/docker-reverse-proxy/internal/auth/validate.go", "target": "function:packages/docker-reverse-proxy/internal/auth/validate.go:ValidateAccessToken", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/docker-reverse-proxy/internal/auth/validate.go", "target": "function:packages/docker-reverse-proxy/internal/auth/validate.go:ExtractAccessToken", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/docker-reverse-proxy/internal/auth/validate_test.go", "target": "function:packages/docker-reverse-proxy/internal/auth/validate_test.go:TestValidate", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/auth/validate_test.go", "target": "function:packages/docker-reverse-proxy/internal/auth/validate_test.go:setupValidateTest", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/auth/validate_test.go", "target": "function:packages/docker-reverse-proxy/internal/auth/validate_test.go:TestValidate", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/docker-reverse-proxy/internal/auth/validate_test.go", "target": "function:packages/docker-reverse-proxy/internal/auth/validate.go:Validate", "type": "tested_by", "direction": "backward", "weight": 0.5},
+
+    {"source": "file:packages/docker-reverse-proxy/internal/cache/auth.go", "target": "function:packages/docker-reverse-proxy/internal/cache/auth.go:New", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/cache/auth.go", "target": "function:packages/docker-reverse-proxy/internal/cache/auth.go:Get", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/cache/auth.go", "target": "function:packages/docker-reverse-proxy/internal/cache/auth.go:Create", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/cache/auth.go", "target": "class:packages/docker-reverse-proxy/internal/cache/auth.go:AccessTokenData", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/cache/auth.go", "target": "class:packages/docker-reverse-proxy/internal/cache/auth.go:AuthCache", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/cache/auth.go", "target": "function:packages/docker-reverse-proxy/internal/cache/auth.go:New", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/docker-reverse-proxy/internal/cache/auth.go", "target": "function:packages/docker-reverse-proxy/internal/cache/auth.go:Get", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/docker-reverse-proxy/internal/cache/auth.go", "target": "function:packages/docker-reverse-proxy/internal/cache/auth.go:Create", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/docker-reverse-proxy/internal/cache/auth.go", "target": "class:packages/docker-reverse-proxy/internal/cache/auth.go:AccessTokenData", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/docker-reverse-proxy/internal/cache/auth.go", "target": "class:packages/docker-reverse-proxy/internal/cache/auth.go:AuthCache", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/docker-reverse-proxy/internal/cache/auth.go", "target": "file:packages/docker-reverse-proxy/internal/utils/authorization.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/docker-reverse-proxy/internal/cache/auth.go", "target": "file:packages/docker-reverse-proxy/internal/utils/random.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/docker-reverse-proxy/internal/cache/auth.go", "target": "file:packages/docker-reverse-proxy/internal/utils/string.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "function:packages/docker-reverse-proxy/internal/cache/auth.go:Create", "target": "function:packages/docker-reverse-proxy/internal/utils/random.go:GenerateRandomString", "type": "calls", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/docker-reverse-proxy/internal/constants/main.go", "target": "function:packages/docker-reverse-proxy/internal/constants/main.go:CheckRequired", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/constants/main.go", "target": "function:packages/docker-reverse-proxy/internal/constants/main.go:CheckRequired", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/login.go", "target": "function:packages/docker-reverse-proxy/internal/handlers/login.go:LoginWithToken", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/login.go", "target": "function:packages/docker-reverse-proxy/internal/handlers/login.go:LoginWithToken", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/login.go", "target": "file:packages/docker-reverse-proxy/internal/utils/authorization.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/login.go", "target": "file:packages/docker-reverse-proxy/internal/utils/random.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/login.go", "target": "file:packages/docker-reverse-proxy/internal/utils/string.go", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/proxy.go", "target": "function:packages/docker-reverse-proxy/internal/handlers/proxy.go:Proxy", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/proxy.go", "target": "function:packages/docker-reverse-proxy/internal/handlers/proxy.go:Proxy", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/proxy.go", "target": "file:packages/docker-reverse-proxy/internal/constants/main.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/proxy.go", "target": "file:packages/docker-reverse-proxy/internal/utils/authorization.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/proxy.go", "target": "file:packages/docker-reverse-proxy/internal/utils/random.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/proxy.go", "target": "file:packages/docker-reverse-proxy/internal/utils/string.go", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/store.go", "target": "function:packages/docker-reverse-proxy/internal/handlers/store.go:NewStore", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/store.go", "target": "function:packages/docker-reverse-proxy/internal/handlers/store.go:ServeHTTP", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/store.go", "target": "class:packages/docker-reverse-proxy/internal/handlers/store.go:APIStore", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/store.go", "target": "function:packages/docker-reverse-proxy/internal/handlers/store.go:NewStore", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/store.go", "target": "function:packages/docker-reverse-proxy/internal/handlers/store.go:ServeHTTP", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/store.go", "target": "class:packages/docker-reverse-proxy/internal/handlers/store.go:APIStore", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/store.go", "target": "file:packages/docker-reverse-proxy/internal/cache/auth.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "function:packages/docker-reverse-proxy/internal/handlers/store.go:NewStore", "target": "function:packages/docker-reverse-proxy/internal/cache/auth.go:New", "type": "calls", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/token.go", "target": "function:packages/docker-reverse-proxy/internal/handlers/token.go:GetToken", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/token.go", "target": "function:packages/docker-reverse-proxy/internal/handlers/token.go:getToken", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/token.go", "target": "class:packages/docker-reverse-proxy/internal/handlers/token.go:DockerToken", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/token.go", "target": "function:packages/docker-reverse-proxy/internal/handlers/token.go:GetToken", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/token.go", "target": "class:packages/docker-reverse-proxy/internal/handlers/token.go:DockerToken", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/token.go", "target": "file:packages/docker-reverse-proxy/internal/auth/validate_test.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/docker-reverse-proxy/internal/handlers/token.go", "target": "file:packages/docker-reverse-proxy/internal/auth/validate.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "function:packages/docker-reverse-proxy/internal/handlers/token.go:GetToken", "target": "function:packages/docker-reverse-proxy/internal/auth/validate.go:Validate", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/docker-reverse-proxy/internal/handlers/token.go:GetToken", "target": "function:packages/docker-reverse-proxy/internal/auth/validate.go:ValidateAccessToken", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/docker-reverse-proxy/internal/handlers/token.go:GetToken", "target": "function:packages/docker-reverse-proxy/internal/auth/validate.go:ExtractAccessToken", "type": "calls", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/docker-reverse-proxy/internal/utils/authorization.go", "target": "function:packages/docker-reverse-proxy/internal/utils/authorization.go:SetDockerUnauthorizedHeaders", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/utils/authorization.go", "target": "function:packages/docker-reverse-proxy/internal/utils/authorization.go:SetDockerUnauthorizedHeaders", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/docker-reverse-proxy/internal/utils/random.go", "target": "function:packages/docker-reverse-proxy/internal/utils/random.go:GenerateRandomString", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/internal/utils/random.go", "target": "function:packages/docker-reverse-proxy/internal/utils/random.go:GenerateRandomString", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/docker-reverse-proxy/main.go", "target": "function:packages/docker-reverse-proxy/main.go:main", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/docker-reverse-proxy/main.go", "target": "file:packages/docker-reverse-proxy/internal/constants/main.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/docker-reverse-proxy/main.go", "target": "file:packages/docker-reverse-proxy/internal/handlers/health.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/docker-reverse-proxy/main.go", "target": "file:packages/docker-reverse-proxy/internal/handlers/login.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/docker-reverse-proxy/main.go", "target": "file:packages/docker-reverse-proxy/internal/handlers/proxy.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/docker-reverse-proxy/main.go", "target": "file:packages/docker-reverse-proxy/internal/handlers/store.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/docker-reverse-proxy/main.go", "target": "file:packages/docker-reverse-proxy/internal/handlers/token.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/docker-reverse-proxy/main.go", "target": "file:packages/docker-reverse-proxy/internal/utils/authorization.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/docker-reverse-proxy/main.go", "target": "file:packages/docker-reverse-proxy/internal/utils/random.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/docker-reverse-proxy/main.go", "target": "file:packages/docker-reverse-proxy/internal/utils/string.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "function:packages/docker-reverse-proxy/main.go:main", "target": "function:packages/docker-reverse-proxy/internal/constants/main.go:CheckRequired", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/docker-reverse-proxy/main.go:main", "target": "function:packages/docker-reverse-proxy/internal/handlers/store.go:NewStore", "type": "calls", "direction": "forward", "weight": 0.8}
+  ]
+}

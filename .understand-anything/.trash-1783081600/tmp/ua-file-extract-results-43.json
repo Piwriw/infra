@@ -1,0 +1,1693 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 13,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/docker-reverse-proxy/internal/auth/validate.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 73,
+      "nonEmptyLines": 59,
+      "functions": [
+        {
+          "name": "Validate",
+          "startLine": 16,
+          "endLine": 31,
+          "params": [
+            "ctx",
+            "sqlcDB",
+            "token",
+            "envID"
+          ]
+        },
+        {
+          "name": "ValidateAccessToken",
+          "startLine": 33,
+          "endLine": 47,
+          "params": [
+            "ctx",
+            "db",
+            "accessToken"
+          ]
+        },
+        {
+          "name": "ExtractAccessToken",
+          "startLine": 49,
+          "endLine": 73,
+          "params": [
+            "authHeader",
+            "authType"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Validate",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "ValidateAccessToken",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "ExtractAccessToken",
+          "line": 49,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Validate",
+          "callee": "keys.VerifyKey",
+          "lineNumber": 17
+        },
+        {
+          "caller": "Validate",
+          "callee": "sqlcDB.ExistsWaitingTemplateBuild",
+          "lineNumber": 22
+        },
+        {
+          "caller": "ValidateAccessToken",
+          "callee": "keys.VerifyKey",
+          "lineNumber": 34
+        },
+        {
+          "caller": "ValidateAccessToken",
+          "callee": "db.Read.GetUserIDFromAccessToken",
+          "lineNumber": 39
+        },
+        {
+          "caller": "ValidateAccessToken",
+          "callee": "log.Printf",
+          "lineNumber": 41
+        },
+        {
+          "caller": "ValidateAccessToken",
+          "callee": "err.Error",
+          "lineNumber": 41
+        },
+        {
+          "caller": "ExtractAccessToken",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 50
+        },
+        {
+          "caller": "ExtractAccessToken",
+          "callee": "strings.TrimPrefix",
+          "lineNumber": 50
+        },
+        {
+          "caller": "ExtractAccessToken",
+          "callee": "base64.StdEncoding.DecodeString",
+          "lineNumber": 52
+        },
+        {
+          "caller": "ExtractAccessToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 54
+        },
+        {
+          "caller": "ExtractAccessToken",
+          "callee": "strings.Split",
+          "lineNumber": 57
+        },
+        {
+          "caller": "ExtractAccessToken",
+          "callee": "string",
+          "lineNumber": 57
+        },
+        {
+          "caller": "ExtractAccessToken",
+          "callee": "len",
+          "lineNumber": 58
+        },
+        {
+          "caller": "ExtractAccessToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 59
+        },
+        {
+          "caller": "ExtractAccessToken",
+          "callee": "string",
+          "lineNumber": 59
+        },
+        {
+          "caller": "ExtractAccessToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 64
+        },
+        {
+          "caller": "ExtractAccessToken",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 67
+        },
+        {
+          "caller": "ExtractAccessToken",
+          "callee": "strings.HasPrefix",
+          "lineNumber": 68
+        },
+        {
+          "caller": "ExtractAccessToken",
+          "callee": "strings.HasSuffix",
+          "lineNumber": 68
+        },
+        {
+          "caller": "ExtractAccessToken",
+          "callee": "strings.Trim",
+          "lineNumber": 69
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/docker-reverse-proxy/internal/auth/validate_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 172,
+      "nonEmptyLines": 155,
+      "functions": [
+        {
+          "name": "TestValidate",
+          "startLine": 18,
+          "endLine": 108,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "setupValidateTest",
+          "startLine": 110,
+          "endLine": 172,
+          "params": [
+            "tb",
+            "db",
+            "userID",
+            "accessToken",
+            "envID",
+            "createdEnvStatus"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestValidate",
+          "line": 18,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestValidate",
+          "callee": "t.Parallel",
+          "lineNumber": 19
+        },
+        {
+          "caller": "TestValidate",
+          "callee": "keys.GenerateKey",
+          "lineNumber": 22
+        },
+        {
+          "caller": "TestValidate",
+          "callee": "require.NoError",
+          "lineNumber": 23
+        },
+        {
+          "caller": "TestValidate",
+          "callee": "uuid.New",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TestValidate",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 52
+        },
+        {
+          "caller": "TestValidate",
+          "callee": "t.Run",
+          "lineNumber": 93
+        },
+        {
+          "caller": "TestValidate",
+          "callee": "t.Parallel",
+          "lineNumber": 94
+        },
+        {
+          "caller": "TestValidate",
+          "callee": "testutils.SetupDatabase",
+          "lineNumber": 96
+        },
+        {
+          "caller": "TestValidate",
+          "callee": "setupValidateTest",
+          "lineNumber": 97
+        },
+        {
+          "caller": "TestValidate",
+          "callee": "Validate",
+          "lineNumber": 99
+        },
+        {
+          "caller": "TestValidate",
+          "callee": "t.Context",
+          "lineNumber": 99
+        },
+        {
+          "caller": "TestValidate",
+          "callee": "require.Error",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestValidate",
+          "callee": "require.NoError",
+          "lineNumber": 103
+        },
+        {
+          "caller": "TestValidate",
+          "callee": "assert.Equal",
+          "lineNumber": 105
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "tb.Helper",
+          "lineNumber": 111
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "db.AuthDB.Write.UpsertPublicUser",
+          "lineNumber": 113
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "tb.Context",
+          "lineNumber": 113
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "require.NoError",
+          "lineNumber": 114
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "db.AuthDB.Write.CreateTeam",
+          "lineNumber": 116
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "tb.Context",
+          "lineNumber": 116
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "require.NoError",
+          "lineNumber": 122
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "db.AuthDB.Write.CreateTeamMembership",
+          "lineNumber": 124
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "tb.Context",
+          "lineNumber": 124
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "require.NoError",
+          "lineNumber": 130
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "db.AuthDB.Write.CreateAccessToken",
+          "lineNumber": 133
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "tb.Context",
+          "lineNumber": 133
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "uuid.New",
+          "lineNumber": 134
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "int32",
+          "lineNumber": 138
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "require.NoError",
+          "lineNumber": 143
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "db.SqlcClient.TestsRawSQL",
+          "lineNumber": 146
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "tb.Context",
+          "lineNumber": 146
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "require.NoError",
+          "lineNumber": 150
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "uuid.New",
+          "lineNumber": 153
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "time.Now().Format",
+          "lineNumber": 156
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "time.Now",
+          "lineNumber": 156
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "db.SqlcClient.TestsRawSQL",
+          "lineNumber": 159
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "tb.Context",
+          "lineNumber": 159
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "require.NoError",
+          "lineNumber": 163
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "db.SqlcClient.CreateTemplateBuildAssignment",
+          "lineNumber": 165
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "tb.Context",
+          "lineNumber": 165
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "require.NoError",
+          "lineNumber": 170
+        },
+        {
+          "caller": "setupValidateTest",
+          "callee": "require.EqualValues",
+          "lineNumber": 171
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/docker-reverse-proxy/internal/cache/auth.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 67,
+      "nonEmptyLines": 49,
+      "functions": [
+        {
+          "name": "New",
+          "startLine": 27,
+          "endLine": 33,
+          "params": []
+        },
+        {
+          "name": "Get",
+          "startLine": 36,
+          "endLine": 48,
+          "params": [
+            "e2bToken"
+          ]
+        },
+        {
+          "name": "Create",
+          "startLine": 51,
+          "endLine": 67,
+          "params": [
+            "templateID",
+            "token",
+            "expiresIn"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AccessTokenData",
+          "startLine": 18,
+          "endLine": 21,
+          "methods": [],
+          "properties": [
+            "DockerToken",
+            "TemplateID"
+          ]
+        },
+        {
+          "name": "AuthCache",
+          "startLine": 23,
+          "endLine": 25,
+          "methods": [
+            "Get",
+            "Create"
+          ],
+          "properties": [
+            "cache"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "AccessTokenData",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "AuthCache",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "New",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "Get",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "Create",
+          "line": 51,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "New",
+          "callee": "ttlcache.New",
+          "lineNumber": 28
+        },
+        {
+          "caller": "New",
+          "callee": "cache.Start",
+          "lineNumber": 30
+        },
+        {
+          "caller": "Get",
+          "callee": "errors.New",
+          "lineNumber": 38
+        },
+        {
+          "caller": "Get",
+          "callee": "c.cache.Get",
+          "lineNumber": 41
+        },
+        {
+          "caller": "Get",
+          "callee": "fmt.Errorf",
+          "lineNumber": 44
+        },
+        {
+          "caller": "Get",
+          "callee": "item.Value",
+          "lineNumber": 47
+        },
+        {
+          "caller": "Create",
+          "callee": "utils.GenerateRandomString",
+          "lineNumber": 54
+        },
+        {
+          "caller": "Create",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 55
+        },
+        {
+          "caller": "Create",
+          "callee": "c.cache.Set",
+          "lineNumber": 62
+        },
+        {
+          "caller": "Create",
+          "callee": "log.Printf",
+          "lineNumber": 64
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 5,
+        "functionCount": 3,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/docker-reverse-proxy/internal/constants/main.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 40,
+      "nonEmptyLines": 29,
+      "functions": [
+        {
+          "name": "CheckRequired",
+          "startLine": 10,
+          "endLine": 38,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "CheckRequired",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CheckRequired",
+          "callee": "append",
+          "lineNumber": 14
+        },
+        {
+          "caller": "CheckRequired",
+          "callee": "append",
+          "lineNumber": 18
+        },
+        {
+          "caller": "CheckRequired",
+          "callee": "append",
+          "lineNumber": 22
+        },
+        {
+          "caller": "CheckRequired",
+          "callee": "append",
+          "lineNumber": 26
+        },
+        {
+          "caller": "CheckRequired",
+          "callee": "append",
+          "lineNumber": 30
+        },
+        {
+          "caller": "CheckRequired",
+          "callee": "len",
+          "lineNumber": 33
+        },
+        {
+          "caller": "CheckRequired",
+          "callee": "fmt.Errorf",
+          "lineNumber": 34
+        },
+        {
+          "caller": "CheckRequired",
+          "callee": "strings.Join",
+          "lineNumber": 34
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/docker-reverse-proxy/internal/handlers/health.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 7,
+      "nonEmptyLines": 5,
+      "functions": [
+        {
+          "name": "HealthCheck",
+          "startLine": 5,
+          "endLine": 7,
+          "params": [
+            "w",
+            "_"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "HealthCheck",
+          "line": 5,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "HealthCheck",
+          "callee": "w.WriteHeader",
+          "lineNumber": 6
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/docker-reverse-proxy/internal/handlers/login.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 24,
+      "nonEmptyLines": 19,
+      "functions": [
+        {
+          "name": "LoginWithToken",
+          "startLine": 12,
+          "endLine": 24,
+          "params": [
+            "w",
+            "r"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "LoginWithToken",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "LoginWithToken",
+          "callee": "r.Header.Get",
+          "lineNumber": 13
+        },
+        {
+          "caller": "LoginWithToken",
+          "callee": "strings.TrimPrefix",
+          "lineNumber": 14
+        },
+        {
+          "caller": "LoginWithToken",
+          "callee": "a.AuthCache.Get",
+          "lineNumber": 15
+        },
+        {
+          "caller": "LoginWithToken",
+          "callee": "log.Printf",
+          "lineNumber": 17
+        },
+        {
+          "caller": "LoginWithToken",
+          "callee": "utils.SetDockerUnauthorizedHeaders",
+          "lineNumber": 18
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/docker-reverse-proxy/internal/handlers/proxy.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 77,
+      "nonEmptyLines": 58,
+      "functions": [
+        {
+          "name": "Proxy",
+          "startLine": 14,
+          "endLine": 77,
+          "params": [
+            "w",
+            "req"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Proxy",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Proxy",
+          "callee": "req.URL.String",
+          "lineNumber": 16
+        },
+        {
+          "caller": "Proxy",
+          "callee": "req.Header.Get",
+          "lineNumber": 19
+        },
+        {
+          "caller": "Proxy",
+          "callee": "strings.TrimPrefix",
+          "lineNumber": 20
+        },
+        {
+          "caller": "Proxy",
+          "callee": "a.AuthCache.Get",
+          "lineNumber": 21
+        },
+        {
+          "caller": "Proxy",
+          "callee": "log.Printf",
+          "lineNumber": 23
+        },
+        {
+          "caller": "Proxy",
+          "callee": "utils.SetDockerUnauthorizedHeaders",
+          "lineNumber": 24
+        },
+        {
+          "caller": "Proxy",
+          "callee": "req.Header.Set",
+          "lineNumber": 30
+        },
+        {
+          "caller": "Proxy",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 30
+        },
+        {
+          "caller": "Proxy",
+          "callee": "strings.HasPrefix",
+          "lineNumber": 36
+        },
+        {
+          "caller": "Proxy",
+          "callee": "a.ServeHTTP",
+          "lineNumber": 37
+        },
+        {
+          "caller": "Proxy",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 43
+        },
+        {
+          "caller": "Proxy",
+          "callee": "strings.HasPrefix",
+          "lineNumber": 44
+        },
+        {
+          "caller": "Proxy",
+          "callee": "strings.HasPrefix",
+          "lineNumber": 44
+        },
+        {
+          "caller": "Proxy",
+          "callee": "log.Printf",
+          "lineNumber": 46
+        },
+        {
+          "caller": "Proxy",
+          "callee": "w.WriteHeader",
+          "lineNumber": 48
+        },
+        {
+          "caller": "Proxy",
+          "callee": "strings.HasPrefix",
+          "lineNumber": 56
+        },
+        {
+          "caller": "Proxy",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 56
+        },
+        {
+          "caller": "Proxy",
+          "callee": "a.ServeHTTP",
+          "lineNumber": 57
+        },
+        {
+          "caller": "Proxy",
+          "callee": "strings.TrimPrefix",
+          "lineNumber": 62
+        },
+        {
+          "caller": "Proxy",
+          "callee": "strings.Split",
+          "lineNumber": 63
+        },
+        {
+          "caller": "Proxy",
+          "callee": "strings.Split",
+          "lineNumber": 63
+        },
+        {
+          "caller": "Proxy",
+          "callee": "w.WriteHeader",
+          "lineNumber": 67
+        },
+        {
+          "caller": "Proxy",
+          "callee": "log.Printf",
+          "lineNumber": 68
+        },
+        {
+          "caller": "Proxy",
+          "callee": "strings.Replace",
+          "lineNumber": 74
+        },
+        {
+          "caller": "Proxy",
+          "callee": "a.ServeHTTP",
+          "lineNumber": 76
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/docker-reverse-proxy/internal/handlers/store.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 72,
+      "nonEmptyLines": 59,
+      "functions": [
+        {
+          "name": "NewStore",
+          "startLine": 27,
+          "endLine": 65,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "ServeHTTP",
+          "startLine": 67,
+          "endLine": 72,
+          "params": [
+            "rw",
+            "req"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "APIStore",
+          "startLine": 20,
+          "endLine": 25,
+          "methods": [
+            "ServeHTTP"
+          ],
+          "properties": [
+            "db",
+            "authDb",
+            "AuthCache",
+            "proxy"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "APIStore",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "NewStore",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "ServeHTTP",
+          "line": 67,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewStore",
+          "callee": "cache.New",
+          "lineNumber": 28
+        },
+        {
+          "caller": "NewStore",
+          "callee": "utils.RequiredEnv",
+          "lineNumber": 30
+        },
+        {
+          "caller": "NewStore",
+          "callee": "client.NewClient",
+          "lineNumber": 32
+        },
+        {
+          "caller": "NewStore",
+          "callee": "pool.WithMaxConnections",
+          "lineNumber": 32
+        },
+        {
+          "caller": "NewStore",
+          "callee": "log.Fatal",
+          "lineNumber": 34
+        },
+        {
+          "caller": "NewStore",
+          "callee": "authdb.NewClient",
+          "lineNumber": 36
+        },
+        {
+          "caller": "NewStore",
+          "callee": "pool.WithMaxConnections",
+          "lineNumber": 36
+        },
+        {
+          "caller": "NewStore",
+          "callee": "log.Fatal",
+          "lineNumber": 38
+        },
+        {
+          "caller": "NewStore",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 43
+        },
+        {
+          "caller": "NewStore",
+          "callee": "httputil.NewSingleHostReverseProxy",
+          "lineNumber": 46
+        },
+        {
+          "caller": "NewStore",
+          "callee": "io.ReadAll",
+          "lineNumber": 51
+        },
+        {
+          "caller": "NewStore",
+          "callee": "log.Printf",
+          "lineNumber": 52
+        },
+        {
+          "caller": "ServeHTTP",
+          "callee": "a.proxy.ServeHTTP",
+          "lineNumber": 71
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/docker-reverse-proxy/internal/handlers/token.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 164,
+      "nonEmptyLines": 126,
+      "functions": [
+        {
+          "name": "GetToken",
+          "startLine": 28,
+          "endLine": 110,
+          "params": [
+            "w",
+            "r"
+          ]
+        },
+        {
+          "name": "getToken",
+          "startLine": 113,
+          "endLine": 164,
+          "params": [
+            "ctx",
+            "templateID"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "DockerToken",
+          "startLine": 19,
+          "endLine": 22,
+          "methods": [],
+          "properties": [
+            "Token",
+            "ExpiresIn"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DockerToken",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "GetToken",
+          "line": 28,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetToken",
+          "callee": "r.Context",
+          "lineNumber": 29
+        },
+        {
+          "caller": "GetToken",
+          "callee": "r.Header.Get",
+          "lineNumber": 33
+        },
+        {
+          "caller": "GetToken",
+          "callee": "auth.ExtractAccessToken",
+          "lineNumber": 35
+        },
+        {
+          "caller": "GetToken",
+          "callee": "w.WriteHeader",
+          "lineNumber": 37
+        },
+        {
+          "caller": "GetToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 39
+        },
+        {
+          "caller": "GetToken",
+          "callee": "auth.ValidateAccessToken",
+          "lineNumber": 42
+        },
+        {
+          "caller": "GetToken",
+          "callee": "log.Printf",
+          "lineNumber": 43
+        },
+        {
+          "caller": "GetToken",
+          "callee": "w.WriteHeader",
+          "lineNumber": 45
+        },
+        {
+          "caller": "GetToken",
+          "callee": "w.Write",
+          "lineNumber": 46
+        },
+        {
+          "caller": "GetToken",
+          "callee": "errors.New",
+          "lineNumber": 48
+        },
+        {
+          "caller": "GetToken",
+          "callee": "r.URL.Query().Get",
+          "lineNumber": 51
+        },
+        {
+          "caller": "GetToken",
+          "callee": "r.URL.Query",
+          "lineNumber": 51
+        },
+        {
+          "caller": "GetToken",
+          "callee": "a.AuthCache.Create",
+          "lineNumber": 57
+        },
+        {
+          "caller": "GetToken",
+          "callee": "int",
+          "lineNumber": 57
+        },
+        {
+          "caller": "GetToken",
+          "callee": "time.Hour.Seconds",
+          "lineNumber": 57
+        },
+        {
+          "caller": "GetToken",
+          "callee": "w.Header().Set",
+          "lineNumber": 59
+        },
+        {
+          "caller": "GetToken",
+          "callee": "w.Header",
+          "lineNumber": 59
+        },
+        {
+          "caller": "GetToken",
+          "callee": "w.Write",
+          "lineNumber": 60
+        },
+        {
+          "caller": "GetToken",
+          "callee": "scopeRegex.FindStringSubmatch",
+          "lineNumber": 65
+        },
+        {
+          "caller": "GetToken",
+          "callee": "len",
+          "lineNumber": 66
+        },
+        {
+          "caller": "GetToken",
+          "callee": "w.WriteHeader",
+          "lineNumber": 67
+        },
+        {
+          "caller": "GetToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 69
+        },
+        {
+          "caller": "GetToken",
+          "callee": "strings.Contains",
+          "lineNumber": 76
+        },
+        {
+          "caller": "GetToken",
+          "callee": "w.WriteHeader",
+          "lineNumber": 77
+        },
+        {
+          "caller": "GetToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 79
+        },
+        {
+          "caller": "GetToken",
+          "callee": "auth.Validate",
+          "lineNumber": 83
+        },
+        {
+          "caller": "GetToken",
+          "callee": "w.WriteHeader",
+          "lineNumber": 85
+        },
+        {
+          "caller": "GetToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 87
+        },
+        {
+          "caller": "GetToken",
+          "callee": "w.WriteHeader",
+          "lineNumber": 91
+        },
+        {
+          "caller": "GetToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 93
+        },
+        {
+          "caller": "GetToken",
+          "callee": "getToken",
+          "lineNumber": 97
+        },
+        {
+          "caller": "GetToken",
+          "callee": "w.WriteHeader",
+          "lineNumber": 99
+        },
+        {
+          "caller": "GetToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 101
+        },
+        {
+          "caller": "GetToken",
+          "callee": "a.AuthCache.Create",
+          "lineNumber": 104
+        },
+        {
+          "caller": "GetToken",
+          "callee": "w.Header().Set",
+          "lineNumber": 106
+        },
+        {
+          "caller": "GetToken",
+          "callee": "w.Header",
+          "lineNumber": 106
+        },
+        {
+          "caller": "GetToken",
+          "callee": "w.Write",
+          "lineNumber": 107
+        },
+        {
+          "caller": "getToken",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 114
+        },
+        {
+          "caller": "getToken",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 121
+        },
+        {
+          "caller": "getToken",
+          "callee": "http.NewRequestWithContext",
+          "lineNumber": 127
+        },
+        {
+          "caller": "getToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 129
+        },
+        {
+          "caller": "getToken",
+          "callee": "r.Header.Set",
+          "lineNumber": 133
+        },
+        {
+          "caller": "getToken",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 133
+        },
+        {
+          "caller": "getToken",
+          "callee": "http.DefaultClient.Do",
+          "lineNumber": 135
+        },
+        {
+          "caller": "getToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 137
+        },
+        {
+          "caller": "getToken",
+          "callee": "resp.Body.Close",
+          "lineNumber": 139
+        },
+        {
+          "caller": "getToken",
+          "callee": "make",
+          "lineNumber": 142
+        },
+        {
+          "caller": "getToken",
+          "callee": "resp.Body.Read",
+          "lineNumber": 143
+        },
+        {
+          "caller": "getToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 145
+        },
+        {
+          "caller": "getToken",
+          "callee": "resp.Body.Close",
+          "lineNumber": 147
+        },
+        {
+          "caller": "getToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 149
+        },
+        {
+          "caller": "getToken",
+          "callee": "string",
+          "lineNumber": 149
+        },
+        {
+          "caller": "getToken",
+          "callee": "io.ReadAll",
+          "lineNumber": 152
+        },
+        {
+          "caller": "getToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 154
+        },
+        {
+          "caller": "getToken",
+          "callee": "json.Unmarshal",
+          "lineNumber": 158
+        },
+        {
+          "caller": "getToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 160
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/docker-reverse-proxy/internal/utils/authorization.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 17,
+      "nonEmptyLines": 14,
+      "functions": [
+        {
+          "name": "SetDockerUnauthorizedHeaders",
+          "startLine": 11,
+          "endLine": 17,
+          "params": [
+            "w"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "SetDockerUnauthorizedHeaders",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "SetDockerUnauthorizedHeaders",
+          "callee": "w.Header().Set",
+          "lineNumber": 13
+        },
+        {
+          "caller": "SetDockerUnauthorizedHeaders",
+          "callee": "w.Header",
+          "lineNumber": 13
+        },
+        {
+          "caller": "SetDockerUnauthorizedHeaders",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 13
+        },
+        {
+          "caller": "SetDockerUnauthorizedHeaders",
+          "callee": "w.Header().Set",
+          "lineNumber": 15
+        },
+        {
+          "caller": "SetDockerUnauthorizedHeaders",
+          "callee": "w.Header",
+          "lineNumber": 15
+        },
+        {
+          "caller": "SetDockerUnauthorizedHeaders",
+          "callee": "w.WriteHeader",
+          "lineNumber": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/docker-reverse-proxy/internal/utils/random.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 16,
+      "nonEmptyLines": 13,
+      "functions": [
+        {
+          "name": "GenerateRandomString",
+          "startLine": 8,
+          "endLine": 16,
+          "params": [
+            "length"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GenerateRandomString",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GenerateRandomString",
+          "callee": "make",
+          "lineNumber": 9
+        },
+        {
+          "caller": "GenerateRandomString",
+          "callee": "rand.Read",
+          "lineNumber": 10
+        },
+        {
+          "caller": "GenerateRandomString",
+          "callee": "panic",
+          "lineNumber": 12
+        },
+        {
+          "caller": "GenerateRandomString",
+          "callee": "base64.StdEncoding.EncodeToString",
+          "lineNumber": 15
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/docker-reverse-proxy/internal/utils/string.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 9,
+      "nonEmptyLines": 7,
+      "functions": [
+        {
+          "name": "SubstringMax",
+          "startLine": 3,
+          "endLine": 9,
+          "params": [
+            "s",
+            "maxLen"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "SubstringMax",
+          "line": 3,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "SubstringMax",
+          "callee": "len",
+          "lineNumber": 4
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/docker-reverse-proxy/main.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 113,
+      "nonEmptyLines": 88,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 25,
+          "endLine": 113,
+          "params": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "context.Background",
+          "lineNumber": 26
+        },
+        {
+          "caller": "main",
+          "callee": "constants.CheckRequired",
+          "lineNumber": 28
+        },
+        {
+          "caller": "main",
+          "callee": "log.Fatal",
+          "lineNumber": 30
+        },
+        {
+          "caller": "main",
+          "callee": "flag.Int",
+          "lineNumber": 33
+        },
+        {
+          "caller": "main",
+          "callee": "flag.Parse",
+          "lineNumber": 34
+        },
+        {
+          "caller": "main",
+          "callee": "log.Println",
+          "lineNumber": 36
+        },
+        {
+          "caller": "main",
+          "callee": "handlers.NewStore",
+          "lineNumber": 38
+        },
+        {
+          "caller": "main",
+          "callee": "http.NewServeMux",
+          "lineNumber": 40
+        },
+        {
+          "caller": "main",
+          "callee": "mux.HandleFunc",
+          "lineNumber": 43
+        },
+        {
+          "caller": "main",
+          "callee": "req.URL.String",
+          "lineNumber": 44
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 45
+        },
+        {
+          "caller": "main",
+          "callee": "utils.SubstringMax",
+          "lineNumber": 45
+        },
+        {
+          "caller": "main",
+          "callee": "store.HealthCheck",
+          "lineNumber": 49
+        },
+        {
+          "caller": "main",
+          "callee": "strings.HasPrefix",
+          "lineNumber": 58
+        },
+        {
+          "caller": "main",
+          "callee": "store.ServeHTTP",
+          "lineNumber": 59
+        },
+        {
+          "caller": "main",
+          "callee": "w.WriteHeader",
+          "lineNumber": 67
+        },
+        {
+          "caller": "main",
+          "callee": "req.Header.Get",
+          "lineNumber": 73
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 74
+        },
+        {
+          "caller": "main",
+          "callee": "utils.SubstringMax",
+          "lineNumber": 74
+        },
+        {
+          "caller": "main",
+          "callee": "utils.SetDockerUnauthorizedHeaders",
+          "lineNumber": 75
+        },
+        {
+          "caller": "main",
+          "callee": "store.GetToken",
+          "lineNumber": 82
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 84
+        },
+        {
+          "caller": "main",
+          "callee": "store.LoginWithToken",
+          "lineNumber": 93
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 95
+        },
+        {
+          "caller": "main",
+          "callee": "store.Proxy",
+          "lineNumber": 102
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 105
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 107
+        },
+        {
+          "caller": "main",
+          "callee": "strconv.Itoa",
+          "lineNumber": 107
+        },
+        {
+          "caller": "main",
+          "callee": "httpserver.ConfigureH2C",
+          "lineNumber": 110
+        },
+        {
+          "caller": "main",
+          "callee": "log.Fatal",
+          "lineNumber": 112
+        },
+        {
+          "caller": "main",
+          "callee": "server.ListenAndServe",
+          "lineNumber": 112
+        }
+      ],
+      "metrics": {
+        "importCount": 9,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,875 @@
+{
+  "nodes": [
+    {
+      "id": "file:iac/provider-gcp/Makefile",
+      "type": "file",
+      "name": "Makefile",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "GCP 提供商目录下的 Terraform 操作 Makefile，封装 init、plan、apply、destroy、state migration、plan-only-jobs（按 Job 名）等 13 个目标，将环境变量自动转发为 TF_VAR_* 并管理 GCS 后端 bucket 与生命周期策略。",
+      "tags": ["build-system", "infrastructure", "terraform", "cicd-helper", "deployment"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:iac/provider-gcp/api.tf",
+      "type": "file",
+      "name": "api.tf",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "为 API 服务、ClickHouse、沙箱访问令牌哈希等创建 GCP Secret Manager 与随机密码资源，并读取其他数据库/PostHog/Analytics/Redis/LaunchDarkly 等 Secret 数据源，为 API 模块注入凭据。",
+      "tags": ["infrastructure", "terraform", "secrets", "provisioning"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/provider-gcp/dashboard-api.tf",
+      "type": "file",
+      "name": "dashboard-api.tf",
+      "filePath": "iac/provider-gcp/dashboard-api.tf",
+      "summary": "为 Dashboard API 服务聚合 Admin Token、Ory 配置、Billing Server URL/Token 等敏感数据源，并将它们组合成 dashboard_api_env_vars（包含 OIDC、Redis、ClickHouse、OTel 等连接配置）注入 Nomad Job spec。",
+      "tags": ["infrastructure", "terraform", "secrets", "configuration"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/provider-gcp/docker-reverse-proxy.tf",
+      "type": "file",
+      "name": "docker-reverse-proxy.tf",
+      "filePath": "iac/provider-gcp/docker-reverse-proxy.tf",
+      "summary": "为 Docker 反向代理创建专用服务账号、Artifact Registry 写入权限与下载用的 Service Account Key，供模板构建拉取/推送镜像。",
+      "tags": ["infrastructure", "terraform", "iam", "containerization"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/provider-gcp/main.tf",
+      "type": "file",
+      "name": "main.tf",
+      "filePath": "iac/provider-gcp/main.tf",
+      "summary": "Terraform 顶层入口：声明 GCS backend 与 google/google-beta/cloudflare/nomad/random providers，组装 init、cluster、k8s_apps、nomad、redis、remote_repository 等子模块，集中定义各服务（API/Orchestrator/Template-Manager/Client-Proxy 等）的环境变量与持久化卷配置。",
+      "tags": ["infrastructure", "terraform", "entry-point", "module-composition"],
+      "complexity": "complex",
+      "languageNotes": "通过 locals 中的 merge(...) 模式将变量与 Secret/随机值混合注入 env vars，并使用 nonsensitive(...) 解包原本标记为敏感的 Secret。"
+    },
+    {
+      "id": "file:iac/provider-gcp/moved.tf",
+      "type": "file",
+      "name": "moved.tf",
+      "filePath": "iac/provider-gcp/moved.tf",
+      "summary": "Terraform 状态迁移指令：将历史资源路径（如 google_secret_manager_secret.postgres_connection_string、ClickHouse 随机密码）重定向至最新的 module.init / 顶层 random_password 资源地址，避免重新创建基础资源。",
+      "tags": ["infrastructure", "terraform", "state-migration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/provider-gcp/persistent-volumes.tf",
+      "type": "file",
+      "name": "persistent-volumes.tf",
+      "filePath": "iac/provider-gcp/persistent-volumes.tf",
+      "summary": "按 var.persistent_volume_types 配置 for_each 实例化 ./persistent-volume-types 模块（每个 Persistent Volume Type 对应一个 Filestore 实例），供 Orchestrator 挂载 NFS。",
+      "tags": ["infrastructure", "terraform", "storage", "filestore"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/provider-gcp/variables.tf",
+      "type": "file",
+      "name": "variables.tf",
+      "filePath": "iac/provider-gcp/variables.tf",
+      "summary": "集中声明 119 个 Terraform input variables：覆盖 GCP 项目/区域、集群规模与机器类型、各服务端口、Redis/Filestore/ClickHouse/Loki 配置、OIDC/Ory、客户端与构建集群配置以及各服务环境变量覆盖等，是 IaC 层级的最大单一配置源。",
+      "tags": ["configuration", "infrastructure", "terraform", "input-variables"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:iac/provider-gcp/volume_content_signing_key.tf",
+      "type": "file",
+      "name": "volume_content_signing_key.tf",
+      "filePath": "iac/provider-gcp/volume_content_signing_key.tf",
+      "summary": "为 sandbox 卷内容签名生成（或读取外部提供）的 Ed25519 TLS 私钥，使用 time_static 记录生成时间，并暴露 verification_key 与 key_name 两个 output 供其他模块消费。",
+      "tags": ["infrastructure", "terraform", "crypto", "provisioning"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:init",
+      "type": "step",
+      "name": "init",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "首次部署目标：创建 GCS 状态桶、版本化与 30 天生命周期策略、terraform init 与 module.init apply，并构建 Nomad 集群磁盘镜像、配置 Docker 仓库认证。",
+      "tags": ["terraform", "bootstrap", "gcp-storage"],
+      "complexity": "moderate",
+      "lineRange": [103, 125]
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:state-migrate",
+      "type": "step",
+      "name": "state-migrate",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "为旧的状态地址提供一次性 terraform state mv 命令，将历史 Admin Token、Dashboard Token、ClickHouse 密码等资源重定位到当前模块路径。",
+      "tags": ["terraform", "state-migration"],
+      "complexity": "moderate",
+      "lineRange": [127, 137]
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:apply-init",
+      "type": "step",
+      "name": "apply-init",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "仅对 module.init 子模块执行 apply，便于快速迭代基础 Secret/Service Account 的初始化。",
+      "tags": ["terraform", "apply"],
+      "complexity": "simple",
+      "lineRange": [139, 141]
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:switch",
+      "type": "step",
+      "name": "switch",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "切换当前环境对应的 GCS backend 桶，使用 terraform init -upgrade -reconfigure 重新初始化后端。",
+      "tags": ["terraform", "backend", "environment"],
+      "complexity": "simple",
+      "lineRange": [143, 146]
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:destroy",
+      "type": "step",
+      "name": "destroy",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "销毁当前环境的全部 Terraform 资源（带 env-aware 输出提示）。",
+      "tags": ["terraform", "destroy"],
+      "complexity": "simple",
+      "lineRange": [148, 151]
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:plan",
+      "type": "step",
+      "name": "plan",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "运行 terraform fmt + plan，输出 .tfplan.${ENV} 文件（暂存以便后续 make apply）。",
+      "tags": ["terraform", "plan"],
+      "complexity": "simple",
+      "lineRange": [153, 157]
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:terraform",
+      "type": "step",
+      "name": "terraform",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "通用 terraform 命令透传入口（通过 ARGS 注入任意 terraform 子命令），适合临时调试。",
+      "tags": ["terraform", "passthrough"],
+      "complexity": "simple",
+      "lineRange": [159, 163]
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:plan-only-jobs",
+      "type": "step",
+      "name": "plan-only-jobs",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "只对 Nomad 子模块（module.nomad）执行 plan，用以单独刷新 Job 配置；同时支持 plan-only-jobs/<jobname> 模式（包含 ClickHouse 与 clickhouse_migrator/backup/backup_restore 等特例）按单个 Job 规划。",
+      "tags": ["terraform", "nomad", "plan"],
+      "complexity": "moderate",
+      "lineRange": [190, 194]
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:plan-without-jobs",
+      "type": "step",
+      "name": "plan-without-jobs",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "动态扫描 main.tf 中除 nomad 以外的所有 module.* 并作为 -target 列表执行 plan，并行度为 20，加快基础设施层规划速度。",
+      "tags": ["terraform", "plan", "nomad-skip"],
+      "complexity": "moderate",
+      "lineRange": [196, 207]
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:apply",
+      "type": "step",
+      "name": "apply",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "执行最近一次 plan 生成的 .tfplan.${ENV}，并自动删除计划文件以保持工作区干净。",
+      "tags": ["terraform", "apply"],
+      "complexity": "simple",
+      "lineRange": [209, 218]
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:import",
+      "type": "step",
+      "name": "import",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "提供 terraform import TARGET=... ID=... 包装，用于将手动创建或在分支之间漂移的资源纳入状态。",
+      "tags": ["terraform", "import"],
+      "complexity": "simple",
+      "lineRange": [221, 224]
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:move",
+      "type": "step",
+      "name": "move",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "提供 terraform state mv SOURCE=... TARGET=... 包装，便于重命名或重组资源而不破坏状态。",
+      "tags": ["terraform", "state-mv"],
+      "complexity": "simple",
+      "lineRange": [226, 229]
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:provider-login",
+      "type": "step",
+      "name": "provider-login",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "使用 gcloud user creds 完成 Packer/Docker 登录，并使用 ADC 完成 Terraform 认证，再将当前项目设置为 GCP_PROJECT_ID。",
+      "tags": ["gcp", "authentication", "cicd-helper"],
+      "complexity": "simple",
+      "lineRange": [233, 237]
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:google_artifact_registry_repository.custom_environments_repository",
+      "type": "resource",
+      "name": "google_artifact_registry_repository.custom_environments_repository",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "DOCKER 格式的 Artifact Registry 仓库，命名以 var.prefix 前缀（custom-environments），用于存储用户自定义环境镜像。",
+      "tags": ["terraform", "artifact-registry", "docker"],
+      "complexity": "simple",
+      "lineRange": [1, 5]
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:random_password.api_secret",
+      "type": "resource",
+      "name": "random_password.api_secret",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "为 API 服务生成 32 位无特殊字符随机密码，作为 API 内嵌 Secret 注入 env_vars。",
+      "tags": ["terraform", "secrets", "random"],
+      "complexity": "simple",
+      "lineRange": [70, 73]
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:random_password.clickhouse_password",
+      "type": "resource",
+      "name": "random_password.clickhouse_password",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "为 ClickHouse 服务生成 32 位无特殊字符随机密码（通过 moved.tf 从 module.nomad 重定位至顶层）。",
+      "tags": ["terraform", "secrets", "random", "clickhouse"],
+      "complexity": "simple",
+      "lineRange": [75, 78]
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:random_password.clickhouse_server_secret",
+      "type": "resource",
+      "name": "random_password.clickhouse_server_secret",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "为 ClickHouse 服务间通信生成 32 位无特殊字符随机密码（通过 moved.tf 从 module.nomad 重定位至顶层）。",
+      "tags": ["terraform", "secrets", "random", "clickhouse"],
+      "complexity": "simple",
+      "lineRange": [80, 83]
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:random_password.sandbox_access_token_hash_seed",
+      "type": "resource",
+      "name": "random_password.sandbox_access_token_hash_seed",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "为沙箱访问令牌哈希生成 32 位无特殊字符随机种子，写入同名 GCP Secret Manager Secret。",
+      "tags": ["terraform", "secrets", "random", "auth"],
+      "complexity": "simple",
+      "lineRange": [99, 102]
+    },
+    {
+      "id": "resource:iac/provider-gcp/docker-reverse-proxy.tf:google_service_account.docker_registry_service_account",
+      "type": "resource",
+      "name": "google_service_account.docker_registry_service_account",
+      "filePath": "iac/provider-gcp/docker-reverse-proxy.tf",
+      "summary": "为 Docker 反向代理创建专用服务账号 <prefix>docker-reverse-proxy-sa，供其访问 Artifact Registry 与读取镜像。",
+      "tags": ["terraform", "iam", "service-account"],
+      "complexity": "simple",
+      "lineRange": [1, 4]
+    },
+    {
+      "id": "resource:iac/provider-gcp/docker-reverse-proxy.tf:google_service_account_key.google_service_key",
+      "type": "resource",
+      "name": "google_service_account_key.google_service_key",
+      "filePath": "iac/provider-gcp/docker-reverse-proxy.tf",
+      "summary": "为上述 Service Account 生成 JSON 私钥 Key，注入 Docker 反向代理容器的 GOOGLE_SERVICE_ACCOUNT_BASE64 环境变量。",
+      "tags": ["terraform", "iam", "service-account-key"],
+      "complexity": "simple",
+      "lineRange": [12, 14]
+    },
+    {
+      "id": "resource:iac/provider-gcp/main.tf:module.init",
+      "type": "resource",
+      "name": "module.init",
+      "filePath": "iac/provider-gcp/main.tf",
+      "summary": "实例化 ./init 子模块：创建项目级 Service Account、所有 GCP Secret Manager Secret（API Admin Token 等）、Cloudflare Key、各种 GCS 桶（template/build-cache/loki/cluster-setup 等），是其它模块的凭据来源。",
+      "tags": ["terraform", "module", "bootstrap", "secrets", "iam"],
+      "complexity": "complex",
+      "lineRange": [250, 268]
+    },
+    {
+      "id": "resource:iac/provider-gcp/main.tf:module.cluster",
+      "type": "resource",
+      "name": "module.cluster",
+      "filePath": "iac/provider-gcp/main.tf",
+      "summary": "实例化 ./nomad-cluster 子模块：创建 Client/Server/Build/Orchestrator VM 集群、Filestore、Consul/Nomad ACL 集成，并暴露 shared_chunk_cache_path 等供 orchestrator 模块使用。",
+      "tags": ["terraform", "module", "compute", "nomad", "filestore"],
+      "complexity": "complex",
+      "lineRange": [270, 351]
+    },
+    {
+      "id": "resource:iac/provider-gcp/main.tf:module.k8s_apps",
+      "type": "resource",
+      "name": "module.k8s_apps",
+      "filePath": "iac/provider-gcp/main.tf",
+      "summary": "实例化 ./k8s-apps 子模块：根据 var.api_server_count/env_vars 在 GKE 上部署 API 与 API DB migrator 等工作负载（当前 argocd_enabled=false）。",
+      "tags": ["terraform", "module", "k8s", "api"],
+      "complexity": "moderate",
+      "lineRange": [353, 386]
+    },
+    {
+      "id": "resource:iac/provider-gcp/main.tf:module.nomad",
+      "type": "resource",
+      "name": "module.nomad",
+      "filePath": "iac/provider-gcp/main.tf",
+      "summary": "实例化 ./nomad 子模块：在 Nomad 中部署 Orchestrator、Client-Proxy、Template-Manager、Docker-Reverse-Proxy、Dashboard API、Filestore-Cleanup、Loki、Ot Collector、Ingress 等服务及相关 Init 任务。",
+      "tags": ["terraform", "module", "nomad", "orchestration"],
+      "complexity": "complex",
+      "lineRange": [388, 518]
+    },
+    {
+      "id": "resource:iac/provider-gcp/main.tf:module.redis",
+      "type": "resource",
+      "name": "module.redis",
+      "filePath": "iac/provider-gcp/main.tf",
+      "summary": "按 var.redis_managed 条件（count）创建托管 Redis（./redis 子模块），并复用 init 模块提供的 redis_cluster_url/redis_tls_ca 凭据。",
+      "tags": ["terraform", "module", "redis", "managed"],
+      "complexity": "moderate",
+      "lineRange": [521, 537]
+    },
+    {
+      "id": "resource:iac/provider-gcp/main.tf:module.remote_repository",
+      "type": "resource",
+      "name": "module.remote_repository",
+      "filePath": "iac/provider-gcp/main.tf",
+      "summary": "按 var.remote_repository_enabled 条件创建 ./remote-repository 子模块：从 DockerHub 远程拉取基础镜像并缓存到 Artifact Registry，供 Template Manager 在隔离网络中使用。",
+      "tags": ["terraform", "module", "artifact-registry", "cache"],
+      "complexity": "moderate",
+      "lineRange": [539, 555]
+    },
+    {
+      "id": "resource:iac/provider-gcp/persistent-volumes.tf:module.persistent-volume-types",
+      "type": "resource",
+      "name": "module.persistent-volume-types",
+      "filePath": "iac/provider-gcp/persistent-volumes.tf",
+      "summary": "对 var.persistent_volume_types（map）执行 for_each 实例化 ./persistent-volume-types 子模块，每个 type 对应一个独立 Filestore 实例（可配置容量、tier、NFS 版本、performance_config），暴露 nfs_location/nfs_version 给 orchestrator 使用。",
+      "tags": ["terraform", "module", "filestore", "persistent-volume"],
+      "complexity": "moderate",
+      "lineRange": [1, 15]
+    },
+    {
+      "id": "resource:iac/provider-gcp/volume_content_signing_key.tf:tls_private_key.volume_token",
+      "type": "resource",
+      "name": "tls_private_key.volume_token",
+      "filePath": "iac/provider-gcp/volume_content_signing_key.tf",
+      "summary": "当外部未提供 volume_token_signature 时，使用 ED25519 算法生成 1 把 TLS 私钥，供 Orchestrator 对沙箱卷内容做签名。",
+      "tags": ["terraform", "crypto", "ed25519"],
+      "complexity": "simple",
+      "lineRange": [31, 34]
+    },
+    {
+      "id": "resource:iac/provider-gcp/volume_content_signing_key.tf:time_static.volume_token_generation",
+      "type": "resource",
+      "name": "time_static.volume_token_generation",
+      "filePath": "iac/provider-gcp/volume_content_signing_key.tf",
+      "summary": "以 time_static 资源记录当前 apply 的 unix 时间戳，作为自动生成的签名密钥的\"签名名称\"版本号。",
+      "tags": ["terraform", "time-provider"],
+      "complexity": "simple",
+      "lineRange": [29, 29]
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:init",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:state-migrate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:apply-init",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:switch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:destroy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:plan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:terraform",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:plan-only-jobs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:plan-without-jobs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:apply",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:import",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:move",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:provider-login",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:google_artifact_registry_repository.custom_environments_repository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.api_secret",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.clickhouse_password",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.clickhouse_server_secret",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.sandbox_access_token_hash_seed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/docker-reverse-proxy.tf",
+      "target": "resource:iac/provider-gcp/docker-reverse-proxy.tf:google_service_account.docker_registry_service_account",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/docker-reverse-proxy.tf",
+      "target": "resource:iac/provider-gcp/docker-reverse-proxy.tf:google_service_account_key.google_service_key",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.init",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.cluster",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.k8s_apps",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.nomad",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.redis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.remote_repository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/persistent-volumes.tf",
+      "target": "resource:iac/provider-gcp/persistent-volumes.tf:module.persistent-volume-types",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/volume_content_signing_key.tf",
+      "target": "resource:iac/provider-gcp/volume_content_signing_key.tf:tls_private_key.volume_token",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-gcp/volume_content_signing_key.tf",
+      "target": "resource:iac/provider-gcp/volume_content_signing_key.tf:time_static.volume_token_generation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "step:iac/provider-gcp/Makefile:init",
+      "target": "resource:iac/provider-gcp/main.tf:module.init",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "step:iac/provider-gcp/Makefile:apply-init",
+      "target": "resource:iac/provider-gcp/main.tf:module.init",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "step:iac/provider-gcp/Makefile:plan-only-jobs",
+      "target": "resource:iac/provider-gcp/main.tf:module.nomad",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "step:iac/provider-gcp/Makefile:plan-without-jobs",
+      "target": "file:iac/provider-gcp/main.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "step:iac/provider-gcp/Makefile:state-migrate",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.clickhouse_password",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "step:iac/provider-gcp/Makefile:state-migrate",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.clickhouse_server_secret",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "step:iac/provider-gcp/Makefile:state-migrate",
+      "target": "resource:iac/provider-gcp/main.tf:module.init",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "step:iac/provider-gcp/Makefile:plan",
+      "target": "file:iac/provider-gcp/main.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "step:iac/provider-gcp/Makefile:apply",
+      "target": "file:iac/provider-gcp/main.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "step:iac/provider-gcp/Makefile:provider-login",
+      "target": "file:iac/provider-gcp/main.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:google_artifact_registry_repository.custom_environments_repository",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.init",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/dashboard-api.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.init",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/dashboard-api.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.nomad",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/docker-reverse-proxy.tf",
+      "target": "resource:iac/provider-gcp/api.tf:google_artifact_registry_repository.custom_environments_repository",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/docker-reverse-proxy.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.nomad",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.init",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.cluster",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.k8s_apps",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.nomad",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.redis",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.remote_repository",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "file:iac/provider-gcp/persistent-volumes.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.api_secret",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.clickhouse_password",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.clickhouse_server_secret",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/api.tf:google_artifact_registry_repository.custom_environments_repository",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/moved.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.init",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/moved.tf",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.clickhouse_password",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/moved.tf",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.clickhouse_server_secret",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/volume_content_signing_key.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.nomad",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/api.tf",
+      "target": "file:iac/provider-gcp/main.tf",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:iac/provider-gcp/dashboard-api.tf",
+      "target": "file:iac/provider-gcp/main.tf",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:iac/provider-gcp/docker-reverse-proxy.tf",
+      "target": "file:iac/provider-gcp/main.tf",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:iac/provider-gcp/persistent-volumes.tf",
+      "target": "file:iac/provider-gcp/main.tf",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:iac/provider-gcp/volume_content_signing_key.tf",
+      "target": "file:iac/provider-gcp/main.tf",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:iac/provider-gcp/moved.tf",
+      "target": "file:iac/provider-gcp/api.tf",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:iac/provider-gcp/Makefile",
+      "target": "file:iac/provider-gcp/main.tf",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:iac/provider-gcp/variables.tf",
+      "target": "file:iac/provider-gcp/main.tf",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/variables.tf",
+      "target": "file:iac/provider-gcp/api.tf",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/variables.tf",
+      "target": "file:iac/provider-gcp/dashboard-api.tf",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/variables.tf",
+      "target": "file:iac/provider-gcp/persistent-volumes.tf",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

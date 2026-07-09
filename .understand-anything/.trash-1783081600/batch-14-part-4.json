@@ -1,0 +1,1505 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/fc/drain_balloon_test.go",
+      "type": "file",
+      "name": "drain_balloon_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/drain_balloon_test.go",
+      "summary": "验证 pollFphDone 在前次完成后的快速轮询周期下能正确处理。",
+      "tags": [
+        "test",
+        "balloon",
+        "unit-test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/drain_balloon_test.go:TestPollFphDone_FastCycleAfterPriorDone",
+      "type": "function",
+      "name": "TestPollFphDone_FastCycleAfterPriorDone",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/drain_balloon_test.go",
+      "lineRange": [
+        18,
+        33
+      ],
+      "summary": "验证快速 pollFphDone 在前次完成后正确返回。",
+      "tags": [
+        "test",
+        "balloon"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "type": "file",
+      "name": "fc_metrics.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "summary": "从 Firecracker API 读取网络/block/balloon 度量,实现 balance-dirty-throttle 检测,提供后台 metrics reader。",
+      "tags": [
+        "metrics",
+        "firecracker",
+        "monitoring"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:countBalanceDirtyThreads",
+      "type": "function",
+      "name": "countBalanceDirtyThreads",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "lineRange": [
+        92,
+        110
+      ],
+      "summary": "统计当前 balance-dirty-throttle 线程数量,防止并发抓取。",
+      "tags": [
+        "metrics",
+        "throttle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:monitorDirtyPageThrottle",
+      "type": "function",
+      "name": "monitorDirtyPageThrottle",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "lineRange": [
+        120,
+        129
+      ],
+      "summary": "监听 dirty page 速率变化,触发 throttle 暂停注入。",
+      "tags": [
+        "metrics",
+        "throttle"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:accumulateBalloon",
+      "type": "function",
+      "name": "accumulateBalloon",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "lineRange": [
+        206,
+        225
+      ],
+      "summary": "聚合两次 balloon 度量差值,得到周期内回收字节。",
+      "tags": [
+        "metrics",
+        "balloon"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:BalloonMetrics",
+      "type": "function",
+      "name": "BalloonMetrics",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "lineRange": [
+        228,
+        234
+      ],
+      "summary": "读取当前 balloon 度量快照。",
+      "tags": [
+        "metrics",
+        "balloon"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:FlushMetrics",
+      "type": "function",
+      "name": "FlushMetrics",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "lineRange": [
+        237,
+        239
+      ],
+      "summary": "请求 Firecracker 刷新指标并读取。",
+      "tags": [
+        "metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:FlushAndReadBalloonMetrics",
+      "type": "function",
+      "name": "FlushAndReadBalloonMetrics",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "lineRange": [
+        244,
+        264
+      ],
+      "summary": "flush 后读取并解析 balloon 度量数据。",
+      "tags": [
+        "metrics",
+        "balloon"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:startMetricsReader",
+      "type": "function",
+      "name": "startMetricsReader",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "lineRange": [
+        270,
+        434
+      ],
+      "summary": "启动后台指标读取循环,周期性 flush 并更新 net/block/balloon 度量。",
+      "tags": [
+        "metrics",
+        "monitoring"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:firecrackerNetMetrics",
+      "type": "class",
+      "name": "firecrackerNetMetrics",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "lineRange": [
+        134,
+        153
+      ],
+      "summary": "firecrackerNetMetrics 记录 Firecracker 网络设备的指标状态。",
+      "tags": [
+        "metrics",
+        "firecracker"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:BalloonMetricsSnapshot",
+      "type": "class",
+      "name": "BalloonMetricsSnapshot",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "lineRange": [
+        193,
+        200
+      ],
+      "summary": "BalloonMetricsSnapshot 存储单次 balloon 度量快照字段。",
+      "tags": [
+        "metrics",
+        "balloon"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/fc/fph_gates.go",
+      "type": "file",
+      "name": "fph_gates.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/fph_gates.go",
+      "summary": "提供 FCSupportsFreePageHinting 与 FCSupportsMemfd 两个特性开关,根据 Firecracker 版本字符串启用相应能力。",
+      "tags": [
+        "feature-gate",
+        "firecracker",
+        "capability"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/fph_gates.go:FCSupportsFreePageHinting",
+      "type": "function",
+      "name": "FCSupportsFreePageHinting",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/fph_gates.go",
+      "lineRange": [
+        10,
+        17
+      ],
+      "summary": "判断当前 Firecracker 版本是否支持 free page hinting。",
+      "tags": [
+        "feature-gate",
+        "firecracker"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/fph_gates.go:FCSupportsMemfd",
+      "type": "function",
+      "name": "FCSupportsMemfd",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/fph_gates.go",
+      "lineRange": [
+        22,
+        29
+      ],
+      "summary": "判断当前 Firecracker 版本是否支持 memfd 快照。",
+      "tags": [
+        "feature-gate",
+        "firecracker"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/fc/kernel_args.go",
+      "type": "file",
+      "name": "kernel_args.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/kernel_args.go",
+      "summary": "实现内核启动参数列表的 String 方法,生成空格分隔的启动命令行。",
+      "tags": [
+        "kernel",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/kernel_args.go:String",
+      "type": "function",
+      "name": "String",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/kernel_args.go",
+      "lineRange": [
+        13,
+        25
+      ],
+      "summary": "将内核参数列表序列化为空格分隔字符串。",
+      "tags": [
+        "kernel",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/fc/mmds.go",
+      "type": "file",
+      "name": "mmds.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/mmds.go",
+      "summary": "定义 MMDS(MicroVM Metadata Service)元数据结构 MmdsMetadata。",
+      "tags": [
+        "firecracker",
+        "mmds",
+        "data-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/fc/mmds.go:MmdsMetadata",
+      "type": "class",
+      "name": "MmdsMetadata",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/mmds.go",
+      "lineRange": [
+        6,
+        12
+      ],
+      "summary": "MmdsMetadata 描述 MMDS 元数据(sandbox 配置、CA bundle 等)。",
+      "tags": [
+        "mmds",
+        "firecracker"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "type": "file",
+      "name": "process.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process.go",
+      "summary": "Process 类型封装 Firecracker 进程生命周期:Create/Resume/Stop/Pause/DrainBalloon/CreateSnapshot,实现 rootfs/网络/限速配置注入以及日志过滤。",
+      "tags": [
+        "firecracker",
+        "process",
+        "vm-lifecycle"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Write",
+      "type": "function",
+      "name": "Write",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process.go",
+      "lineRange": [
+        51,
+        79
+      ],
+      "summary": "fcLogFilter 的 Write 方法,过滤 sandbox 进程输出日志。",
+      "tags": [
+        "log-filter",
+        "firecracker"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/process.go:NewProcess",
+      "type": "function",
+      "name": "NewProcess",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process.go",
+      "lineRange": [
+        159,
+        225
+      ],
+      "summary": "构造 Process 实例,绑定 exec 上下文、配置、slot、rootfs 提供者等。",
+      "tags": [
+        "constructor",
+        "process"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/process.go:configure",
+      "type": "function",
+      "name": "configure",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process.go",
+      "lineRange": [
+        227,
+        317
+      ],
+      "summary": "应用 ProcessOptions 到 Firecracker 客户端并设置各种资源限制。",
+      "tags": [
+        "process",
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Create",
+      "type": "function",
+      "name": "Create",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process.go",
+      "lineRange": [
+        319,
+        511
+      ],
+      "summary": "Create 通过 Firecracker API 启动全新 VM 并附加 rootfs、网络与速率限制。",
+      "tags": [
+        "process",
+        "vm-lifecycle",
+        "firecracker"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Resume",
+      "type": "function",
+      "name": "Resume",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process.go",
+      "lineRange": [
+        513,
+        667
+      ],
+      "summary": "Resume 从快照恢复 VM,配置 uffd、memfd、token bucket、drive rate limit 等。",
+      "tags": [
+        "process",
+        "vm-lifecycle",
+        "firecracker"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Pid",
+      "type": "function",
+      "name": "Pid",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process.go",
+      "lineRange": [
+        669,
+        675
+      ],
+      "summary": "返回 Firecracker 子进程 PID。",
+      "tags": [
+        "process"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Stop",
+      "type": "function",
+      "name": "Stop",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process.go",
+      "lineRange": [
+        677,
+        747
+      ],
+      "summary": "Stop 停止后台采样循环并 flush 最终值。",
+      "tags": [
+        "hoststats",
+        "lifecycle"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Pause",
+      "type": "function",
+      "name": "Pause",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process.go",
+      "lineRange": [
+        749,
+        754
+      ],
+      "summary": "Pause 通过 Firecracker API 暂停 VM 执行。",
+      "tags": [
+        "process",
+        "vm-lifecycle"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/process.go:DrainBalloon",
+      "type": "function",
+      "name": "DrainBalloon",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process.go",
+      "lineRange": [
+        762,
+        800
+      ],
+      "summary": "DrainBalloon 等待 balloon 回收满足目标后再返回。",
+      "tags": [
+        "process",
+        "balloon"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/process.go:pollFphDone",
+      "type": "function",
+      "name": "pollFphDone",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process.go",
+      "lineRange": [
+        802,
+        820
+      ],
+      "summary": "轮询 FPH 完成事件,直到 balloon 提示处理完毕。",
+      "tags": [
+        "process",
+        "balloon"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/process.go:CreateSnapshot",
+      "type": "function",
+      "name": "CreateSnapshot",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process.go",
+      "lineRange": [
+        823,
+        828
+      ],
+      "summary": "CreateSnapshot 请求 Firecracker 将当前状态写入快照文件。",
+      "tags": [
+        "process",
+        "snapshot"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/fc/process.go:ProcessOptions",
+      "type": "class",
+      "name": "ProcessOptions",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process.go",
+      "lineRange": [
+        88,
+        118
+      ],
+      "summary": "ProcessOptions 存储创建/恢复 VM 时可选的行为开关(白名单、HugePages 等)。",
+      "tags": [
+        "config",
+        "process"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/fc/process.go:TokenBucketConfig",
+      "type": "class",
+      "name": "TokenBucketConfig",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process.go",
+      "lineRange": [
+        122,
+        126
+      ],
+      "summary": "TokenBucketConfig 描述 Firecracker TX 限速的 token bucket 配置。",
+      "tags": [
+        "config",
+        "firecracker"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/fc/process.go:RateLimiterConfig",
+      "type": "class",
+      "name": "RateLimiterConfig",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process.go",
+      "lineRange": [
+        130,
+        133
+      ],
+      "summary": "RateLimiterConfig 描述 Firecracker 速率限制器配置。",
+      "tags": [
+        "config",
+        "firecracker"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/fc/process.go:Process",
+      "type": "class",
+      "name": "Process",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process.go",
+      "lineRange": [
+        135,
+        157
+      ],
+      "summary": "Process 封装单个 Firecracker 微 VM 进程的生命周期管理与配置注入。",
+      "tags": [
+        "firecracker",
+        "process",
+        "vm-lifecycle"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/fc/process_test.go",
+      "type": "file",
+      "name": "process_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process_test.go",
+      "summary": "验证 Process.Stop 的幂等性以及在 leader 退出后不再向进程组发信号的行为。",
+      "tags": [
+        "test",
+        "process",
+        "unit-test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/process_test.go:TestProcessStopIsIdempotent",
+      "type": "function",
+      "name": "TestProcessStopIsIdempotent",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process_test.go",
+      "lineRange": [
+        22,
+        51
+      ],
+      "summary": "验证多次调用 Stop 不会出错或重复发送信号。",
+      "tags": [
+        "test",
+        "process"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/process_test.go:TestProcessStopDoesNotSignalProcessGroupAfterLeaderExit",
+      "type": "function",
+      "name": "TestProcessStopDoesNotSignalProcessGroupAfterLeaderExit",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/process_test.go",
+      "lineRange": [
+        53,
+        105
+      ],
+      "summary": "验证进程组 leader 已退出后 Stop 不再向组内其他进程发信号。",
+      "tags": [
+        "test",
+        "process"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "type": "file",
+      "name": "script_builder.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "summary": "生成 Firecracker 启动所需的 JSON 配置脚本(rootfs、内核、boot args、机器配置),支持 build/serialize。",
+      "tags": [
+        "firecracker",
+        "script-builder",
+        "config-gen"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/script_builder.go:NewStartScriptBuilder",
+      "type": "function",
+      "name": "NewStartScriptBuilder",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "lineRange": [
+        73,
+        82
+      ],
+      "summary": "NewStartScriptBuilder 创建 StartScriptBuilder 实例。",
+      "tags": [
+        "constructor",
+        "script-builder"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/script_builder.go:buildArgs",
+      "type": "function",
+      "name": "buildArgs",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "lineRange": [
+        85,
+        110
+      ],
+      "summary": "根据 sandbox 元数据构建 Firecracker 启动参数。",
+      "tags": [
+        "script-builder",
+        "config"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/script_builder.go:GenerateScript",
+      "type": "function",
+      "name": "GenerateScript",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "lineRange": [
+        113,
+        130
+      ],
+      "summary": "生成 Firecracker 启动 JSON 脚本字节。",
+      "tags": [
+        "script-builder",
+        "serialization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/script_builder.go:Build",
+      "type": "function",
+      "name": "Build",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "lineRange": [
+        133,
+        154
+      ],
+      "summary": "Build 返回最终生成的启动脚本。",
+      "tags": [
+        "script-builder"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/fc/script_builder.go:StartScriptResult",
+      "type": "class",
+      "name": "StartScriptResult",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "lineRange": [
+        34,
+        43
+      ],
+      "summary": "StartScriptResult 存储 StartScriptBuilder 生成的最终脚本与元数据。",
+      "tags": [
+        "script-builder"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/fc/script_builder.go:StartScriptBuilder",
+      "type": "class",
+      "name": "StartScriptBuilder",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "lineRange": [
+        66,
+        70
+      ],
+      "summary": "StartScriptBuilder 构建 Firecracker 微 VM 启动所需的 JSON 脚本。",
+      "tags": [
+        "script-builder",
+        "firecracker"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/drain_balloon_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/drain_balloon_test.go:TestPollFphDone_FastCycleAfterPriorDone",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/drain_balloon_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/drain_balloon_test.go:TestPollFphDone_FastCycleAfterPriorDone",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:countBalanceDirtyThreads",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:monitorDirtyPageThrottle",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:accumulateBalloon",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:BalloonMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:BalloonMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:FlushMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:FlushMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:FlushAndReadBalloonMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:FlushAndReadBalloonMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:startMetricsReader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:firecrackerNetMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:BalloonMetricsSnapshot",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go:BalloonMetricsSnapshot",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fph_gates.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/fph_gates.go:FCSupportsFreePageHinting",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fph_gates.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/fph_gates.go:FCSupportsFreePageHinting",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fph_gates.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/fph_gates.go:FCSupportsMemfd",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/fph_gates.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/fph_gates.go:FCSupportsMemfd",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/kernel_args.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/kernel_args.go:String",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/kernel_args.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/kernel_args.go:String",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/mmds.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/mmds.go:MmdsMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/mmds.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/mmds.go:MmdsMetadata",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Write",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Write",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:NewProcess",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:NewProcess",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:configure",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Create",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Create",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Resume",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Resume",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Pid",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Pid",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Stop",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Stop",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Pause",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:Pause",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:DrainBalloon",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:DrainBalloon",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:pollFphDone",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:CreateSnapshot",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process.go:CreateSnapshot",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/process.go:ProcessOptions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/process.go:ProcessOptions",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/process.go:TokenBucketConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/process.go:TokenBucketConfig",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/process.go:RateLimiterConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/process.go:RateLimiterConfig",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/process.go:Process",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/process.go:Process",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/manager_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/manager.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/noop.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/dscp_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/host.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/slot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_kv.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_memory.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/rootfs/direct.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/rootfs/nbd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/rootfs/rootfs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/socket/socket.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/header_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/local_file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/local_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/mask_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/storage_file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/storage_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/drain_balloon_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/process_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process_test.go:TestProcessStopIsIdempotent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process_test.go:TestProcessStopIsIdempotent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process_test.go:TestProcessStopDoesNotSignalProcessGroupAfterLeaderExit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/process_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/process_test.go:TestProcessStopDoesNotSignalProcessGroupAfterLeaderExit",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/script_builder.go:NewStartScriptBuilder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/script_builder.go:NewStartScriptBuilder",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/script_builder.go:buildArgs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/script_builder.go:GenerateScript",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/script_builder.go:GenerateScript",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/script_builder.go:Build",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/script_builder.go:Build",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/script_builder.go:StartScriptResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/script_builder.go:StartScriptResult",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/script_builder.go:StartScriptBuilder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/fc/script_builder.go:StartScriptBuilder",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/artifact/names.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/script_builder_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

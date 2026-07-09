@@ -1,0 +1,1346 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/server/utils.go",
+      "type": "file",
+      "name": "utils.go",
+      "filePath": "packages/orchestrator/pkg/server/utils.go",
+      "summary": "Server 通用工具：带 acquire 超时的 starting 槽位等待，触发 ResourceExhausted gRPC 错误。",
+      "tags": [
+        "utility",
+        "semaphore",
+        "grpc-util"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/utils.go:waitForAcquire",
+      "type": "function",
+      "name": "waitForAcquire",
+      "filePath": "packages/orchestrator/pkg/server/utils.go",
+      "lineRange": [
+        14,
+        29
+      ],
+      "summary": "在 acquireTimeout 内等待一个 starting 槽位；超限返回 ResourceExhausted。",
+      "tags": [
+        "semaphore",
+        "admission"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/service/info.go",
+      "type": "file",
+      "name": "info.go",
+      "filePath": "packages/orchestrator/pkg/service/info.go",
+      "summary": "ServiceInfo 容器：聚合 ClientId/ServiceId/版本/角色/标签/MachineInfo 等服务元数据并提供线程安全的状态读写。",
+      "tags": [
+        "service-info",
+        "metadata",
+        "thread-safe"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/service/info.go:ServiceStatus",
+      "type": "class",
+      "name": "ServiceStatus",
+      "filePath": "packages/orchestrator/pkg/service/info.go",
+      "lineRange": [
+        19,
+        22
+      ],
+      "summary": "服务状态值与最后一次变更时间的组合。",
+      "tags": [
+        "status"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/service/info.go:ServiceInfo",
+      "type": "class",
+      "name": "ServiceInfo",
+      "filePath": "packages/orchestrator/pkg/service/info.go",
+      "lineRange": [
+        24,
+        38
+      ],
+      "summary": "orchestrator 节点的身份与元数据容器，包含只读暴露的状态字段。",
+      "tags": [
+        "metadata",
+        "service-info"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/service/info.go:GetStatus",
+      "type": "function",
+      "name": "GetStatus",
+      "filePath": "packages/orchestrator/pkg/service/info.go",
+      "lineRange": [
+        45,
+        50
+      ],
+      "summary": "线程安全地读取当前 ServiceStatus。",
+      "tags": [
+        "thread-safe"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/service/info.go:SetStatus",
+      "type": "function",
+      "name": "SetStatus",
+      "filePath": "packages/orchestrator/pkg/service/info.go",
+      "lineRange": [
+        52,
+        60
+      ],
+      "summary": "线程安全地更新状态，仅在变化时记录日志。",
+      "tags": [
+        "thread-safe",
+        "logging"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/service/info.go:NewInfoContainer",
+      "type": "function",
+      "name": "NewInfoContainer",
+      "filePath": "packages/orchestrator/pkg/service/info.go",
+      "lineRange": [
+        62,
+        89
+      ],
+      "summary": "从 clientId/version/commit/instanceID/machineInfo/config 装配 ServiceInfo，并把 cfg service 映射为 protobuf role。",
+      "tags": [
+        "constructor",
+        "role-mapping"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/service/machineinfo/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/orchestrator/pkg/service/machineinfo/main.go",
+      "summary": "通过 gopsutil 检测 CPU Family/Model/ModelName/Flags，并对 arm64 缺失字段做兜底。",
+      "tags": [
+        "machine-info",
+        "cpu-detection"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/service/machineinfo/main.go:MachineInfo",
+      "type": "class",
+      "name": "MachineInfo",
+      "filePath": "packages/orchestrator/pkg/service/machineinfo/main.go",
+      "lineRange": [
+        11,
+        17
+      ],
+      "summary": "CPU 平台信息结构。",
+      "tags": [
+        "struct"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/service/machineinfo/main.go:Detect",
+      "type": "function",
+      "name": "Detect",
+      "filePath": "packages/orchestrator/pkg/service/machineinfo/main.go",
+      "lineRange": [
+        19,
+        58
+      ],
+      "summary": "读取 /proc/cpuinfo 提取 CPU 字段，对 arm64 缺失 Family/Model 时填入通用值。",
+      "tags": [
+        "detection",
+        "arm64"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/service/service_info.go",
+      "type": "file",
+      "name": "service_info.go",
+      "filePath": "packages/orchestrator/pkg/service/service_info.go",
+      "summary": "orchestrator-info gRPC 服务：返回 ServiceInfo 与允许外部触发 ServiceStatus 变更。",
+      "tags": [
+        "grpc-handler",
+        "service-info",
+        "info-service"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/service/service_info.go:Server",
+      "type": "class",
+      "name": "Server",
+      "filePath": "packages/orchestrator/pkg/service/service_info.go",
+      "lineRange": [
+        19,
+        25
+      ],
+      "summary": "orchestrator-info gRPC 服务容器。",
+      "tags": [
+        "grpc-server"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/service/service_info.go:NewInfoService",
+      "type": "function",
+      "name": "NewInfoService",
+      "filePath": "packages/orchestrator/pkg/service/service_info.go",
+      "lineRange": [
+        27,
+        33
+      ],
+      "summary": "构造 info gRPC 服务实例。",
+      "tags": [
+        "constructor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/service/service_info.go:ServiceInfo",
+      "type": "function",
+      "name": "ServiceInfo",
+      "filePath": "packages/orchestrator/pkg/service/service_info.go",
+      "lineRange": [
+        35,
+        106
+      ],
+      "summary": "聚合 ServiceInfo、sandbox 资源分配、host CPU/内存/磁盘指标为响应。",
+      "tags": [
+        "grpc-handler",
+        "metrics-aggregation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/service/service_info.go:convertDiskMetrics",
+      "type": "function",
+      "name": "convertDiskMetrics",
+      "filePath": "packages/orchestrator/pkg/service/service_info.go",
+      "lineRange": [
+        109,
+        122
+      ],
+      "summary": "把内部 DiskInfo 转换为 protobuf DiskMetrics。",
+      "tags": [
+        "conversion"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/service/service_info.go:convertMachineInfo",
+      "type": "function",
+      "name": "convertMachineInfo",
+      "filePath": "packages/orchestrator/pkg/service/service_info.go",
+      "lineRange": [
+        125,
+        133
+      ],
+      "summary": "把内部 MachineInfo 转为 protobuf MachineInfo。",
+      "tags": [
+        "conversion"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/service/service_info.go:ServiceStatusOverride",
+      "type": "function",
+      "name": "ServiceStatusOverride",
+      "filePath": "packages/orchestrator/pkg/service/service_info.go",
+      "lineRange": [
+        135,
+        140
+      ],
+      "summary": "允许外部将 ServiceInfo.SetStatus 推到目标状态。",
+      "tags": [
+        "grpc-handler",
+        "status-override"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/startupreclaim/firecracker.go",
+      "type": "file",
+      "name": "firecracker.go",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/firecracker.go",
+      "summary": "启动时回收泄漏的 Firecracker 进程组：扫描 /proc，按 cmdline basename 判定并 SIGKILL。",
+      "tags": [
+        "startup-reclaim",
+        "process-cleanup",
+        "firecracker"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/startupreclaim/firecracker.go:reclaimFirecrackers",
+      "type": "function",
+      "name": "reclaimFirecrackers",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/firecracker.go",
+      "lineRange": [
+        24,
+        53
+      ],
+      "summary": "遍历 /proc 找到 firecracker 进程并按 pgid SIGKILL，返回回收数和失败列表。",
+      "tags": [
+        "reclaim",
+        "kill"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/startupreclaim/firecracker.go:discoverFirecrackerPIDs",
+      "type": "function",
+      "name": "discoverFirecrackerPIDs",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/firecracker.go",
+      "lineRange": [
+        56,
+        82
+      ],
+      "summary": "扫描 procDir 目录项，读取 cmdline 判定 firecracker 进程并返回 PID 列表。",
+      "tags": [
+        "discovery",
+        "proc-scan"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/startupreclaim/firecracker.go:processCmdline",
+      "type": "function",
+      "name": "processCmdline",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/firecracker.go",
+      "lineRange": [
+        84,
+        102
+      ],
+      "summary": "读取 /proc/<pid>/cmdline 并按 NUL 分隔返回字符串数组。",
+      "tags": [
+        "proc-read"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/startupreclaim/firecracker.go:isFirecrackerCmdline",
+      "type": "function",
+      "name": "isFirecrackerCmdline",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/firecracker.go",
+      "lineRange": [
+        104,
+        112
+      ],
+      "summary": "通过 cmdline[0] basename 判定是否为 firecracker 二进制，避免误伤 firecracker-monitor 等。",
+      "tags": [
+        "filter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/startupreclaim/firecracker_test.go",
+      "type": "file",
+      "name": "firecracker_test.go",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/firecracker_test.go",
+      "summary": "discoverFirecrackerPIDs 在正常 proc 目录与缺失目录下的行为测试。",
+      "tags": [
+        "test",
+        "startup-reclaim"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/startupreclaim/firecracker_test.go:TestDiscoverFirecrackerPIDs",
+      "type": "function",
+      "name": "TestDiscoverFirecrackerPIDs",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/firecracker_test.go",
+      "lineRange": [],
+      "summary": "验证在包含 firecracker 与非 firecracker cmdline 的 proc 目录下仅返回目标 PID。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/startupreclaim/firecracker_test.go:TestDiscoverFirecrackerPIDsMissingProcDir",
+      "type": "function",
+      "name": "TestDiscoverFirecrackerPIDsMissingProcDir",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/firecracker_test.go",
+      "lineRange": [],
+      "summary": "procDir 不存在时函数返回错误。",
+      "tags": [
+        "test",
+        "error"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "type": "file",
+      "name": "reclaim.go",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "summary": "启动时统一回收多种泄漏资源（firecracker/NBD/network/cgroup/file）的编排器和度量。",
+      "tags": [
+        "startup-reclaim",
+        "orchestration",
+        "metrics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/startupreclaim/reclaim.go:Config",
+      "type": "class",
+      "name": "Config",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "lineRange": [
+        45,
+        54
+      ],
+      "summary": "启动 reclaim 所需的所有路径/依赖配置。",
+      "tags": [
+        "config"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/startupreclaim/reclaim.go:Summary",
+      "type": "class",
+      "name": "Summary",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "lineRange": [
+        56,
+        59
+      ],
+      "summary": "reclaim 各类资源的回收数与失败数。",
+      "tags": [
+        "result"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/startupreclaim/reclaim.go:reclaimer",
+      "type": "class",
+      "name": "reclaimer",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "lineRange": [
+        80,
+        83
+      ],
+      "summary": "单个资源回收闭包的描述（资源名 + reclaim 函数）。",
+      "tags": [
+        "internal"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/startupreclaim/reclaim.go:Run",
+      "type": "function",
+      "name": "Run",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "lineRange": [
+        85,
+        135
+      ],
+      "summary": "按 firecracker → NBD → network → cgroup → file 顺序执行 reclaim，记录指标并打日志。",
+      "tags": [
+        "orchestration",
+        "metrics"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/startupreclaim/reclaim.go:totalReclaimed",
+      "type": "function",
+      "name": "totalReclaimed",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "lineRange": [
+        61,
+        63
+      ],
+      "summary": "汇总 Summary 中所有资源的回收数。",
+      "tags": [
+        "aggregate"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/startupreclaim/reclaim.go:totalFailed",
+      "type": "function",
+      "name": "totalFailed",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "lineRange": [
+        65,
+        67
+      ],
+      "summary": "汇总 Summary 中所有资源的失败数。",
+      "tags": [
+        "aggregate"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/startupreclaim/reclaim.go:withDefaults",
+      "type": "function",
+      "name": "withDefaults",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "lineRange": [
+        137,
+        152
+      ],
+      "summary": "为 Config 缺失字段填入默认值（os.TempDir、/proc、网络 ns 目录等）。",
+      "tags": [
+        "defaults"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/startupreclaim/reclaim.go:record",
+      "type": "function",
+      "name": "record",
+      "filePath": "packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "lineRange": [
+        154,
+        165
+      ],
+      "summary": "把单个资源的回收/失败计数写入 Summary 并上报 OpenTelemetry。",
+      "tags": [
+        "telemetry"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "file:packages/orchestrator/pkg/service/machineinfo/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/metrics/host.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/service/machineinfo/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/firecracker.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/artifact/names.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/manager_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/manager.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/noop.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch_writezeroes_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/mounthelper.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/dscp_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/host.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/slot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_kv.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_memory.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/utils.go",
+      "target": "function:packages/orchestrator/pkg/server/utils.go:waitForAcquire",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "class:packages/orchestrator/pkg/service/info.go:ServiceStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "class:packages/orchestrator/pkg/service/info.go:ServiceInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "function:packages/orchestrator/pkg/service/info.go:GetStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "function:packages/orchestrator/pkg/service/info.go:SetStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "function:packages/orchestrator/pkg/service/info.go:NewInfoContainer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/machineinfo/main.go",
+      "target": "class:packages/orchestrator/pkg/service/machineinfo/main.go:MachineInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/machineinfo/main.go",
+      "target": "function:packages/orchestrator/pkg/service/machineinfo/main.go:Detect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "class:packages/orchestrator/pkg/service/service_info.go:Server",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "function:packages/orchestrator/pkg/service/service_info.go:NewInfoService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "function:packages/orchestrator/pkg/service/service_info.go:ServiceInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "function:packages/orchestrator/pkg/service/service_info.go:convertDiskMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "function:packages/orchestrator/pkg/service/service_info.go:convertMachineInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "function:packages/orchestrator/pkg/service/service_info.go:ServiceStatusOverride",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/firecracker.go",
+      "target": "function:packages/orchestrator/pkg/startupreclaim/firecracker.go:reclaimFirecrackers",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/firecracker.go",
+      "target": "function:packages/orchestrator/pkg/startupreclaim/firecracker.go:discoverFirecrackerPIDs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/firecracker.go",
+      "target": "function:packages/orchestrator/pkg/startupreclaim/firecracker.go:processCmdline",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/firecracker.go",
+      "target": "function:packages/orchestrator/pkg/startupreclaim/firecracker.go:isFirecrackerCmdline",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/firecracker_test.go",
+      "target": "function:packages/orchestrator/pkg/startupreclaim/firecracker_test.go:TestDiscoverFirecrackerPIDs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/firecracker_test.go",
+      "target": "function:packages/orchestrator/pkg/startupreclaim/firecracker_test.go:TestDiscoverFirecrackerPIDsMissingProcDir",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "class:packages/orchestrator/pkg/startupreclaim/reclaim.go:Config",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "class:packages/orchestrator/pkg/startupreclaim/reclaim.go:Summary",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "class:packages/orchestrator/pkg/startupreclaim/reclaim.go:reclaimer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "function:packages/orchestrator/pkg/startupreclaim/reclaim.go:Run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "function:packages/orchestrator/pkg/startupreclaim/reclaim.go:totalReclaimed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "function:packages/orchestrator/pkg/startupreclaim/reclaim.go:totalFailed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "function:packages/orchestrator/pkg/startupreclaim/reclaim.go:withDefaults",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "function:packages/orchestrator/pkg/startupreclaim/reclaim.go:record",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "class:packages/orchestrator/pkg/service/info.go:ServiceStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "class:packages/orchestrator/pkg/service/info.go:ServiceInfo",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "function:packages/orchestrator/pkg/service/info.go:GetStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "function:packages/orchestrator/pkg/service/info.go:SetStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "function:packages/orchestrator/pkg/service/info.go:NewInfoContainer",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/machineinfo/main.go",
+      "target": "class:packages/orchestrator/pkg/service/machineinfo/main.go:MachineInfo",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/machineinfo/main.go",
+      "target": "function:packages/orchestrator/pkg/service/machineinfo/main.go:Detect",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "class:packages/orchestrator/pkg/service/service_info.go:Server",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "function:packages/orchestrator/pkg/service/service_info.go:NewInfoService",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "function:packages/orchestrator/pkg/service/service_info.go:ServiceInfo",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "function:packages/orchestrator/pkg/service/service_info.go:ServiceStatusOverride",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/firecracker_test.go",
+      "target": "function:packages/orchestrator/pkg/startupreclaim/firecracker_test.go:TestDiscoverFirecrackerPIDs",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/firecracker_test.go",
+      "target": "function:packages/orchestrator/pkg/startupreclaim/firecracker_test.go:TestDiscoverFirecrackerPIDsMissingProcDir",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "class:packages/orchestrator/pkg/startupreclaim/reclaim.go:Config",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "class:packages/orchestrator/pkg/startupreclaim/reclaim.go:Summary",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "target": "function:packages/orchestrator/pkg/startupreclaim/reclaim.go:Run",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/info.go",
+      "target": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/service/service_info.go",
+      "target": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

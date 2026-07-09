@@ -1,0 +1,43 @@
+{
+  "nodes": [
+    {
+      "id": "config:.understand-anything/config.json",
+      "type": "config",
+      "name": "config.json",
+      "filePath": ".understand-anything/config.json",
+      "summary": "Understand-Anything 插件运行时配置，指定分析输出的目标语言（中文）。",
+      "tags": ["configuration", "understand-anything", "plugin-config", "i18n"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.understand-anything/fingerprints.json",
+      "type": "config",
+      "name": "fingerprints.json",
+      "filePath": ".understand-anything/fingerprints.json",
+      "summary": "大型 JSON 数据文件，存储 Understand-Anything 插件对项目内每个文件提取的结构指纹（hash、函数、类、导入等），用于增量分析。",
+      "tags": ["configuration", "understand-anything", "fingerprints", "cache", "generated-artifact"],
+      "complexity": "complex",
+      "languageNotes": "文件超过 23 万行，按 path 为 key 的 map 结构存储每个文件的结构化元数据。"
+    },
+    {
+      "id": "config:.understand-anything/knowledge-graph.json",
+      "type": "config",
+      "name": "knowledge-graph.json",
+      "filePath": ".understand-anything/knowledge-graph.json",
+      "summary": "Understand-Anything 插件生成的核心知识图谱，描述 E2B infra 项目（基于 Firecracker 微虚拟机 + GCP Terraform/Nomad）的节点、边、分层与导览路线。",
+      "tags": ["configuration", "understand-anything", "knowledge-graph", "generated-artifact", "architecture"],
+      "complexity": "complex",
+      "languageNotes": "包含 version、project 元信息、nodes、edges、layers、tour 六大字段，文件约 17.5 万行。"
+    },
+    {
+      "id": "config:.understand-anything/meta.json",
+      "type": "config",
+      "name": "meta.json",
+      "filePath": ".understand-anything/meta.json",
+      "summary": "Understand-Anything 插件的轻量元数据，记录最近分析时间、对应 Git commit、插件版本及已分析文件总数。",
+      "tags": ["configuration", "understand-anything", "metadata", "generated-artifact"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": []
+}

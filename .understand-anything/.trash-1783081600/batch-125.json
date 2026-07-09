@@ -1,0 +1,812 @@
+{
+  "nodes": [
+    {
+      "id": "file:iac/provider-gcp/redis/.terraform.lock.hcl",
+      "type": "file",
+      "name": ".terraform.lock.hcl",
+      "filePath": "iac/provider-gcp/redis/.terraform.lock.hcl",
+      "summary": "Terraform 依赖锁文件，固定 redis 模块所依赖的 google provider (6.28.0) 与 time provider (0.13.0) 的版本及哈希，用于保证 IaC 部署的一致性。",
+      "tags": ["infrastructure", "terraform", "dependency-lock", "gcp", "redis"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/api/docker-bake.hcl",
+      "type": "file",
+      "name": "docker-bake.hcl",
+      "filePath": "packages/api/docker-bake.hcl",
+      "summary": "Docker Buildx bake 配置，并行构建 API 服务镜像和 db-migrator 镜像，注入 COMMIT_SHA 与 EXPECTED_MIGRATION_TIMESTAMP 构建参数。",
+      "tags": ["containerization", "docker-bake", "build-system", "ci-cd"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:packages/api/internal/api/cfg.yaml",
+      "type": "config",
+      "name": "cfg.yaml",
+      "filePath": "packages/api/internal/api/cfg.yaml",
+      "summary": "oapi-codegen 配置文件，控制 API 服务的 OpenAPI 客户端、Gin 服务端、嵌入式 spec 和 model 代码的生成。",
+      "tags": ["configuration", "openapi", "code-generation", "oapi-codegen"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:packages/api/internal/sandbox/reservations/redis/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "packages/api/internal/sandbox/reservations/redis/README.md",
+      "summary": "说明 Redis Reservation Storage 模块的键空间设计、Reserve/Release/Waiter 流程以及 PubSub 与 fallback ticker 的协作机制。",
+      "tags": ["documentation", "redis", "reservation", "sandbox"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:packages/auth/go.mod",
+      "type": "config",
+      "name": "go.mod",
+      "filePath": "packages/auth/go.mod",
+      "summary": "auth 包的 Go 模块定义，声明 Go 1.26.3 版本、依赖 db/shared 内部包替换以及 JWT、OIDC、Redis、Zap、OpenTelemetry 等核心库。",
+      "tags": ["configuration", "go-module", "dependency-management", "auth"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:packages/auth/go.sum",
+      "type": "config",
+      "name": "go.sum",
+      "filePath": "packages/auth/go.sum",
+      "summary": "auth 包所有传递依赖的校验和清单，由 Go 工具链自动维护以保证模块构建的完整性与可重现性。",
+      "tags": ["configuration", "go-module", "checksum", "auth"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/auth/pkg/auth/consts.go",
+      "type": "file",
+      "name": "consts.go",
+      "filePath": "packages/auth/pkg/auth/consts.go",
+      "summary": "集中定义认证相关的 HTTP 头名（X-API-Key、Authorization、X-Team-ID、X-Admin-Token）以及 API key、access token、Bearer 等前缀常量。",
+      "tags": ["constants", "auth", "http-header", "token"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/auth/pkg/auth/error.go",
+      "type": "file",
+      "name": "error.go",
+      "filePath": "packages/auth/pkg/auth/error.go",
+      "summary": "定义 TeamForbiddenError 与 TeamBlockedError 两个错误类型，并重新导出 shared/apierrors.APIError 别名以便内部使用。",
+      "tags": ["error-type", "auth", "team", "api-error"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/auth/pkg/auth/error.go:TeamForbiddenError",
+      "type": "class",
+      "name": "TeamForbiddenError",
+      "filePath": "packages/auth/pkg/auth/error.go",
+      "lineRange": [9, 11],
+      "summary": "当团队访问被禁止（例如被封禁）时返回的错误类型，携带一段说明消息并实现 error 接口。",
+      "tags": ["error-type", "auth", "team", "forbidden"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/auth/pkg/auth/error.go:TeamBlockedError",
+      "type": "class",
+      "name": "TeamBlockedError",
+      "filePath": "packages/auth/pkg/auth/error.go",
+      "lineRange": [18, 20],
+      "summary": "当团队被阻止访问时返回的错误类型，携带说明消息并实现 error 接口。",
+      "tags": ["error-type", "auth", "team", "blocked"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/auth/pkg/auth/provider_config_parse.go:ParseProviderConfig",
+      "type": "function",
+      "name": "ParseProviderConfig",
+      "filePath": "packages/auth/pkg/auth/provider_config_parse.go",
+      "lineRange": [13, 25],
+      "summary": "将 AUTH_PROVIDER_CONFIG 环境变量解析为 ProviderConfig，对空值和字面量 'null' 返回零值，确保 Terraform jsonencode(null) 与未设置环境变量行为一致。",
+      "tags": ["parser", "configuration", "json", "auth-provider"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/auth/pkg/tests/sign_token.go:SignTestToken",
+      "type": "function",
+      "name": "SignTestToken",
+      "filePath": "packages/auth/pkg/tests/sign_token.go",
+      "lineRange": [11, 27],
+      "summary": "测试辅助函数，使用 HS256 签发一个 1 小时过期的 JWT，发行人固定为 test，便于单元测试构造受认证的请求。",
+      "tags": ["test", "jwt", "auth", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:packages/clickhouse/local/config.tpl.xml",
+      "type": "config",
+      "name": "config.tpl.xml",
+      "filePath": "packages/clickhouse/local/config.tpl.xml",
+      "summary": "本地开发环境 ClickHouse 配置模板，调整 shutdown 等待时间、内存占用比例（80%）以及单分片单副本集群的监听端口。",
+      "tags": ["configuration", "clickhouse", "local-dev", "template"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:packages/clickhouse/local/users.tpl.xml",
+      "type": "config",
+      "name": "users.tpl.xml",
+      "filePath": "packages/clickhouse/local/users.tpl.xml",
+      "summary": "本地开发环境 ClickHouse 用户配置模板，定义带用户名/密码、允许任意 IP 访问的账户以及默认 profile/quota。",
+      "tags": ["configuration", "clickhouse", "user-management", "local-dev"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/clickhouse/pkg/events/event.go",
+      "type": "file",
+      "name": "event.go",
+      "filePath": "packages/clickhouse/pkg/events/event.go",
+      "summary": "定义 SandboxEvent 数据结构，记录沙箱事件的 ID、版本、类型、时间戳、沙箱关联字段以及每团队 TTL 等用于 ClickHouse 存储的列。",
+      "tags": ["data-model", "clickhouse", "sandbox-event", "schema"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/clickhouse/pkg/events/event.go:SandboxEvent",
+      "type": "class",
+      "name": "SandboxEvent",
+      "filePath": "packages/clickhouse/pkg/events/event.go",
+      "lineRange": [10, 24],
+      "summary": "表示一条写入 ClickHouse 的沙箱事件记录，携带事件元数据、沙箱标识以及 TTL（天数）等列映射。",
+      "tags": ["data-model", "clickhouse", "sandbox-event", "struct"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/clickhouse/pkg/events/delivery_test.go",
+      "type": "file",
+      "name": "delivery_test.go",
+      "filePath": "packages/clickhouse/pkg/events/delivery_test.go",
+      "summary": "验证 GatedClickhouseDelivery 在 feature flag 关闭或 feature flag 客户端为 nil 时静默丢弃事件，同时确保非 gated 发布会越过 flag 检查触发底层 batcher。",
+      "tags": ["test", "clickhouse", "delivery", "feature-flag", "gating"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/events/delivery_test.go:TestGatedClickhouseDelivery_PublishFlagOffDrops",
+      "type": "function",
+      "name": "TestGatedClickhouseDelivery_PublishFlagOffDrops",
+      "filePath": "packages/clickhouse/pkg/events/delivery_test.go",
+      "lineRange": [31, 40],
+      "summary": "验证在 ClickhouseWriteFanoutFlag 关闭时 GatedClickhouseDelivery.Publish 不会将事件实际下发。",
+      "tags": ["test", "feature-flag", "clickhouse", "gated-delivery"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/events/delivery_test.go:TestClickhouseDelivery_PublishSkipsFlagCheck",
+      "type": "function",
+      "name": "TestClickhouseDelivery_PublishSkipsFlagCheck",
+      "filePath": "packages/clickhouse/pkg/events/delivery_test.go",
+      "lineRange": [42, 53],
+      "summary": "验证未启用 flag 检查的 ClickhouseDelivery 在 flag 关闭时仍会执行 Publish，并因 nil batcher 而 panic。",
+      "tags": ["test", "feature-flag", "clickhouse", "ungated-delivery"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/events/delivery_test.go:TestGatedClickhouseDelivery_PublishNilFeatureFlagsDrops",
+      "type": "function",
+      "name": "TestGatedClickhouseDelivery_PublishNilFeatureFlagsDrops",
+      "filePath": "packages/clickhouse/pkg/events/delivery_test.go",
+      "lineRange": [55, 62],
+      "summary": "验证 GatedClickhouseDelivery 在 feature flags 客户端为 nil 时直接丢弃事件，避免空指针解引用。",
+      "tags": ["test", "feature-flag", "clickhouse", "nil-safety"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/clickhouse/pkg/hoststats/hoststats.go",
+      "type": "file",
+      "name": "hoststats.go",
+      "filePath": "packages/clickhouse/pkg/hoststats/hoststats.go",
+      "summary": "定义沙箱主机层统计指标 SandboxHostStat、Delivery 接口以及 noop / multi 两种实现，其中 multi 在 Push 时串行分发、Close 时并发 join 错误。",
+      "tags": ["clickhouse", "host-stats", "delivery", "fanout", "cgroup"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/clickhouse/pkg/hoststats/hoststats.go:SandboxHostStat",
+      "type": "class",
+      "name": "SandboxHostStat",
+      "filePath": "packages/clickhouse/pkg/hoststats/hoststats.go",
+      "lineRange": [14, 39],
+      "summary": "描述一次 Firecracker 沙箱主机层统计采样，包括 cgroup v2 CPU/内存累计值与差分值以及采样间隔等。",
+      "tags": ["data-model", "clickhouse", "host-stats", "cgroup", "firecracker"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/clickhouse/pkg/hoststats/hoststats.go:Delivery",
+      "type": "class",
+      "name": "Delivery",
+      "filePath": "packages/clickhouse/pkg/hoststats/hoststats.go",
+      "lineRange": [43, 46],
+      "summary": "通用 Delivery 接口，定义 Push(单条统计) 与 Close(关闭底层资源) 两个方法以便 orchestrator 仅依赖抽象。",
+      "tags": ["interface", "delivery", "abstraction"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/hoststats/hoststats.go:NewNoopDelivery",
+      "type": "function",
+      "name": "NewNoopDelivery",
+      "filePath": "packages/clickhouse/pkg/hoststats/hoststats.go",
+      "lineRange": [55, 57],
+      "summary": "返回一个静默丢弃所有统计的 Delivery 实现，常用于 CLI 与测试环境。",
+      "tags": ["factory", "delivery", "noop"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/hoststats/hoststats.go:NewMultiDelivery",
+      "type": "function",
+      "name": "NewMultiDelivery",
+      "filePath": "packages/clickhouse/pkg/hoststats/hoststats.go",
+      "lineRange": [73, 82],
+      "summary": "对 0/1/N 个目标进行短路：0 个返回 noop，1 个直接返回该 target，多个返回 multiDelivery wrapper，使调用方可以无条件包装。",
+      "tags": ["factory", "delivery", "fanout", "short-circuit"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/clickhouse/pkg/hoststats/delivery_test.go",
+      "type": "file",
+      "name": "delivery_test.go",
+      "filePath": "packages/clickhouse/pkg/hoststats/delivery_test.go",
+      "summary": "对 GatedClickhouseDelivery.Push 在 feature flag 关闭/feature flags 为 nil 时的丢弃行为以及非 gated 形式越过 flag 的行为进行单元测试。",
+      "tags": ["test", "clickhouse", "host-stats", "feature-flag", "gating"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/hoststats/delivery_test.go:TestGatedClickhouseDelivery_PushFlagOffDrops",
+      "type": "function",
+      "name": "TestGatedClickhouseDelivery_PushFlagOffDrops",
+      "filePath": "packages/clickhouse/pkg/hoststats/delivery_test.go",
+      "lineRange": [30, 39],
+      "summary": "验证 GatedClickhouseDelivery.Push 在 ClickhouseWriteFanoutFlag 关闭时直接丢弃 SandboxHostStat 记录。",
+      "tags": ["test", "feature-flag", "host-stats", "gated-delivery"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/hoststats/delivery_test.go:TestClickhouseDelivery_PushSkipsFlagCheck",
+      "type": "function",
+      "name": "TestClickhouseDelivery_PushSkipsFlagCheck",
+      "filePath": "packages/clickhouse/pkg/hoststats/delivery_test.go",
+      "lineRange": [41, 52],
+      "summary": "验证未启用 flag 的 ClickhouseDelivery 即使在 flag 关闭时仍调用底层 batcher.Push，因此会因 nil batcher 而 panic。",
+      "tags": ["test", "feature-flag", "host-stats", "ungated-delivery"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/hoststats/delivery_test.go:TestGatedClickhouseDelivery_PushNilFeatureFlagsDrops",
+      "type": "function",
+      "name": "TestGatedClickhouseDelivery_PushNilFeatureFlagsDrops",
+      "filePath": "packages/clickhouse/pkg/hoststats/delivery_test.go",
+      "lineRange": [54, 61],
+      "summary": "验证 GatedClickhouseDelivery 在 feature flags 客户端为 nil 时安全地丢弃推送调用。",
+      "tags": ["test", "host-stats", "nil-safety", "gated-delivery"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "type": "file",
+      "name": "hoststats_test.go",
+      "filePath": "packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "summary": "使用 fakeDelivery 对 NewMultiDelivery 的扇出、错误聚合、空目标、单目标短路等行为进行系统化单元测试。",
+      "tags": ["test", "host-stats", "multi-delivery", "fanout", "error-aggregation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/clickhouse/pkg/hoststats/hoststats_test.go:fakeDelivery",
+      "type": "class",
+      "name": "fakeDelivery",
+      "filePath": "packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "lineRange": [12, 17],
+      "summary": "测试桩：实现 Delivery 接口，记录 push 的统计和可注入的 push/close 错误，便于驱动 multiDelivery 行为。",
+      "tags": ["test-fixture", "fake", "delivery"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_PushFansOutToAllTargets",
+      "type": "function",
+      "name": "TestMultiDelivery_PushFansOutToAllTargets",
+      "filePath": "packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "lineRange": [31, 42],
+      "summary": "验证 multiDelivery.Push 会将 SandboxHostStat 完整地分发给全部 target。",
+      "tags": ["test", "fanout", "multi-delivery"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_PushContinuesAfterTargetError",
+      "type": "function",
+      "name": "TestMultiDelivery_PushContinuesAfterTargetError",
+      "filePath": "packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "lineRange": [44, 59],
+      "summary": "验证当某个 target 失败时，multiDelivery 不会提前返回，会继续推送其余 target 并聚合错误。",
+      "tags": ["test", "error-aggregation", "multi-delivery", "resilience"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_CloseAllTargets",
+      "type": "function",
+      "name": "TestMultiDelivery_CloseAllTargets",
+      "filePath": "packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "lineRange": [61, 74],
+      "summary": "验证 multiDelivery.Close 在 target 报错时仍会关闭所有 target 并返回聚合错误。",
+      "tags": ["test", "error-aggregation", "close", "multi-delivery"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_PushJoinsAllErrors",
+      "type": "function",
+      "name": "TestMultiDelivery_PushJoinsAllErrors",
+      "filePath": "packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "lineRange": [76, 93],
+      "summary": "验证 multiDelivery.Push 通过 errors.Join 同时包含所有 target 的失败错误。",
+      "tags": ["test", "errors-join", "multi-delivery"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_CloseJoinsAllErrors",
+      "type": "function",
+      "name": "TestMultiDelivery_CloseJoinsAllErrors",
+      "filePath": "packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "lineRange": [95, 111],
+      "summary": "验证 multiDelivery.Close 通过 errors.Join 同时包含所有 target 的关闭错误。",
+      "tags": ["test", "errors-join", "close", "multi-delivery"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_EmptyTargets",
+      "type": "function",
+      "name": "TestMultiDelivery_EmptyTargets",
+      "filePath": "packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "lineRange": [113, 119],
+      "summary": "验证 NewMultiDelivery 在 0 个 target 时返回 noop，Push 和 Close 都不返回错误。",
+      "tags": ["test", "noop", "edge-case", "multi-delivery"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_SingleTargetBypassesWrapper",
+      "type": "function",
+      "name": "TestMultiDelivery_SingleTargetBypassesWrapper",
+      "filePath": "packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "lineRange": [121, 136],
+      "summary": "验证当只有 1 个 target 时 NewMultiDelivery 直接返回该 target 实例本身（短路 wrapper）。",
+      "tags": ["test", "short-circuit", "multi-delivery"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/clickhouse/pkg/utils/step.go",
+      "type": "file",
+      "name": "step.go",
+      "filePath": "packages/clickhouse/pkg/utils/step.go",
+      "summary": "提供 CalculateStep 工具函数，根据时间区间长度返回合适的指标采样步长，确保结果序列点数始终小于 1000。",
+      "tags": ["utility", "time", "metrics", "downsampling"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/utils/step.go:CalculateStep",
+      "type": "function",
+      "name": "CalculateStep",
+      "filePath": "packages/clickhouse/pkg/utils/step.go",
+      "lineRange": [7, 24],
+      "summary": "依据时间区间长度选择 5s/30s/1m/2m/5m/15m 的采样步长，保证绘图点数少于 1000。",
+      "tags": ["utility", "time", "metrics", "step-size"],
+      "complexity": "simple"
+    },
+    {
+      "id": "data:packages/db/pkg/auth/sql_queries/users_teams/teams_usersteams_join.sql:GetTeamsWithUsersTeams",
+      "type": "table",
+      "name": "GetTeamsWithUsersTeams",
+      "filePath": "packages/db/pkg/auth/sql_queries/users_teams/teams_usersteams_join.sql",
+      "summary": "sqlc 查询：根据 user_id 获取该用户所属的全部 teams，并附带 is_default 标志（通过 JOIN users_teams）。",
+      "tags": ["sql", "sqlc", "auth", "team", "user-relation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "data:packages/db/pkg/dashboard/sql_queries/teams/get_dashboard_teams_with_users_teams_with_tier.sql:GetDashboardTeamsWithUsersTeamsWithTier",
+      "type": "table",
+      "name": "GetDashboardTeamsWithUsersTeamsWithTier",
+      "filePath": "packages/db/pkg/dashboard/sql_queries/teams/get_dashboard_teams_with_users_teams_with_tier.sql",
+      "summary": "dashboard sqlc 查询：返回用户所属的 teams、is_default 标记以及对应的 team_limits（tier 信息），用于仪表盘展示。",
+      "tags": ["sql", "sqlc", "dashboard", "team", "tier"],
+      "complexity": "simple"
+    },
+    {
+      "id": "data:packages/db/pkg/dashboard/sql_queries/teams/update_team.sql:UpdateTeam",
+      "type": "table",
+      "name": "UpdateTeam",
+      "filePath": "packages/db/pkg/dashboard/sql_queries/teams/update_team.sql",
+      "summary": "dashboard sqlc 更新：按 team_id 选择性更新 name 与 profile_picture_url（使用 sqlc.narg 与 set 标记实现部分更新），返回更新后的三列。",
+      "tags": ["sql", "sqlc", "dashboard", "team", "partial-update"],
+      "complexity": "simple"
+    },
+    {
+      "id": "data:packages/db/pkg/testutils/tests.sql:InsertTestTeam",
+      "type": "table",
+      "name": "InsertTestTeam",
+      "filePath": "packages/db/pkg/testutils/tests.sql",
+      "summary": "测试工具 sqlc 查询：插入指定 id/slug 的 teams 行，使用默认 base_v1 tier，便于测试环境构建可预测的数据。",
+      "tags": ["sql", "sqlc", "test-fixture", "team"],
+      "complexity": "simple"
+    },
+    {
+      "id": "data:packages/db/pkg/testutils/tests.sql:InsertTestEnv",
+      "type": "table",
+      "name": "InsertTestEnv",
+      "filePath": "packages/db/pkg/testutils/tests.sql",
+      "summary": "测试工具 sqlc 查询：插入 envs 模板行，不维护 build_count 簿记，仅用于测试种子的确定性数据。",
+      "tags": ["sql", "sqlc", "test-fixture", "env-template"],
+      "complexity": "simple"
+    },
+    {
+      "id": "data:packages/db/pkg/testutils/tests.sql:GetRowLevelSecurity",
+      "type": "table",
+      "name": "GetRowLevelSecurity",
+      "filePath": "packages/db/pkg/testutils/tests.sql",
+      "summary": "测试工具 sqlc 查询：列举 pg_catalog 中所有普通表/视图/物化视图的 row level security 配置与 reloptions，用于 RLS 迁移验证。",
+      "tags": ["sql", "sqlc", "test-fixture", "rls", "pg-catalog"],
+      "complexity": "simple"
+    },
+    {
+      "id": "data:packages/db/queries/sandboxes/get_sandbox_record.sql:GetSandboxRecordByTeamAndSandboxID",
+      "type": "table",
+      "name": "GetSandboxRecordByTeamAndSandboxID",
+      "filePath": "packages/db/queries/sandboxes/get_sandbox_record.sql",
+      "summary": "核心 sqlc 查询：通过 (team_id, sandbox_id) 从 billing.sandbox_logs、snapshots、env_aliases、clusters、teams 等多表拼出沙箱的完整运行记录。",
+      "tags": ["sql", "sqlc", "sandbox", "billing", "record-lookup"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "data:packages/db/queries/teams/resolve_team.sql:ResolveTeamBySlugAndUser",
+      "type": "table",
+      "name": "ResolveTeamBySlugAndUser",
+      "filePath": "packages/db/queries/teams/resolve_team.sql",
+      "summary": "核心 sqlc 查询：按 user_id 与 team slug 解析得到 team 的 id 和 slug，用于按 slug 路由到具体团队。",
+      "tags": ["sql", "sqlc", "team", "user-relation", "lookup"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/auth/pkg/auth/error.go",
+      "target": "class:packages/auth/pkg/auth/error.go:TeamForbiddenError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/auth/pkg/auth/error.go",
+      "target": "class:packages/auth/pkg/auth/error.go:TeamBlockedError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/auth/pkg/auth/error.go",
+      "target": "class:packages/auth/pkg/auth/error.go:TeamForbiddenError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/auth/pkg/auth/error.go",
+      "target": "class:packages/auth/pkg/auth/error.go:TeamBlockedError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/auth/pkg/auth/provider_config_parse.go",
+      "target": "function:packages/auth/pkg/auth/provider_config_parse.go:ParseProviderConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/auth/pkg/auth/provider_config_parse.go",
+      "target": "function:packages/auth/pkg/auth/provider_config_parse.go:ParseProviderConfig",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/auth/pkg/tests/sign_token.go",
+      "target": "function:packages/auth/pkg/tests/sign_token.go:SignTestToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/auth/pkg/tests/sign_token.go",
+      "target": "function:packages/auth/pkg/tests/sign_token.go:SignTestToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/events/event.go",
+      "target": "class:packages/clickhouse/pkg/events/event.go:SandboxEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/events/event.go",
+      "target": "class:packages/clickhouse/pkg/events/event.go:SandboxEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/events/delivery_test.go",
+      "target": "function:packages/clickhouse/pkg/events/delivery_test.go:TestGatedClickhouseDelivery_PublishFlagOffDrops",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/events/delivery_test.go",
+      "target": "function:packages/clickhouse/pkg/events/delivery_test.go:TestClickhouseDelivery_PublishSkipsFlagCheck",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/events/delivery_test.go",
+      "target": "function:packages/clickhouse/pkg/events/delivery_test.go:TestGatedClickhouseDelivery_PublishNilFeatureFlagsDrops",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/events/delivery_test.go",
+      "target": "function:packages/clickhouse/pkg/events/delivery_test.go:TestGatedClickhouseDelivery_PublishFlagOffDrops",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/events/delivery_test.go",
+      "target": "function:packages/clickhouse/pkg/events/delivery_test.go:TestClickhouseDelivery_PublishSkipsFlagCheck",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/events/delivery_test.go",
+      "target": "function:packages/clickhouse/pkg/events/delivery_test.go:TestGatedClickhouseDelivery_PublishNilFeatureFlagsDrops",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats.go",
+      "target": "class:packages/clickhouse/pkg/hoststats/hoststats.go:SandboxHostStat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats.go",
+      "target": "class:packages/clickhouse/pkg/hoststats/hoststats.go:Delivery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats.go:NewNoopDelivery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats.go:NewMultiDelivery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats.go",
+      "target": "class:packages/clickhouse/pkg/hoststats/hoststats.go:SandboxHostStat",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats.go",
+      "target": "class:packages/clickhouse/pkg/hoststats/hoststats.go:Delivery",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats.go:NewNoopDelivery",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats.go:NewMultiDelivery",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats.go",
+      "target": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/delivery_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/delivery_test.go:TestGatedClickhouseDelivery_PushFlagOffDrops",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/delivery_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/delivery_test.go:TestClickhouseDelivery_PushSkipsFlagCheck",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/delivery_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/delivery_test.go:TestGatedClickhouseDelivery_PushNilFeatureFlagsDrops",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/delivery_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/delivery_test.go:TestGatedClickhouseDelivery_PushFlagOffDrops",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/delivery_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/delivery_test.go:TestClickhouseDelivery_PushSkipsFlagCheck",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/delivery_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/delivery_test.go:TestGatedClickhouseDelivery_PushNilFeatureFlagsDrops",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "target": "class:packages/clickhouse/pkg/hoststats/hoststats_test.go:fakeDelivery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_PushFansOutToAllTargets",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_PushContinuesAfterTargetError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_CloseAllTargets",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_PushJoinsAllErrors",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_CloseJoinsAllErrors",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_EmptyTargets",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_SingleTargetBypassesWrapper",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_PushFansOutToAllTargets",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_PushContinuesAfterTargetError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_CloseAllTargets",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_PushJoinsAllErrors",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_CloseJoinsAllErrors",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_EmptyTargets",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "target": "function:packages/clickhouse/pkg/hoststats/hoststats_test.go:TestMultiDelivery_SingleTargetBypassesWrapper",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/hoststats/hoststats_test.go",
+      "target": "file:packages/clickhouse/pkg/hoststats/hoststats.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/step.go",
+      "target": "function:packages/clickhouse/pkg/utils/step.go:CalculateStep",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/step.go",
+      "target": "function:packages/clickhouse/pkg/utils/step.go:CalculateStep",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "data:packages/db/queries/sandboxes/get_sandbox_record.sql:GetSandboxRecordByTeamAndSandboxID",
+      "target": "file:packages/clickhouse/pkg/events/event.go",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

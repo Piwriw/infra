@@ -1,0 +1,402 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/client-proxy/internal/cfg/model.go",
+      "type": "file",
+      "name": "model.go",
+      "filePath": "packages/client-proxy/internal/cfg/model.go",
+      "summary": "定义 client-proxy 的运行时配置结构 Config，并通过 Parse 从环境变量读取监听端口、节点 ID 等参数。",
+      "tags": ["config", "data-model", "env-parsing", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/client-proxy/internal/cfg/model.go:Parse",
+      "type": "function",
+      "name": "Parse",
+      "filePath": "packages/client-proxy/internal/cfg/model.go",
+      "lineRange": [22, 24],
+      "summary": "从环境变量解析 client-proxy 启动配置，返回填充好的 Config 实例或错误。",
+      "tags": ["config", "env-parsing", "factory"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/client-proxy/internal/cfg/model.go:Config",
+      "type": "class",
+      "name": "Config",
+      "filePath": "packages/client-proxy/internal/cfg/model.go",
+      "lineRange": [5, 20],
+      "summary": "承载 client-proxy 全部启动参数的配置结构体，包括监听地址、端口以及下游服务地址等字段。",
+      "tags": ["data-model", "config", "struct"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/client-proxy/internal/cfg/model_test.go",
+      "type": "file",
+      "name": "model_test.go",
+      "filePath": "packages/client-proxy/internal/cfg/model_test.go",
+      "summary": "对 cfg.Parse 进行单元测试，覆盖默认值、环境变量覆盖以及非法整数的错误路径。",
+      "tags": ["test", "config", "unit-test"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/client-proxy/internal/info.go",
+      "type": "file",
+      "name": "info.go",
+      "filePath": "packages/client-proxy/internal/info.go",
+      "summary": "提供 ServiceInfo 结构体以原子方式记录与查询 client-proxy 的运行状态（含读写锁保护）。",
+      "tags": ["service", "data-model", "status", "concurrency"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/client-proxy/internal/info.go:GetStatus",
+      "type": "function",
+      "name": "GetStatus",
+      "filePath": "packages/client-proxy/internal/info.go",
+      "lineRange": [25, 30],
+      "summary": "并发安全地读取当前 ServiceInfo 的状态值。",
+      "tags": ["service", "status", "concurrency"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/client-proxy/internal/info.go:SetStatus",
+      "type": "function",
+      "name": "SetStatus",
+      "filePath": "packages/client-proxy/internal/info.go",
+      "lineRange": [32, 40],
+      "summary": "并发安全地更新 ServiceInfo 的状态，并通过 logger 记录状态变更。",
+      "tags": ["service", "status", "concurrency", "logging"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/client-proxy/internal/info.go:ServiceInfo",
+      "type": "class",
+      "name": "ServiceInfo",
+      "filePath": "packages/client-proxy/internal/info.go",
+      "lineRange": [20, 23],
+      "summary": "封装 client-proxy 服务状态的运行时对象，内部使用 RWMutex 保护并发访问。",
+      "tags": ["data-model", "service", "concurrency"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/client-proxy/internal/info_test.go",
+      "type": "file",
+      "name": "info_test.go",
+      "filePath": "packages/client-proxy/internal/info_test.go",
+      "summary": "验证 ServiceInfo 的默认状态、读写一致性、幂等设置以及多 goroutine 并发访问的正确性。",
+      "tags": ["test", "concurrency", "unit-test"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/client-proxy/internal/proxy/grpc_resume_auth.go",
+      "type": "file",
+      "name": "grpc_resume_auth.go",
+      "filePath": "packages/client-proxy/internal/proxy/grpc_resume_auth.go",
+      "summary": "为 gRPC 恢复链路提供 OAuth 令牌认证抽象，支持 noop 与 oauth 两种实现，并在请求上下文中注入认证元数据。",
+      "tags": ["grpc", "oauth", "authentication", "middleware"],
+      "complexity": "moderate",
+      "languageNotes": "通过未导出的接口和多态工厂模式选择 noop 或 oauth 实现。"
+    },
+    {
+      "id": "function:packages/client-proxy/internal/proxy/grpc_resume_auth.go:newGrpcResumeAuth",
+      "type": "function",
+      "name": "newGrpcResumeAuth",
+      "filePath": "packages/client-proxy/internal/proxy/grpc_resume_auth.go",
+      "lineRange": [34, 53],
+      "summary": "根据 OAuth 配置构造 grpcResumeAuth 实例：未启用时返回 noop 实现，配置不完整时返回错误。",
+      "tags": ["factory", "oauth", "authentication"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/client-proxy/internal/proxy/grpc_resume_auth.go:authorize",
+      "type": "function",
+      "name": "authorize",
+      "filePath": "packages/client-proxy/internal/proxy/grpc_resume_auth.go",
+      "lineRange": [59, 66],
+      "summary": "OAuth 实现版本：从 token source 获取令牌并将其作为 authorization metadata 追加到 gRPC 出站上下文。",
+      "tags": ["oauth", "grpc", "authentication"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/client-proxy/internal/proxy/grpc_resume_auth_test.go",
+      "type": "file",
+      "name": "grpc_resume_auth_test.go",
+      "filePath": "packages/client-proxy/internal/proxy/grpc_resume_auth_test.go",
+      "summary": "测试 newGrpcResumeAuth 工厂分支以及 OAuth/noop 实现的 authorize 行为，包含一个 stubTokenSource 用于注入令牌。",
+      "tags": ["test", "oauth", "grpc", "unit-test"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/client-proxy/internal/proxy/paused_resumer.go",
+      "type": "file",
+      "name": "paused_resumer.go",
+      "filePath": "packages/client-proxy/internal/proxy/paused_resumer.go",
+      "summary": "定义 PausedSandboxResumer 接口契约，描述对暂停沙箱执行 Init/Close/Resume 操作的能力。",
+      "tags": ["interface", "grpc", "sandbox", "contract"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/client-proxy/internal/proxy/paused_resumer.go:PausedSandboxResumer",
+      "type": "class",
+      "name": "PausedSandboxResumer",
+      "filePath": "packages/client-proxy/internal/proxy/paused_resumer.go",
+      "lineRange": [5, 10],
+      "summary": "声明用于恢复暂停沙箱的接口，包含 Init、Close 与 Resume 三个方法。",
+      "tags": ["interface", "sandbox", "contract"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go",
+      "type": "file",
+      "name": "paused_sandbox_resumer_grpc.go",
+      "filePath": "packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go",
+      "summary": "实现 gRPC 版本的 PausedSandboxResumer：建立到 orchestrator 的连接，发送携带沙箱 ID、端口与认证 token 的 ResumeSandbox 请求并返回节点 IP。",
+      "tags": ["grpc", "sandbox", "service", "resume"],
+      "complexity": "moderate",
+      "languageNotes": "通过 grpc.NewClient + otelgrpc stats handler 集成 OpenTelemetry，并在 insecure/TLS 之间切换传输凭证。"
+    },
+    {
+      "id": "function:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:NewGRPCPausedSandboxResumer",
+      "type": "function",
+      "name": "NewGRPCPausedSandboxResumer",
+      "filePath": "packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go",
+      "lineRange": [33, 63],
+      "summary": "构造 grpcPausedSandboxResumer：校验地址、初始化 resume auth，根据 TLS 配置选择传输凭证并创建带 OTel 观测的 gRPC 客户端。",
+      "tags": ["factory", "grpc", "oauth", "sandbox"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:Resume",
+      "type": "function",
+      "name": "Resume",
+      "filePath": "packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go",
+      "lineRange": [73, 97],
+      "summary": "调用下游 ResumeSandbox RPC，附加 sandbox ID、端口与可选认证元数据，返回解析后的 orchestrator 节点 IP。",
+      "tags": ["grpc", "sandbox", "resume"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:Init",
+      "type": "function",
+      "name": "Init",
+      "filePath": "packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go",
+      "lineRange": [65, 67],
+      "summary": "向 e2bgrpc 注册连接以开始观测统计。",
+      "tags": ["grpc", "observability", "sandbox"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:Close",
+      "type": "function",
+      "name": "Close",
+      "filePath": "packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go",
+      "lineRange": [69, 71],
+      "summary": "关闭底层 gRPC 连接，释放资源。",
+      "tags": ["grpc", "cleanup", "sandbox"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:GRPCOAuthConfig",
+      "type": "class",
+      "name": "GRPCOAuthConfig",
+      "filePath": "packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go",
+      "lineRange": [27, 31],
+      "summary": "承载构造 OAuth 凭证所需字段（如 client ID、secret、token endpoint）的配置结构体。",
+      "tags": ["data-model", "oauth", "config"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:grpcPausedSandboxResumer",
+      "type": "class",
+      "name": "grpcPausedSandboxResumer",
+      "filePath": "packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go",
+      "lineRange": [21, 25],
+      "summary": "PausedSandboxResumer 的 gRPC 实现，封装连接、auth、客户端句柄以及配置等内部状态。",
+      "tags": ["grpc", "sandbox", "service"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc_test.go",
+      "type": "file",
+      "name": "paused_sandbox_resumer_grpc_test.go",
+      "filePath": "packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc_test.go",
+      "summary": "通过 bufconn + fakeSandboxServer 对 GRPC PausedSandboxResumer 进行端到端单测，覆盖构造错误、TLS/Insecure、Resume 元数据透传及服务端错误等场景。",
+      "tags": ["test", "grpc", "sandbox", "unit-test"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/client-proxy/internal/proxy/proxy.go",
+      "type": "file",
+      "name": "proxy.go",
+      "filePath": "packages/client-proxy/internal/proxy/proxy.go",
+      "summary": "client-proxy 的核心反向代理逻辑：从沙箱目录解析节点 IP、对暂停沙箱调用 Resumer，并构造 NewClientProxy HTTP 处理器。",
+      "tags": ["reverse-proxy", "api-handler", "sandbox", "service"],
+      "complexity": "complex",
+      "languageNotes": "结合 reverseproxy、featureflags 与 sandbox catalog，将 gRPC 状态码映射回 HTTP 友好的错误类型。"
+    },
+    {
+      "id": "function:packages/client-proxy/internal/proxy/proxy.go:NewClientProxy",
+      "type": "function",
+      "name": "NewClientProxy",
+      "filePath": "packages/client-proxy/internal/proxy/proxy.go",
+      "lineRange": [138, 252],
+      "summary": "构造 client-proxy 反向代理 HTTP 处理器：注册 Prometheus 指标、设置连接池、根据请求目标解析沙箱节点 IP 并转发。",
+      "tags": ["reverse-proxy", "api-handler", "factory", "metrics"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/client-proxy/internal/proxy/proxy.go:handlePausedSandbox",
+      "type": "function",
+      "name": "handlePausedSandbox",
+      "filePath": "packages/client-proxy/internal/proxy/proxy.go",
+      "lineRange": [97, 136],
+      "summary": "当沙箱处于暂停状态时，调用 PausedSandboxResumer.Resume 恢复，并将 gRPC 错误码转换为对应的 HTTP 错误。",
+      "tags": ["reverse-proxy", "error-handling", "sandbox"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/client-proxy/internal/proxy/proxy.go:catalogResolution",
+      "type": "function",
+      "name": "catalogResolution",
+      "filePath": "packages/client-proxy/internal/proxy/proxy.go",
+      "lineRange": [76, 95],
+      "summary": "从沙箱目录查询节点 IP，若沙箱处于暂停态则委托 handlePausedSandbox 恢复，否则直接返回解析后的 IP。",
+      "tags": ["reverse-proxy", "catalog", "sandbox"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/client-proxy/internal/proxy/proxy.go:clientProxyMaskRequestHost",
+      "type": "function",
+      "name": "clientProxyMaskRequestHost",
+      "filePath": "packages/client-proxy/internal/proxy/proxy.go",
+      "lineRange": [65, 74],
+      "summary": "依据特性开关决定是否将请求 Host 重写为沙箱共享域名，以向下游隐藏原始主机信息。",
+      "tags": ["reverse-proxy", "feature-flags", "header-rewrite"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/client-proxy/internal/proxy/proxy.go:catalogSandboxNodeIP",
+      "type": "function",
+      "name": "catalogSandboxNodeIP",
+      "filePath": "packages/client-proxy/internal/proxy/proxy.go",
+      "lineRange": [52, 54],
+      "summary": "将节点 IP 经过 normalize 后作为最终路由目标返回。",
+      "tags": ["reverse-proxy", "utility", "sandbox"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/client-proxy/internal/proxy/proxy.go:normalizeNodeIP",
+      "type": "function",
+      "name": "normalizeNodeIP",
+      "filePath": "packages/client-proxy/internal/proxy/proxy.go",
+      "lineRange": [56, 63],
+      "summary": "对节点 IP 字符串进行 trim 与 IPv6 方括号规范化处理，便于后续路由使用。",
+      "tags": ["utility", "ip-normalization", "reverse-proxy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/client-proxy/internal/proxy/proxy_test.go",
+      "type": "file",
+      "name": "proxy_test.go",
+      "filePath": "packages/client-proxy/internal/proxy/proxy_test.go",
+      "summary": "对 proxy 包核心路径进行单测，包含 catalog 解析、host mask、paused sandbox 恢复流程以及 NewClientProxy 构造与错误处理；使用 stubResumer/recordingResumer/errorCatalog 等桩件隔离外部依赖。",
+      "tags": ["test", "reverse-proxy", "unit-test", "mocking"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/client-proxy/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/client-proxy/main.go",
+      "summary": "client-proxy 服务入口：解析配置、初始化日志/遥测/特性开关，注册信号处理并以优雅关闭方式启动反向代理。",
+      "tags": ["entry-point", "service", "bootstrap"],
+      "complexity": "complex",
+      "languageNotes": "采用经典的 run(ctx) 模式分离 main 与业务逻辑，便于测试与信号驱动的优雅退出。"
+    },
+    {
+      "id": "function:packages/client-proxy/main.go:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "packages/client-proxy/main.go",
+      "lineRange": [50, 307],
+      "summary": "client-proxy 的核心启动函数：装配配置、日志、遥测、特性开关、连接池与 NewClientProxy 处理器，并在收到信号时执行优雅关闭。",
+      "tags": ["entry-point", "bootstrap", "service"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/client-proxy/main.go:Closeable",
+      "type": "class",
+      "name": "Closeable",
+      "filePath": "packages/client-proxy/main.go",
+      "lineRange": [35, 37],
+      "summary": "定义用于统一关闭资源的接口，供 main 在退出时按序释放连接与处理器。",
+      "tags": ["interface", "cleanup", "contract"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {"source": "file:packages/client-proxy/internal/cfg/model.go", "target": "function:packages/client-proxy/internal/cfg/model.go:Parse", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/cfg/model.go", "target": "class:packages/client-proxy/internal/cfg/model.go:Config", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/cfg/model.go", "target": "function:packages/client-proxy/internal/cfg/model.go:Parse", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/client-proxy/internal/cfg/model.go", "target": "class:packages/client-proxy/internal/cfg/model.go:Config", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/client-proxy/internal/cfg/model.go", "target": "file:packages/client-proxy/internal/cfg/model_test.go", "type": "tested_by", "direction": "forward", "weight": 0.5},
+
+    {"source": "file:packages/client-proxy/internal/info.go", "target": "function:packages/client-proxy/internal/info.go:GetStatus", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/info.go", "target": "function:packages/client-proxy/internal/info.go:SetStatus", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/info.go", "target": "class:packages/client-proxy/internal/info.go:ServiceInfo", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/info.go", "target": "function:packages/client-proxy/internal/info.go:GetStatus", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/client-proxy/internal/info.go", "target": "function:packages/client-proxy/internal/info.go:SetStatus", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/client-proxy/internal/info.go", "target": "class:packages/client-proxy/internal/info.go:ServiceInfo", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/client-proxy/internal/info.go", "target": "file:packages/client-proxy/internal/info_test.go", "type": "tested_by", "direction": "forward", "weight": 0.5},
+
+    {"source": "file:packages/client-proxy/internal/proxy/grpc_resume_auth.go", "target": "function:packages/client-proxy/internal/proxy/grpc_resume_auth.go:newGrpcResumeAuth", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/proxy/grpc_resume_auth.go", "target": "function:packages/client-proxy/internal/proxy/grpc_resume_auth.go:authorize", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/proxy/grpc_resume_auth.go", "target": "file:packages/client-proxy/internal/proxy/grpc_resume_auth_test.go", "type": "tested_by", "direction": "forward", "weight": 0.5},
+
+    {"source": "file:packages/client-proxy/internal/proxy/paused_resumer.go", "target": "class:packages/client-proxy/internal/proxy/paused_resumer.go:PausedSandboxResumer", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/proxy/paused_resumer.go", "target": "class:packages/client-proxy/internal/proxy/paused_resumer.go:PausedSandboxResumer", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go", "target": "function:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:NewGRPCPausedSandboxResumer", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go", "target": "function:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:Resume", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go", "target": "function:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:Init", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go", "target": "function:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:Close", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go", "target": "class:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:GRPCOAuthConfig", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go", "target": "class:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:grpcPausedSandboxResumer", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go", "target": "function:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:NewGRPCPausedSandboxResumer", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go", "target": "function:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:Init", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go", "target": "function:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:Close", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go", "target": "function:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:Resume", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go", "target": "class:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go:GRPCOAuthConfig", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go", "target": "function:packages/client-proxy/internal/proxy/grpc_resume_auth.go:newGrpcResumeAuth", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go", "target": "class:packages/client-proxy/internal/proxy/paused_resumer.go:PausedSandboxResumer", "type": "implements", "direction": "forward", "weight": 0.9},
+    {"source": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go", "target": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc_test.go", "type": "tested_by", "direction": "forward", "weight": 0.5},
+
+    {"source": "file:packages/client-proxy/internal/proxy/proxy.go", "target": "function:packages/client-proxy/internal/proxy/proxy.go:NewClientProxy", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/proxy/proxy.go", "target": "function:packages/client-proxy/internal/proxy/proxy.go:handlePausedSandbox", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/proxy/proxy.go", "target": "function:packages/client-proxy/internal/proxy/proxy.go:catalogResolution", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/proxy/proxy.go", "target": "function:packages/client-proxy/internal/proxy/proxy.go:clientProxyMaskRequestHost", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/proxy/proxy.go", "target": "function:packages/client-proxy/internal/proxy/proxy.go:catalogSandboxNodeIP", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/proxy/proxy.go", "target": "function:packages/client-proxy/internal/proxy/proxy.go:normalizeNodeIP", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/internal/proxy/proxy.go", "target": "function:packages/client-proxy/internal/proxy/proxy.go:NewClientProxy", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/client-proxy/internal/proxy/proxy.go", "target": "class:packages/client-proxy/internal/proxy/paused_resumer.go:PausedSandboxResumer", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:packages/client-proxy/internal/proxy/proxy.go", "target": "file:packages/client-proxy/internal/proxy/proxy_test.go", "type": "tested_by", "direction": "forward", "weight": 0.5},
+
+    {"source": "file:packages/client-proxy/main.go", "target": "function:packages/client-proxy/main.go:run", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/main.go", "target": "class:packages/client-proxy/main.go:Closeable", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/client-proxy/main.go", "target": "class:packages/client-proxy/main.go:Closeable", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/client-proxy/main.go", "target": "file:packages/client-proxy/internal/cfg/model.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/client-proxy/main.go", "target": "file:packages/client-proxy/internal/cfg/model_test.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/client-proxy/main.go", "target": "file:packages/client-proxy/internal/info.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/client-proxy/main.go", "target": "file:packages/client-proxy/internal/info_test.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/client-proxy/main.go", "target": "file:packages/client-proxy/internal/proxy/grpc_resume_auth.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/client-proxy/main.go", "target": "file:packages/client-proxy/internal/proxy/grpc_resume_auth_test.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/client-proxy/main.go", "target": "file:packages/client-proxy/internal/proxy/paused_resumer.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/client-proxy/main.go", "target": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/client-proxy/main.go", "target": "file:packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc_test.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/client-proxy/main.go", "target": "file:packages/client-proxy/internal/proxy/proxy.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/client-proxy/main.go", "target": "file:packages/client-proxy/internal/proxy/proxy_test.go", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:packages/client-proxy/main.go", "target": "function:packages/client-proxy/internal/cfg/model.go:Parse", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/client-proxy/main.go", "target": "function:packages/client-proxy/internal/proxy/proxy.go:NewClientProxy", "type": "calls", "direction": "forward", "weight": 0.8}
+  ]
+}

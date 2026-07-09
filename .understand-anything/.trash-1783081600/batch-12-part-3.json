@@ -1,0 +1,551 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/cfg/model.go",
+      "type": "file",
+      "name": "model.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/cfg/model.go",
+      "summary": "nfsproxy 模块共享的 Config 结构 — 控制 logging/tracing/metrics/statchandle 开关和 NFS log level。",
+      "tags": [
+        "config",
+        "nfs-proxy"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "type": "file",
+      "name": "change.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "summary": "将 chrooted.Chrooted 适配为 billy.Change 接口的薄包装 — 暴露 Chmod/Chown/Lchown/Chtimes。",
+      "tags": [
+        "nfs-proxy",
+        "billy-adapter",
+        "chroot"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/chroot/file.go",
+      "type": "file",
+      "name": "file.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/chroot/file.go",
+      "summary": "把 *os.File 包装成 billy.File；额外通过 unix.Flock 提供文件级 Lock/Unlock 语义，并把 nil 安全处理。",
+      "tags": [
+        "nfs-proxy",
+        "billy-adapter",
+        "flock"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/chroot/file_test.go",
+      "type": "file",
+      "name": "file_test.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/chroot/file_test.go",
+      "summary": "wrappedFile 的单元测试 — 验证 nil 处理、基本与排他 Lock/Unlock 行为。",
+      "tags": [
+        "test",
+        "flock",
+        "billy-adapter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs.go",
+      "type": "file",
+      "name": "fs.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/chroot/fs.go",
+      "summary": "把 chrooted.Chrooted 适配为 billy.Filesystem 的薄包装；禁止再 chroot（直接返回 ErrPermission）。",
+      "tags": [
+        "nfs-proxy",
+        "billy-adapter",
+        "filesystem"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs_failed.go",
+      "type": "file",
+      "name": "fs_failed.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/chroot/fs_failed.go",
+      "summary": "NFS mount 失败时返回的占位 Filesystem — 所有访问统一返回 ErrInvalidSandbox，用于装饰失败响应。",
+      "tags": [
+        "nfs-proxy",
+        "error-fallback",
+        "filesystem"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/cfg/model.go:Config",
+      "type": "class",
+      "name": "Config",
+      "summary": "nfsproxy 共享配置",
+      "tags": [
+        "config",
+        "nfs-proxy"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        5,
+        12
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/chroot/change.go:wrappedChange",
+      "type": "class",
+      "name": "wrappedChange",
+      "summary": "把 chrooted 包成 billy.Change",
+      "tags": [
+        "billy-adapter",
+        "nfs-proxy"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/chroot/file.go:wrappedFile",
+      "type": "class",
+      "name": "wrappedFile",
+      "summary": "把 *os.File 包成 billy.File",
+      "tags": [
+        "billy-adapter",
+        "nfs-proxy"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        12,
+        14
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/chroot/fs.go:wrappedFS",
+      "type": "class",
+      "name": "wrappedFS",
+      "summary": "把 chrooted 包成 billy.Filesystem",
+      "tags": [
+        "billy-adapter",
+        "nfs-proxy"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        13,
+        15
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/chroot/fs_failed.go:mountFailedFS",
+      "type": "class",
+      "name": "mountFailedFS",
+      "summary": "mount 失败占位 FS",
+      "tags": [
+        "error-fallback",
+        "nfs-proxy"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        15,
+        15
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/chroot/change.go:Chmod",
+      "type": "function",
+      "name": "Chmod",
+      "summary": "billy.Change.Chmod 实现",
+      "tags": [
+        "billy-adapter"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        18,
+        20
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/chroot/change.go:Lchown",
+      "type": "function",
+      "name": "Lchown",
+      "summary": "billy.Change.Lchown 实现",
+      "tags": [
+        "billy-adapter"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        22,
+        24
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/chroot/change.go:Chown",
+      "type": "function",
+      "name": "Chown",
+      "summary": "billy.Change.Chown 实现",
+      "tags": [
+        "billy-adapter"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        26,
+        28
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/chroot/change.go:Chtimes",
+      "type": "function",
+      "name": "Chtimes",
+      "summary": "billy.Change.Chtimes 实现",
+      "tags": [
+        "billy-adapter"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/chroot/file.go:Lock",
+      "type": "function",
+      "name": "Lock",
+      "summary": "通过 unix.Flock 抢占排他锁",
+      "tags": [
+        "flock"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        42,
+        44
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/chroot/file.go:maybeWrap",
+      "type": "function",
+      "name": "maybeWrap",
+      "summary": "安全地把 *os.File 包装为 billy.File",
+      "tags": [
+        "billy-adapter"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        54,
+        60
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/chroot/file_test.go:TestWrappedFile_LockUnlock",
+      "type": "function",
+      "name": "TestWrappedFile_LockUnlock",
+      "summary": "排他 flock 行为测试",
+      "tags": [
+        "test",
+        "flock"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        31,
+        79
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/chroot/fs.go:wrapChrooted",
+      "type": "function",
+      "name": "wrapChrooted",
+      "summary": "把 *chrooted.Chrooted 包装成 wrappedFS",
+      "tags": [
+        "billy-adapter"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        87,
+        89
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/cfg/model.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/cfg/model.go:Config",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/chroot/change.go:wrappedChange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/file.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/chroot/file.go:wrappedFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/chroot/fs.go:wrappedFS",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs_failed.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/chroot/fs_failed.go:mountFailedFS",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/change.go:Chmod",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/change.go:Lchown",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/change.go:Chown",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/change.go:Chtimes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/file.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/file.go:Lock",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/file.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/file.go:maybeWrap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/file_test.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/file_test.go:TestWrappedFile_LockUnlock",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/fs.go:wrapChrooted",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/builder.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/change.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/chroot_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/chroot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/mountns.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/builder.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/change.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/chroot_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/chroot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/mountns.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/file.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/chroot/file_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/cfg/model.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/cfg/model.go:Config",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/chroot/change.go:wrappedChange",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/change.go:Chmod",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/change.go:Lchown",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/change.go:Chown",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/change.go:Chtimes",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/file.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/chroot/file.go:wrappedFile",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/file.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/file.go:Lock",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/file.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/file.go:maybeWrap",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/chroot/fs.go:wrappedFS",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/fs.go:wrapChrooted",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs_failed.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/chroot/fs_failed.go:mountFailedFS",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

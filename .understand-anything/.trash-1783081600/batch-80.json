@@ -1,0 +1,112 @@
+{
+  "nodes": [
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster-disk-image/main.tf",
+      "type": "resource",
+      "name": "main.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster-disk-image/main.tf",
+      "summary": "Terraform 配置文件,用于在 GCP 上预配 Packer 构建 Nomad 集群磁盘镜像所需的 VPC 网络、子网和 IAP 防火墙规则。",
+      "tags": ["infrastructure", "deployment", "terraform", "gcp", "packer"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/provider-gcp/nomad-cluster-disk-image/variables.tf",
+      "type": "file",
+      "name": "variables.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster-disk-image/variables.tf",
+      "summary": "Terraform 变量定义文件,声明 GCP 项目 ID、区域、网络名称和子网名称四个输入变量。",
+      "tags": ["infrastructure", "configuration", "terraform", "variables"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/provider-gcp/nomad-cluster-disk-image/Makefile",
+      "type": "file",
+      "name": "Makefile",
+      "filePath": "iac/provider-gcp/nomad-cluster-disk-image/Makefile",
+      "summary": "构建自动化 Makefile,封装 Packer 和 Terraform 命令,用于初始化、构建 Nomad 集群磁盘镜像以及格式化 Packer 配置。",
+      "tags": ["infrastructure", "build-system", "packer", "terraform", "automation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster-disk-image/main.tf:google_compute_network.packer_network",
+      "type": "resource",
+      "name": "google_compute_network.packer_network",
+      "filePath": "iac/provider-gcp/nomad-cluster-disk-image/main.tf",
+      "lineRange": [21, 24],
+      "summary": "创建自定义模式的 GCP VPC 网络,用于 Packer 构建过程的隔离网络环境。",
+      "tags": ["gcp", "network", "vpc", "infrastructure"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster-disk-image/main.tf:google_compute_subnetwork.packer_subnetwork",
+      "type": "resource",
+      "name": "google_compute_subnetwork.packer_subnetwork",
+      "filePath": "iac/provider-gcp/nomad-cluster-disk-image/main.tf",
+      "lineRange": [26, 36],
+      "summary": "在 Packer 网络中创建子网,使用 10.0.0.0/8 大型 CIDR 块并配置 15 分钟聚合间隔的流日志。",
+      "tags": ["gcp", "subnet", "network", "logging"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster-disk-image/main.tf:google_compute_firewall.internal_remote_connection_firewall_ingress",
+      "type": "resource",
+      "name": "google_compute_firewall.internal_remote_connection_firewall_ingress",
+      "filePath": "iac/provider-gcp/nomad-cluster-disk-image/main.tf",
+      "lineRange": [39, 53],
+      "summary": "创建入站防火墙规则,仅允许来自 IAP(Identity-Aware Proxy)IP 范围(35.235.240.0/20)的 SSH(22端口)流量,以支持通过 IAP 进行安全的远程连接。",
+      "tags": ["gcp", "firewall", "security", "iap", "ssh"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster-disk-image/main.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster-disk-image/main.tf:google_compute_network.packer_network",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster-disk-image/main.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster-disk-image/main.tf:google_compute_subnetwork.packer_subnetwork",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster-disk-image/main.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster-disk-image/main.tf:google_compute_firewall.internal_remote_connection_firewall_ingress",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster-disk-image/main.tf:google_compute_subnetwork.packer_subnetwork",
+      "target": "resource:iac/provider-gcp/nomad-cluster-disk-image/main.tf:google_compute_network.packer_network",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster-disk-image/main.tf:google_compute_firewall.internal_remote_connection_firewall_ingress",
+      "target": "resource:iac/provider-gcp/nomad-cluster-disk-image/main.tf:google_compute_network.packer_network",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/nomad-cluster-disk-image/Makefile",
+      "target": "resource:iac/provider-gcp/nomad-cluster-disk-image/main.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster-disk-image/main.tf",
+      "target": "file:iac/provider-gcp/nomad-cluster-disk-image/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

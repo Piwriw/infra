@@ -1,0 +1,1283 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "type": "file",
+      "name": "store.go",
+      "filePath": "packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "summary": "hyperloop APIStore — 持有 sandboxes Map、collection collector http 客户端和共享发送错误工具。",
+      "tags": [
+        "api-handler",
+        "store"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "type": "file",
+      "name": "server.go",
+      "filePath": "packages/orchestrator/pkg/hyperloopserver/server.go",
+      "summary": "Gin 引擎的 HTTP 服务器工厂 — 挂载 size limiter、oapi validator、注册 handlers、启用 h2c、绑定监听地址并返回 http.Server。",
+      "tags": [
+        "http-server",
+        "gin",
+        "factory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/localupload/handler.go",
+      "type": "file",
+      "name": "handler.go",
+      "filePath": "packages/orchestrator/pkg/localupload/handler.go",
+      "summary": "用于 STORAGE_PROVIDER=Local 模式的 PUT 上传处理器 — 校验 HMAC 签名 + 过期时间、检查路径穿越、原子写入临时文件再 rename。",
+      "tags": [
+        "upload-handler",
+        "hmac",
+        "filesystem"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "在没有 GCS/S3 时把客户端上传落到本地磁盘；HMAC 令牌防止未授权写入；tempfile+rename 模式避免半截文件。"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/localupload/handler_test.go",
+      "type": "file",
+      "name": "handler_test.go",
+      "filePath": "packages/orchestrator/pkg/localupload/handler_test.go",
+      "summary": "localupload.Handler 的单元测试套件 — 覆盖 HMAC 成功、错误方法、缺失/无效参数、过期/不同路径 token、路径穿越、覆盖和嵌套目录创建。",
+      "tags": [
+        "test",
+        "upload-handler",
+        "hmac"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/metrics/host.go",
+      "type": "file",
+      "name": "host.go",
+      "filePath": "packages/orchestrator/pkg/metrics/host.go",
+      "summary": "HostMetrics 后台采样器 — 用 gopsutil 采集 CPU/内存/磁盘快照，请求路径通过读锁非阻塞读取最近一次缓存样本。",
+      "tags": [
+        "metrics",
+        "host-stats",
+        "background-sampler"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "采样间隔 10 秒，CPU 计数器差分依赖于 ticker 间隔；过滤掉 /boot、/dev/loop、/dev/zram 虚拟盘。"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "type": "file",
+      "name": "sandboxes.go",
+      "filePath": "packages/orchestrator/pkg/metrics/sandboxes.go",
+      "summary": "SandboxObserver 周期观察所有 sandbox metrics（CPU/内存/磁盘），依据 envd 版本兼容性切换版本并导出 OTEL gauge；检测 host-sandbox 时钟漂移。",
+      "tags": [
+        "metrics",
+        "otel",
+        "callback-observer",
+        "sandbox-stats"
+      ],
+      "complexity": "complex",
+      "languageNotes": "使用 errgroup 并发抓取，遵守 envd 最低版本门控 (0.1.5/0.1.3/0.2.4/0.5.9)；clock drift > 5s 报警。"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/hyperloopserver/handlers/store.go:APIStore",
+      "type": "class",
+      "name": "APIStore",
+      "summary": "hyperloop store 持有 sandboxes + collector client",
+      "tags": [
+        "api-handler",
+        "store"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        18,
+        24
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/localupload/handler.go:Handler",
+      "type": "class",
+      "name": "Handler",
+      "summary": "本地 PUT 上传 handler",
+      "tags": [
+        "upload-handler",
+        "filesystem"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        16,
+        19
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/metrics/host.go:CPUMetrics",
+      "type": "class",
+      "name": "CPUMetrics",
+      "summary": "单核 CPU 使用率与核数",
+      "tags": [
+        "metrics",
+        "host-stats"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        26,
+        29
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/metrics/host.go:MemoryMetrics",
+      "type": "class",
+      "name": "MemoryMetrics",
+      "summary": "内存使用字节数与总量",
+      "tags": [
+        "metrics",
+        "host-stats"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        31,
+        34
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/metrics/host.go:DiskInfo",
+      "type": "class",
+      "name": "DiskInfo",
+      "summary": "单块挂载点的使用统计",
+      "tags": [
+        "metrics",
+        "host-stats"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        36,
+        43
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/metrics/host.go:HostMetrics",
+      "type": "class",
+      "name": "HostMetrics",
+      "summary": "后台采样 CPU/Memory/Disk 快照",
+      "tags": [
+        "metrics",
+        "host-stats",
+        "background-sampler"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        49,
+        59
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/metrics/sandboxes.go:SandboxObserver",
+      "type": "class",
+      "name": "SandboxObserver",
+      "summary": "OTEL gauge 观察所有 sandbox metrics",
+      "tags": [
+        "metrics",
+        "otel",
+        "observer"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        50,
+        65
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/hyperloopserver/handlers/store.go:NewHyperloopStore",
+      "type": "function",
+      "name": "NewHyperloopStore",
+      "summary": "构造 hyperloop APIStore",
+      "tags": [
+        "factory"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        26,
+        36
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/hyperloopserver/server.go:NewHyperloopServer",
+      "type": "function",
+      "name": "NewHyperloopServer",
+      "summary": "构造 hyperloop HTTP 服务",
+      "tags": [
+        "factory",
+        "gin"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        25,
+        51
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/localupload/handler.go:NewHandler",
+      "type": "function",
+      "name": "NewHandler",
+      "summary": "新建 HMAC 验证的本地上传 handler",
+      "tags": [
+        "factory"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        24,
+        29
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/localupload/handler.go:ServeHTTP",
+      "type": "function",
+      "name": "ServeHTTP",
+      "summary": "HTTP server 入口 — 校验后写入磁盘",
+      "tags": [
+        "http-handler"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        31,
+        124
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/metrics/host.go:NewHostMetrics",
+      "type": "function",
+      "name": "NewHostMetrics",
+      "summary": "构造 HostMetrics 实例",
+      "tags": [
+        "factory"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        61,
+        63
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/metrics/host.go:Start",
+      "type": "function",
+      "name": "Start",
+      "summary": "立即采样并启动 ticker 后台循环",
+      "tags": [
+        "background-sampler"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        67,
+        81
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/metrics/host.go:Close",
+      "type": "function",
+      "name": "Close",
+      "summary": "停止采样循环",
+      "tags": [
+        "shutdown"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        83,
+        87
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/metrics/host.go:sample",
+      "type": "function",
+      "name": "sample",
+      "summary": "原子刷新 CPU/内存/磁盘快照",
+      "tags": [
+        "background-sampler"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        131,
+        153
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/metrics/sandboxes.go:NewSandboxObserver",
+      "type": "function",
+      "name": "NewSandboxObserver",
+      "summary": "构造 SandboxObserver 并启动回调",
+      "tags": [
+        "factory",
+        "otel"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        67,
+        152
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/metrics/sandboxes.go:startObserving",
+      "type": "function",
+      "name": "startObserving",
+      "summary": "注册 OTEL 回调收集所有 sandbox 指标",
+      "tags": [
+        "otel",
+        "callback-observer"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        154,
+        288
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/metrics/sandboxes.go:Close",
+      "type": "function",
+      "name": "Close",
+      "summary": "注销回调并关闭 OTEL meter exporter",
+      "tags": [
+        "shutdown",
+        "otel"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        292,
+        314
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "class:packages/orchestrator/pkg/hyperloopserver/handlers/store.go:APIStore",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/localupload/handler.go",
+      "target": "class:packages/orchestrator/pkg/localupload/handler.go:Handler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/host.go",
+      "target": "class:packages/orchestrator/pkg/metrics/host.go:CPUMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/host.go",
+      "target": "class:packages/orchestrator/pkg/metrics/host.go:MemoryMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/host.go",
+      "target": "class:packages/orchestrator/pkg/metrics/host.go:DiskInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/host.go",
+      "target": "class:packages/orchestrator/pkg/metrics/host.go:HostMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "class:packages/orchestrator/pkg/metrics/sandboxes.go:SandboxObserver",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "function:packages/orchestrator/pkg/hyperloopserver/handlers/store.go:NewHyperloopStore",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "function:packages/orchestrator/pkg/hyperloopserver/server.go:NewHyperloopServer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/localupload/handler.go",
+      "target": "function:packages/orchestrator/pkg/localupload/handler.go:NewHandler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/localupload/handler.go",
+      "target": "function:packages/orchestrator/pkg/localupload/handler.go:ServeHTTP",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/host.go",
+      "target": "function:packages/orchestrator/pkg/metrics/host.go:NewHostMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/host.go",
+      "target": "function:packages/orchestrator/pkg/metrics/host.go:Start",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/host.go",
+      "target": "function:packages/orchestrator/pkg/metrics/host.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/host.go",
+      "target": "function:packages/orchestrator/pkg/metrics/host.go:sample",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/metrics/sandboxes.go:NewSandboxObserver",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/metrics/sandboxes.go:startObserving",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/metrics/sandboxes.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/hyperloopserver/handlers/logs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/hyperloopserver/handlers/me.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/localupload/handler.go",
+      "target": "file:packages/orchestrator/pkg/localupload/handler_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/hyperloopserver/handlers/logs.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "file:packages/orchestrator/pkg/hyperloopserver/handlers/me.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "class:packages/orchestrator/pkg/hyperloopserver/handlers/store.go:APIStore",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/store.go",
+      "target": "function:packages/orchestrator/pkg/hyperloopserver/handlers/store.go:NewHyperloopStore",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "target": "function:packages/orchestrator/pkg/hyperloopserver/server.go:NewHyperloopServer",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/localupload/handler.go",
+      "target": "class:packages/orchestrator/pkg/localupload/handler.go:Handler",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/localupload/handler.go",
+      "target": "function:packages/orchestrator/pkg/localupload/handler.go:NewHandler",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/localupload/handler.go",
+      "target": "function:packages/orchestrator/pkg/localupload/handler.go:ServeHTTP",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/host.go",
+      "target": "class:packages/orchestrator/pkg/metrics/host.go:CPUMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/host.go",
+      "target": "class:packages/orchestrator/pkg/metrics/host.go:MemoryMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/host.go",
+      "target": "class:packages/orchestrator/pkg/metrics/host.go:DiskInfo",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/host.go",
+      "target": "class:packages/orchestrator/pkg/metrics/host.go:HostMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/host.go",
+      "target": "function:packages/orchestrator/pkg/metrics/host.go:NewHostMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/host.go",
+      "target": "function:packages/orchestrator/pkg/metrics/host.go:Start",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/host.go",
+      "target": "function:packages/orchestrator/pkg/metrics/host.go:Close",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "class:packages/orchestrator/pkg/metrics/sandboxes.go:SandboxObserver",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/metrics/sandboxes.go:NewSandboxObserver",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/metrics/sandboxes.go:Close",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

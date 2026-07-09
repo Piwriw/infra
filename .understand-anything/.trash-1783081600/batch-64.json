@@ -1,0 +1,15 @@
+{
+  "nodes": [
+    {
+      "id": "table:packages/db/pkg/dashboard/migrations/20260316130000_dashboard_add_env_defaults_and_team_profile_picture.sql:env_defaults",
+      "type": "table",
+      "name": "env_defaults",
+      "filePath": "packages/db/pkg/dashboard/migrations/20260316130000_dashboard_add_env_defaults_and_team_profile_picture.sql",
+      "summary": "数据库迁移文件，创建 public.env_defaults 表（包含 env_id 主键和外键引用 public.envs，以及 description 字段），并为 public.teams 表新增 profile_picture_url 列；包含对应的回滚（Down）语句。",
+      "tags": ["database", "migration", "schema-definition", "postgresql", "dashboard"],
+      "complexity": "simple",
+      "languageNotes": "使用 goose 迁移框架的 +goose Up / +goose Down 与 StatementBegin/StatementEnd 标记；采用 IF NOT EXISTS / IF EXISTS 实现幂等的可逆迁移。"
+    }
+  ],
+  "edges": []
+}

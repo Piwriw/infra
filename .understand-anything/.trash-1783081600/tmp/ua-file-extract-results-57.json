@@ -1,0 +1,140 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/db/Dockerfile",
+      "language": "dockerfile",
+      "fileCategory": "infra",
+      "totalLines": 34,
+      "nonEmptyLines": 23,
+      "services": [
+        {
+          "name": "builder",
+          "image": "golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION}",
+          "ports": [],
+          "startLine": 5,
+          "endLine": 28
+        },
+        {
+          "name": "alpine",
+          "image": "alpine:${ALPINE_VERSION}",
+          "ports": [],
+          "startLine": 29,
+          "endLine": 35
+        }
+      ],
+      "steps": [
+        {
+          "name": "ARG GOLANG_VERSION=1.26.3",
+          "startLine": 1,
+          "endLine": 1
+        },
+        {
+          "name": "ARG ALPINE_VERSION=3.22",
+          "startLine": 2,
+          "endLine": 2
+        },
+        {
+          "name": "FROM golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION} AS builder",
+          "startLine": 5,
+          "endLine": 5
+        },
+        {
+          "name": "WORKDIR /build/shared",
+          "startLine": 8,
+          "endLine": 8
+        },
+        {
+          "name": "COPY ./shared/go.mod ./shared/go.sum ./",
+          "startLine": 9,
+          "endLine": 9
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 10,
+          "endLine": 10
+        },
+        {
+          "name": "WORKDIR /build/db",
+          "startLine": 12,
+          "endLine": 12
+        },
+        {
+          "name": "COPY ./db/go.mod ./db/go.sum ./",
+          "startLine": 13,
+          "endLine": 13
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 14,
+          "endLine": 14
+        },
+        {
+          "name": "WORKDIR /build",
+          "startLine": 17,
+          "endLine": 17
+        },
+        {
+          "name": "COPY ./shared/pkg ./shared/pkg",
+          "startLine": 19,
+          "endLine": 19
+        },
+        {
+          "name": "COPY ./db/scripts/migrator.go ./db/scripts/migrator.go",
+          "startLine": 21,
+          "endLine": 21
+        },
+        {
+          "name": "COPY ./db/migrations/ ./db/migrations",
+          "startLine": 22,
+          "endLine": 22
+        },
+        {
+          "name": "WORKDIR /build/db",
+          "startLine": 24,
+          "endLine": 24
+        },
+        {
+          "name": "RUN go build -o ./bin/migrator ./scripts/migrator.go",
+          "startLine": 26,
+          "endLine": 26
+        },
+        {
+          "name": "RUN chmod +x ./bin/migrator",
+          "startLine": 27,
+          "endLine": 27
+        },
+        {
+          "name": "FROM alpine:${ALPINE_VERSION}",
+          "startLine": 29,
+          "endLine": 29
+        },
+        {
+          "name": "COPY --from=builder /build/db/bin/migrator .",
+          "startLine": 31,
+          "endLine": 31
+        },
+        {
+          "name": "COPY --from=builder  /build/db/migrations ./migrations",
+          "startLine": 32,
+          "endLine": 32
+        },
+        {
+          "name": "ENTRYPOINT [\"./migrator\"]",
+          "startLine": 34,
+          "endLine": 34
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "serviceCount": 2,
+        "stepCount": 20
+      }
+    }
+  ]
+}

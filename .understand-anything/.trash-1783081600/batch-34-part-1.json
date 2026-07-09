@@ -1,0 +1,1205 @@
+{
+ "nodes": [
+  {
+   "id": "file:packages/envd/internal/api/api.gen.go",
+   "type": "file",
+   "name": "api.gen.go",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "summary": "由 oapi-codegen 生成的 Connect RPC 服务端骨架代码,定义 ServerInterface、ServerInterfaceWrapper、所有 DTO(请求/响应/参数)、错误类型以及 Chi 路由绑定工厂。",
+   "tags": [
+    "api-handler",
+    "generated",
+    "openapi",
+    "type-definition",
+    "server-skeleton"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "file:packages/envd/internal/api/auth.go",
+   "type": "file",
+   "name": "auth.go",
+   "filePath": "packages/envd/internal/api/auth.go",
+   "summary": "提供 HTTP 授权中间件 WithAuthorization,负责基于 HMAC 签名对每个请求执行身份与签名验证。",
+   "tags": [
+    "middleware",
+    "authentication",
+    "authorization",
+    "hmac-signature",
+    "api-handler"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "file:packages/envd/internal/api/auth_test.go",
+   "type": "file",
+   "name": "auth_test.go",
+   "filePath": "packages/envd/internal/api/auth_test.go",
+   "summary": "对 HMAC 签名生成算法的稳定性与无过期时间场景进行单元测试。",
+   "tags": [
+    "test",
+    "authentication",
+    "hmac"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "file:packages/envd/internal/api/clock_linux.go",
+   "type": "file",
+   "name": "clock_linux.go",
+   "filePath": "packages/envd/internal/api/clock_linux.go",
+   "summary": "Linux 平台下设置沙箱系统时间的实现文件。",
+   "tags": [
+    "platform-specific",
+    "linux",
+    "system-time"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "file:packages/envd/internal/api/clock_other.go",
+   "type": "file",
+   "name": "clock_other.go",
+   "filePath": "packages/envd/internal/api/clock_other.go",
+   "summary": "非 Linux 平台下的设置沙箱系统时间的占位实现。",
+   "tags": [
+    "platform-specific",
+    "stub",
+    "system-time"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "file:packages/envd/internal/api/collapse.go",
+   "type": "file",
+   "name": "collapse.go",
+   "filePath": "packages/envd/internal/api/collapse.go",
+   "summary": "实现 PostCollapse HTTP 处理函数,在 envd 中触发进程内存合并(madvise/MADV_COLLAPSE)以回收未使用页。",
+   "tags": [
+    "api-handler",
+    "memory-collapse",
+    "kvm"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "file:packages/envd/internal/api/compose.go",
+   "type": "file",
+   "name": "compose.go",
+   "filePath": "packages/envd/internal/api/compose.go",
+   "summary": "实现 PostFilesCompose HTTP 处理函数,将用户提供的多个源文件按顺序连接并写入目标路径,支持目录创建与源删除。",
+   "tags": [
+    "api-handler",
+    "file-composition",
+    "concatenation"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "file:packages/envd/internal/api/compose_test.go",
+   "type": "file",
+   "name": "compose_test.go",
+   "filePath": "packages/envd/internal/api/compose_test.go",
+   "summary": "对文件组合接口的全面测试:拼接、删除源、目录创建、源等于目标、源不存在、大文件、与 GetFiles 协同等场景。",
+   "tags": [
+    "test",
+    "file-composition"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "file:packages/envd/internal/api/download.go",
+   "type": "file",
+   "name": "download.go",
+   "filePath": "packages/envd/internal/api/download.go",
+   "summary": "实现 GetFiles HTTP 处理函数,支持 Content-Disposition、Range 请求、Gzip/Identity 编码协商以及流式响应。",
+   "tags": [
+    "api-handler",
+    "file-download",
+    "range-request",
+    "gzip"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "class:packages/envd/internal/api/api.gen.go:ServerInterface",
+   "type": "class",
+   "name": "ServerInterface",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    251,
+    288
+   ],
+   "summary": "ServerInterface 定义 envd HTTP 服务需要实现的所有处理器签名,被 connect-go 服务器自动绑定。",
+   "tags": [
+    "api-handler",
+    "server-interface",
+    "interface"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "class:packages/envd/internal/api/api.gen.go:ServerInterfaceWrapper",
+   "type": "class",
+   "name": "ServerInterfaceWrapper",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    367,
+    371
+   ],
+   "summary": "将 ServerInterface 包装为 chi 路由可调用的处理器,提供中间件链与统一错误处理函数。",
+   "tags": [
+    "server-wrapper",
+    "middleware",
+    "chi"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/api/api.gen.go:Unimplemented",
+   "type": "class",
+   "name": "Unimplemented",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    292,
+    292
+   ],
+   "summary": "ServerInterface 的默认占位实现,所有方法返回未实现错误,便于增量实现。",
+   "tags": [
+    "stub",
+    "server-interface"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/api/api.gen.go:CollapseResult",
+   "type": "class",
+   "name": "CollapseResult",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    38,
+    56
+   ],
+   "summary": "PostCollapse 操作的响应 DTO,包含合并区域、跳过区域、耗时等统计信息。",
+   "tags": [
+    "dto",
+    "memory-collapse"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/api/api.gen.go:EntryInfo",
+   "type": "class",
+   "name": "EntryInfo",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    71,
+    83
+   ],
+   "summary": "文件系统条目信息 DTO,描述名称、类型、路径与可选元数据。",
+   "tags": [
+    "dto",
+    "filesystem"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/api/api.gen.go:Metrics",
+   "type": "class",
+   "name": "Metrics",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    101,
+    131
+   ],
+   "summary": "沙箱指标 DTO,包含 CPU、内存、磁盘使用情况与时间戳。",
+   "tags": [
+    "dto",
+    "metrics"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/api/api.gen.go:PostInitJSONBody",
+   "type": "class",
+   "name": "PostInitJSONBody",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    214,
+    239
+   ],
+   "summary": "PostInit 请求体 DTO,定义访问令牌、CA 证书包、默认用户/工作目录、环境变量与卷挂载。",
+   "tags": [
+    "dto",
+    "init",
+    "request-body"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "class:packages/envd/internal/api/api.gen.go:PostFilesParams",
+   "type": "class",
+   "name": "PostFilesParams",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    199,
+    211
+   ],
+   "summary": "PostFiles 查询参数 DTO,定义路径、用户名与签名信息。",
+   "tags": [
+    "dto",
+    "upload",
+    "query-params"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/api/api.gen.go:GetFilesParams",
+   "type": "class",
+   "name": "GetFilesParams",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    179,
+    191
+   ],
+   "summary": "GetFiles 查询参数 DTO,定义路径、用户名与签名信息。",
+   "tags": [
+    "dto",
+    "download",
+    "query-params"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/api/api.gen.go:ChiServerOptions",
+   "type": "class",
+   "name": "ChiServerOptions",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    799,
+    804
+   ],
+   "summary": "Chi 服务配置选项,用于配置基础 URL、路由、中间件链与错误处理器。",
+   "tags": [
+    "config",
+    "chi",
+    "server-options"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/api.gen.go:HandlerFromMux",
+   "type": "function",
+   "name": "HandlerFromMux",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    807,
+    811
+   ],
+   "summary": "返回绑定到自定义 chi 路由器的 HTTP 处理器,使用默认中间件。",
+   "tags": [
+    "handler",
+    "chi",
+    "router"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/api.gen.go:HandlerFromMuxWithBaseURL",
+   "type": "function",
+   "name": "HandlerFromMuxWithBaseURL",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    813,
+    818
+   ],
+   "summary": "返回带 BaseURL 的 HTTP 处理器,可挂载在子路径下。",
+   "tags": [
+    "handler",
+    "chi",
+    "router"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/api.gen.go:HandlerWithOptions",
+   "type": "function",
+   "name": "HandlerWithOptions",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    821,
+    876
+   ],
+   "summary": "根据 ChiServerOptions 注册所有 ServerInterface 方法到 chi 路由器,返回 http.Handler。",
+   "tags": [
+    "handler",
+    "chi",
+    "router",
+    "registration"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/api.gen.go:Handler",
+   "type": "function",
+   "name": "Handler",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    795,
+    797
+   ],
+   "summary": "返回绑定到默认 chi 路由器的 HTTP 处理器。",
+   "tags": [
+    "handler",
+    "chi"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/api/api.gen.go:UnescapedCookieParamError",
+   "type": "class",
+   "name": "UnescapedCookieParamError",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    725,
+    728
+   ],
+   "summary": "Cookie 参数未正确转义时返回的错误。",
+   "tags": [
+    "error",
+    "cookie"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/api/api.gen.go:UnmarshalingParamError",
+   "type": "class",
+   "name": "UnmarshalingParamError",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    738,
+    741
+   ],
+   "summary": "查询参数或路径参数反序列化失败时返回的错误。",
+   "tags": [
+    "error",
+    "param"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/api/api.gen.go:RequiredParamError",
+   "type": "class",
+   "name": "RequiredParamError",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    751,
+    753
+   ],
+   "summary": "必填参数缺失时返回的错误。",
+   "tags": [
+    "error",
+    "param"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/api/api.gen.go:RequiredHeaderError",
+   "type": "class",
+   "name": "RequiredHeaderError",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    759,
+    762
+   ],
+   "summary": "必填 Header 缺失时返回的错误。",
+   "tags": [
+    "error",
+    "header"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/api/api.gen.go:InvalidParamFormatError",
+   "type": "class",
+   "name": "InvalidParamFormatError",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    772,
+    775
+   ],
+   "summary": "参数格式无效时返回的错误。",
+   "tags": [
+    "error",
+    "param"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/api/api.gen.go:TooManyValuesForParamError",
+   "type": "class",
+   "name": "TooManyValuesForParamError",
+   "filePath": "packages/envd/internal/api/api.gen.go",
+   "lineRange": [
+    785,
+    788
+   ],
+   "summary": "参数值过多时返回的错误。",
+   "tags": [
+    "error",
+    "param"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/auth.go:WithAuthorization",
+   "type": "function",
+   "name": "WithAuthorization",
+   "filePath": "packages/envd/internal/api/auth.go",
+   "lineRange": [
+    33,
+    53
+   ],
+   "summary": "HTTP 中间件,验证 HMAC 签名后将用户上下文与签名透传到下游 handler。",
+   "tags": [
+    "middleware",
+    "authentication",
+    "hmac"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/auth.go:validateSigning",
+   "type": "function",
+   "name": "validateSigning",
+   "filePath": "packages/envd/internal/api/auth.go",
+   "lineRange": [
+    74,
+    129
+   ],
+   "summary": "校验 HMAC 签名、过期时间与路径匹配,返回错误或 nil。",
+   "tags": [
+    "utility",
+    "authentication",
+    "hmac",
+    "validation"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/auth_test.go:TestKeyGenerationAlgorithmIsStable",
+   "type": "function",
+   "name": "TestKeyGenerationAlgorithmIsStable",
+   "filePath": "packages/envd/internal/api/auth_test.go",
+   "lineRange": [
+    15,
+    38
+   ],
+   "summary": "测试签名密钥生成算法在固定输入下产生稳定输出。",
+   "tags": [
+    "test",
+    "hmac",
+    "deterministic"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/auth_test.go:TestKeyGenerationAlgorithmWithoutExpirationIsStable",
+   "type": "function",
+   "name": "TestKeyGenerationAlgorithmWithoutExpirationIsStable",
+   "filePath": "packages/envd/internal/api/auth_test.go",
+   "lineRange": [
+    40,
+    62
+   ],
+   "summary": "测试无签名过期时间时签名生成同样保持稳定。",
+   "tags": [
+    "test",
+    "hmac",
+    "deterministic"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/collapse.go:PostCollapse",
+   "type": "function",
+   "name": "PostCollapse",
+   "filePath": "packages/envd/internal/api/collapse.go",
+   "lineRange": [
+    20,
+    59
+   ],
+   "summary": "HTTP 处理函数:从 PID 列表触发进程内存合并,记录耗时并返回 CollapseResult。",
+   "tags": [
+    "api-handler",
+    "memory-collapse"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/compose.go:PostFilesCompose",
+   "type": "function",
+   "name": "PostFilesCompose",
+   "filePath": "packages/envd/internal/api/compose.go",
+   "lineRange": [
+    20,
+    214
+   ],
+   "summary": "HTTP 处理函数:接收源文件路径列表与目标路径,按顺序连接源内容到目标,并删除源文件。",
+   "tags": [
+    "api-handler",
+    "file-composition",
+    "concatenation"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/compose_test.go:newComposeTestAPI",
+   "type": "function",
+   "name": "newComposeTestAPI",
+   "filePath": "packages/envd/internal/api/compose_test.go",
+   "lineRange": [
+    24,
+    37
+   ],
+   "summary": "测试辅助函数:构造带临时工作目录与默认用户配置的 API 实例。",
+   "tags": [
+    "test",
+    "helper"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/compose_test.go:callCompose",
+   "type": "function",
+   "name": "callCompose",
+   "filePath": "packages/envd/internal/api/compose_test.go",
+   "lineRange": [
+    48,
+    61
+   ],
+   "summary": "测试辅助函数:执行 PostFilesCompose HTTP 调用并返回响应记录器。",
+   "tags": [
+    "test",
+    "helper"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/compose_test.go:TestCompose_ConcatenatesFiles",
+   "type": "function",
+   "name": "TestCompose_ConcatenatesFiles",
+   "filePath": "packages/envd/internal/api/compose_test.go",
+   "lineRange": [
+    63,
+    94
+   ],
+   "summary": "测试多文件按顺序拼接生成单一目标文件。",
+   "tags": [
+    "test",
+    "file-composition"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/compose_test.go:TestCompose_DeletesSourceFiles",
+   "type": "function",
+   "name": "TestCompose_DeletesSourceFiles",
+   "filePath": "packages/envd/internal/api/compose_test.go",
+   "lineRange": [
+    96,
+    118
+   ],
+   "summary": "测试成功合并后源文件被删除。",
+   "tags": [
+    "test",
+    "file-composition"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/compose_test.go:TestCompose_CreatesParentDirs",
+   "type": "function",
+   "name": "TestCompose_CreatesParentDirs",
+   "filePath": "packages/envd/internal/api/compose_test.go",
+   "lineRange": [
+    192,
+    211
+   ],
+   "summary": "测试目标父目录不存在时会被自动创建。",
+   "tags": [
+    "test",
+    "file-composition"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/compose_test.go:TestCompose_LargeFile",
+   "type": "function",
+   "name": "TestCompose_LargeFile",
+   "filePath": "packages/envd/internal/api/compose_test.go",
+   "lineRange": [
+    213,
+    256
+   ],
+   "summary": "测试大文件合并场景下的正确性与性能。",
+   "tags": [
+    "test",
+    "file-composition"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/compose_test.go:TestCompose_RoundTripWithDownload",
+   "type": "function",
+   "name": "TestCompose_RoundTripWithDownload",
+   "filePath": "packages/envd/internal/api/compose_test.go",
+   "lineRange": [
+    258,
+    290
+   ],
+   "summary": "测试合并后通过 GetFiles 下载结果的一致性。",
+   "tags": [
+    "test",
+    "file-composition",
+    "roundtrip"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/compose_test.go:TestCompose_PreservesExistingFileOnFailure",
+   "type": "function",
+   "name": "TestCompose_PreservesExistingFileOnFailure",
+   "filePath": "packages/envd/internal/api/compose_test.go",
+   "lineRange": [
+    292,
+    329
+   ],
+   "summary": "测试合并失败时不会破坏已存在的目标文件。",
+   "tags": [
+    "test",
+    "file-composition",
+    "error-handling"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/download.go:GetFiles",
+   "type": "function",
+   "name": "GetFiles",
+   "filePath": "packages/envd/internal/api/download.go",
+   "lineRange": [
+    19,
+    173
+   ],
+   "summary": "HTTP 处理函数:根据参数读取文件,支持 Range、Content-Disposition、Gzip 压缩、用户权限校验。",
+   "tags": [
+    "api-handler",
+    "file-download",
+    "range-request",
+    "gzip",
+    "authorization"
+   ],
+   "complexity": "复杂"
+  }
+ ],
+ "edges": [
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "class:packages/envd/internal/api/api.gen.go:ServerInterface",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "class:packages/envd/internal/api/api.gen.go:ServerInterfaceWrapper",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "class:packages/envd/internal/api/api.gen.go:Unimplemented",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "class:packages/envd/internal/api/api.gen.go:CollapseResult",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "class:packages/envd/internal/api/api.gen.go:EntryInfo",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "class:packages/envd/internal/api/api.gen.go:Metrics",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "class:packages/envd/internal/api/api.gen.go:PostInitJSONBody",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "class:packages/envd/internal/api/api.gen.go:PostFilesParams",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "class:packages/envd/internal/api/api.gen.go:GetFilesParams",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "class:packages/envd/internal/api/api.gen.go:ChiServerOptions",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "function:packages/envd/internal/api/api.gen.go:HandlerFromMux",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "function:packages/envd/internal/api/api.gen.go:HandlerFromMuxWithBaseURL",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "function:packages/envd/internal/api/api.gen.go:HandlerWithOptions",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "function:packages/envd/internal/api/api.gen.go:Handler",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "class:packages/envd/internal/api/api.gen.go:UnescapedCookieParamError",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "class:packages/envd/internal/api/api.gen.go:UnmarshalingParamError",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "class:packages/envd/internal/api/api.gen.go:RequiredParamError",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "class:packages/envd/internal/api/api.gen.go:RequiredHeaderError",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "class:packages/envd/internal/api/api.gen.go:InvalidParamFormatError",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/api.gen.go",
+   "target": "class:packages/envd/internal/api/api.gen.go:TooManyValuesForParamError",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/auth.go",
+   "target": "function:packages/envd/internal/api/auth.go:WithAuthorization",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/auth.go",
+   "target": "function:packages/envd/internal/api/auth.go:validateSigning",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/auth_test.go",
+   "target": "function:packages/envd/internal/api/auth_test.go:TestKeyGenerationAlgorithmIsStable",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/auth_test.go",
+   "target": "function:packages/envd/internal/api/auth_test.go:TestKeyGenerationAlgorithmWithoutExpirationIsStable",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/collapse.go",
+   "target": "function:packages/envd/internal/api/collapse.go:PostCollapse",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose.go",
+   "target": "function:packages/envd/internal/api/compose.go:PostFilesCompose",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "function:packages/envd/internal/api/compose_test.go:newComposeTestAPI",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "function:packages/envd/internal/api/compose_test.go:callCompose",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "function:packages/envd/internal/api/compose_test.go:TestCompose_ConcatenatesFiles",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "function:packages/envd/internal/api/compose_test.go:TestCompose_DeletesSourceFiles",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "function:packages/envd/internal/api/compose_test.go:TestCompose_CreatesParentDirs",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "function:packages/envd/internal/api/compose_test.go:TestCompose_LargeFile",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "function:packages/envd/internal/api/compose_test.go:TestCompose_RoundTripWithDownload",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "function:packages/envd/internal/api/compose_test.go:TestCompose_PreservesExistingFileOnFailure",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/download.go",
+   "target": "function:packages/envd/internal/api/download.go:GetFiles",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/collapse.go",
+   "target": "file:packages/envd/internal/logs/interceptor.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/collapse.go",
+   "target": "file:packages/envd/internal/logs/logger.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/collapse.go",
+   "target": "file:packages/envd/internal/services/memory/collapse_linux.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/collapse.go",
+   "target": "file:packages/envd/internal/services/memory/collapse_other.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/collapse.go",
+   "target": "file:packages/envd/internal/services/memory/collapse_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/collapse.go",
+   "target": "file:packages/envd/internal/services/memory/collapse.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose.go",
+   "target": "file:packages/envd/internal/execcontext/context.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose.go",
+   "target": "file:packages/envd/internal/logs/interceptor.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose.go",
+   "target": "file:packages/envd/internal/logs/logger.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose.go",
+   "target": "file:packages/envd/internal/permissions/authenticate.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose.go",
+   "target": "file:packages/envd/internal/permissions/keepalive.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose.go",
+   "target": "file:packages/envd/internal/permissions/path.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose.go",
+   "target": "file:packages/envd/internal/permissions/user.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "file:packages/envd/internal/execcontext/context.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2_stub.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/iface.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/noop.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "file:packages/envd/internal/utils/atomic_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "file:packages/envd/internal/utils/atomic.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "file:packages/envd/internal/utils/envvars_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "file:packages/envd/internal/utils/envvars.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "file:packages/envd/internal/utils/map.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "file:packages/envd/internal/utils/multipart.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose_test.go",
+   "target": "file:packages/envd/internal/utils/rfsnotify.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download.go",
+   "target": "file:packages/envd/internal/execcontext/context.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download.go",
+   "target": "file:packages/envd/internal/logs/interceptor.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download.go",
+   "target": "file:packages/envd/internal/logs/logger.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download.go",
+   "target": "file:packages/envd/internal/permissions/authenticate.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download.go",
+   "target": "file:packages/envd/internal/permissions/keepalive.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download.go",
+   "target": "file:packages/envd/internal/permissions/path.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download.go",
+   "target": "file:packages/envd/internal/permissions/user.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/auth.go",
+   "target": "file:packages/envd/internal/api/auth_test.go",
+   "type": "tested_by",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:packages/envd/internal/api/compose.go",
+   "target": "file:packages/envd/internal/api/compose_test.go",
+   "type": "tested_by",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:packages/envd/internal/api/download.go",
+   "target": "file:packages/envd/internal/api/download_test.go",
+   "type": "tested_by",
+   "direction": "forward",
+   "weight": 0.5
+  }
+ ]
+}

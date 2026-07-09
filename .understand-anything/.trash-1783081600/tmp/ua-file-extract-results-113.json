@@ -1,0 +1,1788 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 11,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/orchestrator/pkg/sandbox/docs/00-index.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 221,
+      "nonEmptyLines": 188,
+      "sections": [
+        {
+          "heading": "`pkg/sandbox` 模块原理总览",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 在整体架构中的位置",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "2. 目录结构(本模块范围内)",
+          "level": 2,
+          "line": 41
+        },
+        {
+          "heading": "3. 核心类型(类型地图)",
+          "level": 2,
+          "line": 75
+        },
+        {
+          "heading": "4. 关键调用链",
+          "level": 2,
+          "line": 100
+        },
+        {
+          "heading": "4.1 创建冷启动沙箱(无现成 snapshot)",
+          "level": 3,
+          "line": 102
+        },
+        {
+          "heading": "4.2 从 snapshot 恢复(快路径)",
+          "level": 3,
+          "line": 118
+        },
+        {
+          "heading": "4.3 暂停 → 快照",
+          "level": 3,
+          "line": 135
+        },
+        {
+          "heading": "4.4 关闭",
+          "level": 3,
+          "line": 152
+        },
+        {
+          "heading": "5. 与 envd 交互的入口",
+          "level": 2,
+          "line": 173
+        },
+        {
+          "heading": "6. 关键不变量(阅读源码时关注)",
+          "level": 2,
+          "line": 185
+        },
+        {
+          "heading": "7. 文档索引(按学习顺序)",
+          "level": 2,
+          "line": 198
+        },
+        {
+          "heading": "8. 阅读建议路线",
+          "level": 2,
+          "line": 215
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 13
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/docs/01-sandbox-entry.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 375,
+      "nonEmptyLines": 301,
+      "sections": [
+        {
+          "heading": "01. `sandbox.go` 顶层入口",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 核心类型",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "1.1 `Config` — 静态配置",
+          "level": 3,
+          "line": 10
+        },
+        {
+          "heading": "1.2 `RuntimeMetadata` — 运行时元数据",
+          "level": 3,
+          "line": 32
+        },
+        {
+          "heading": "1.3 `Resources` — 沙箱关键资源",
+          "level": 3,
+          "line": 43
+        },
+        {
+          "heading": "1.4 `Sandbox` — 沙箱实例",
+          "level": 3,
+          "line": 55
+        },
+        {
+          "heading": "2. `Factory` — 创建器",
+          "level": 2,
+          "line": 88
+        },
+        {
+          "heading": "3. `CreateSandbox` 流程详解",
+          "level": 2,
+          "line": 111
+        },
+        {
+          "heading": "3.1 资源初始化拓扑图",
+          "level": 3,
+          "line": 153
+        },
+        {
+          "heading": "4. `ResumeSandbox` 流程详解",
+          "level": 2,
+          "line": 176
+        },
+        {
+          "heading": "5. `Pause` 流程详解",
+          "level": 2,
+          "line": 221
+        },
+        {
+          "heading": "5.1 dedup 路径与非 dedup 路径差异",
+          "level": 3,
+          "line": 268
+        },
+        {
+          "heading": "6. `Stop` 与 `Shutdown`",
+          "level": 2,
+          "line": 277
+        },
+        {
+          "heading": "6.1 `Stop` —— 运行时停止",
+          "level": 3,
+          "line": 279
+        },
+        {
+          "heading": "6.2 `Shutdown` —— pause + snapshot 化收尾",
+          "level": 3,
+          "line": 294
+        },
+        {
+          "heading": "7. `Wait` / `WaitForExit` / `WaitForEnvd`",
+          "level": 2,
+          "line": 310
+        },
+        {
+          "heading": "7.1 `Wait` —— 等退出",
+          "level": 3,
+          "line": 312
+        },
+        {
+          "heading": "7.2 `WaitForExit` —— 等到 endAt 或 ctx",
+          "level": 3,
+          "line": 320
+        },
+        {
+          "heading": "7.3 `WaitForEnvd` —— 启动时等待 envd 初始化",
+          "level": 3,
+          "line": 324
+        },
+        {
+          "heading": "8. `Stop` 与 `cleanup` 的协作",
+          "level": 2,
+          "line": 338
+        },
+        {
+          "heading": "9. `Map.MarkRunning` / `MarkStopping` 的双 map 设计",
+          "level": 2,
+          "line": 358
+        },
+        {
+          "heading": "10. 关联模块(后续文档展开)",
+          "level": 2,
+          "line": 370
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 22
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/docs/02-cleanup-reclaim-map.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 201,
+      "nonEmptyLines": 151,
+      "sections": [
+        {
+          "heading": "02. `cleanup.go` / `reclaim.go` / `map.go` 沙箱基础组件",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. `cleanup.go` — 清理链",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "1.1 数据结构",
+          "level": 3,
+          "line": 10
+        },
+        {
+          "heading": "1.2 接口",
+          "level": 3,
+          "line": 27
+        },
+        {
+          "heading": "1.3 关键设计",
+          "level": 3,
+          "line": 37
+        },
+        {
+          "heading": "1.4 典型用法(在 `CreateSandbox` 中)",
+          "level": 3,
+          "line": 43
+        },
+        {
+          "heading": "1.5 辅助函数",
+          "level": 3,
+          "line": 63
+        },
+        {
+          "heading": "2. `reclaim.go` — 暂停前的最佳努力回收",
+          "level": 2,
+          "line": 76
+        },
+        {
+          "heading": "2.1 触发点",
+          "level": 3,
+          "line": 78
+        },
+        {
+          "heading": "2.2 配置",
+          "level": 3,
+          "line": 82
+        },
+        {
+          "heading": "2.3 `buildReclaimScript`",
+          "level": 3,
+          "line": 93
+        },
+        {
+          "heading": "2.4 `bestEffortFreeze` / `bestEffortUnfreeze`",
+          "level": 3,
+          "line": 104
+        },
+        {
+          "heading": "2.5 关键设计取舍",
+          "level": 3,
+          "line": 111
+        },
+        {
+          "heading": "3. `map.go` — 沙箱索引",
+          "level": 2,
+          "line": 119
+        },
+        {
+          "heading": "3.1 双 map 设计",
+          "level": 3,
+          "line": 121
+        },
+        {
+          "heading": "3.2 订阅者",
+          "level": 3,
+          "line": 144
+        },
+        {
+          "heading": "3.3 lifecycleID 守卫",
+          "level": 3,
+          "line": 158
+        },
+        {
+          "heading": "3.4 关联",
+          "level": 3,
+          "line": 175
+        },
+        {
+          "heading": "4. 与本目录其他模块的协作",
+          "level": 2,
+          "line": 182
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 19
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/docs/03-checks-hoststats.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 232,
+      "nonEmptyLines": 177,
+      "sections": [
+        {
+          "heading": "03. `checks.go` / `health.go` / `metrics.go` / `hoststats*.go` 健康与统计",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. `Checks` —— 健康检查调度器",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "1.1 字段",
+          "level": 3,
+          "line": 10
+        },
+        {
+          "heading": "1.2 关键设计",
+          "level": 3,
+          "line": 23
+        },
+        {
+          "heading": "1.2.1 启动/停止的竞态",
+          "level": 4,
+          "line": 25
+        },
+        {
+          "heading": "1.2.2 状态变迁用 atomic.Bool + CompareAndSwap",
+          "level": 4,
+          "line": 42
+        },
+        {
+          "heading": "1.2.3 间隔与超时",
+          "level": 4,
+          "line": 58
+        },
+        {
+          "heading": "1.3 `Checks.Stop`",
+          "level": 3,
+          "line": 71
+        },
+        {
+          "heading": "1.4 关联",
+          "level": 3,
+          "line": 75
+        },
+        {
+          "heading": "2. `health.go` —— 单次 HTTP /health 探测",
+          "level": 2,
+          "line": 85
+        },
+        {
+          "heading": "3. `metrics.go` —— 拉 envd 暴露的 /metrics 端点",
+          "level": 2,
+          "line": 103
+        },
+        {
+          "heading": "4. `hoststats.go` + `hoststats_collector.go` —— 后台 cgroup 采样",
+          "level": 2,
+          "line": 125
+        },
+        {
+          "heading": "4.1 入口 `initializeHostStatsCollector`",
+          "level": 3,
+          "line": 127
+        },
+        {
+          "heading": "4.2 `HostStatsCollector`",
+          "level": 3,
+          "line": 147
+        },
+        {
+          "heading": "4.3 关键设计",
+          "level": 3,
+          "line": 161
+        },
+        {
+          "heading": "4.3.1 零基线优先入队",
+          "level": 4,
+          "line": 163
+        },
+        {
+          "heading": "4.3.2 饱和小减",
+          "level": 4,
+          "line": 169
+        },
+        {
+          "heading": "4.3.3 Stop 时取最后一帧",
+          "level": 4,
+          "line": 180
+        },
+        {
+          "heading": "4.4 与 sandbox 生命周期绑定",
+          "level": 3,
+          "line": 198
+        },
+        {
+          "heading": "5. 与其他模块的关系",
+          "level": 2,
+          "line": 206
+        },
+        {
+          "heading": "6. 常见误解",
+          "level": 2,
+          "line": 228
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 21
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/docs/04-snapshot-and-uploads.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 350,
+      "nonEmptyLines": 270,
+      "sections": [
+        {
+          "heading": "04. `snapshot.go` / `build_upload*.go` / `uploads.go` / `snapshot_metrics.go`",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. `snapshot.go` — `Snapshot` 数据结构",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "2. `build_upload.go` — V3 / V4 路由与公共逻辑",
+          "level": 2,
+          "line": 42
+        },
+        {
+          "heading": "2.1 `Upload` 结构",
+          "level": 3,
+          "line": 44
+        },
+        {
+          "heading": "2.2 `NewUpload` 决定走 V3 还是 V4",
+          "level": 3,
+          "line": 62
+        },
+        {
+          "heading": "2.3 `Run` 入口",
+          "level": 3,
+          "line": 80
+        },
+        {
+          "heading": "2.4 `resolveCompressConfig` 详细",
+          "level": 3,
+          "line": 92
+        },
+        {
+          "heading": "2.5 `Finish` 与 publish",
+          "level": 3,
+          "line": 104
+        },
+        {
+          "heading": "2.6 `publish` —— 替换本地缓存的 header",
+          "level": 3,
+          "line": 115
+        },
+        {
+          "heading": "3. `build_upload_v3.go` — V3 路径",
+          "level": 2,
+          "line": 125
+        },
+        {
+          "heading": "4. `build_upload_v4.go` — V4 路径",
+          "level": 2,
+          "line": 148
+        },
+        {
+          "heading": "4.1 `uploadFramed` 详解",
+          "level": 3,
+          "line": 160
+        },
+        {
+          "heading": "4.2 `seekableTypeFor`",
+          "level": 3,
+          "line": 188
+        },
+        {
+          "heading": "5. `uploads.go` — 跨 orchestrator 等待",
+          "level": 2,
+          "line": 198
+        },
+        {
+          "heading": "5.1 数据结构",
+          "level": 3,
+          "line": 200
+        },
+        {
+          "heading": "5.2 `Start(buildID)`",
+          "level": 3,
+          "line": 223
+        },
+        {
+          "heading": "5.3 `Wait(buildID, fileType)`",
+          "level": 3,
+          "line": 232
+        },
+        {
+          "heading": "5.4 Redis pub/sub 协调",
+          "level": 3,
+          "line": 249
+        },
+        {
+          "heading": "5.5 错误恢复层级",
+          "level": 3,
+          "line": 254
+        },
+        {
+          "heading": "6. `snapshot_metrics.go` — Pause 指标",
+          "level": 2,
+          "line": 266
+        },
+        {
+          "heading": "6.1 直方图",
+          "level": 3,
+          "line": 268
+        },
+        {
+          "heading": "6.2 `recordSnapshotDiff`",
+          "level": 3,
+          "line": 278
+        },
+        {
+          "heading": "6.3 `recordSnapshotDedup`",
+          "level": 3,
+          "line": 289
+        },
+        {
+          "heading": "7. `snapshot.go` 的 cleanup",
+          "level": 2,
+          "line": 304
+        },
+        {
+          "heading": "8. 整体时序:从 Pause 到 upload 完成",
+          "level": 2,
+          "line": 313
+        },
+        {
+          "heading": "9. 关键不变量",
+          "level": 2,
+          "line": 345
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 26
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/docs/05-fc.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 407,
+      "nonEmptyLines": 316,
+      "sections": [
+        {
+          "heading": "05. `fc/` Firecracker 进程抽象",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 文件分工",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "2. `Process` 生命周期",
+          "level": 2,
+          "line": 24
+        },
+        {
+          "heading": "2.1 `NewProcess` —— 不启动进程,只准备",
+          "level": 3,
+          "line": 43
+        },
+        {
+          "heading": "2.2 `configure` —— 真正启动 + 等 socket",
+          "level": 3,
+          "line": 55
+        },
+        {
+          "heading": "2.3 `Create` —— 冷启动的全配置",
+          "level": 3,
+          "line": 68
+        },
+        {
+          "heading": "2.4 `KernelArgs`",
+          "level": 3,
+          "line": 87
+        },
+        {
+          "heading": "2.5 `Resume` —— 从 snapshot 恢复",
+          "level": 3,
+          "line": 110
+        },
+        {
+          "heading": "2.6 `Pause` / `CreateSnapshot` / `DrainBalloon`",
+          "level": 3,
+          "line": 138
+        },
+        {
+          "heading": "2.7 `Stop` —— SIGTERM → 10s → SIGKILL",
+          "level": 3,
+          "line": 149
+        },
+        {
+          "heading": "3. `apiClient` —— FC REST 包装",
+          "level": 2,
+          "line": 167
+        },
+        {
+          "heading": "3.1 关键方法",
+          "level": 3,
+          "line": 171
+        },
+        {
+          "heading": "3.2 `buildRateLimiter` / `buildTokenBucket`",
+          "level": 3,
+          "line": 194
+        },
+        {
+          "heading": "4. `config.go` —— 路径解析",
+          "level": 2,
+          "line": 209
+        },
+        {
+          "heading": "5. `script_builder.go` —— 启动脚本",
+          "level": 2,
+          "line": 235
+        },
+        {
+          "heading": "6. `kernel_args.go`",
+          "level": 2,
+          "line": 251
+        },
+        {
+          "heading": "7. `mmds.go`",
+          "level": 2,
+          "line": 264
+        },
+        {
+          "heading": "8. `memory.go` —— 内存导出",
+          "level": 2,
+          "line": 281
+        },
+        {
+          "heading": "8.1 `MemoryInfo(ctx, blockSize)` 和 `DirtyMemory(ctx, blockSize)`",
+          "level": 3,
+          "line": 283
+        },
+        {
+          "heading": "8.2 `exportMemoryFromFc`",
+          "level": 3,
+          "line": 289
+        },
+        {
+          "heading": "8.3 `ExportMemory` 详细",
+          "level": 3,
+          "line": 301
+        },
+        {
+          "heading": "9. `fc_metrics.go` —— Metrics 采集",
+          "level": 2,
+          "line": 332
+        },
+        {
+          "heading": "9.1 两 goroutine",
+          "level": 3,
+          "line": 334
+        },
+        {
+          "heading": "9.2 `FlushAndReadBalloonMetrics`",
+          "level": 3,
+          "line": 349
+        },
+        {
+          "heading": "9.3 dirty-page throttle 监控",
+          "level": 3,
+          "line": 355
+        },
+        {
+          "heading": "9.4 指标总览",
+          "level": 3,
+          "line": 365
+        },
+        {
+          "heading": "10. `fph_gates.go`",
+          "level": 2,
+          "line": 374
+        },
+        {
+          "heading": "11. 与其他模块的关系",
+          "level": 2,
+          "line": 387
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 28
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/docs/06-block.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 566,
+      "nonEmptyLines": 425,
+      "sections": [
+        {
+          "heading": "06. `block/` 块设备抽象、缓存、去重、分块",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 文件分工",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "2. 接口(`device.go`)",
+          "level": 2,
+          "line": 29
+        },
+        {
+          "heading": "3. `Cache` —— mmap 块缓存",
+          "level": 2,
+          "line": 80
+        },
+        {
+          "heading": "3.1 字段",
+          "level": 3,
+          "line": 82
+        },
+        {
+          "heading": "3.2 `NewCache(size, blockSize, filePath, dirtyFile)`",
+          "level": 3,
+          "line": 97
+        },
+        {
+          "heading": "3.3 写入路径",
+          "level": 3,
+          "line": 104
+        },
+        {
+          "heading": "3.3.1 `WriteAt` / `WriteAtWithoutLock`",
+          "level": 4,
+          "line": 106
+        },
+        {
+          "heading": "3.3.2 `WriteZeroesAt`",
+          "level": 4,
+          "line": 129
+        },
+        {
+          "heading": "3.4 读取路径",
+          "level": 3,
+          "line": 133
+        },
+        {
+          "heading": "3.4.1 `Slice(off, length)`",
+          "level": 4,
+          "line": 135
+        },
+        {
+          "heading": "3.4.2 `sliceDirect(off, length)`",
+          "level": 4,
+          "line": 145
+        },
+        {
+          "heading": "3.5 `ExportToDiff` —— 把 cache 内容导出为 diff",
+          "level": 3,
+          "line": 149
+        },
+        {
+          "heading": "3.6 `Dedup` —— 父 memfile 去重",
+          "level": 3,
+          "line": 161
+        },
+        {
+          "heading": "3.7 `NewCacheFromProcessMemory`",
+          "level": 3,
+          "line": 177
+        },
+        {
+          "heading": "3.8 `Close`",
+          "level": 3,
+          "line": 190
+        },
+        {
+          "heading": "4. `Tracker` —— Dirty/Zero/NotPresent 三态",
+          "level": 2,
+          "line": 197
+        },
+        {
+          "heading": "5. `Local` / `Empty` / `Overlay` —— 简单设备实现",
+          "level": 2,
+          "line": 216
+        },
+        {
+          "heading": "5.1 `Local`",
+          "level": 3,
+          "line": 218
+        },
+        {
+          "heading": "5.2 `Empty`",
+          "level": 3,
+          "line": 232
+        },
+        {
+          "heading": "5.3 `Overlay` —— cache 优先的读写设备",
+          "level": 3,
+          "line": 241
+        },
+        {
+          "heading": "6. `Memfd` / MemfdCache / DedupedMemfdCache",
+          "level": 2,
+          "line": 259
+        },
+        {
+          "heading": "6.1 `Memfd`",
+          "level": 3,
+          "line": 261
+        },
+        {
+          "heading": "6.2 `NewCacheFromMemfd`",
+          "level": 3,
+          "line": 272
+        },
+        {
+          "heading": "6.3 `NewCacheFromMemfdAsync`",
+          "level": 3,
+          "line": 282
+        },
+        {
+          "heading": "6.4 `NewCacheFromMemfdDeduped`",
+          "level": 3,
+          "line": 292
+        },
+        {
+          "heading": "6.5 `pwritevAll(fd, off, iovs)`",
+          "level": 3,
+          "line": 303
+        },
+        {
+          "heading": "7. `Range` / `BitsetRanges` / `drainIovs` / `IOV_MAX`",
+          "level": 2,
+          "line": 312
+        },
+        {
+          "heading": "7.1 `Range`",
+          "level": 3,
+          "line": 314
+        },
+        {
+          "heading": "7.2 `BitsetRanges`",
+          "level": 3,
+          "line": 323
+        },
+        {
+          "heading": "7.3 `drainIovs`",
+          "level": 3,
+          "line": 331
+        },
+        {
+          "heading": "7.4 `IOV_MAX` / `MAX_RW_COUNT`",
+          "level": 3,
+          "line": 341
+        },
+        {
+          "heading": "8. `fetchSession` —— chunk 拉取会话",
+          "level": 2,
+          "line": 348
+        },
+        {
+          "heading": "9. `Chunker` —— 流式拉 chunk",
+          "level": 2,
+          "line": 378
+        },
+        {
+          "heading": "9.1 `NewChunker(ff, size, blockSize, cachePath, metrics)`",
+          "level": 3,
+          "line": 392
+        },
+        {
+          "heading": "9.2 `ReadAt(ctx, b, off, upstream, ft)` / `Slice(ctx, off, length, upstream, ft)`",
+          "level": 3,
+          "line": 396
+        },
+        {
+          "heading": "9.3 `getOrCreateSession`",
+          "level": 3,
+          "line": 407
+        },
+        {
+          "heading": "9.4 `runFetch`",
+          "level": 3,
+          "line": 413
+        },
+        {
+          "heading": "9.5 `locateChunk`",
+          "level": 3,
+          "line": 423
+        },
+        {
+          "heading": "9.6 `IsCached(ctx, off, length)`",
+          "level": 3,
+          "line": 434
+        },
+        {
+          "heading": "9.7 指标",
+          "level": 3,
+          "line": 438
+        },
+        {
+          "heading": "10. `PrefetchTracker` —— 块访问追踪",
+          "level": 2,
+          "line": 446
+        },
+        {
+          "heading": "11. `dedup.go` —— 与父 memfile 去重",
+          "level": 2,
+          "line": 463
+        },
+        {
+          "heading": "11.1 数据结构",
+          "level": 3,
+          "line": 465
+        },
+        {
+          "heading": "11.2 `dedupCompare` 三步",
+          "level": 3,
+          "line": 482
+        },
+        {
+          "heading": "11.3 `compactBlockWindows` 实现要点",
+          "level": 3,
+          "line": 499
+        },
+        {
+          "heading": "11.4 `countExternalBlocks`",
+          "level": 3,
+          "line": 516
+        },
+        {
+          "heading": "11.5 `parentFetchKey` / `fetchKeyAndEnd`",
+          "level": 3,
+          "line": 524
+        },
+        {
+          "heading": "11.6 `recordDedupAttrs`",
+          "level": 3,
+          "line": 529
+        },
+        {
+          "heading": "12. 关键不变量",
+          "level": 2,
+          "line": 541
+        },
+        {
+          "heading": "13. 与本目录其他模块的协作",
+          "level": 2,
+          "line": 552
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 51
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/docs/07-nbd.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 309,
+      "nonEmptyLines": 229,
+      "sections": [
+        {
+          "heading": "07. `nbd/` Linux NBD 用户态服务端",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 文件分工",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "2. 协议",
+          "level": 2,
+          "line": 21
+        },
+        {
+          "heading": "2.1 Request 包(28 字节,大端)",
+          "level": 3,
+          "line": 25
+        },
+        {
+          "heading": "2.2 Response 包(16 字节)",
+          "level": 3,
+          "line": 32
+        },
+        {
+          "heading": "2.3 命令",
+          "level": 3,
+          "line": 39
+        },
+        {
+          "heading": "3. `DevicePool` —— `/dev/nbd*` 资源池",
+          "level": 2,
+          "line": 52
+        },
+        {
+          "heading": "3.1 数据结构",
+          "level": 3,
+          "line": 54
+        },
+        {
+          "heading": "3.2 `NewDevicePool(maxSlotsReady)`",
+          "level": 3,
+          "line": 66
+        },
+        {
+          "heading": "3.3 `Populate(ctx)`",
+          "level": 3,
+          "line": 73
+        },
+        {
+          "heading": "3.4 `isDeviceFree(slot)`",
+          "level": 3,
+          "line": 80
+        },
+        {
+          "heading": "3.5 `getMaybeEmptySlot(start)` / `getFreeDeviceSlot`",
+          "level": 3,
+          "line": 86
+        },
+        {
+          "heading": "3.6 `GetDevice(ctx)`",
+          "level": 3,
+          "line": 94
+        },
+        {
+          "heading": "3.7 `ReleaseDevice(ctx, idx, opts...)`",
+          "level": 3,
+          "line": 98
+        },
+        {
+          "heading": "3.8 `Close(ctx)`",
+          "level": 3,
+          "line": 108
+        },
+        {
+          "heading": "4. `Dispatch` —— NBD 协议服务端",
+          "level": 2,
+          "line": 115
+        },
+        {
+          "heading": "4.1 字段",
+          "level": 3,
+          "line": 117
+        },
+        {
+          "heading": "4.2 接口",
+          "level": 3,
+          "line": 133
+        },
+        {
+          "heading": "4.3 `Handle(ctx)`",
+          "level": 3,
+          "line": 146
+        },
+        {
+          "heading": "4.4 `cmdRead(ctx, handle, from, length)`",
+          "level": 3,
+          "line": 162
+        },
+        {
+          "heading": "4.5 `cmdWrite(ctx, handle, from, data)`",
+          "level": 3,
+          "line": 174
+        },
+        {
+          "heading": "4.6 `cmdWriteZeroes`",
+          "level": 3,
+          "line": 178
+        },
+        {
+          "heading": "4.7 `Drain()`",
+          "level": 3,
+          "line": 185
+        },
+        {
+          "heading": "4.8 关键设计",
+          "level": 3,
+          "line": 190
+        },
+        {
+          "heading": "5. `DirectPathMount` —— NBD 客户端 + 内核注入",
+          "level": 2,
+          "line": 199
+        },
+        {
+          "heading": "5.1 `NewDirectPathMount`",
+          "level": 3,
+          "line": 218
+        },
+        {
+          "heading": "5.2 `Open(ctx)`",
+          "level": 3,
+          "line": 223
+        },
+        {
+          "heading": "5.3 `Close(ctx)`",
+          "level": 3,
+          "line": 241
+        },
+        {
+          "heading": "5.4 `GetDevicePath(slot)`",
+          "level": 3,
+          "line": 248
+        },
+        {
+          "heading": "6. `GetNBDDevice` (helper)",
+          "level": 2,
+          "line": 256
+        },
+        {
+          "heading": "7. `MountNBDDevice` (helper)",
+          "level": 2,
+          "line": 270
+        },
+        {
+          "heading": "8. 关键不变量",
+          "level": 2,
+          "line": 281
+        },
+        {
+          "heading": "9. 与其他模块的关系",
+          "level": 2,
+          "line": 291
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 33
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/docs/08-uffd.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 270,
+      "nonEmptyLines": 200,
+      "sections": [
+        {
+          "heading": "08. `uffd/` userfaultfd 按需分页、写时复制",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 文件分工",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "2. `MemoryBackend` 接口",
+          "level": 2,
+          "line": 22
+        },
+        {
+          "heading": "3. `Uffd` —— 主实现",
+          "level": 2,
+          "line": 48
+        },
+        {
+          "heading": "3.1 字段",
+          "level": 3,
+          "line": 50
+        },
+        {
+          "heading": "3.2 `New(memfile, socketPath)`",
+          "level": 3,
+          "line": 66
+        },
+        {
+          "heading": "3.3 `Start(ctx, sandboxID)`",
+          "level": 3,
+          "line": 72
+        },
+        {
+          "heading": "3.4 `handle(ctx, sandboxID, fdExit)`",
+          "level": 3,
+          "line": 80
+        },
+        {
+          "heading": "3.5 `Prefault(ctx, offset, data)`",
+          "level": 3,
+          "line": 99
+        },
+        {
+          "heading": "3.6 `Stop()`",
+          "level": 3,
+          "line": 108
+        },
+        {
+          "heading": "3.7 `DiffMetadata(ctx, fcProcess)` —— Pause 用",
+          "level": 3,
+          "line": 112
+        },
+        {
+          "heading": "3.8 `PrefetchData(ctx)`",
+          "level": 3,
+          "line": 128
+        },
+        {
+          "heading": "3.9 `Memfd(ctx)`",
+          "level": 3,
+          "line": 132
+        },
+        {
+          "heading": "3.10 `ServeStats()`",
+          "level": 3,
+          "line": 140
+        },
+        {
+          "heading": "4. `NoopMemory` —— 冷启动用",
+          "level": 2,
+          "line": 156
+        },
+        {
+          "heading": "5. `prefetch/` —— 主动预取",
+          "level": 2,
+          "line": 175
+        },
+        {
+          "heading": "6. `fdexit/` —— 退出事件",
+          "level": 2,
+          "line": 197
+        },
+        {
+          "heading": "7. `memory/`",
+          "level": 2,
+          "line": 215
+        },
+        {
+          "heading": "8. `userfaultfd/` 高级包装",
+          "level": 2,
+          "line": 223
+        },
+        {
+          "heading": "9. 关键不变量",
+          "level": 2,
+          "line": 235
+        },
+        {
+          "heading": "10. 与其他模块的关系",
+          "level": 2,
+          "line": 246
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 21
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/docs/09-cgroup-network-rootfs.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 523,
+      "nonEmptyLines": 390,
+      "sections": [
+        {
+          "heading": "09. `cgroup/` / `network/` / `rootfs/` 资源管理三大子模块",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Part A. `cgroup/` cgroup v2 资源计量",
+          "level": 1,
+          "line": 8
+        },
+        {
+          "heading": "1. 文件分工",
+          "level": 2,
+          "line": 10
+        },
+        {
+          "heading": "2. 核心常量",
+          "level": 2,
+          "line": 17
+        },
+        {
+          "heading": "3. `Stats`",
+          "level": 2,
+          "line": 27
+        },
+        {
+          "heading": "4. `CgroupHandle` 生命周期",
+          "level": 2,
+          "line": 36
+        },
+        {
+          "heading": "4.1 `Create(ctx, cgroupName)`",
+          "level": 3,
+          "line": 42
+        },
+        {
+          "heading": "4.2 `GetFD() int`",
+          "level": 3,
+          "line": 55
+        },
+        {
+          "heading": "4.3 `ReleaseCgroupFD()`",
+          "level": 3,
+          "line": 59
+        },
+        {
+          "heading": "4.4 `GetStats(ctx)`",
+          "level": 3,
+          "line": 64
+        },
+        {
+          "heading": "4.5 `Remove(ctx)`",
+          "level": 3,
+          "line": 74
+        },
+        {
+          "heading": "5. `managerImpl`",
+          "level": 2,
+          "line": 84
+        },
+        {
+          "heading": "5.1 `Initialize(ctx)`",
+          "level": 3,
+          "line": 86
+        },
+        {
+          "heading": "5.2 `Create(ctx, cgroupName)` —— 见上。",
+          "level": 3,
+          "line": 92
+        },
+        {
+          "heading": "6. `noopManager`",
+          "level": 2,
+          "line": 94
+        },
+        {
+          "heading": "7. 与 FC 进程的集成",
+          "level": 2,
+          "line": 100
+        },
+        {
+          "heading": "8. 关键不变量",
+          "level": 2,
+          "line": 114
+        },
+        {
+          "heading": "Part B. `network/` 沙箱网络",
+          "level": 1,
+          "line": 122
+        },
+        {
+          "heading": "1. 文件分工",
+          "level": 2,
+          "line": 124
+        },
+        {
+          "heading": "2. `Config`",
+          "level": 2,
+          "line": 137
+        },
+        {
+          "heading": "3. CIDR 划分",
+          "level": 2,
+          "line": 153
+        },
+        {
+          "heading": "4. `Slot` 字段",
+          "level": 2,
+          "line": 164
+        },
+        {
+          "heading": "4.1 `NewSlot(key, idx, config, egressProxy)`",
+          "level": 3,
+          "line": 184
+        },
+        {
+          "heading": "4.2 命名规则",
+          "level": 3,
+          "line": 193
+        },
+        {
+          "heading": "5. `CreateNetwork(ctx)` 详解",
+          "level": 2,
+          "line": 200
+        },
+        {
+          "heading": "5.1 在新 ns 里建 veth pair",
+          "level": 3,
+          "line": 216
+        },
+        {
+          "heading": "5.2 把 veth 端移回 host ns",
+          "level": 3,
+          "line": 229
+        },
+        {
+          "heading": "5.3 在 sandbox ns 里建 tap + 配置路由",
+          "level": 3,
+          "line": 239
+        },
+        {
+          "heading": "5.4 NAT 规则(ns 内 + host)",
+          "level": 3,
+          "line": 251
+        },
+        {
+          "heading": "5.5 host 上加路由 + FORWARD + 几个 REDIRECT",
+          "level": 3,
+          "line": 260
+        },
+        {
+          "heading": "5.6 egress proxy 接入",
+          "level": 3,
+          "line": 276
+        },
+        {
+          "heading": "6. `RemoveNetwork()`",
+          "level": 2,
+          "line": 284
+        },
+        {
+          "heading": "7. `ConfigureInternet` / `UpdateInternet` / `ResetInternet`",
+          "level": 2,
+          "line": 294
+        },
+        {
+          "heading": "8. `Pool` —— 双池设计",
+          "level": 2,
+          "line": 300
+        },
+        {
+          "heading": "8.1 `Populate(ctx)`",
+          "level": 3,
+          "line": 317
+        },
+        {
+          "heading": "8.2 `Get(ctx, network)`",
+          "level": 3,
+          "line": 321
+        },
+        {
+          "heading": "8.3 `Return(ctx, slot, releasedFn, returnDelay)`",
+          "level": 3,
+          "line": 327
+        },
+        {
+          "heading": "8.4 `Close(ctx)`",
+          "level": 3,
+          "line": 337
+        },
+        {
+          "heading": "9. `Storage` 接口",
+          "level": 2,
+          "line": 344
+        },
+        {
+          "heading": "10. 关键不变量",
+          "level": 2,
+          "line": 355
+        },
+        {
+          "heading": "Part C. `rootfs/` rootfs 暴露方式",
+          "level": 1,
+          "line": 364
+        },
+        {
+          "heading": "1. 文件分工",
+          "level": 2,
+          "line": 366
+        },
+        {
+          "heading": "2. `Provider` 接口",
+          "level": 2,
+          "line": 374
+        },
+        {
+          "heading": "3. `flush(ctx, path)`",
+          "level": 2,
+          "line": 389
+        },
+        {
+          "heading": "4. `DirectProvider`",
+          "level": 2,
+          "line": 399
+        },
+        {
+          "heading": "4.1 `NewDirectProvider(ctx, rootfs, path)`",
+          "level": 3,
+          "line": 412
+        },
+        {
+          "heading": "4.2 `Start(ctx)` —— no-op",
+          "level": 3,
+          "line": 417
+        },
+        {
+          "heading": "4.3 `ExportDiff(ctx, out, stopSandbox)`",
+          "level": 3,
+          "line": 421
+        },
+        {
+          "heading": "4.4 `Close(ctx)`",
+          "level": 3,
+          "line": 431
+        },
+        {
+          "heading": "5. `NBDProvider`",
+          "level": 2,
+          "line": 436
+        },
+        {
+          "heading": "5.1 `NewNBDProvider(ctx, rootfs, cachePath, devicePool, ff)`",
+          "level": 3,
+          "line": 450
+        },
+        {
+          "heading": "5.2 `Start(ctx)`",
+          "level": 3,
+          "line": 457
+        },
+        {
+          "heading": "5.3 `ExportDiff(ctx, out, closeSandbox)`",
+          "level": 3,
+          "line": 462
+        },
+        {
+          "heading": "5.4 `Close(ctx)`",
+          "level": 3,
+          "line": 471
+        },
+        {
+          "heading": "6. Direct vs NBD 的选择",
+          "level": 2,
+          "line": 478
+        },
+        {
+          "heading": "7. 关键不变量",
+          "level": 2,
+          "line": 493
+        },
+        {
+          "heading": "总体联动",
+          "level": 1,
+          "line": 502
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 57
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/docs/10-template-and-build.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 406,
+      "nonEmptyLines": 324,
+      "sections": [
+        {
+          "heading": "10. `template/` 与 `build/` 模板与差异存储",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Part A. `template/` 模板缓存",
+          "level": 1,
+          "line": 8
+        },
+        {
+          "heading": "1. 文件分工",
+          "level": 2,
+          "line": 10
+        },
+        {
+          "heading": "2. `Template` 接口",
+          "level": 2,
+          "line": 25
+        },
+        {
+          "heading": "3. `Cache` —— 模板入口",
+          "level": 2,
+          "line": 41
+        },
+        {
+          "heading": "3.1 字段",
+          "level": 3,
+          "line": 43
+        },
+        {
+          "heading": "3.2 TTL",
+          "level": 3,
+          "line": 59
+        },
+        {
+          "heading": "3.3 `NewCache` 启动期清理",
+          "level": 3,
+          "line": 72
+        },
+        {
+          "heading": "3.4 `GetTemplate(ctx, buildID, isSnapshot, isBuilding, opts...)`",
+          "level": 3,
+          "line": 80
+        },
+        {
+          "heading": "3.5 `getTemplateWithFetch`",
+          "level": 3,
+          "line": 99
+        },
+        {
+          "heading": "3.6 `AddSnapshot` —— Pause 完成后注册",
+          "level": 3,
+          "line": 122
+        },
+        {
+          "heading": "3.7 `useNFSCache`",
+          "level": 3,
+          "line": 131
+        },
+        {
+          "heading": "4. `storageTemplate` 实现",
+          "level": 2,
+          "line": 136
+        },
+        {
+          "heading": "5. `File` 抽象",
+          "level": 2,
+          "line": 147
+        },
+        {
+          "heading": "Part B. `build/` build diff 存储",
+          "level": 1,
+          "line": 153
+        },
+        {
+          "heading": "1. 文件分工",
+          "level": 2,
+          "line": 155
+        },
+        {
+          "heading": "2. 关键类型",
+          "level": 2,
+          "line": 168
+        },
+        {
+          "heading": "3. `File.ReadAt(ctx, p, off)`",
+          "level": 2,
+          "line": 199
+        },
+        {
+          "heading": "4. `planRead` 详解",
+          "level": 2,
+          "line": 220
+        },
+        {
+          "heading": "5. `readSegment` —— 错误恢复",
+          "level": 2,
+          "line": 249
+        },
+        {
+          "heading": "6. `File.Slice` —— 零拷贝快路径",
+          "level": 2,
+          "line": 266
+        },
+        {
+          "heading": "7. `File.IsCached` —— dedup 优化",
+          "level": 2,
+          "line": 294
+        },
+        {
+          "heading": "8. `File.createDiff` —— 创建/打开一个 build 的 diff",
+          "level": 2,
+          "line": 305
+        },
+        {
+          "heading": "8.1 hasEntry",
+          "level": 3,
+          "line": 309
+        },
+        {
+          "heading": "8.2 无 entry 且 V4+",
+          "level": 3,
+          "line": 318
+        },
+        {
+          "heading": "8.3 `refreshAncestorAndOpenUpstream`",
+          "level": 3,
+          "line": 324
+        },
+        {
+          "heading": "8.4 `openUpstream`",
+          "level": 3,
+          "line": 331
+        },
+        {
+          "heading": "9. `DiffStore`",
+          "level": 2,
+          "line": 340
+        },
+        {
+          "heading": "10. 关键不变量",
+          "level": 2,
+          "line": 362
+        },
+        {
+          "heading": "整体协作(模板、build、上传)",
+          "level": 1,
+          "line": 372
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 30
+      }
+    }
+  ]
+}

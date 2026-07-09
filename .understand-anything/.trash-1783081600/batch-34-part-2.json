@@ -1,0 +1,1398 @@
+{
+ "nodes": [
+  {
+   "id": "file:packages/envd/internal/api/download_test.go",
+   "type": "file",
+   "name": "download_test.go",
+   "filePath": "packages/envd/internal/api/download_test.go",
+   "summary": "对 GetFiles 与 PostFiles 的内容协商、Range、Gzip 压缩上传/下载、Content-Disposition、Multipart 与原始 body 等场景的完整单元测试。",
+   "tags": [
+    "test",
+    "file-upload",
+    "file-download",
+    "gzip",
+    "range"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "file:packages/envd/internal/api/encoding.go",
+   "type": "file",
+   "name": "encoding.go",
+   "filePath": "packages/envd/internal/api/encoding.go",
+   "summary": "HTTP 内容协商工具集:解析 Accept-Encoding、Content-Encoding,自动识别 gzip/identity 并返回解压后的请求体。",
+   "tags": [
+    "utility",
+    "http-encoding",
+    "content-negotiation",
+    "gzip"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "file:packages/envd/internal/api/encoding_test.go",
+   "type": "file",
+   "name": "encoding_test.go",
+   "filePath": "packages/envd/internal/api/encoding_test.go",
+   "summary": "对 Accept-Encoding/Content-Encoding 解析、q 值优先级、自动解压逻辑的全面单元测试。",
+   "tags": [
+    "test",
+    "http-encoding"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "file:packages/envd/internal/api/envs.go",
+   "type": "file",
+   "name": "envs.go",
+   "filePath": "packages/envd/internal/api/envs.go",
+   "summary": "实现 GetEnvs HTTP 处理函数,返回沙箱当前的所有环境变量映射。",
+   "tags": [
+    "api-handler",
+    "env-vars"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "file:packages/envd/internal/api/error.go",
+   "type": "file",
+   "name": "error.go",
+   "filePath": "packages/envd/internal/api/error.go",
+   "summary": "提供统一的 jsonError 辅助函数,将错误码与消息编码为 JSON 响应写入 HTTP 响应体。",
+   "tags": [
+    "utility",
+    "error-response"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "file:packages/envd/internal/api/fsfreeze.go",
+   "type": "file",
+   "name": "fsfreeze.go",
+   "filePath": "packages/envd/internal/api/fsfreeze.go",
+   "summary": "实现 PostFsfreeze 与 PostFsthaw 两个 HTTP 处理函数,调用 Freezer 接口冻结/解冻挂载点文件系统。",
+   "tags": [
+    "api-handler",
+    "fs-freeze",
+    "snapshot"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "file:packages/envd/internal/api/fsfreeze_test.go",
+   "type": "file",
+   "name": "fsfreeze_test.go",
+   "filePath": "packages/envd/internal/api/fsfreeze_test.go",
+   "summary": "对 fsfreeze/fsthaw 接口的单元测试,使用 fakeFreezer 跟踪冻结/解冻调用与错误注入。",
+   "tags": [
+    "test",
+    "fs-freeze"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "file:packages/envd/internal/api/generate.go",
+   "type": "file",
+   "name": "generate.go",
+   "filePath": "packages/envd/internal/api/generate.go",
+   "summary": "标记文件,告知 oapi-codegen 从 OpenAPI 规范生成此包内容的指令文件。",
+   "tags": [
+    "generated",
+    "openapi",
+    "marker"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "file:packages/envd/internal/api/init.go",
+   "type": "file",
+   "name": "init.go",
+   "filePath": "packages/envd/internal/api/init.go",
+   "summary": "沙箱初始化主入口(PostInit/SetData/PostFreeze/PostUnfreeze/SetupHyperloop),负责身份校验、NFS 挂载、Hyperloop 网络配置、CA 证书安装、cgroup 冻结以及 /etc/hosts 重写。",
+   "tags": [
+    "api-handler",
+    "init",
+    "nfs-mount",
+    "hyperloop",
+    "cgroup",
+    "auth-validation"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/download_test.go:TestGetFilesContentDisposition",
+   "type": "function",
+   "name": "TestGetFilesContentDisposition",
+   "filePath": "packages/envd/internal/api/download_test.go",
+   "lineRange": [
+    25,
+    123
+   ],
+   "summary": "测试下载响应的 Content-Disposition 头与文件名处理。",
+   "tags": [
+    "test",
+    "file-download",
+    "content-disposition"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/download_test.go:TestGetFilesContentDispositionWithNestedPath",
+   "type": "function",
+   "name": "TestGetFilesContentDispositionWithNestedPath",
+   "filePath": "packages/envd/internal/api/download_test.go",
+   "lineRange": [
+    125,
+    170
+   ],
+   "summary": "测试嵌套路径下的 Content-Disposition 行为。",
+   "tags": [
+    "test",
+    "file-download",
+    "content-disposition"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/download_test.go:TestGetFiles_GzipEncoding_ExplicitIdentityOffWithRange",
+   "type": "function",
+   "name": "TestGetFiles_GzipEncoding_ExplicitIdentityOffWithRange",
+   "filePath": "packages/envd/internal/api/download_test.go",
+   "lineRange": [
+    172,
+    211
+   ],
+   "summary": "测试 Identity 被禁用且客户端使用 Range 时的内容协商。",
+   "tags": [
+    "test",
+    "file-download",
+    "gzip",
+    "range"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/download_test.go:TestGetFiles_GzipDownload",
+   "type": "function",
+   "name": "TestGetFiles_GzipDownload",
+   "filePath": "packages/envd/internal/api/download_test.go",
+   "lineRange": [
+    213,
+    260
+   ],
+   "summary": "测试下载时启用 gzip 压缩,客户端正确解压得到原文。",
+   "tags": [
+    "test",
+    "file-download",
+    "gzip"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/download_test.go:TestPostFiles_GzipUpload",
+   "type": "function",
+   "name": "TestPostFiles_GzipUpload",
+   "filePath": "packages/envd/internal/api/download_test.go",
+   "lineRange": [
+    262,
+    319
+   ],
+   "summary": "测试上传 gzip 压缩的 multipart 负载,服务端正确解压并落盘。",
+   "tags": [
+    "test",
+    "file-upload",
+    "gzip",
+    "multipart"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/download_test.go:TestPostFiles_RawBodyUpload",
+   "type": "function",
+   "name": "TestPostFiles_RawBodyUpload",
+   "filePath": "packages/envd/internal/api/download_test.go",
+   "lineRange": [
+    321,
+    357
+   ],
+   "summary": "测试原始请求体(非 multipart)上传单文件到指定路径。",
+   "tags": [
+    "test",
+    "file-upload",
+    "raw-body"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/download_test.go:TestPostFiles_RawBodyUploadCreatesDirectories",
+   "type": "function",
+   "name": "TestPostFiles_RawBodyUploadCreatesDirectories",
+   "filePath": "packages/envd/internal/api/download_test.go",
+   "lineRange": [
+    359,
+    395
+   ],
+   "summary": "测试上传原始 body 时自动创建不存在的父目录。",
+   "tags": [
+    "test",
+    "file-upload",
+    "directory"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/download_test.go:TestPostFiles_RawBodyUploadRequiresPath",
+   "type": "function",
+   "name": "TestPostFiles_RawBodyUploadRequiresPath",
+   "filePath": "packages/envd/internal/api/download_test.go",
+   "lineRange": [
+    397,
+    423
+   ],
+   "summary": "测试缺失路径参数时上传被拒绝。",
+   "tags": [
+    "test",
+    "file-upload",
+    "validation"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/download_test.go:TestPostFiles_RawBodyUploadOverwritesExisting",
+   "type": "function",
+   "name": "TestPostFiles_RawBodyUploadOverwritesExisting",
+   "filePath": "packages/envd/internal/api/download_test.go",
+   "lineRange": [
+    425,
+    463
+   ],
+   "summary": "测试上传会覆盖已有目标文件的内容。",
+   "tags": [
+    "test",
+    "file-upload",
+    "overwrite"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/download_test.go:TestPostFiles_RawBodyGzipUpload",
+   "type": "function",
+   "name": "TestPostFiles_RawBodyGzipUpload",
+   "filePath": "packages/envd/internal/api/download_test.go",
+   "lineRange": [
+    465,
+    510
+   ],
+   "summary": "测试上传 gzip 压缩的原始 body 并自动解压。",
+   "tags": [
+    "test",
+    "file-upload",
+    "gzip"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/download_test.go:TestPostFiles_UnsupportedContentType",
+   "type": "function",
+   "name": "TestPostFiles_UnsupportedContentType",
+   "filePath": "packages/envd/internal/api/download_test.go",
+   "lineRange": [
+    512,
+    542
+   ],
+   "summary": "测试不支持的 Content-Type 时返回 415 错误。",
+   "tags": [
+    "test",
+    "file-upload",
+    "error-handling"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/download_test.go:TestPostFiles_MultipartStillWorksWithoutContentType",
+   "type": "function",
+   "name": "TestPostFiles_MultipartStillWorksWithoutContentType",
+   "filePath": "packages/envd/internal/api/download_test.go",
+   "lineRange": [
+    544,
+    589
+   ],
+   "summary": "测试即使没有显式 Content-Type 头,multipart 仍可正确解析。",
+   "tags": [
+    "test",
+    "file-upload",
+    "multipart"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/download_test.go:TestGzipUploadThenGzipDownload",
+   "type": "function",
+   "name": "TestGzipUploadThenGzipDownload",
+   "filePath": "packages/envd/internal/api/download_test.go",
+   "lineRange": [
+    591,
+    672
+   ],
+   "summary": "测试往返:gzip 压缩上传后下载仍能正确还原原始内容。",
+   "tags": [
+    "test",
+    "file-upload",
+    "file-download",
+    "gzip",
+    "roundtrip"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/encoding.go:parseEncodingWithQuality",
+   "type": "function",
+   "name": "parseEncodingWithQuality",
+   "filePath": "packages/envd/internal/api/encoding.go",
+   "lineRange": [
+    44,
+    65
+   ],
+   "summary": "解析带 q 值(优先级)的 Accept-Encoding 列表,返回编码条目数组。",
+   "tags": [
+    "utility",
+    "http-encoding",
+    "qvalue"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/encoding.go:parseContentEncoding",
+   "type": "function",
+   "name": "parseContentEncoding",
+   "filePath": "packages/envd/internal/api/encoding.go",
+   "lineRange": [
+    75,
+    92
+   ],
+   "summary": "解析请求的 Content-Encoding 头,识别单一编码值。",
+   "tags": [
+    "utility",
+    "http-encoding"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/encoding.go:parseAcceptEncodingHeader",
+   "type": "function",
+   "name": "parseAcceptEncodingHeader",
+   "filePath": "packages/envd/internal/api/encoding.go",
+   "lineRange": [
+    98,
+    137
+   ],
+   "summary": "解析 Accept-Encoding 头并按 q 值排序返回已支持的编码集合。",
+   "tags": [
+    "utility",
+    "http-encoding",
+    "negotiation"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/encoding.go:parseAcceptEncoding",
+   "type": "function",
+   "name": "parseAcceptEncoding",
+   "filePath": "packages/envd/internal/api/encoding.go",
+   "lineRange": [
+    153,
+    198
+   ],
+   "summary": "从请求对象解析 Accept-Encoding 头,返回最佳匹配编码。",
+   "tags": [
+    "utility",
+    "http-encoding",
+    "negotiation"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/encoding.go:getDecompressedBody",
+   "type": "function",
+   "name": "getDecompressedBody",
+   "filePath": "packages/envd/internal/api/encoding.go",
+   "lineRange": [
+    205,
+    227
+   ],
+   "summary": "根据请求体的 Content-Encoding 自动解压,返回原始 io.ReadCloser。",
+   "tags": [
+    "utility",
+    "http-encoding",
+    "decompression"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "class:packages/envd/internal/api/encoding.go:encodingWithQuality",
+   "type": "class",
+   "name": "encodingWithQuality",
+   "filePath": "packages/envd/internal/api/encoding.go",
+   "lineRange": [
+    30,
+    33
+   ],
+   "summary": "内部结构:单个编码字符串及其 q 值(优先级)。",
+   "tags": [
+    "struct",
+    "http-encoding"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/encoding_test.go:TestIsSupportedEncoding",
+   "type": "function",
+   "name": "TestIsSupportedEncoding",
+   "filePath": "packages/envd/internal/api/encoding_test.go",
+   "lineRange": [
+    14,
+    41
+   ],
+   "summary": "测试支持的编码集合判定逻辑。",
+   "tags": [
+    "test",
+    "http-encoding"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/encoding_test.go:TestParseEncodingWithQuality",
+   "type": "function",
+   "name": "TestParseEncodingWithQuality",
+   "filePath": "packages/envd/internal/api/encoding_test.go",
+   "lineRange": [
+    43,
+    100
+   ],
+   "summary": "测试带 q 值编码列表的解析。",
+   "tags": [
+    "test",
+    "http-encoding"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/encoding_test.go:TestParseContentEncoding",
+   "type": "function",
+   "name": "TestParseContentEncoding",
+   "filePath": "packages/envd/internal/api/encoding_test.go",
+   "lineRange": [
+    126,
+    198
+   ],
+   "summary": "测试 Content-Encoding 头的解析。",
+   "tags": [
+    "test",
+    "http-encoding"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/encoding_test.go:TestParseAcceptEncoding",
+   "type": "function",
+   "name": "TestParseAcceptEncoding",
+   "filePath": "packages/envd/internal/api/encoding_test.go",
+   "lineRange": [
+    200,
+    391
+   ],
+   "summary": "测试 Accept-Encoding 头解析与 q 值优先级排序。",
+   "tags": [
+    "test",
+    "http-encoding"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/encoding_test.go:TestGetDecompressedBody",
+   "type": "function",
+   "name": "TestGetDecompressedBody",
+   "filePath": "packages/envd/internal/api/encoding_test.go",
+   "lineRange": [
+    393,
+    494
+   ],
+   "summary": "测试自动解压 gzip/deflate/identity 等编码请求体。",
+   "tags": [
+    "test",
+    "http-encoding",
+    "decompression"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/envs.go:GetEnvs",
+   "type": "function",
+   "name": "GetEnvs",
+   "filePath": "packages/envd/internal/api/envs.go",
+   "lineRange": [
+    10,
+    24
+   ],
+   "summary": "HTTP 处理函数:返回沙箱当前的所有环境变量映射。",
+   "tags": [
+    "api-handler",
+    "env-vars"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/error.go:jsonError",
+   "type": "function",
+   "name": "jsonError",
+   "filePath": "packages/envd/internal/api/error.go",
+   "lineRange": [
+    9,
+    21
+   ],
+   "summary": "将错误码与消息序列化为 JSON 响应写入 HTTP 响应体。",
+   "tags": [
+    "utility",
+    "error-response"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/fsfreeze.go:PostFsfreeze",
+   "type": "function",
+   "name": "PostFsfreeze",
+   "filePath": "packages/envd/internal/api/fsfreeze.go",
+   "lineRange": [
+    21,
+    42
+   ],
+   "summary": "HTTP 处理函数:冻结沙箱挂载点的文件系统(配合快照/恢复)。",
+   "tags": [
+    "api-handler",
+    "fs-freeze",
+    "snapshot"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/fsfreeze.go:PostFsthaw",
+   "type": "function",
+   "name": "PostFsthaw",
+   "filePath": "packages/envd/internal/api/fsfreeze.go",
+   "lineRange": [
+    47,
+    71
+   ],
+   "summary": "HTTP 处理函数:解冻之前冻结的文件系统挂载点。",
+   "tags": [
+    "api-handler",
+    "fs-freeze",
+    "snapshot"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "class:packages/envd/internal/api/fsfreeze_test.go:fakeFreezer",
+   "type": "class",
+   "name": "fakeFreezer",
+   "filePath": "packages/envd/internal/api/fsfreeze_test.go",
+   "lineRange": [
+    16,
+    22
+   ],
+   "summary": "测试桩 Freezer 实现,记录 Freeze/Thaw 调用与可选错误注入。",
+   "tags": [
+    "test",
+    "stub",
+    "fs-freeze"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/fsfreeze_test.go:TestPostFsfreeze",
+   "type": "function",
+   "name": "TestPostFsfreeze",
+   "filePath": "packages/envd/internal/api/fsfreeze_test.go",
+   "lineRange": [
+    53,
+    83
+   ],
+   "summary": "测试 PostFsfreeze 调用 Freezer.Freeze 的行为与错误处理。",
+   "tags": [
+    "test",
+    "fs-freeze"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/fsfreeze_test.go:TestPostFsthaw",
+   "type": "function",
+   "name": "TestPostFsthaw",
+   "filePath": "packages/envd/internal/api/fsfreeze_test.go",
+   "lineRange": [
+    85,
+    115
+   ],
+   "summary": "测试 PostFsthaw 调用 Freezer.Thaw 的行为与错误处理。",
+   "tags": [
+    "test",
+    "fs-freeze"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init.go:validateInitAccessToken",
+   "type": "function",
+   "name": "validateInitAccessToken",
+   "filePath": "packages/envd/internal/api/init.go",
+   "lineRange": [
+    46,
+    67
+   ],
+   "summary": "校验初始化请求附带的访问令牌,使用 MMDS 中的哈希进行对比。",
+   "tags": [
+    "utility",
+    "auth-validation",
+    "init"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init.go:checkMMDSHash",
+   "type": "function",
+   "name": "checkMMDSHash",
+   "filePath": "packages/envd/internal/api/init.go",
+   "lineRange": [
+    76,
+    113
+   ],
+   "summary": "通过 MMDS 客户端读取哈希并与请求中的访问令牌摘要比对。",
+   "tags": [
+    "utility",
+    "mmds",
+    "auth-validation"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init.go:PostInit",
+   "type": "function",
+   "name": "PostInit",
+   "filePath": "packages/envd/internal/api/init.go",
+   "lineRange": [
+    115,
+    189
+   ],
+   "summary": "HTTP 处理函数:验证令牌后设置沙箱默认配置(用户、工作目录、CA 证书、环境变量等)。",
+   "tags": [
+    "api-handler",
+    "init",
+    "auth-validation"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init.go:SetData",
+   "type": "function",
+   "name": "SetData",
+   "filePath": "packages/envd/internal/api/init.go",
+   "lineRange": [
+    191,
+    245
+   ],
+   "summary": "实际应用沙箱默认数据:安装 CA 证书、配置 cgroup、设置环境变量等。",
+   "tags": [
+    "api-handler",
+    "init",
+    "cgroup"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init.go:PostFreeze",
+   "type": "function",
+   "name": "PostFreeze",
+   "filePath": "packages/envd/internal/api/init.go",
+   "lineRange": [
+    257,
+    284
+   ],
+   "summary": "HTTP 处理函数:冻结沙箱进程以准备快照或迁移。",
+   "tags": [
+    "api-handler",
+    "cgroup",
+    "fs-freeze"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init.go:PostUnfreeze",
+   "type": "function",
+   "name": "PostUnfreeze",
+   "filePath": "packages/envd/internal/api/init.go",
+   "lineRange": [
+    290,
+    318
+   ],
+   "summary": "HTTP 处理函数:解冻沙箱进程并按需挂载 NFS 卷。",
+   "tags": [
+    "api-handler",
+    "cgroup",
+    "fs-freeze",
+    "nfs"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init.go:setupNFS",
+   "type": "function",
+   "name": "setupNFS",
+   "filePath": "packages/envd/internal/api/init.go",
+   "lineRange": [
+    365,
+    417
+   ],
+   "summary": "按生命周期 ID 挂载请求中的所有 NFS 卷,处理重挂决策。",
+   "tags": [
+    "utility",
+    "nfs-mount",
+    "lifecycle"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init.go:unmountNFS",
+   "type": "function",
+   "name": "unmountNFS",
+   "filePath": "packages/envd/internal/api/init.go",
+   "lineRange": [
+    419,
+    453
+   ],
+   "summary": "卸载所有由本沙箱挂载的 NFS 卷。",
+   "tags": [
+    "utility",
+    "nfs-mount"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init.go:mountNFS",
+   "type": "function",
+   "name": "mountNFS",
+   "filePath": "packages/envd/internal/api/init.go",
+   "lineRange": [
+    455,
+    469
+   ],
+   "summary": "挂载单个 NFS 目标到本地路径,记录到挂载表。",
+   "tags": [
+    "utility",
+    "nfs-mount"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init.go:rewriteHostsFile",
+   "type": "function",
+   "name": "rewriteHostsFile",
+   "filePath": "packages/envd/internal/api/init.go",
+   "lineRange": [
+    519,
+    542
+   ],
+   "summary": "重写 /etc/hosts 文件加入 Hyperloop IP 解析条目。",
+   "tags": [
+    "utility",
+    "hyperloop",
+    "hosts-file"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init.go:getIPFamily",
+   "type": "function",
+   "name": "getIPFamily",
+   "filePath": "packages/envd/internal/api/init.go",
+   "lineRange": [
+    549,
+    563
+   ],
+   "summary": "判断给定 IP 地址是 IPv4 还是 IPv6。",
+   "tags": [
+    "utility",
+    "ip-family"
+   ],
+   "complexity": "简单"
+  }
+ ],
+ "edges": [
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "function:packages/envd/internal/api/download_test.go:TestGetFilesContentDisposition",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "function:packages/envd/internal/api/download_test.go:TestGetFilesContentDispositionWithNestedPath",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "function:packages/envd/internal/api/download_test.go:TestGetFiles_GzipEncoding_ExplicitIdentityOffWithRange",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "function:packages/envd/internal/api/download_test.go:TestGetFiles_GzipDownload",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "function:packages/envd/internal/api/download_test.go:TestPostFiles_GzipUpload",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "function:packages/envd/internal/api/download_test.go:TestPostFiles_RawBodyUpload",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "function:packages/envd/internal/api/download_test.go:TestPostFiles_RawBodyUploadCreatesDirectories",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "function:packages/envd/internal/api/download_test.go:TestPostFiles_RawBodyUploadRequiresPath",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "function:packages/envd/internal/api/download_test.go:TestPostFiles_RawBodyUploadOverwritesExisting",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "function:packages/envd/internal/api/download_test.go:TestPostFiles_RawBodyGzipUpload",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "function:packages/envd/internal/api/download_test.go:TestPostFiles_UnsupportedContentType",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "function:packages/envd/internal/api/download_test.go:TestPostFiles_MultipartStillWorksWithoutContentType",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "function:packages/envd/internal/api/download_test.go:TestGzipUploadThenGzipDownload",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/encoding.go",
+   "target": "function:packages/envd/internal/api/encoding.go:parseEncodingWithQuality",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/encoding.go",
+   "target": "function:packages/envd/internal/api/encoding.go:parseContentEncoding",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/encoding.go",
+   "target": "function:packages/envd/internal/api/encoding.go:parseAcceptEncodingHeader",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/encoding.go",
+   "target": "function:packages/envd/internal/api/encoding.go:parseAcceptEncoding",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/encoding.go",
+   "target": "function:packages/envd/internal/api/encoding.go:getDecompressedBody",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/encoding.go",
+   "target": "class:packages/envd/internal/api/encoding.go:encodingWithQuality",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/encoding_test.go",
+   "target": "function:packages/envd/internal/api/encoding_test.go:TestIsSupportedEncoding",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/encoding_test.go",
+   "target": "function:packages/envd/internal/api/encoding_test.go:TestParseEncodingWithQuality",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/encoding_test.go",
+   "target": "function:packages/envd/internal/api/encoding_test.go:TestParseContentEncoding",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/encoding_test.go",
+   "target": "function:packages/envd/internal/api/encoding_test.go:TestParseAcceptEncoding",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/encoding_test.go",
+   "target": "function:packages/envd/internal/api/encoding_test.go:TestGetDecompressedBody",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/envs.go",
+   "target": "function:packages/envd/internal/api/envs.go:GetEnvs",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/error.go",
+   "target": "function:packages/envd/internal/api/error.go:jsonError",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/fsfreeze.go",
+   "target": "function:packages/envd/internal/api/fsfreeze.go:PostFsfreeze",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/fsfreeze.go",
+   "target": "function:packages/envd/internal/api/fsfreeze.go:PostFsthaw",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/fsfreeze_test.go",
+   "target": "class:packages/envd/internal/api/fsfreeze_test.go:fakeFreezer",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/fsfreeze_test.go",
+   "target": "function:packages/envd/internal/api/fsfreeze_test.go:TestPostFsfreeze",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/fsfreeze_test.go",
+   "target": "function:packages/envd/internal/api/fsfreeze_test.go:TestPostFsthaw",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "function:packages/envd/internal/api/init.go:validateInitAccessToken",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "function:packages/envd/internal/api/init.go:checkMMDSHash",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "function:packages/envd/internal/api/init.go:PostInit",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "function:packages/envd/internal/api/init.go:SetData",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "function:packages/envd/internal/api/init.go:PostFreeze",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "function:packages/envd/internal/api/init.go:PostUnfreeze",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "function:packages/envd/internal/api/init.go:setupNFS",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "function:packages/envd/internal/api/init.go:unmountNFS",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "function:packages/envd/internal/api/init.go:mountNFS",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "function:packages/envd/internal/api/init.go:rewriteHostsFile",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "function:packages/envd/internal/api/init.go:getIPFamily",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "file:packages/envd/internal/execcontext/context.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2_stub.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/iface.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/noop.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "file:packages/envd/internal/utils/atomic_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "file:packages/envd/internal/utils/atomic.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "file:packages/envd/internal/utils/envvars_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "file:packages/envd/internal/utils/envvars.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "file:packages/envd/internal/utils/map.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "file:packages/envd/internal/utils/multipart.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/download_test.go",
+   "target": "file:packages/envd/internal/utils/rfsnotify.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/envs.go",
+   "target": "file:packages/envd/internal/logs/interceptor.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/envs.go",
+   "target": "file:packages/envd/internal/logs/logger.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/fsfreeze.go",
+   "target": "file:packages/envd/internal/logs/interceptor.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/fsfreeze.go",
+   "target": "file:packages/envd/internal/logs/logger.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/fsfreeze_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2_stub.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/fsfreeze_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/fsfreeze_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/fsfreeze_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/iface.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/fsfreeze_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/noop.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "file:packages/envd/internal/host/cacerts_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "file:packages/envd/internal/host/cacerts.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "file:packages/envd/internal/host/metrics.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "file:packages/envd/internal/host/mmds_route_linux.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "file:packages/envd/internal/host/mmds_route_other.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "file:packages/envd/internal/host/mmds.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "file:packages/envd/internal/logs/interceptor.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "file:packages/envd/internal/logs/logger.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "file:packages/envd/internal/logs/ratelimit/ratelimit.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2_stub.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "file:packages/envd/internal/services/cgroups/iface.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "file:packages/envd/internal/services/cgroups/noop.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/encoding.go",
+   "target": "file:packages/envd/internal/api/encoding_test.go",
+   "type": "tested_by",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:packages/envd/internal/api/fsfreeze.go",
+   "target": "file:packages/envd/internal/api/fsfreeze_test.go",
+   "type": "tested_by",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:packages/envd/internal/api/init.go",
+   "target": "file:packages/envd/internal/api/init_test.go",
+   "type": "tested_by",
+   "direction": "forward",
+   "weight": 0.5
+  }
+ ]
+}

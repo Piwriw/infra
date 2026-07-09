@@ -1,0 +1,175 @@
+{
+  "nodes": [
+    {
+      "id": "table:packages/db/queries/builds/active_template_builds.sql:CreateActiveTemplateBuild",
+      "type": "table",
+      "name": "CreateActiveTemplateBuild",
+      "filePath": "packages/db/queries/builds/active_template_builds.sql",
+      "lineRange": [1, 12],
+      "summary": "在 active_template_builds 表中插入一条模板构建任务记录，包含 build_id、team_id、template_id 和 tags 等字段。",
+      "tags": ["sqlc", "insert", "template-build", "active-template"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/db/queries/builds/active_template_builds.sql:DeleteActiveTemplateBuild",
+      "type": "table",
+      "name": "DeleteActiveTemplateBuild",
+      "filePath": "packages/db/queries/builds/active_template_builds.sql",
+      "lineRange": [14, 16],
+      "summary": "根据 build_id 从 active_template_builds 表中删除对应的活动模板构建记录。",
+      "tags": ["sqlc", "delete", "template-build"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/db/queries/builds/finish_template_build.sql:FinishTemplateBuild",
+      "type": "table",
+      "name": "FinishTemplateBuild",
+      "filePath": "packages/db/queries/builds/finish_template_build.sql",
+      "lineRange": [1, 19],
+      "summary": "完成模板构建：先从 active_template_builds 中移除记录，然后更新 env_builds 表的 finished_at、total_disk_size_mb、status、envd_version、kernel_version 和 firecracker_version 字段。",
+      "tags": ["sqlc", "update", "delete", "template-build", "cte"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "table:packages/db/queries/builds/get_build_info.sql:GetBuildInfoByTeamAndBuildID",
+      "type": "table",
+      "name": "GetBuildInfoByTeamAndBuildID",
+      "filePath": "packages/db/queries/builds/get_build_info.sql",
+      "lineRange": [1, 30],
+      "summary": "根据 team_id 和 build_id 获取构建信息，包括创建时间、完成时间、状态、原因以及该构建关联模板的命名空间别名列表。",
+      "tags": ["sqlc", "select", "lateral-join", "template-build"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "table:packages/db/queries/builds/get_builds_paginated.sql:GetTeamBuildsPage",
+      "type": "table",
+      "name": "GetTeamBuildsPage",
+      "filePath": "packages/db/queries/builds/get_builds_paginated.sql",
+      "lineRange": [1, 38],
+      "summary": "按团队分页查询构建记录，使用游标分页（created_at, id 复合游标），按状态组过滤，返回构建的详细信息以及首个模板别名。",
+      "tags": ["sqlc", "select", "pagination", "cursor", "template-build"],
+      "complexity": "complex"
+    },
+    {
+      "id": "table:packages/db/queries/builds/get_builds_paginated.sql:GetTeamBuildsPageByBuildID",
+      "type": "table",
+      "name": "GetTeamBuildsPageByBuildID",
+      "filePath": "packages/db/queries/builds/get_builds_paginated.sql",
+      "lineRange": [40, 78],
+      "summary": "按团队与 build_id 游标分页查询构建记录，用于按特定构建 ID 过滤的滚动分页场景。",
+      "tags": ["sqlc", "select", "pagination", "cursor", "template-build"],
+      "complexity": "complex"
+    },
+    {
+      "id": "table:packages/db/queries/builds/get_builds_paginated.sql:GetTeamBuildsPageByTemplateID",
+      "type": "table",
+      "name": "GetTeamBuildsPageByTemplateID",
+      "filePath": "packages/db/queries/builds/get_builds_paginated.sql",
+      "lineRange": [80, 118],
+      "summary": "按团队与 template_id 游标分页查询构建记录，仅返回关联到指定模板的构建。",
+      "tags": ["sqlc", "select", "pagination", "cursor", "template-build"],
+      "complexity": "complex"
+    },
+    {
+      "id": "table:packages/db/queries/builds/get_builds_paginated.sql:GetTeamBuildsPageByTemplateAlias",
+      "type": "table",
+      "name": "GetTeamBuildsPageByTemplateAlias",
+      "filePath": "packages/db/queries/builds/get_builds_paginated.sql",
+      "lineRange": [120, 163],
+      "summary": "按团队与 template_alias 游标分页查询构建记录，使用 EXISTS 子查询过滤出关联到指定模板别名的构建。",
+      "tags": ["sqlc", "select", "pagination", "cursor", "template-build", "exists"],
+      "complexity": "complex"
+    },
+    {
+      "id": "table:packages/db/queries/builds/get_builds_statuses.sql:GetBuildsStatusesByTeam",
+      "type": "table",
+      "name": "GetBuildsStatusesByTeam",
+      "filePath": "packages/db/queries/builds/get_builds_statuses.sql",
+      "lineRange": [1, 9],
+      "summary": "根据 team_id 和 build_ids 数组批量获取多个构建的状态组、原因和完成时间。",
+      "tags": ["sqlc", "select", "batch", "template-build"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/db/queries/builds/get_concurrent_template_builds.sql:GetConcurrentTemplateBuilds",
+      "type": "table",
+      "name": "GetConcurrentTemplateBuilds",
+      "filePath": "packages/db/queries/builds/get_concurrent_template_builds.sql",
+      "lineRange": [1, 10],
+      "summary": "查询与当前构建共享 tag 的同模板并发模板构建（状态为 pending 或 in_progress，且排除当前构建）。",
+      "tags": ["sqlc", "select", "concurrent", "template-build", "tag"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/db/queries/builds/get_exclusive_builds_for_template_deletion.sql:GetExclusiveBuildsForTemplateDeletion",
+      "type": "table",
+      "name": "GetExclusiveBuildsForTemplateDeletion",
+      "filePath": "packages/db/queries/builds/get_exclusive_builds_for_template_deletion.sql",
+      "lineRange": [1, 12],
+      "summary": "查询仅分配给指定模板的构建（不与其他模板共享），用于模板删除时的安全清理判断。",
+      "tags": ["sqlc", "select", "delete", "template-build", "not-exists"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/db/queries/builds/get_inprogress_builds.sql:GetInProgressTemplateBuilds",
+      "type": "table",
+      "name": "GetInProgressTemplateBuilds",
+      "filePath": "packages/db/queries/builds/get_inprogress_builds.sql",
+      "lineRange": [1, 9],
+      "summary": "查询所有进行中或待处理的模板构建及其团队集群信息，使用 DISTINCT ON 保证每个构建唯一。",
+      "tags": ["sqlc", "select", "in-progress", "template-build", "distinct"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "table:packages/db/queries/builds/get_inprogress_builds.sql:GetInProgressTemplateBuildsByTeam",
+      "type": "table",
+      "name": "GetInProgressTemplateBuildsByTeam",
+      "filePath": "packages/db/queries/builds/get_inprogress_builds.sql",
+      "lineRange": [11, 20],
+      "summary": "统计某团队近 24 小时内处于活动状态的模板构建数量，可排除特定模板和 tag 组合。",
+      "tags": ["sqlc", "select", "count", "template-build", "team"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/db/queries/builds/get_inprogress_builds.sql:GetCancellableTemplateBuildsByTeam",
+      "type": "table",
+      "name": "GetCancellableTemplateBuildsByTeam",
+      "filePath": "packages/db/queries/builds/get_inprogress_builds.sql",
+      "lineRange": [22, 30],
+      "summary": "查询某团队近 24 小时内可取消的模板构建，包含 build_id、template_id、cluster_id 和 cluster_node_id。",
+      "tags": ["sqlc", "select", "cancel", "template-build", "team"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/db/queries/builds/get_template_build.sql:GetTemplateBuildWithTemplate",
+      "type": "table",
+      "name": "GetTemplateBuildWithTemplate",
+      "filePath": "packages/db/queries/builds/get_template_build.sql",
+      "lineRange": [1, 7],
+      "summary": "根据 template_id 和 build_id 获取模板及其关联的构建信息（仅匹配 source='template' 的模板）。",
+      "tags": ["sqlc", "select", "join", "template-build"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/db/queries/builds/update_template.sql:UpdateTemplateBuild",
+      "type": "table",
+      "name": "UpdateTemplateBuild",
+      "filePath": "packages/db/queries/builds/update_template.sql",
+      "lineRange": [1, 13],
+      "summary": "更新 env_builds 表中指定 build 的启动命令、就绪命令、Dockerfile、集群节点和 CPU 详细信息。",
+      "tags": ["sqlc", "update", "template-build", "cpu-info"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/db/queries/builds/validate_build.sql:ExistsWaitingTemplateBuild",
+      "type": "table",
+      "name": "ExistsWaitingTemplateBuild",
+      "filePath": "packages/db/queries/builds/validate_build.sql",
+      "lineRange": [1, 11],
+      "summary": "校验给定访问令牌对指定模板是否存在处于 pending 状态的构建任务，用于构建状态鉴权。",
+      "tags": ["sqlc", "select", "exists", "auth", "template-build"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": []
+}

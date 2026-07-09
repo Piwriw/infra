@@ -1,0 +1,238 @@
+{
+  "nodes": [
+    {
+      "id": "pipeline:packages/db/Makefile",
+      "type": "pipeline",
+      "name": "Makefile",
+      "filePath": "packages/db/Makefile",
+      "summary": "数据库包构建脚本，提供 goose 迁移（migrate、migrate-local、status、create-migration）、sqlc 代码生成（generate）以及测试和种子数据等任务，并默认在 _migrations 表中跟踪迁移历史。",
+      "tags": ["build-system", "database", "migration", "sqlc", "goose"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:packages/db/Makefile:migrate",
+      "type": "step",
+      "name": "migrate",
+      "filePath": "packages/db/Makefile",
+      "lineRange": [10, 14],
+      "summary": "对当前环境的 PostgreSQL 数据库应用所有 goose 迁移。",
+      "tags": ["migration", "postgres", "goose"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/db/Makefile:migrate-local",
+      "type": "step",
+      "name": "migrate-local",
+      "filePath": "packages/db/Makefile",
+      "lineRange": [16, 20],
+      "summary": "针对本地 PostgreSQL（localhost:5432）应用 goose 迁移。",
+      "tags": ["migration", "postgres", "local-dev"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/db/Makefile:build-debug",
+      "type": "step",
+      "name": "build-debug",
+      "filePath": "packages/db/Makefile",
+      "lineRange": [31, 34],
+      "summary": "下载 Go 模块并执行 go vet ./...，用于调试构建前检查。",
+      "tags": ["build", "go-vet", "debug"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/db/Makefile:create-migration",
+      "type": "step",
+      "name": "create-migration",
+      "filePath": "packages/db/Makefile",
+      "lineRange": [36, 36],
+      "summary": "使用 goose create 创建一条新的 SQL 迁移文件，需要传入 NAME 参数。",
+      "tags": ["migration", "goose", "scaffolding"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/db/Makefile:status",
+      "type": "step",
+      "name": "status",
+      "filePath": "packages/db/Makefile",
+      "lineRange": [44, 46],
+      "summary": "调用 goose status 查看数据库迁移当前状态。",
+      "tags": ["migration", "goose", "status"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/db/Makefile:generate",
+      "type": "step",
+      "name": "generate",
+      "filePath": "packages/db/Makefile",
+      "lineRange": [48, 51],
+      "summary": "清空 queries/*.go 后执行 sqlc generate，生成类型安全的数据库访问代码。",
+      "tags": ["code-generation", "sqlc"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/db/Makefile:build-tools",
+      "type": "step",
+      "name": "build-tools",
+      "filePath": "packages/db/Makefile",
+      "lineRange": [53, 55],
+      "summary": "验证 goose 工具可用（go tool goose --version）。",
+      "tags": ["tooling", "goose"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/db/Makefile:test",
+      "type": "step",
+      "name": "test",
+      "filePath": "packages/db/Makefile",
+      "lineRange": [57, 59],
+      "summary": "先执行 build-tools 再运行 ./tests/... 下的 Go 测试。",
+      "tags": ["test", "go-test"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/db/Makefile:seed-db",
+      "type": "step",
+      "name": "seed-db",
+      "filePath": "packages/db/Makefile",
+      "lineRange": [61, 64],
+      "summary": "运行 scripts/seed/postgres/seed-db.go 向 PostgreSQL 写入种子数据。",
+      "tags": ["seed", "postgres", "scripts"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:packages/db/go.mod",
+      "type": "config",
+      "name": "go.mod",
+      "filePath": "packages/db/go.mod",
+      "summary": "数据库包 Go 模块定义（go 1.26.3），声明对 e2b-dev/infra/packages/shared 的本地 replace，并依赖 goose、sqlc、pgx/v5、testcontainers、otelpgx 等关键库。",
+      "tags": ["go-modules", "configuration", "sqlc", "goose", "pgx"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:packages/db/go.sum",
+      "type": "config",
+      "name": "go.sum",
+      "filePath": "packages/db/go.sum",
+      "summary": "数据库包 Go 模块校验和文件，固定 goose、sqlc、pgx、testcontainers、otelpgx 等直接和间接依赖的哈希值。",
+      "tags": ["go-modules", "configuration", "checksum"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:packages/db/sqlc.yaml",
+      "type": "config",
+      "name": "sqlc.yaml",
+      "filePath": "packages/db/sqlc.yaml",
+      "summary": "sqlc 代码生成配置，定义四套 PostgreSQL → Go 生成器：主 queries 包、pkg/dashboard、pkg/auth 以及 pkg/testutils，并为 uuid、timestamptz、numeric、jsonb 等类型以及 env_builds.status、snapshots.config 列提供自定义 Go 类型映射。",
+      "tags": ["sqlc", "code-generation", "postgres", "configuration"],
+      "complexity": "moderate",
+      "languageNotes": "sqlc 的 overrides 机制允许把 PostgreSQL 原生类型映射到自定义 Go 类型（如将 jsonb 映射为 JSONBStringMap、numeric 映射为 shopspring/decimal.Decimal），从而在生成的代码中保留强类型语义。"
+    }
+  ],
+  "edges": [
+    {
+      "source": "pipeline:packages/db/Makefile",
+      "target": "step:packages/db/Makefile:migrate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "pipeline:packages/db/Makefile",
+      "target": "step:packages/db/Makefile:migrate-local",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "pipeline:packages/db/Makefile",
+      "target": "step:packages/db/Makefile:build-debug",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "pipeline:packages/db/Makefile",
+      "target": "step:packages/db/Makefile:create-migration",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "pipeline:packages/db/Makefile",
+      "target": "step:packages/db/Makefile:status",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "pipeline:packages/db/Makefile",
+      "target": "step:packages/db/Makefile:generate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "pipeline:packages/db/Makefile",
+      "target": "step:packages/db/Makefile:build-tools",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "pipeline:packages/db/Makefile",
+      "target": "step:packages/db/Makefile:test",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "pipeline:packages/db/Makefile",
+      "target": "step:packages/db/Makefile:seed-db",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "step:packages/db/Makefile:test",
+      "target": "step:packages/db/Makefile:build-tools",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "step:packages/db/Makefile:generate",
+      "target": "config:packages/db/sqlc.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "step:packages/db/Makefile:migrate",
+      "target": "config:packages/db/go.mod",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "step:packages/db/Makefile:build-tools",
+      "target": "config:packages/db/go.mod",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/db/sqlc.yaml",
+      "target": "config:packages/db/go.mod",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/db/go.mod",
+      "target": "config:packages/db/go.sum",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

@@ -1,0 +1,1443 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/fc/script_builder_test.go",
+      "type": "file",
+      "name": "script_builder_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/script_builder_test.go",
+      "summary": "验证 StartScriptBuilder 生成的 JSON 启动脚本结构。",
+      "tags": [
+        "test",
+        "script-builder",
+        "unit-test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/script_builder_test.go:TestStartScriptBuilder_Build",
+      "type": "function",
+      "name": "TestStartScriptBuilder_Build",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/script_builder_test.go",
+      "lineRange": [
+        16,
+        144
+      ],
+      "summary": "验证生成的启动脚本 JSON 内容。",
+      "tags": [
+        "test",
+        "script-builder"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/script_builder_test.go:createTestSandboxFiles",
+      "type": "function",
+      "name": "createTestSandboxFiles",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/script_builder_test.go",
+      "lineRange": [
+        147,
+        158
+      ],
+      "summary": "构造测试用 sandbox 文件对象。",
+      "tags": [
+        "test",
+        "fixture"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "file",
+      "name": "fsfreeze_pause_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "summary": "验证 fsfreeze 失败时正确回滚 thaw,fsthaw 成功时不再二次 thaw 的 GuestPrepareFsForPause 行为。",
+      "tags": [
+        "test",
+        "fsfreeze",
+        "unit-test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go:TestGuestPrepareFsForPause_FreezeFailureRollsBackThaw",
+      "type": "function",
+      "name": "TestGuestPrepareFsForPause_FreezeFailureRollsBackThaw",
+      "filePath": "packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "lineRange": [
+        28,
+        61
+      ],
+      "summary": "验证 fsfreeze 失败时自动 thaw 回收。",
+      "tags": [
+        "test",
+        "fsfreeze"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go:TestGuestPrepareFsForPause_SuccessDoesNotThaw",
+      "type": "function",
+      "name": "TestGuestPrepareFsForPause_SuccessDoesNotThaw",
+      "filePath": "packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "lineRange": [
+        67,
+        91
+      ],
+      "summary": "验证 fsfreeze 成功时不会重复 thaw。",
+      "tags": [
+        "test",
+        "fsfreeze"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go:newFsFreezeSandbox",
+      "type": "function",
+      "name": "newFsFreezeSandbox",
+      "filePath": "packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "lineRange": [
+        93,
+        115
+      ],
+      "summary": "构造 fsfreeze 测试用 sandbox 桩。",
+      "tags": [
+        "test",
+        "fixture"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "file",
+      "name": "health.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/health.go",
+      "summary": "提供 getHealth 函数,封装 sandbox 健康状态读取与处理。",
+      "tags": [
+        "health-check",
+        "sandbox"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/health.go:getHealth",
+      "type": "function",
+      "name": "getHealth",
+      "filePath": "packages/orchestrator/pkg/sandbox/health.go",
+      "lineRange": [
+        16,
+        49
+      ],
+      "summary": "getHealth 通过 sandbox 接口获取健康状态并返回结构化结果。",
+      "tags": [
+        "health-check"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "file",
+      "name": "hoststats.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/hoststats.go",
+      "summary": "提供 initializeHostStatsCollector,根据特性开关启用/禁用主机度量采集器。",
+      "tags": [
+        "hoststats",
+        "feature-gate"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/hoststats.go:initializeHostStatsCollector",
+      "type": "function",
+      "name": "initializeHostStatsCollector",
+      "filePath": "packages/orchestrator/pkg/sandbox/hoststats.go",
+      "lineRange": [
+        17,
+        48
+      ],
+      "summary": "根据 feature flag 启用主机度量采集器并保存实例。",
+      "tags": [
+        "hoststats",
+        "feature-gate"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "file",
+      "name": "hoststats_collector.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "summary": "HostStatsCollector 周期性采集宿主机 CPU/内存/网络指标,提供 Start/Stop 控制与采样接口。",
+      "tags": [
+        "hoststats",
+        "collector",
+        "monitoring"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/hoststats_collector.go:NewHostStatsCollector",
+      "type": "function",
+      "name": "NewHostStatsCollector",
+      "filePath": "packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "lineRange": [
+        47,
+        63
+      ],
+      "summary": "NewHostStatsCollector 构造主机指标采集器,支持配置采样间隔与字段。",
+      "tags": [
+        "constructor",
+        "hoststats"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/hoststats_collector.go:CollectSample",
+      "type": "function",
+      "name": "CollectSample",
+      "filePath": "packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "lineRange": [
+        78,
+        118
+      ],
+      "summary": "CollectSample 采集一次主机 CPU/内存/网络指标快照。",
+      "tags": [
+        "hoststats",
+        "metrics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/hoststats_collector.go:Start",
+      "type": "function",
+      "name": "Start",
+      "filePath": "packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "lineRange": [
+        121,
+        162
+      ],
+      "summary": "Start 启动后台采样循环。",
+      "tags": [
+        "hoststats",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/hoststats_collector.go:Stop",
+      "type": "function",
+      "name": "Stop",
+      "filePath": "packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "lineRange": [
+        165,
+        178
+      ],
+      "summary": "Stop 停止后台采样循环并 flush 最终值。",
+      "tags": [
+        "hoststats",
+        "lifecycle"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/hoststats_collector.go:HostStatsCollector",
+      "type": "class",
+      "name": "HostStatsCollector",
+      "filePath": "packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "lineRange": [
+        24,
+        34
+      ],
+      "summary": "HostStatsCollector 周期性采集宿主机 CPU/内存/网络指标并保存最近采样。",
+      "tags": [
+        "hoststats",
+        "collector"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/hoststats_collector.go:HostStatsMetadata",
+      "type": "class",
+      "name": "HostStatsMetadata",
+      "filePath": "packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "lineRange": [
+        36,
+        45
+      ],
+      "summary": "HostStatsMetadata 描述主机采样元数据(时间戳、字段标签等)。",
+      "tags": [
+        "hoststats"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "file",
+      "name": "map.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "summary": "Map 维护运行中 sandbox 集合,提供网络分配、生命周期订阅/等待以及 sandbox 停止通知。",
+      "tags": [
+        "sandbox-registry",
+        "lifecycle",
+        "network"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map.go:NewSandboxesMap",
+      "type": "function",
+      "name": "NewSandboxesMap",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "lineRange": [
+        60,
+        67
+      ],
+      "summary": "NewSandboxesMap 构造 Map 实例并初始化订阅者列表。",
+      "tags": [
+        "constructor",
+        "sandbox-registry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map.go:Subscribe",
+      "type": "function",
+      "name": "Subscribe",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "lineRange": [
+        73,
+        78
+      ],
+      "summary": "注册 lifecycle 订阅者。",
+      "tags": [
+        "sandbox-registry",
+        "pub-sub"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map.go:Items",
+      "type": "function",
+      "name": "Items",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "lineRange": [
+        89,
+        91
+      ],
+      "summary": "返回当前注册的所有 sandbox 描述符副本。",
+      "tags": [
+        "sandbox-registry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map.go:Count",
+      "type": "function",
+      "name": "Count",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "lineRange": [
+        93,
+        95
+      ],
+      "summary": "返回 Map 中的 sandbox 数量。",
+      "tags": [
+        "sandbox-registry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map.go:Get",
+      "type": "function",
+      "name": "Get",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "lineRange": [
+        97,
+        99
+      ],
+      "summary": "根据 sandbox ID 查找 sandbox 描述符。",
+      "tags": [
+        "sandbox-registry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map.go:LifecycleItems",
+      "type": "function",
+      "name": "LifecycleItems",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "lineRange": [
+        101,
+        109
+      ],
+      "summary": "读取 sandbox lifecycle 状态历史条目。",
+      "tags": [
+        "sandbox-registry",
+        "lifecycle"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map.go:WaitLifecycles",
+      "type": "function",
+      "name": "WaitLifecycles",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "lineRange": [
+        111,
+        129
+      ],
+      "summary": "等待指定的 lifecycle 事件完成,支持 ctx 取消。",
+      "tags": [
+        "sandbox-registry",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map.go:GetByHostPort",
+      "type": "function",
+      "name": "GetByHostPort",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "lineRange": [
+        132,
+        144
+      ],
+      "summary": "根据主机端口反查 sandbox 描述符。",
+      "tags": [
+        "sandbox-registry",
+        "network"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map.go:AssignNetwork",
+      "type": "function",
+      "name": "AssignNetwork",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "lineRange": [
+        147,
+        156
+      ],
+      "summary": "为 sandbox 分配 host/tap 网络端口。",
+      "tags": [
+        "sandbox-registry",
+        "network"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map.go:trackLifecycle",
+      "type": "function",
+      "name": "trackLifecycle",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "lineRange": [
+        158,
+        169
+      ],
+      "summary": "将 sandbox lifecycle 状态变更写入历史并通知订阅者。",
+      "tags": [
+        "sandbox-registry",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map.go:MarkRunning",
+      "type": "function",
+      "name": "MarkRunning",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "lineRange": [
+        172,
+        193
+      ],
+      "summary": "将 sandbox 标记为运行中并发送 lifecycle 通知。",
+      "tags": [
+        "sandbox-registry",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map.go:MarkStopping",
+      "type": "function",
+      "name": "MarkStopping",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "lineRange": [
+        197,
+        221
+      ],
+      "summary": "将 sandbox 标记为正在停止,保持 lifecycle 追踪。",
+      "tags": [
+        "sandbox-registry",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map.go:MarkStopped",
+      "type": "function",
+      "name": "MarkStopped",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "lineRange": [
+        223,
+        234
+      ],
+      "summary": "将 sandbox 标记为已停止,通知订阅者并清理网络。",
+      "tags": [
+        "sandbox-registry",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map.go:NetworkReleased",
+      "type": "function",
+      "name": "NetworkReleased",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "lineRange": [
+        243,
+        268
+      ],
+      "summary": "当 sandbox 释放网络时回调,清理端口分配并通知订阅者。",
+      "tags": [
+        "sandbox-registry",
+        "network"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/map.go:MapSubscriber",
+      "type": "class",
+      "name": "MapSubscriber",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "lineRange": [
+        21,
+        26
+      ],
+      "summary": "MapSubscriber 定义订阅者接收 sandbox 插入与网络释放事件的回调接口。",
+      "tags": [
+        "sandbox-registry",
+        "interface"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/map.go:Map",
+      "type": "class",
+      "name": "Map",
+      "filePath": "packages/orchestrator/pkg/sandbox/map.go",
+      "lineRange": [
+        48,
+        58
+      ],
+      "summary": "Map 维护运行中 sandbox 集合、生命周期事件和网络端口分配。",
+      "tags": [
+        "sandbox-registry",
+        "lifecycle",
+        "network"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "file",
+      "name": "map_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/map_test.go",
+      "summary": "针对 Map 的 sandbox 生命周期跟踪、并发安全性与 WaitLifecycles 行为的单元测试。",
+      "tags": [
+        "test",
+        "sandbox-registry",
+        "unit-test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapMarkRunningTracksLifecycle",
+      "type": "function",
+      "name": "TestMapMarkRunningTracksLifecycle",
+      "filePath": "packages/orchestrator/pkg/sandbox/map_test.go",
+      "lineRange": [
+        16,
+        25
+      ],
+      "summary": "验证 MarkRunning 写入 lifecycle 历史。",
+      "tags": [
+        "test",
+        "sandbox-registry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapLifecycleItemsRemainAfterMarkStopping",
+      "type": "function",
+      "name": "TestMapLifecycleItemsRemainAfterMarkStopping",
+      "filePath": "packages/orchestrator/pkg/sandbox/map_test.go",
+      "lineRange": [
+        27,
+        44
+      ],
+      "summary": "验证 MarkStopping 后 lifecycle 条目仍保留。",
+      "tags": [
+        "test",
+        "sandbox-registry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestSandboxCloseMarksLifecycleStopped",
+      "type": "function",
+      "name": "TestSandboxCloseMarksLifecycleStopped",
+      "filePath": "packages/orchestrator/pkg/sandbox/map_test.go",
+      "lineRange": [
+        46,
+        59
+      ],
+      "summary": "验证 sandbox 关闭触发 MarkStopped 通知。",
+      "tags": [
+        "test",
+        "sandbox-registry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapLifecycleItemsAllowDuplicateSandboxIDs",
+      "type": "function",
+      "name": "TestMapLifecycleItemsAllowDuplicateSandboxIDs",
+      "filePath": "packages/orchestrator/pkg/sandbox/map_test.go",
+      "lineRange": [
+        61,
+        73
+      ],
+      "summary": "验证重复 sandbox ID 的 lifecycle 处理。",
+      "tags": [
+        "test",
+        "sandbox-registry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapWaitLifecyclesReturnsWhenEmpty",
+      "type": "function",
+      "name": "TestMapWaitLifecyclesReturnsWhenEmpty",
+      "filePath": "packages/orchestrator/pkg/sandbox/map_test.go",
+      "lineRange": [
+        75,
+        81
+      ],
+      "summary": "验证 lifecycle 列表为空时立即返回。",
+      "tags": [
+        "test",
+        "sandbox-registry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapWaitLifecyclesWaitsUntilStopped",
+      "type": "function",
+      "name": "TestMapWaitLifecyclesWaitsUntilStopped",
+      "filePath": "packages/orchestrator/pkg/sandbox/map_test.go",
+      "lineRange": [
+        83,
+        106
+      ],
+      "summary": "验证 WaitLifecycles 阻塞直到事件完成。",
+      "tags": [
+        "test",
+        "sandbox-registry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapWaitLifecyclesReturnsContextError",
+      "type": "function",
+      "name": "TestMapWaitLifecyclesReturnsContextError",
+      "filePath": "packages/orchestrator/pkg/sandbox/map_test.go",
+      "lineRange": [
+        108,
+        119
+      ],
+      "summary": "验证 WaitLifecycles 在 ctx 取消时返回错误。",
+      "tags": [
+        "test",
+        "sandbox-registry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapConcurrentMarkStoppingAndStoppedDoesNotResurrectLifecycle",
+      "type": "function",
+      "name": "TestMapConcurrentMarkStoppingAndStoppedDoesNotResurrectLifecycle",
+      "filePath": "packages/orchestrator/pkg/sandbox/map_test.go",
+      "lineRange": [
+        121,
+        150
+      ],
+      "summary": "验证并发 MarkStopping/MarkStopped 不会复活 lifecycle。",
+      "tags": [
+        "test",
+        "sandbox-registry"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/map_test.go:testMapSandbox",
+      "type": "function",
+      "name": "testMapSandbox",
+      "filePath": "packages/orchestrator/pkg/sandbox/map_test.go",
+      "lineRange": [
+        152,
+        166
+      ],
+      "summary": "构造测试用 Map sandbox 桩。",
+      "tags": [
+        "test",
+        "fixture"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "file",
+      "name": "metrics.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/metrics.go",
+      "summary": "定义 Metrics 结构并提供 GetMetrics 函数,聚合 sandbox 相关监控指标。",
+      "tags": [
+        "metrics",
+        "sandbox"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/metrics.go:GetMetrics",
+      "type": "function",
+      "name": "GetMetrics",
+      "filePath": "packages/orchestrator/pkg/sandbox/metrics.go",
+      "lineRange": [
+        35,
+        69
+      ],
+      "summary": "GetMetrics 聚合并返回 sandbox 相关指标集合。",
+      "tags": [
+        "metrics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/metrics.go:Metrics",
+      "type": "class",
+      "name": "Metrics",
+      "filePath": "packages/orchestrator/pkg/sandbox/metrics.go",
+      "lineRange": [
+        15,
+        33
+      ],
+      "summary": "Metrics 描述 envd 内部指标字段。",
+      "tags": [
+        "envd",
+        "generated",
+        "api-types"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/script_builder_test.go:TestStartScriptBuilder_Build",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/script_builder_test.go:TestStartScriptBuilder_Build",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/script_builder_test.go:createTestSandboxFiles",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder_test.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder_test.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder_test.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/script_builder_test.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go:TestGuestPrepareFsForPause_FreezeFailureRollsBackThaw",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go:TestGuestPrepareFsForPause_FreezeFailureRollsBackThaw",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go:TestGuestPrepareFsForPause_SuccessDoesNotThaw",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go:TestGuestPrepareFsForPause_SuccessDoesNotThaw",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go:newFsFreezeSandbox",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/health.go:getHealth",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/hoststats.go:initializeHostStatsCollector",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/hoststats_collector.go:NewHostStatsCollector",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/hoststats_collector.go:NewHostStatsCollector",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/hoststats_collector.go:CollectSample",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/hoststats_collector.go:CollectSample",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/hoststats_collector.go:Start",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/hoststats_collector.go:Start",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/hoststats_collector.go:Stop",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/hoststats_collector.go:Stop",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/hoststats_collector.go:HostStatsCollector",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/hoststats_collector.go:HostStatsCollector",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/hoststats_collector.go:HostStatsMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/hoststats_collector.go:HostStatsMetadata",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/manager_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/manager.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/noop.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:NewSandboxesMap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:NewSandboxesMap",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:Subscribe",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:Subscribe",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:Items",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:Items",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:Count",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:Count",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:Get",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:Get",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:LifecycleItems",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:LifecycleItems",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:WaitLifecycles",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:WaitLifecycles",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:GetByHostPort",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:GetByHostPort",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:AssignNetwork",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:AssignNetwork",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:trackLifecycle",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:MarkRunning",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:MarkRunning",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:MarkStopping",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:MarkStopping",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:MarkStopped",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:MarkStopped",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:NetworkReleased",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map.go:NetworkReleased",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/map.go:MapSubscriber",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/map.go:MapSubscriber",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/map.go:Map",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/map.go:Map",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapMarkRunningTracksLifecycle",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapMarkRunningTracksLifecycle",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapLifecycleItemsRemainAfterMarkStopping",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapLifecycleItemsRemainAfterMarkStopping",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestSandboxCloseMarksLifecycleStopped",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestSandboxCloseMarksLifecycleStopped",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapLifecycleItemsAllowDuplicateSandboxIDs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapLifecycleItemsAllowDuplicateSandboxIDs",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapWaitLifecyclesReturnsWhenEmpty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapWaitLifecyclesReturnsWhenEmpty",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapWaitLifecyclesWaitsUntilStopped",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapWaitLifecyclesWaitsUntilStopped",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapWaitLifecyclesReturnsContextError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapWaitLifecyclesReturnsContextError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapConcurrentMarkStoppingAndStoppedDoesNotResurrectLifecycle",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:TestMapConcurrentMarkStoppingAndStoppedDoesNotResurrectLifecycle",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/map_test.go:testMapSandbox",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/dscp_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/host.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/slot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_kv.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_memory.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/metrics.go:GetMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/metrics.go:GetMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/metrics.go:Metrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/metrics.go:Metrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

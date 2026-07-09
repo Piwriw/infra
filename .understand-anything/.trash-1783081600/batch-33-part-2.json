@@ -1,0 +1,1172 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/dashboard-api/internal/teamprovision/factory_test.go",
+      "type": "file",
+      "name": "factory_test.go",
+      "filePath": "packages/dashboard-api/internal/teamprovision/factory_test.go",
+      "summary": "\u9488\u5bf9 NewProvisionSink \u5de5\u5382\u51fd\u6570\u7684\u5355\u5143\u6d4b\u8bd5\uff0c\u8986\u76d6\u914d\u7f6e\u7f3a\u5931\u3001\u4e0d\u5b8c\u6574\u7b49\u573a\u666f\u3002",
+      "tags": [
+        "test",
+        "unit-test",
+        "factory",
+        "provisioning"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/dashboard-api/internal/teamprovision/http_sink.go",
+      "type": "file",
+      "name": "http_sink.go",
+      "filePath": "packages/dashboard-api/internal/teamprovision/http_sink.go",
+      "summary": "\u901a\u8fc7 HTTP \u8c03\u7528\u8ba1\u8d39\u670d\u52a1\u7684 TeamProvisionSink \u5b9e\u73b0\uff0c\u542b\u53ef\u91cd\u8bd5\u5ba2\u6237\u7aef\u4e0e\u9519\u8bef\u89e3\u6790\u3002",
+      "tags": [
+        "provisioning",
+        "http-client",
+        "billing",
+        "retry"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/dashboard-api/internal/teamprovision/http_sink.go:ProvisionTeam",
+      "type": "function",
+      "name": "ProvisionTeam",
+      "filePath": "packages/dashboard-api/internal/teamprovision/http_sink.go",
+      "lineRange": [
+        59,
+        121
+      ],
+      "summary": "HTTPProvisionSink \u7684\u4e3b\u5165\u53e3\uff0c\u5411\u8ba1\u8d39\u670d\u52a1\u53d1\u9001 team billing provision \u8bf7\u6c42\u5e76\u5904\u7406\u9519\u8bef\u3002",
+      "tags": [
+        "provisioning",
+        "http-client",
+        "billing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/dashboard-api/internal/teamprovision/http_sink.go:HTTPProvisionSink",
+      "type": "class",
+      "name": "HTTPProvisionSink",
+      "filePath": "packages/dashboard-api/internal/teamprovision/http_sink.go",
+      "lineRange": [
+        37,
+        42
+      ],
+      "summary": "\u901a\u8fc7 HTTP \u4e0e\u8ba1\u8d39\u670d\u52a1\u901a\u4fe1\u7684 TeamProvisionSink \u5b9e\u73b0\uff0c\u5c01\u88c5 baseURL\u3001token \u4e0e\u53ef\u91cd\u8bd5 HTTP \u5ba2\u6237\u7aef\u3002",
+      "tags": [
+        "provisioning",
+        "http-client",
+        "billing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/dashboard-api/internal/teamprovision/http_sink_test.go",
+      "type": "file",
+      "name": "http_sink_test.go",
+      "filePath": "packages/dashboard-api/internal/teamprovision/http_sink_test.go",
+      "summary": "HTTPProvisionSink \u7684\u5355\u5143\u6d4b\u8bd5\uff1aJSON \u9519\u8bef\u4fe1\u606f\u89e3\u6790\u3001\u53ef\u91cd\u8bd5\u54cd\u5e94\u4e0e\u8bf7\u6c42\u8d85\u65f6\u91cd\u8bd5\u3002",
+      "tags": [
+        "test",
+        "unit-test",
+        "provisioning",
+        "http-client"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/dashboard-api/internal/teamprovision/noop_sink.go",
+      "type": "file",
+      "name": "noop_sink.go",
+      "filePath": "packages/dashboard-api/internal/teamprovision/noop_sink.go",
+      "summary": "TeamProvisionSink \u7684 Noop \u5b9e\u73b0\uff1a\u5f53\u672a\u914d\u7f6e\u8ba1\u8d39\u670d\u52a1\u65f6\u76f4\u63a5\u8fd4\u56de nil\u3002",
+      "tags": [
+        "provisioning",
+        "noop",
+        "billing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/dashboard-api/internal/teamprovision/noop_sink.go:NoopProvisionSink",
+      "type": "class",
+      "name": "NoopProvisionSink",
+      "filePath": "packages/dashboard-api/internal/teamprovision/noop_sink.go",
+      "lineRange": [
+        14,
+        14
+      ],
+      "summary": "TeamProvisionSink \u7684\u7a7a\u5b9e\u73b0\uff0c\u5728\u672a\u914d\u7f6e\u8ba1\u8d39\u670d\u52a1\u65f6\u4f7f\u7528\u3002",
+      "tags": [
+        "provisioning",
+        "noop"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/dashboard-api/internal/teamprovision/sink.go",
+      "type": "file",
+      "name": "sink.go",
+      "filePath": "packages/dashboard-api/internal/teamprovision/sink.go",
+      "summary": "TeamProvisionSink \u63a5\u53e3\u5b9a\u4e49\u4e0e ProvisionError \u9519\u8bef\u7c7b\u578b\uff0c\u9644 provision \u76f8\u5173\u7684\u65e5\u5fd7/\u9065\u6d4b\u5b57\u6bb5\u8f85\u52a9\u51fd\u6570\u3002",
+      "tags": [
+        "provisioning",
+        "interface",
+        "error-type",
+        "telemetry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/dashboard-api/internal/teamprovision/sink.go:TeamProvisionSink",
+      "type": "class",
+      "name": "TeamProvisionSink",
+      "filePath": "packages/dashboard-api/internal/teamprovision/sink.go",
+      "lineRange": [
+        15,
+        17
+      ],
+      "summary": "\u8ba1\u8d39\u56e2\u961f\u5f00\u901a sink \u7684\u62bd\u8c61\u63a5\u53e3\uff0c\u63d0\u4f9b ProvisionTeam \u65b9\u6cd5\u3002",
+      "tags": [
+        "interface",
+        "provisioning",
+        "billing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/dashboard-api/internal/teamprovision/sink.go:ProvisionError",
+      "type": "class",
+      "name": "ProvisionError",
+      "filePath": "packages/dashboard-api/internal/teamprovision/sink.go",
+      "lineRange": [
+        24,
+        28
+      ],
+      "summary": "\u643a\u5e26 HTTP \u72b6\u6001\u7801\u7684 provision \u9519\u8bef\u7c7b\u578b\uff0c\u7528\u4e8e\u5c06\u5931\u8d25\u8f6c\u5316\u4e3a API \u9519\u8bef\u3002",
+      "tags": [
+        "error-type",
+        "provisioning"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/dashboard-api/internal/userprofile/creator_context.go",
+      "type": "file",
+      "name": "creator_context.go",
+      "filePath": "packages/dashboard-api/internal/userprofile/creator_context.go",
+      "summary": "\u4ece\u6ce8\u518c\u5143\u6570\u636e\u6784\u9020\u56e2\u961f\u521b\u5efa\u8005\u4e0a\u4e0b\u6587\u7684\u5de5\u5177\u51fd\u6570\u4e0e\u8ba4\u8bc1\u65b9\u5f0f\u5224\u5b9a\u3002",
+      "tags": [
+        "utility",
+        "user-profile",
+        "creator-context",
+        "metadata"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/dashboard-api/internal/userprofile/ory.go",
+      "type": "file",
+      "name": "ory.go",
+      "filePath": "packages/dashboard-api/internal/userprofile/ory.go",
+      "summary": "Ory \u4f5c\u4e3a\u8eab\u4efd\u63d0\u4f9b\u65b9\u65f6\u7684\u7528\u6237 profile \u5b9e\u73b0\uff0c\u5c01\u88c5\u8eab\u4efd\u62c9\u53d6\u3001OIDC external ID \u8bbe\u7f6e\u4e0e\u7528\u6237\u5220\u9664\u6d41\u7a0b\u3002",
+      "tags": [
+        "ory",
+        "identity-provider",
+        "user-profile",
+        "oidc"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/dashboard-api/internal/userprofile/ory.go:oryProvider",
+      "type": "class",
+      "name": "oryProvider",
+      "filePath": "packages/dashboard-api/internal/userprofile/ory.go",
+      "lineRange": [
+        26,
+        31
+      ],
+      "summary": "\u901a\u8fc7 Ory API \u83b7\u53d6/\u7ba1\u7406\u7528\u6237\u8eab\u4efd profile \u7684 Provider \u5b9e\u73b0\u3002",
+      "tags": [
+        "provider",
+        "ory",
+        "identity"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/dashboard-api/internal/userprofile/ory.go:NewOryProvider",
+      "type": "function",
+      "name": "NewOryProvider",
+      "filePath": "packages/dashboard-api/internal/userprofile/ory.go",
+      "lineRange": [
+        48,
+        72
+      ],
+      "summary": "\u57fa\u4e8e OryConfig \u6784\u9020 oryProvider\uff0c\u6ce8\u5165 HTTP \u5ba2\u6237\u7aef\u548c\u8eab\u4efd\u89e3\u6790\u5668\u3002",
+      "tags": [
+        "factory",
+        "ory",
+        "provider"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/dashboard-api/internal/userprofile/ory.go:OryConfig",
+      "type": "class",
+      "name": "OryConfig",
+      "filePath": "packages/dashboard-api/internal/userprofile/ory.go",
+      "lineRange": [
+        40,
+        46
+      ],
+      "summary": "OryProvider \u7684\u914d\u7f6e\u7ed3\u6784\uff0c\u627f\u8f7d admin URL\u3001\u5ba2\u6237\u7aef\u914d\u7f6e\u548c issuer \u7b49\u3002",
+      "tags": [
+        "config",
+        "ory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/dashboard-api/internal/userprofile/ory.go:GetProfilesByUserID",
+      "type": "function",
+      "name": "GetProfilesByUserID",
+      "filePath": "packages/dashboard-api/internal/userprofile/ory.go",
+      "lineRange": [
+        90,
+        117
+      ],
+      "summary": "\u901a\u8fc7\u8eab\u4efd\u89e3\u6790\u5668\u4ece Ory \u62c9\u53d6\u591a\u4e2a\u7528\u6237\u7684 profile\u3002",
+      "tags": [
+        "provider",
+        "user-profile",
+        "ory"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/dashboard-api/internal/userprofile/ory.go:FindProfilesByEmail",
+      "type": "function",
+      "name": "FindProfilesByEmail",
+      "filePath": "packages/dashboard-api/internal/userprofile/ory.go",
+      "lineRange": [
+        119,
+        156
+      ],
+      "summary": "\u901a\u8fc7 Ory \u8eab\u4efd\u670d\u52a1\u6309\u90ae\u7bb1\u67e5\u627e\u5339\u914d\u7684 profile \u5217\u8868\u3002",
+      "tags": [
+        "provider",
+        "user-profile",
+        "email-lookup"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/dashboard-api/internal/userprofile/ory.go:SetIdentityExternalID",
+      "type": "function",
+      "name": "SetIdentityExternalID",
+      "filePath": "packages/dashboard-api/internal/userprofile/ory.go",
+      "lineRange": [
+        182,
+        208
+      ],
+      "summary": "\u5c06 OIDC \u7684\u5916\u90e8 (issuer, subject) \u5199\u5165 Ory \u8eab\u4efd\u7684 traits \u4e2d\u3002",
+      "tags": [
+        "provider",
+        "oidc",
+        "identity-update"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/dashboard-api/internal/userprofile/ory_test.go",
+      "type": "file",
+      "name": "ory_test.go",
+      "filePath": "packages/dashboard-api/internal/userprofile/ory_test.go",
+      "summary": "\u9488\u5bf9 OryProvider \u7684\u5355\u5143\u6d4b\u8bd5\uff0c\u8986\u76d6 external ID \u5199\u5165\u3001profile \u8f6c\u6362\u4e0e\u521b\u5efa\u8005\u4e0a\u4e0b\u6587\u751f\u6210\u3002",
+      "tags": [
+        "test",
+        "unit-test",
+        "ory",
+        "provider"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/dashboard-api/internal/userprofile/provider.go",
+      "type": "file",
+      "name": "provider.go",
+      "filePath": "packages/dashboard-api/internal/userprofile/provider.go",
+      "summary": "\u7528\u6237 profile Provider \u7684\u63a5\u53e3\u4e0e\u901a\u7528\u8f85\u52a9\uff1aProfile \u6a21\u578b\u3001Provider \u63a5\u53e3\u3001DeleteUserHandle \u62bd\u8c61\u4e0e\u5143\u6570\u636e\u5de5\u5177\u3002",
+      "tags": [
+        "provider",
+        "interface",
+        "user-profile"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/dashboard-api/internal/userprofile/provider.go:Profile",
+      "type": "class",
+      "name": "Profile",
+      "filePath": "packages/dashboard-api/internal/userprofile/provider.go",
+      "lineRange": [
+        16,
+        22
+      ],
+      "summary": "\u901a\u7528\u7684\u7528\u6237 profile \u6570\u636e\u7ed3\u6784\uff0c\u627f\u8f7d\u7528\u6237 ID\u3001\u90ae\u7bb1\u3001\u59d3\u540d\u4e0e\u5143\u6570\u636e\u3002",
+      "tags": [
+        "data-model",
+        "user-profile"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/dashboard-api/internal/userprofile/provider.go:Provider",
+      "type": "class",
+      "name": "Provider",
+      "filePath": "packages/dashboard-api/internal/userprofile/provider.go",
+      "lineRange": [
+        24,
+        34
+      ],
+      "summary": "\u7528\u6237 profile \u8bbf\u95ee\u7684\u62bd\u8c61\u63a5\u53e3\uff0c\u5b9a\u4e49\u6309 ID \u62c9\u53d6\u3001\u6309\u90ae\u7bb1\u67e5\u627e\u3001\u521b\u5efa\u8005\u4e0a\u4e0b\u6587\u83b7\u53d6\u7b49\u65b9\u6cd5\u3002",
+      "tags": [
+        "interface",
+        "provider",
+        "user-profile"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/dashboard-api/internal/userprofile/provider_test.go",
+      "type": "file",
+      "name": "provider_test.go",
+      "filePath": "packages/dashboard-api/internal/userprofile/provider_test.go",
+      "summary": "Provider \u62bd\u8c61\u7684\u5355\u5143\u6d4b\u8bd5\uff1a\u901a\u8fc7 stub \u9a8c\u8bc1\u5de5\u5382\u9009\u62e9\u884c\u4e3a\u3002",
+      "tags": [
+        "test",
+        "unit-test",
+        "provider",
+        "factory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/dashboard-api/internal/userprofile/providers.go",
+      "type": "file",
+      "name": "providers.go",
+      "filePath": "packages/dashboard-api/internal/userprofile/providers.go",
+      "summary": "\u8ba4\u8bc1\u63d0\u4f9b\u8005\u914d\u7f6e\u5f52\u4e00\u5316\u5de5\u5177\uff1a\u5c06\u73af\u5883\u5b57\u7b26\u4e32\u8f6c\u6362\u4e3a\u5185\u90e8 auth provider \u5217\u8868\u3002",
+      "tags": [
+        "configuration",
+        "auth-providers",
+        "normalization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/dashboard-api/internal/utils/builds.go",
+      "type": "file",
+      "name": "builds.go",
+      "filePath": "packages/dashboard-api/internal/utils/builds.go",
+      "summary": "\u6784\u5efa\u72b6\u6001/\u72b6\u6001\u7ec4\u5728 API \u679a\u4e3e\u4e0e DB \u679a\u4e3e\u4e4b\u95f4\u7684\u8f6c\u6362\u5de5\u5177\u96c6\u3002",
+      "tags": [
+        "utility",
+        "build",
+        "enum-mapping",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/dashboard-api/internal/utils/builds.go:MapBuildStatusesToDBStatusGroups",
+      "type": "function",
+      "name": "MapBuildStatusesToDBStatusGroups",
+      "filePath": "packages/dashboard-api/internal/utils/builds.go",
+      "lineRange": [
+        15,
+        39
+      ],
+      "summary": "\u5c06 API \u72b6\u6001\u5217\u8868\u6620\u5c04\u4e3a\u6570\u636e\u5e93\u72b6\u6001\u7ec4\u96c6\u5408\u3002",
+      "tags": [
+        "enum-mapping",
+        "build"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/dashboard-api/internal/utils/builds.go:MapBuildStatusFromDBStatus",
+      "type": "function",
+      "name": "MapBuildStatusFromDBStatus",
+      "filePath": "packages/dashboard-api/internal/utils/builds.go",
+      "lineRange": [
+        57,
+        66
+      ],
+      "summary": "\u5c06\u5355\u4e2a DB \u72b6\u6001\u6620\u5c04\u56de API \u72b6\u6001\u3002",
+      "tags": [
+        "enum-mapping",
+        "build"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/dashboard-api/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/dashboard-api/main.go",
+      "summary": "dashboard-api \u670d\u52a1\u5165\u53e3\uff1a\u88c5\u8f7d\u914d\u7f6e\u3001\u521d\u59cb\u5316\u9065\u6d4b/\u65e5\u5fd7/\u6570\u636e\u5e93\u3001\u88c5\u914d handlers \u4e0e\u4e2d\u95f4\u4ef6\uff0c\u5e76\u542f\u52a8 HTTP \u670d\u52a1\u5668\u3002",
+      "tags": [
+        "entry-point",
+        "server",
+        "bootstrap",
+        "gin",
+        "telemetry"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/dashboard-api/main.go:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "packages/dashboard-api/main.go",
+      "lineRange": [
+        65,
+        274
+      ],
+      "summary": "\u670d\u52a1\u542f\u52a8\u4e3b\u6d41\u7a0b\uff1a\u89e3\u6790\u914d\u7f6e\u3001\u521d\u59cb\u5316\u4f9d\u8d56\u3001\u6784\u5efa APIStore \u4e0e\u8def\u7531\u5e76\u542f\u52a8 HTTP \u670d\u52a1\u3002",
+      "tags": [
+        "server",
+        "bootstrap",
+        "entry-point"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/dashboard-api/main.go:newHTTPServer",
+      "type": "function",
+      "name": "newHTTPServer",
+      "filePath": "packages/dashboard-api/main.go",
+      "lineRange": [
+        280,
+        370
+      ],
+      "summary": "\u6784\u9020 dashboard-api \u7684 HTTP \u670d\u52a1\u5668\uff1a\u6ce8\u518c\u4e2d\u95f4\u4ef6\u94fe\u3001OAPI \u8def\u7531\u3001\u5065\u5eb7\u68c0\u67e5\u7b49\u3002",
+      "tags": [
+        "server",
+        "http",
+        "router"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/dashboard-api/main.go:startHTTPServer",
+      "type": "function",
+      "name": "startHTTPServer",
+      "filePath": "packages/dashboard-api/main.go",
+      "lineRange": [
+        372,
+        387
+      ],
+      "summary": "\u542f\u52a8 HTTP \u670d\u52a1\u5668\u5e76\u76d1\u542c\u914d\u7f6e\u7aef\u53e3\uff0c\u6355\u83b7\u542f\u52a8\u9519\u8bef\u3002",
+      "tags": [
+        "server",
+        "http",
+        "lifecycle"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/dashboard-api/internal/teamprovision/http_sink.go",
+      "target": "function:packages/dashboard-api/internal/teamprovision/http_sink.go:ProvisionTeam",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/teamprovision/http_sink.go",
+      "target": "function:packages/dashboard-api/internal/teamprovision/http_sink.go:ProvisionTeam",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/teamprovision/http_sink.go",
+      "target": "class:packages/dashboard-api/internal/teamprovision/http_sink.go:HTTPProvisionSink",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/teamprovision/http_sink.go",
+      "target": "class:packages/dashboard-api/internal/teamprovision/http_sink.go:HTTPProvisionSink",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/teamprovision/noop_sink.go",
+      "target": "class:packages/dashboard-api/internal/teamprovision/noop_sink.go:NoopProvisionSink",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/teamprovision/noop_sink.go",
+      "target": "class:packages/dashboard-api/internal/teamprovision/noop_sink.go:NoopProvisionSink",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/teamprovision/sink.go",
+      "target": "class:packages/dashboard-api/internal/teamprovision/sink.go:TeamProvisionSink",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/teamprovision/sink.go",
+      "target": "class:packages/dashboard-api/internal/teamprovision/sink.go:TeamProvisionSink",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/teamprovision/sink.go",
+      "target": "class:packages/dashboard-api/internal/teamprovision/sink.go:ProvisionError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/teamprovision/sink.go",
+      "target": "class:packages/dashboard-api/internal/teamprovision/sink.go:ProvisionError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/ory.go",
+      "target": "class:packages/dashboard-api/internal/userprofile/ory.go:oryProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/ory.go",
+      "target": "function:packages/dashboard-api/internal/userprofile/ory.go:NewOryProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/ory.go",
+      "target": "function:packages/dashboard-api/internal/userprofile/ory.go:NewOryProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/ory.go",
+      "target": "class:packages/dashboard-api/internal/userprofile/ory.go:OryConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/ory.go",
+      "target": "class:packages/dashboard-api/internal/userprofile/ory.go:OryConfig",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/ory.go",
+      "target": "function:packages/dashboard-api/internal/userprofile/ory.go:GetProfilesByUserID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/ory.go",
+      "target": "function:packages/dashboard-api/internal/userprofile/ory.go:GetProfilesByUserID",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/ory.go",
+      "target": "function:packages/dashboard-api/internal/userprofile/ory.go:FindProfilesByEmail",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/ory.go",
+      "target": "function:packages/dashboard-api/internal/userprofile/ory.go:FindProfilesByEmail",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/ory.go",
+      "target": "function:packages/dashboard-api/internal/userprofile/ory.go:SetIdentityExternalID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/ory.go",
+      "target": "function:packages/dashboard-api/internal/userprofile/ory.go:SetIdentityExternalID",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/provider.go",
+      "target": "class:packages/dashboard-api/internal/userprofile/provider.go:Profile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/provider.go",
+      "target": "class:packages/dashboard-api/internal/userprofile/provider.go:Profile",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/provider.go",
+      "target": "class:packages/dashboard-api/internal/userprofile/provider.go:Provider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/provider.go",
+      "target": "class:packages/dashboard-api/internal/userprofile/provider.go:Provider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/utils/builds.go",
+      "target": "function:packages/dashboard-api/internal/utils/builds.go:MapBuildStatusesToDBStatusGroups",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/utils/builds.go",
+      "target": "function:packages/dashboard-api/internal/utils/builds.go:MapBuildStatusesToDBStatusGroups",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/utils/builds.go",
+      "target": "function:packages/dashboard-api/internal/utils/builds.go:MapBuildStatusFromDBStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/utils/builds.go",
+      "target": "function:packages/dashboard-api/internal/utils/builds.go:MapBuildStatusFromDBStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "function:packages/dashboard-api/main.go:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "function:packages/dashboard-api/main.go:newHTTPServer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "function:packages/dashboard-api/main.go:startHTTPServer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/utils/builds.go",
+      "target": "file:packages/dashboard-api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/utils/builds.go",
+      "target": "file:packages/dashboard-api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/utils/builds.go",
+      "target": "file:packages/dashboard-api/internal/api/route_conflict_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/api/route_conflict_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/cfg/model_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/admin_auth_provider_profiles.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/admin_teams_bootstrap_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/admin_teams_bootstrap.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/admin_users_bootstrap.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/admin_users_delete.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/build.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/builds_list.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/builds_statuses.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/sandbox_record_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/sandbox_record.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/store.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/team_creation.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/team_handlers_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/team_members.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/team_update.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/teams_list.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/teams_resolve.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/template_get_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/template_get.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/template_tag_assignments_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/template_tag_assignments.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/template_tags_pagination_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/template_tags_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/template_tags.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/templates_defaults.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/templates_list_db_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/templates_list.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/utils_cursor.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/utils_team_provisioning.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/utils_template_tag_assignments.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/utils_template_tags.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/utils_templates_list_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/utils_templates_list.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/handlers/utils.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/middleware/blocked_team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/teamprovision/factory_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/teamprovision/factory.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/teamprovision/http_sink_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/teamprovision/http_sink.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/teamprovision/noop_sink.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/teamprovision/sink.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/userprofile/creator_context.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/userprofile/ory_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/userprofile/ory.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/userprofile/provider_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/userprofile/provider.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "file:packages/dashboard-api/internal/userprofile/providers.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/teamprovision/http_sink.go",
+      "target": "file:packages/dashboard-api/internal/teamprovision/http_sink_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/ory.go",
+      "target": "file:packages/dashboard-api/internal/userprofile/ory_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/provider.go",
+      "target": "file:packages/dashboard-api/internal/userprofile/provider_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/teamprovision/http_sink.go",
+      "target": "class:packages/dashboard-api/internal/teamprovision/sink.go:TeamProvisionSink",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/teamprovision/noop_sink.go",
+      "target": "class:packages/dashboard-api/internal/teamprovision/sink.go:TeamProvisionSink",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "class:packages/dashboard-api/internal/teamprovision/http_sink.go:HTTPProvisionSink",
+      "target": "class:packages/dashboard-api/internal/teamprovision/sink.go:TeamProvisionSink",
+      "type": "implements",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "class:packages/dashboard-api/internal/teamprovision/noop_sink.go:NoopProvisionSink",
+      "target": "class:packages/dashboard-api/internal/teamprovision/sink.go:TeamProvisionSink",
+      "type": "implements",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "class:packages/dashboard-api/internal/userprofile/ory.go:oryProvider",
+      "target": "class:packages/dashboard-api/internal/userprofile/provider.go:Provider",
+      "type": "implements",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "file:packages/dashboard-api/internal/userprofile/ory.go",
+      "target": "class:packages/dashboard-api/internal/userprofile/provider.go:Provider",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "function:packages/dashboard-api/internal/middleware/blocked_team.go:EnforceBlockedTeam",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/dashboard-api/main.go",
+      "target": "function:packages/dashboard-api/internal/teamprovision/factory.go:NewProvisionSink",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

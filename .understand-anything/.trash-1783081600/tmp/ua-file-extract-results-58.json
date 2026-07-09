@@ -1,0 +1,185 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/docker-reverse-proxy/Dockerfile",
+      "language": "dockerfile",
+      "fileCategory": "infra",
+      "totalLines": 45,
+      "nonEmptyLines": 31,
+      "services": [
+        {
+          "name": "builder",
+          "image": "golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION}",
+          "ports": [],
+          "startLine": 4,
+          "endLine": 40
+        },
+        {
+          "name": "alpine",
+          "image": "alpine:${ALPINE_VERSION}",
+          "ports": [],
+          "startLine": 41,
+          "endLine": 46
+        }
+      ],
+      "steps": [
+        {
+          "name": "ARG GOLANG_VERSION=1.26.3",
+          "startLine": 1,
+          "endLine": 1
+        },
+        {
+          "name": "ARG ALPINE_VERSION=3.22",
+          "startLine": 2,
+          "endLine": 2
+        },
+        {
+          "name": "FROM golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION} AS builder",
+          "startLine": 4,
+          "endLine": 4
+        },
+        {
+          "name": "RUN apk add --no-cache make",
+          "startLine": 6,
+          "endLine": 6
+        },
+        {
+          "name": "WORKDIR /build/shared",
+          "startLine": 9,
+          "endLine": 9
+        },
+        {
+          "name": "COPY ./shared/go.mod ./shared/go.sum ./",
+          "startLine": 10,
+          "endLine": 10
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 11,
+          "endLine": 11
+        },
+        {
+          "name": "WORKDIR /build/db",
+          "startLine": 13,
+          "endLine": 13
+        },
+        {
+          "name": "COPY ./db/go.mod ./db/go.sum ./",
+          "startLine": 14,
+          "endLine": 14
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 15,
+          "endLine": 15
+        },
+        {
+          "name": "WORKDIR /build/docker-reverse-proxy",
+          "startLine": 17,
+          "endLine": 17
+        },
+        {
+          "name": "COPY ./docker-reverse-proxy/go.mod ./docker-reverse-proxy/go.sum ",
+          "startLine": 18,
+          "endLine": 18
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 19,
+          "endLine": 19
+        },
+        {
+          "name": "WORKDIR /build",
+          "startLine": 22,
+          "endLine": 22
+        },
+        {
+          "name": "COPY ./shared/pkg ./shared/pkg",
+          "startLine": 24,
+          "endLine": 24
+        },
+        {
+          "name": "COPY ./db/client ./db/client",
+          "startLine": 25,
+          "endLine": 25
+        },
+        {
+          "name": "COPY ./db/queries ./db/queries",
+          "startLine": 26,
+          "endLine": 26
+        },
+        {
+          "name": "COPY ./db/pkg ./db/pkg",
+          "startLine": 27,
+          "endLine": 27
+        },
+        {
+          "name": "COPY ./docker-reverse-proxy/internal ./docker-reverse-proxy/inter",
+          "startLine": 29,
+          "endLine": 29
+        },
+        {
+          "name": "COPY ./docker-reverse-proxy/main.go ./docker-reverse-proxy/main.g",
+          "startLine": 30,
+          "endLine": 30
+        },
+        {
+          "name": "COPY ./docker-reverse-proxy/Makefile ./docker-reverse-proxy/Makef",
+          "startLine": 31,
+          "endLine": 31
+        },
+        {
+          "name": "WORKDIR /build/docker-reverse-proxy",
+          "startLine": 33,
+          "endLine": 33
+        },
+        {
+          "name": "ARG COMMIT_SHA",
+          "startLine": 35,
+          "endLine": 35
+        },
+        {
+          "name": "ARG VERSION=dev",
+          "startLine": 36,
+          "endLine": 36
+        },
+        {
+          "name": "RUN --mount=type=cache,target=/root/.cache/go-build make build C",
+          "startLine": 37,
+          "endLine": 37
+        },
+        {
+          "name": "RUN chmod +x /build/docker-reverse-proxy/bin/docker-reverse-prox",
+          "startLine": 39,
+          "endLine": 39
+        },
+        {
+          "name": "FROM alpine:${ALPINE_VERSION}",
+          "startLine": 41,
+          "endLine": 41
+        },
+        {
+          "name": "COPY --from=builder /build/docker-reverse-proxy/bin/docker-revers",
+          "startLine": 43,
+          "endLine": 43
+        },
+        {
+          "name": "ENTRYPOINT [\"./docker-reverse-proxy\"]",
+          "startLine": 45,
+          "endLine": 45
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "serviceCount": 2,
+        "stepCount": 29
+      }
+    }
+  ]
+}

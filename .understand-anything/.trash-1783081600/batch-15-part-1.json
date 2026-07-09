@@ -1,0 +1,1101 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "type": "file",
+      "name": "dispatch.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "summary": "NBD (Network Block Device) \u8bf7\u6c42\u5206\u53d1\u5668\uff0c\u5b9e\u73b0 Linux \u5185\u6838\u5757\u8bbe\u5907\u5ba2\u6237\u7aef\u4e0e Provider \u540e\u7aef\u4e4b\u95f4\u57fa\u4e8e NBD \u534f\u8bae\u7684\u8bfb\u5199\u53ca WriteZeroes \u547d\u4ee4\u7684\u53cc\u5411\u6865\u63a5\u3002",
+      "tags": [
+        "nbd",
+        "block-device",
+        "protocol",
+        "dispatcher"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:Provider",
+      "type": "class",
+      "name": "Provider",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "lineRange": [
+        46,
+        51
+      ],
+      "summary": "Provider \u63a5\u53e3\u62bd\u8c61\u5e95\u5c42\u5757\u8bbe\u5907\u540e\u7aef\uff0c\u63d0\u4f9b ReadAt/Size/WriteZeroesAt \u4e09\u79cd\u8bed\u4e49\u64cd\u4f5c\u3002",
+      "tags": [
+        "interface",
+        "nbd",
+        "block-device"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:Request",
+      "type": "class",
+      "name": "Request",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "lineRange": [
+        85,
+        92
+      ],
+      "summary": "NBD \u8bf7\u6c42\u6d88\u606f\u7ed3\u6784\uff0c\u5305\u542b type/handle/from/length \u7b49\u4e8c\u8fdb\u5236\u534f\u8bae\u5b57\u6bb5\u3002",
+      "tags": [
+        "struct",
+        "nbd",
+        "protocol"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:Response",
+      "type": "class",
+      "name": "Response",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "lineRange": [
+        95,
+        99
+      ],
+      "summary": "NBD \u54cd\u5e94\u6d88\u606f\u7ed3\u6784\uff0c\u5305\u542b error/handle \u7b49\u534f\u8bae\u5b57\u6bb5\u3002",
+      "tags": [
+        "struct",
+        "nbd",
+        "protocol"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:Dispatch",
+      "type": "class",
+      "name": "Dispatch",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "lineRange": [
+        101,
+        119
+      ],
+      "summary": "NBD \u534f\u8bae\u5206\u6d3e\u5668\uff0c\u6301\u6709\u5e27\u89e3\u6790\u3001\u6302\u8d77\u54cd\u5e94\u3001\u5173\u95ed\u72b6\u6001\u7b49\u534f\u8c03\u8d44\u6e90\uff0c\u8fd0\u884c\u5f02\u6b65\u54cd\u5e94\u5faa\u73af\u3002",
+      "tags": [
+        "nbd",
+        "dispatcher",
+        "concurrency"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:NewDispatch",
+      "type": "function",
+      "name": "NewDispatch",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "lineRange": [
+        121,
+        134
+      ],
+      "summary": "\u6784\u9020\u4e00\u4e2a\u65b0\u7684 Dispatch \u5b9e\u4f8b\u5e76\u9884\u534f\u5546 NBD \u534f\u8bae\u63e1\u624b\uff08\u5ba2\u6237\u7aef\u6807\u5fd7\u3001\u4f20\u8f93\u6807\u5fd7\u3001\u5757\u5927\u5c0f\u7b49\uff09\u3002",
+      "tags": [
+        "nbd",
+        "constructor",
+        "handshake"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:Drain",
+      "type": "function",
+      "name": "Drain",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "lineRange": [
+        136,
+        143
+      ],
+      "summary": "\u7b49\u5f85\u6240\u6709\u6302\u8d77\u7684\u54cd\u5e94\u88ab\u5199\u5165\u540e\u518d\u8fd4\u56de\uff0c\u786e\u4fdd\u4f18\u96c5\u5173\u95ed\u65f6\u4e0d\u4f1a\u4e22\u5931\u54cd\u5e94\u3002",
+      "tags": [
+        "shutdown",
+        "sync"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:Handle",
+      "type": "function",
+      "name": "Handle",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "lineRange": [
+        174,
+        285
+      ],
+      "summary": "\u4e3b\u534f\u8bae\u5faa\u73af\uff0c\u8bfb\u53d6\u5e76\u89e3\u6790 NBD \u8bf7\u6c42\u5e27\uff0c\u5e76\u6309\u8bf7\u6c42\u7c7b\u578b\u5206\u6d3e\u5230 cmdRead/cmdWrite/cmdWriteZeroes\u3002",
+      "tags": [
+        "nbd",
+        "event-loop",
+        "protocol"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:cmdRead",
+      "type": "function",
+      "name": "cmdRead",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "lineRange": [
+        287,
+        372
+      ],
+      "summary": "\u5904\u7406 NBD CMD_READ\uff0c\u4ece Provider \u540e\u7aef\u8bfb\u53d6\u6570\u636e\u5e76\u6309\u9700\u5206\u7247\u56de\u5199\u5230\u5ba2\u6237\u7aef\u3002",
+      "tags": [
+        "nbd",
+        "read",
+        "io"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:cmdWrite",
+      "type": "function",
+      "name": "cmdWrite",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "lineRange": [
+        374,
+        439
+      ],
+      "summary": "\u5904\u7406 NBD CMD_WRITE\uff0c\u5c06\u5ba2\u6237\u7aef\u5199\u5165\u7684\u6570\u636e\u843d\u5230 Provider \u540e\u7aef\uff0c\u5e76\u53d1\u9001\u5f02\u6b65\u5199\u5b8c\u6210\u54cd\u5e94\u3002",
+      "tags": [
+        "nbd",
+        "write",
+        "io"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:cmdWriteZeroes",
+      "type": "function",
+      "name": "cmdWriteZeroes",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "lineRange": [
+        450,
+        518
+      ],
+      "summary": "\u5904\u7406 NBD CMD_WRITE_ZEROES\uff0c\u6309\u9700\u5bf9 Provider \u540e\u7aef\u6267\u884c\u6253\u96f6\u6216\u843d\u76d8\u5e76\u901a\u77e5\u5ba2\u6237\u7aef\u3002",
+      "tags": [
+        "nbd",
+        "write-zeroes",
+        "io"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch_writezeroes_test.go",
+      "type": "file",
+      "name": "dispatch_writezeroes_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/dispatch_writezeroes_test.go",
+      "summary": "\u9488\u5bf9 NBD Dispatch \u7684 WriteZeroes \u547d\u4ee4\u7684\u6d4b\u8bd5\uff0c\u9a8c\u8bc1\u5f02\u6b65\u5199\u96f6\u8bed\u4e49\u4e0b\u8bfb\u53d6\u5faa\u73af\u4e0d\u4f1a\u88ab\u751f\u4ea7\u8005\u997f\u6b7b\u3002",
+      "tags": [
+        "test",
+        "nbd",
+        "write-zeroes"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/nbd/dispatch_writezeroes_test.go:ctrlConn",
+      "type": "class",
+      "name": "ctrlConn",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/dispatch_writezeroes_test.go",
+      "lineRange": [
+        20,
+        26
+      ],
+      "summary": "\u6d4b\u8bd5\u7528\u7684\u63a7\u5236\u8fde\u63a5\u6a21\u62df\uff0c\u8bfb\u5199\u5747\u8bb0\u5f55\u5230\u56fa\u5b9a\u5b57\u8282\u7f13\u51b2\u3002",
+      "tags": [
+        "test",
+        "mock"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/nbd/dispatch_writezeroes_test.go:stallProv",
+      "type": "class",
+      "name": "stallProv",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/dispatch_writezeroes_test.go",
+      "lineRange": [
+        52,
+        57
+      ],
+      "summary": "\u6545\u610f stall \u8bfb\u53d6\u8bf7\u6c42\u7684 Provider \u5b9e\u73b0\uff0c\u7528\u4e8e\u89e6\u53d1 read/write \u7ade\u6001\u6d4b\u8bd5\u573a\u666f\u3002",
+      "tags": [
+        "test",
+        "mock",
+        "provider"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/nbd/mounthelper.go",
+      "type": "file",
+      "name": "mounthelper.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/mounthelper.go",
+      "summary": "\u901a\u8fc7 unix.Mount \u5c06 NBD \u5757\u8bbe\u5907\u6302\u8f7d\u5230\u6307\u5b9a\u8def\u5f84\uff0c\u5e76\u5728\u5931\u8d25\u6216\u4e0a\u4e0b\u6587\u53d6\u6d88\u65f6\u5ef6\u8fdf\u6267\u884c unmount \u6e05\u7406\u3002",
+      "tags": [
+        "nbd",
+        "mount",
+        "unix"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/mounthelper.go:MountNBDDevice",
+      "type": "function",
+      "name": "MountNBDDevice",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/mounthelper.go",
+      "lineRange": [
+        19,
+        49
+      ],
+      "summary": "\u6302\u8f7d NBD \u8bbe\u5907\u5230 mountPath\uff0c\u5e76\u5728\u540e\u53f0 ticker \u68c0\u6d4b\u5230\u6e05\u7406\u4fe1\u53f7\u65f6\u81ea\u52a8 unmount\u3002",
+      "tags": [
+        "mount",
+        "cleanup",
+        "nbd"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "type": "file",
+      "name": "pool.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "summary": "NBD \u8bbe\u5907\u6c60\uff0c\u8d1f\u8d23\u6309\u4f4d\u56fe\u5206\u914d/\u91ca\u653e /dev/nbdX \u69fd\u4f4d\uff0c\u5e76\u8ddf\u8e2a\u8fde\u63a5\u72b6\u6001\u548c\u5e76\u53d1\u5b89\u5168\u3002",
+      "tags": [
+        "nbd",
+        "pool",
+        "resource-management"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/nbd/pool.go:NoFreeSlotsError",
+      "type": "class",
+      "name": "NoFreeSlotsError",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "lineRange": [
+        49,
+        49
+      ],
+      "summary": "\u5f53 NBD \u6c60\u4e2d\u6240\u6709\u69fd\u4f4d\u90fd\u88ab\u5360\u7528\u65f6\u8fd4\u56de\u7684\u9519\u8bef\u7c7b\u578b\u3002",
+      "tags": [
+        "error",
+        "nbd"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/nbd/pool.go:DeviceInUseError",
+      "type": "class",
+      "name": "DeviceInUseError",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "lineRange": [
+        57,
+        57
+      ],
+      "summary": "\u5f53\u8bf7\u6c42\u91ca\u653e\u7684 NBD \u8bbe\u5907\u4ecd\u5904\u4e8e\u5360\u7528\u72b6\u6001\u65f6\u8fd4\u56de\u7684\u9519\u8bef\u3002",
+      "tags": [
+        "error",
+        "nbd"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/nbd/pool.go:DevicePool",
+      "type": "class",
+      "name": "DevicePool",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "lineRange": [
+        75,
+        84
+      ],
+      "summary": "NBD \u8bbe\u5907\u6c60\u5b9e\u73b0\uff0c\u4f7f\u7528 bitset \u8ddf\u8e2a\u7a7a\u95f2\u69fd\u4f4d\u5e76\u63d0\u4f9b Populate/Get/Release \u7b49\u751f\u547d\u5468\u671f\u7ba1\u7406\u3002",
+      "tags": [
+        "nbd",
+        "pool",
+        "concurrency"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/pool.go:NewDevicePool",
+      "type": "function",
+      "name": "NewDevicePool",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "lineRange": [
+        86,
+        107
+      ],
+      "summary": "\u57fa\u4e8e maxSlotsReady \u4e0a\u9650\u6784\u9020\u4e00\u4e2a NBD \u8bbe\u5907\u6c60\uff0c\u521d\u59cb\u5316\u4f4d\u56fe\u548c\u5c31\u7eea\u961f\u5217\u3002",
+      "tags": [
+        "constructor",
+        "pool",
+        "nbd"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/pool.go:ConnectedDevices",
+      "type": "function",
+      "name": "ConnectedDevices",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "lineRange": [
+        130,
+        148
+      ],
+      "summary": "\u904d\u5386 /sys/kernel/nbd \u5217\u51fa\u6240\u6709\u5f53\u524d\u8fde\u63a5\u7684 NBD \u8bbe\u5907\u53ca\u5176\u7d22\u5f15\u3002",
+      "tags": [
+        "sysfs",
+        "nbd",
+        "discovery"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/pool.go:Populate",
+      "type": "function",
+      "name": "Populate",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "lineRange": [
+        167,
+        208
+      ],
+      "summary": "\u5f02\u6b65\u542f\u52a8 NBD \u8bbe\u5907\u7684\u9884\u8fde\u63a5\u586b\u5145\uff0c\u76f4\u5230\u8fbe\u5230 maxSlotsReady \u4e0a\u9650\u3002",
+      "tags": [
+        "pool",
+        "async",
+        "nbd"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/pool.go:GetDevice",
+      "type": "function",
+      "name": "GetDevice",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "lineRange": [
+        300,
+        312
+      ],
+      "summary": "\u4ece\u6c60\u4e2d\u83b7\u53d6\u4e00\u4e2a\u53ef\u7528 NBD \u8bbe\u5907\u69fd\u4f4d\uff1b\u82e5\u7a7a\u95f2\u961f\u5217\u4e3a\u7a7a\u5219\u963b\u585e\u7b49\u5f85\u3002",
+      "tags": [
+        "pool",
+        "acquire",
+        "nbd"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/pool.go:ReleaseDevice",
+      "type": "function",
+      "name": "ReleaseDevice",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "lineRange": [
+        334,
+        371
+      ],
+      "summary": "\u91ca\u653e\u6307\u5b9a\u7d22\u5f15\u7684 NBD \u8bbe\u5907\u5e76\u6839\u636e releaseOptions \u51b3\u5b9a\u662f\u5426\u91cd\u8fde\u3002",
+      "tags": [
+        "pool",
+        "release",
+        "nbd"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/nbd/reclaim.go",
+      "type": "file",
+      "name": "reclaim.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/reclaim.go",
+      "summary": "\u56de\u6536\u6cc4\u9732\u7684 NBD \u8bbe\u5907\u8fde\u63a5\uff0c\u626b\u63cf\u5df2\u8fde\u63a5\u4f46\u672a\u88ab\u6c60\u8ddf\u8e2a\u7684 /dev/nbdX \u5e76\u65ad\u5f00\u3002",
+      "tags": [
+        "nbd",
+        "reclaim",
+        "cleanup"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/reclaim.go:ReclaimLeaked",
+      "type": "function",
+      "name": "ReclaimLeaked",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/reclaim.go",
+      "lineRange": [
+        13,
+        32
+      ],
+      "summary": "\u679a\u4e3e /sys/kernel/nbd \u4e2d\u6240\u6709\u8fde\u63a5\u4f46\u4e0d\u5728\u5df2\u77e5\u69fd\u4f4d\u96c6\u5408\u4e2d\u7684\u8bbe\u5907\u5e76\u65ad\u5f00\u3002",
+      "tags": [
+        "reclaim",
+        "nbd",
+        "cleanup"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/nbd/reclaim_test.go",
+      "type": "file",
+      "name": "reclaim_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/reclaim_test.go",
+      "summary": "\u6d4b\u8bd5 isDeviceConnectedIn \u5728\u5df2\u77e5/\u672a\u77e5\u8bbe\u5907\u6df7\u5408\u65f6\u7684\u5224\u5b9a\u6b63\u786e\u6027\u3002",
+      "tags": [
+        "test",
+        "nbd",
+        "reclaim"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/reclaim_test.go:TestIsDeviceConnectedIn",
+      "type": "function",
+      "name": "TestIsDeviceConnectedIn",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/reclaim_test.go",
+      "lineRange": [
+        13,
+        28
+      ],
+      "summary": "\u5728\u4e34\u65f6\u76ee\u5f55\u4e0b\u6784\u9020 NBD sysfs \u89c6\u56fe\u5e76\u9a8c\u8bc1\u8fde\u63a5\u63a2\u6d4b\u51fd\u6570\u7684\u5224\u65ad\u7ed3\u679c\u3002",
+      "tags": [
+        "test",
+        "nbd"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go",
+      "type": "file",
+      "name": "template_rootfs.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go",
+      "summary": "\u6d4b\u8bd5\u8f85\u52a9\uff1a\u4ece\u5bf9\u8c61\u5b58\u50a8\u4e2d\u6309 buildID \u8bfb\u53d6\u6a21\u677f rootfs blob\uff0c\u5e76\u5c06\u5176\u6620\u5c04\u5230\u672c\u5730\u53ef\u6302\u8f7d\u8bbe\u5907\u3002",
+      "tags": [
+        "test",
+        "rootfs",
+        "template",
+        "testutils"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go:TemplateRootfs",
+      "type": "function",
+      "name": "TemplateRootfs",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go",
+      "lineRange": [
+        23,
+        124
+      ],
+      "summary": "\u5728\u6d4b\u8bd5\u4e2d\u901a\u8fc7 storage provider \u6253\u5f00\u6a21\u677f rootfs \u5934\u4e0e\u6570\u636e blob \u5e76\u8fd4\u56de\u53ef\u6302\u8f7d\u7684\u8bbe\u5907\u5bf9\u8c61\u3002",
+      "tags": [
+        "test",
+        "rootfs",
+        "storage"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go",
+      "type": "file",
+      "name": "deny_egress_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/network/deny_egress_test.go",
+      "summary": "\u6d4b\u8bd5 deny-egress \u9632\u706b\u5899\u89c4\u5219\u80fd\u5728 netns \u4e2d\u6b63\u786e\u5b89\u88c5\u5e76\u62e6\u622a\u6240\u6709\u534f\u8bae\u3002",
+      "tags": [
+        "test",
+        "network",
+        "firewall"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go:TestDenyEgress_InstallsAllProtocolDrop",
+      "type": "function",
+      "name": "TestDenyEgress_InstallsAllProtocolDrop",
+      "filePath": "packages/orchestrator/pkg/sandbox/network/deny_egress_test.go",
+      "lineRange": [
+        30,
+        65
+      ],
+      "summary": "\u9a8c\u8bc1 deny-egress \u89c4\u5219\u5b89\u88c5\u540e\u5728 netns \u4e2d\u80fd\u62e6\u622a\u4efb\u610f\u534f\u8bae\u7684\u5bf9\u5916\u6d41\u91cf\u3002",
+      "tags": [
+        "test",
+        "firewall",
+        "egress"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go:TestDenyEgress_NilFirewallErrors",
+      "type": "function",
+      "name": "TestDenyEgress_NilFirewallErrors",
+      "filePath": "packages/orchestrator/pkg/sandbox/network/deny_egress_test.go",
+      "lineRange": [
+        71,
+        79
+      ],
+      "summary": "\u5728\u672a\u521d\u59cb\u5316 firewall \u65f6\u8c03\u7528 DenyEgress \u5e94\u8fd4\u56de\u660e\u786e\u9519\u8bef\u3002",
+      "tags": [
+        "test",
+        "firewall",
+        "error"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/network/dscp_egress_test.go",
+      "type": "file",
+      "name": "dscp_egress_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/network/dscp_egress_test.go",
+      "summary": "\u9a8c\u8bc1 createNetwork \u5728 egress \u63a5\u53e3\u4e0a\u6b63\u786e\u6253\u4e0a DSCP \u6807\u8bb0\u7684\u6d4b\u8bd5\u3002",
+      "tags": [
+        "test",
+        "network",
+        "dscp"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/network/dscp_egress_test.go:TestCreateNetwork_TagsEgressWithDSCP",
+      "type": "function",
+      "name": "TestCreateNetwork_TagsEgressWithDSCP",
+      "filePath": "packages/orchestrator/pkg/sandbox/network/dscp_egress_test.go",
+      "lineRange": [
+        23,
+        44
+      ],
+      "summary": "\u5728 netns \u4e2d\u521b\u5efa\u7f51\u7edc\u5e76\u68c0\u67e5 egress \u6d41\u91cf\u88ab\u81ea\u52a8\u6253\u4e0a DSCP \u6807\u8bb0\u3002",
+      "tags": [
+        "test",
+        "dscp",
+        "qos"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "type": "file",
+      "name": "egressproxy.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "summary": "\u5b9a\u4e49 EgressProxy \u63a5\u53e3\u548c\u7a7a\u5b9e\u73b0 NoopEgressProxy\uff0c\u4f5c\u4e3a\u51fa\u53e3\u4ee3\u7406\u94a9\u5b50\u7684\u5360\u4f4d\u7b26\u3002",
+      "tags": [
+        "network",
+        "egress",
+        "proxy",
+        "interface"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/network/egressproxy.go:EgressProxy",
+      "type": "class",
+      "name": "EgressProxy",
+      "filePath": "packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "lineRange": [
+        9,
+        18
+      ],
+      "summary": "EgressProxy \u63a5\u53e3\u5b9a\u4e49 slot \u751f\u547d\u5468\u671f\u548c BYOP \u80fd\u529b\u76f8\u5173\u7684\u94a9\u5b50\u3002",
+      "tags": [
+        "interface",
+        "egress",
+        "network"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/network/egressproxy.go:NoopEgressProxy",
+      "type": "class",
+      "name": "NoopEgressProxy",
+      "filePath": "packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "lineRange": [
+        21,
+        21
+      ],
+      "summary": "\u4e0d\u6267\u884c\u4efb\u4f55\u64cd\u4f5c\u7684 EgressProxy \u9ed8\u8ba4\u5b9e\u73b0\u3002",
+      "tags": [
+        "egress",
+        "noop",
+        "network"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/network/egressproxy.go:NewNoopEgressProxy",
+      "type": "function",
+      "name": "NewNoopEgressProxy",
+      "filePath": "packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "lineRange": [
+        25,
+        27
+      ],
+      "summary": "\u8fd4\u56de\u4e00\u4e2a\u65b0\u7684 NoopEgressProxy \u5b9e\u4f8b\u3002",
+      "tags": [
+        "constructor",
+        "egress"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "type": "file",
+      "name": "firewall.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "summary": "\u57fa\u4e8e nftables \u7684\u9632\u706b\u5899\u89c4\u5219\u7ba1\u7406\uff0c\u63d0\u4f9b deny-all\u3001allow-CIDR \u4e0e BYO \u51fa\u53e3\u7b49\u89c4\u5219\u96c6\u3002",
+      "tags": [
+        "network",
+        "firewall",
+        "nftables"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/network/firewall.go:Firewall",
+      "type": "class",
+      "name": "Firewall",
+      "filePath": "packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "lineRange": [
+        27,
+        46
+      ],
+      "summary": "\u5c01\u88c5 nftables \u8fde\u63a5\u3001tap \u63a5\u53e3\u5339\u914d\u5668\u4ee5\u53ca\u5141\u8bb8/\u62d2\u7edd CIDR \u96c6\u5408\u7684\u9632\u706b\u5899\u5bf9\u8c61\u3002",
+      "tags": [
+        "firewall",
+        "nftables",
+        "network"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/network/firewall.go:NewFirewall",
+      "type": "function",
+      "name": "NewFirewall",
+      "filePath": "packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "lineRange": [
+        48,
+        123
+      ],
+      "summary": "\u6784\u9020\u9632\u706b\u5899\u5bf9\u8c61\uff0c\u521b\u5efa nftables \u8868/\u94fe/\u96c6\u5408\u5e76\u521d\u59cb\u5316\u9ed8\u8ba4\u89c4\u5219\u3002",
+      "tags": [
+        "firewall",
+        "constructor",
+        "nftables"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/network/firewall.go:ApplyRules",
+      "type": "function",
+      "name": "ApplyRules",
+      "filePath": "packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "lineRange": [
+        368,
+        389
+      ],
+      "summary": "\u5c06\u5141\u8bb8/\u62d2\u7edd CIDR \u5e94\u7528\u5230 nftables \u96c6\u5408\u4e2d\u5e76\u5237\u65b0\u89c4\u5219\u94fe\u3002",
+      "tags": [
+        "firewall",
+        "nftables"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/network/firewall.go:DenyEgress",
+      "type": "function",
+      "name": "DenyEgress",
+      "filePath": "packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "lineRange": [
+        408,
+        432
+      ],
+      "summary": "\u5b89\u88c5 deny-all egress \u89c4\u5219\uff0c\u8986\u76d6\u6240\u6709\u534f\u8bae\u4e0e\u7aef\u53e3\u3002",
+      "tags": [
+        "firewall",
+        "egress",
+        "deny"
+      ],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:Provider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:Request",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:Response",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:Dispatch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:NewDispatch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:Drain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:Handle",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:cmdRead",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:cmdWrite",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:cmdWriteZeroes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch_writezeroes_test.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/nbd/dispatch_writezeroes_test.go:ctrlConn",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch_writezeroes_test.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/nbd/dispatch_writezeroes_test.go:stallProv",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/mounthelper.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/mounthelper.go:MountNBDDevice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/nbd/pool.go:NoFreeSlotsError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/nbd/pool.go:DeviceInUseError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/nbd/pool.go:DevicePool",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/pool.go:NewDevicePool",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/pool.go:ConnectedDevices",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/pool.go:Populate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/pool.go:GetDevice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/pool.go:ReleaseDevice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/reclaim.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/reclaim.go:ReclaimLeaked",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/reclaim_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/reclaim_test.go:TestIsDeviceConnectedIn",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go:TemplateRootfs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go:TestDenyEgress_InstallsAllProtocolDrop",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go:TestDenyEgress_NilFirewallErrors",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/network/dscp_egress_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/network/dscp_egress_test.go:TestCreateNetwork_TagsEgressWithDSCP",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/network/egressproxy.go:EgressProxy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/network/egressproxy.go:NoopEgressProxy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/network/egressproxy.go:NewNoopEgressProxy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/network/firewall.go:Firewall",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/network/firewall.go:NewFirewall",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/network/firewall.go:ApplyRules",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/network/firewall.go:DenyEgress",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/mounthelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/mounthelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/cleaner.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/mounthelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/logger_overlay.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/mounthelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/mounthelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/zero_device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/metrics/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch_writezeroes_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/reclaim_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/reclaim.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/sandbox/network/egressproxy.go:NoopEgressProxy",
+      "target": "class:packages/orchestrator/pkg/sandbox/network/egressproxy.go:EgressProxy",
+      "type": "implements",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:Dispatch",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/nbd/dispatch.go:Provider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/nbd/pool.go:DevicePool",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/network/firewall.go:Firewall",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/network/egressproxy.go:EgressProxy",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

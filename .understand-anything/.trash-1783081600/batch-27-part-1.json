@@ -1,0 +1,2519 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "type": "file",
+      "name": "validate.go",
+      "filePath": "packages/orchestrator/cmd/inspect-build/validate.go",
+      "summary": "生产校验工具：通过 block.Chunker 对 build artifact 进行端到端校验， recursive 模式下顺延校验所有父级映射。",
+      "tags": [
+        "cli",
+        "validation",
+        "block-storage"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "summary": "CLI 工具入口：将 envd 构建的 rootfs 挂载到 NBD 设备以便校验或导出。 集成 block cache、dedup、feature flags 与 NBD 路径直连。",
+      "tags": [
+        "cli",
+        "mount",
+        "rootfs",
+        "nbd",
+        "entry-point"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "type": "file",
+      "name": "cache.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "summary": "内存映射（memfd/mmap）回写缓存，支持 hole punch、dedup drain 与导出 diff。 是 block 子系统的核心：合并 dirty pages 和按需从远端 base 拉取。",
+      "tags": [
+        "cache",
+        "block-storage",
+        "mmap",
+        "dedup",
+        "data-structure",
+        "core"
+      ],
+      "complexity": "complex",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "type": "file",
+      "name": "cache_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "summary": "针对 cache.go 的测试套件，覆盖 dedup、写入、导出、零页缓存与 process memory 复制。 包含基准测试 BenchmarkCopyFromHugepagesFile 与子测试包装器 perPagePeeker。",
+      "tags": [
+        "test",
+        "cache",
+        "dedup",
+        "benchmark"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "type": "file",
+      "name": "dedup.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "summary": "基于 base+dirty 的页面级去重/调度器，按 budget（fetch 窗口/parent promotion）做规划。 输出 dedupPlan（pageDirty / pageEmpty / promotedFrames 等）供 cache.Dedup 消费。",
+      "tags": [
+        "dedup",
+        "block-storage",
+        "planner",
+        "budget",
+        "core"
+      ],
+      "complexity": "complex",
+      "languageNotes": "含 budget 受限的调度算法（page-level fetch windows / parent promotion）。"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "type": "file",
+      "name": "dedup_sim_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "summary": "Dedup 调度的随机链仿真测试： 对照 plannerDedup / plannerNoDedup / plannerRunKnapsack 等策略的 storedMiB 与缓存命中。",
+      "tags": [
+        "test",
+        "simulation",
+        "dedup",
+        "planner"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "type": "file",
+      "name": "dedup_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "summary": "Dedup 单元测试，覆盖 fetch-run budget、parent frame promotion、frame window compression。 通过 helper parentKeyedPage / TestFetchWindowerCompact 等验证紧凑化逻辑。",
+      "tags": [
+        "test",
+        "dedup",
+        "budget",
+        "promotion"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "type": "file",
+      "name": "device.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/device.go",
+      "summary": "block 子系统的接口集合：FramedReader / Slicer / Device / ReadonlyDevice / DiffSource。 所有具体存储后端（Cache、Local、Empty、Memfd、Overlay、BuildDevice）的契约定义。",
+      "tags": [
+        "interface",
+        "contract",
+        "block-storage"
+      ],
+      "complexity": "complex",
+      "languageNotes": "纯接口定义文件，所有具体存储后端都实现这些契约。"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/validate.go:runValidate",
+      "type": "function",
+      "name": "runValidate",
+      "filePath": "packages/orchestrator/cmd/inspect-build/validate.go",
+      "lineRange": [
+        34,
+        73
+      ],
+      "summary": "runValidate 是 validate.go 中的关键函数，行 34-73。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/validate.go:validateBuild",
+      "type": "function",
+      "name": "validateBuild",
+      "filePath": "packages/orchestrator/cmd/inspect-build/validate.go",
+      "lineRange": [
+        80,
+        146
+      ],
+      "summary": "validateBuild 是 validate.go 中的关键函数，行 80-146。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/validate.go:openChunker",
+      "type": "function",
+      "name": "openChunker",
+      "filePath": "packages/orchestrator/cmd/inspect-build/validate.go",
+      "lineRange": [
+        150,
+        206
+      ],
+      "summary": "openChunker 是 validate.go 中的关键函数，行 150-206。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/validate.go:reportValidation",
+      "type": "function",
+      "name": "reportValidation",
+      "filePath": "packages/orchestrator/cmd/inspect-build/validate.go",
+      "lineRange": [
+        211,
+        256
+      ],
+      "summary": "reportValidation 是 validate.go 中的关键函数，行 211-256。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/validate.go:validationUnits",
+      "type": "function",
+      "name": "validationUnits",
+      "filePath": "packages/orchestrator/cmd/inspect-build/validate.go",
+      "lineRange": [
+        262,
+        280
+      ],
+      "summary": "validationUnits 是 validate.go 中的关键函数，行 262-280。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/validate.go:validateFrameTable",
+      "type": "function",
+      "name": "validateFrameTable",
+      "filePath": "packages/orchestrator/cmd/inspect-build/validate.go",
+      "lineRange": [
+        286,
+        322
+      ],
+      "summary": "validateFrameTable 是 validate.go 中的关键函数，行 286-322。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/validate.go:mergeRanges",
+      "type": "function",
+      "name": "mergeRanges",
+      "filePath": "packages/orchestrator/cmd/inspect-build/validate.go",
+      "lineRange": [
+        325,
+        342
+      ],
+      "summary": "mergeRanges 是 validate.go 中的关键函数，行 325-342。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/validate.go:coveredBy",
+      "type": "function",
+      "name": "coveredBy",
+      "filePath": "packages/orchestrator/cmd/inspect-build/validate.go",
+      "lineRange": [
+        345,
+        357
+      ],
+      "summary": "coveredBy 是 validate.go 中的关键函数，行 345-357。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/mount-build-rootfs/main.go:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "lineRange": [
+        26,
+        95
+      ],
+      "summary": "main 是 main.go 中的关键函数，行 26-95。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/mount-build-rootfs/main.go:runEmpty",
+      "type": "function",
+      "name": "runEmpty",
+      "filePath": "packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "lineRange": [
+        97,
+        135
+      ],
+      "summary": "runEmpty 是 main.go 中的关键函数，行 97-135。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/mount-build-rootfs/main.go:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "lineRange": [
+        137,
+        232
+      ],
+      "summary": "run 是 main.go 中的关键函数，行 137-232。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/cache.go:Cache",
+      "type": "class",
+      "name": "Cache",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        51,
+        60
+      ],
+      "summary": "block 子系统的 Cache 实现，定义在 packages/orchestrator/pkg/sandbox/block/cache.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:NewCache",
+      "type": "function",
+      "name": "NewCache",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        62,
+        103
+      ],
+      "summary": "NewCache 是 cache.go 中的关键函数，行 62-103。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:ExportToDiff",
+      "type": "function",
+      "name": "ExportToDiff",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        109,
+        205
+      ],
+      "summary": "ExportToDiff 是 cache.go 中的关键函数，行 109-205。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:dedupDrain",
+      "type": "function",
+      "name": "dedupDrain",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        208,
+        251
+      ],
+      "summary": "dedupDrain 是 cache.go 中的关键函数，行 208-251。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:drainDirtyPages",
+      "type": "function",
+      "name": "drainDirtyPages",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        256,
+        292
+      ],
+      "summary": "drainDirtyPages 是 cache.go 中的关键函数，行 256-292。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:Dedup",
+      "type": "function",
+      "name": "Dedup",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        296,
+        346
+      ],
+      "summary": "Dedup 是 cache.go 中的关键函数，行 296-346。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:ReadAt",
+      "type": "function",
+      "name": "ReadAt",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        348,
+        366
+      ],
+      "summary": "ReadAt 是 cache.go 中的关键函数，行 348-366。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:WriteAt",
+      "type": "function",
+      "name": "WriteAt",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        368,
+        381
+      ],
+      "summary": "WriteAt 是 cache.go 中的关键函数，行 368-381。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:Close",
+      "type": "function",
+      "name": "Close",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        383,
+        405
+      ],
+      "summary": "Close 是 cache.go 中的关键函数，行 383-405。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:Slice",
+      "type": "function",
+      "name": "Slice",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        417,
+        433
+      ],
+      "summary": "Slice 是 cache.go 中的关键函数，行 417-433。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:sliceDirect",
+      "type": "function",
+      "name": "sliceDirect",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        437,
+        453
+      ],
+      "summary": "sliceDirect 是 cache.go 中的关键函数，行 437-453。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:WriteAtWithoutLock",
+      "type": "function",
+      "name": "WriteAtWithoutLock",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        478,
+        524
+      ],
+      "summary": "WriteAtWithoutLock 是 cache.go 中的关键函数，行 478-524。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:WriteZeroesAt",
+      "type": "function",
+      "name": "WriteZeroesAt",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        528,
+        553
+      ],
+      "summary": "WriteZeroesAt 是 cache.go 中的关键函数，行 528-553。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:FileSize",
+      "type": "function",
+      "name": "FileSize",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        557,
+        568
+      ],
+      "summary": "FileSize 是 cache.go 中的关键函数，行 557-568。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:address",
+      "type": "function",
+      "name": "address",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        570,
+        580
+      ],
+      "summary": "address 是 cache.go 中的关键函数，行 570-580。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:addressBytes",
+      "type": "function",
+      "name": "addressBytes",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        583,
+        611
+      ],
+      "summary": "addressBytes 是 cache.go 中的关键函数，行 583-611。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:NewCacheFromProcessMemory",
+      "type": "function",
+      "name": "NewCacheFromProcessMemory",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        621,
+        645
+      ],
+      "summary": "NewCacheFromProcessMemory 是 cache.go 中的关键函数，行 621-645。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:copyProcessMemory",
+      "type": "function",
+      "name": "copyProcessMemory",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        647,
+        695
+      ],
+      "summary": "copyProcessMemory 是 cache.go 中的关键函数，行 647-695。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache.go:splitOversizedRanges",
+      "type": "function",
+      "name": "splitOversizedRanges",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache.go",
+      "lineRange": [
+        700,
+        717
+      ],
+      "summary": "splitOversizedRanges 是 cache.go 中的关键函数，行 700-717。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "大量 mmap 与 lock 操作，包含 process_vm_readv 复制 hugepages。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:allocateTestMemory",
+      "type": "function",
+      "name": "allocateTestMemory",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        27,
+        38
+      ],
+      "summary": "allocateTestMemory 是 cache_test.go 中的关键函数，行 27-38。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCopyFromProcess_FullRange",
+      "type": "function",
+      "name": "TestCopyFromProcess_FullRange",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        40,
+        71
+      ],
+      "summary": "TestCopyFromProcess_FullRange 是 cache_test.go 中的关键函数，行 40-71。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCopyFromProcess_LargeRanges",
+      "type": "function",
+      "name": "TestCopyFromProcess_LargeRanges",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        73,
+        117
+      ],
+      "summary": "TestCopyFromProcess_LargeRanges 是 cache_test.go 中的关键函数，行 73-117。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCopyFromProcess_MultipleRanges",
+      "type": "function",
+      "name": "TestCopyFromProcess_MultipleRanges",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        119,
+        164
+      ],
+      "summary": "TestCopyFromProcess_MultipleRanges 是 cache_test.go 中的关键函数，行 119-164。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCopyFromProcess_HugepageToRegularPage",
+      "type": "function",
+      "name": "TestCopyFromProcess_HugepageToRegularPage",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        166,
+        209
+      ],
+      "summary": "TestCopyFromProcess_HugepageToRegularPage 是 cache_test.go 中的关键函数，行 166-209。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheExportToDiff_ZeroBlockMapsToEmpty",
+      "type": "function",
+      "name": "TestCacheExportToDiff_ZeroBlockMapsToEmpty",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        271,
+        305
+      ],
+      "summary": "TestCacheExportToDiff_ZeroBlockMapsToEmpty 是 cache_test.go 中的关键函数，行 271-305。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheExportToDiff_MixedZeroBlockSplitsIntoEmptyAndDirty",
+      "type": "function",
+      "name": "TestCacheExportToDiff_MixedZeroBlockSplitsIntoEmptyAndDirty",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        307,
+        361
+      ],
+      "summary": "TestCacheExportToDiff_MixedZeroBlockSplitsIntoEmptyAndDirty 是 cache_test.go 中的关键函数，行 307-361。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheWriteZeroesAt_AlignedRangeMapsToEmpty",
+      "type": "function",
+      "name": "TestCacheWriteZeroesAt_AlignedRangeMapsToEmpty",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        363,
+        392
+      ],
+      "summary": "TestCacheWriteZeroesAt_AlignedRangeMapsToEmpty 是 cache_test.go 中的关键函数，行 363-392。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheExportToDiff_NonContiguousDirtyBlocksPreserveRangeOrder",
+      "type": "function",
+      "name": "TestCacheExportToDiff_NonContiguousDirtyBlocksPreserveRangeOrder",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        394,
+        432
+      ],
+      "summary": "TestCacheExportToDiff_NonContiguousDirtyBlocksPreserveRangeOrder 是 cache_test.go 中的关键函数，行 394-432。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCache_ZeroLengthIsCachedAndSetIsCached",
+      "type": "function",
+      "name": "TestCache_ZeroLengthIsCachedAndSetIsCached",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        434,
+        464
+      ],
+      "summary": "TestCache_ZeroLengthIsCachedAndSetIsCached 是 cache_test.go 中的关键函数，行 434-464。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:compareData",
+      "type": "function",
+      "name": "compareData",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        466,
+        475
+      ],
+      "summary": "compareData 是 cache_test.go 中的关键函数，行 466-475。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestSplitOversizedRanges",
+      "type": "function",
+      "name": "TestSplitOversizedRanges",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        477,
+        601
+      ],
+      "summary": "TestSplitOversizedRanges 是 cache_test.go 中的关键函数，行 477-601。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCopyFromProcess_Exceed_MAX_RW_COUNT",
+      "type": "function",
+      "name": "TestCopyFromProcess_Exceed_MAX_RW_COUNT",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        604,
+        644
+      ],
+      "summary": "TestCopyFromProcess_Exceed_MAX_RW_COUNT 是 cache_test.go 中的关键函数，行 604-644。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCopyFromProcess_MAX_RW_COUNT_Misalignment_Hugepage",
+      "type": "function",
+      "name": "TestCopyFromProcess_MAX_RW_COUNT_Misalignment_Hugepage",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        647,
+        685
+      ],
+      "summary": "TestCopyFromProcess_MAX_RW_COUNT_Misalignment_Hugepage 是 cache_test.go 中的关键函数，行 647-685。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:BenchmarkCopyFromHugepagesFile",
+      "type": "function",
+      "name": "BenchmarkCopyFromHugepagesFile",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        687,
+        762
+      ],
+      "summary": "BenchmarkCopyFromHugepagesFile 是 cache_test.go 中的关键函数，行 687-762。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:buildPackedSrcCache",
+      "type": "function",
+      "name": "buildPackedSrcCache",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        765,
+        783
+      ],
+      "summary": "buildPackedSrcCache 是 cache_test.go 中的关键函数，行 765-783。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:runDedup",
+      "type": "function",
+      "name": "runDedup",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        785,
+        794
+      ],
+      "summary": "runDedup 是 cache_test.go 中的关键函数，行 785-794。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheDedup_NonZeroRangeStartAndMultipleRanges",
+      "type": "function",
+      "name": "TestCacheDedup_NonZeroRangeStartAndMultipleRanges",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        822,
+        856
+      ],
+      "summary": "TestCacheDedup_NonZeroRangeStartAndMultipleRanges 是 cache_test.go 中的关键函数，行 822-856。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheDedup_ContiguousDirtyBlocks",
+      "type": "function",
+      "name": "TestCacheDedup_ContiguousDirtyBlocks",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        860,
+        894
+      ],
+      "summary": "TestCacheDedup_ContiguousDirtyBlocks 是 cache_test.go 中的关键函数，行 860-894。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheDedup_EmptyParentMappingSkipsBaseReadAt",
+      "type": "function",
+      "name": "TestCacheDedup_EmptyParentMappingSkipsBaseReadAt",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        941,
+        984
+      ],
+      "summary": "TestCacheDedup_EmptyParentMappingSkipsBaseReadAt 是 cache_test.go 中的关键函数，行 941-984。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheDedup_ZeroMatchingPagesGoIntoEmpty",
+      "type": "function",
+      "name": "TestCacheDedup_ZeroMatchingPagesGoIntoEmpty",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        987,
+        1016
+      ],
+      "summary": "TestCacheDedup_ZeroMatchingPagesGoIntoEmpty 是 cache_test.go 中的关键函数，行 987-1016。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheDedup_BestEffortUncachedSkipsBaseReadAt",
+      "type": "function",
+      "name": "TestCacheDedup_BestEffortUncachedSkipsBaseReadAt",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        1041,
+        1072
+      ],
+      "summary": "TestCacheDedup_BestEffortUncachedSkipsBaseReadAt 是 cache_test.go 中的关键函数，行 1041-1072。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCache_FileSize_MatchesActualAllocation",
+      "type": "function",
+      "name": "TestCache_FileSize_MatchesActualAllocation",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "lineRange": [
+        1153,
+        1183
+      ],
+      "summary": "TestCache_FileSize_MatchesActualAllocation 是 cache_test.go 中的关键函数，行 1153-1183。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/dedup.go:fetchWindower",
+      "type": "class",
+      "name": "fetchWindower",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "lineRange": [
+        372,
+        375
+      ],
+      "summary": "block 子系统的 fetchWindower 实现，定义在 packages/orchestrator/pkg/sandbox/block/dedup.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple",
+      "languageNotes": "含 budget 受限的调度算法（page-level fetch windows / parent promotion）。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:dedupCompare",
+      "type": "function",
+      "name": "dedupCompare",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "lineRange": [
+        90,
+        186
+      ],
+      "summary": "dedupCompare 是 dedup.go 中的关键函数，行 90-186。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "含 budget 受限的调度算法（page-level fetch windows / parent promotion）。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:parentFetchKey",
+      "type": "function",
+      "name": "parentFetchKey",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "lineRange": [
+        192,
+        204
+      ],
+      "summary": "parentFetchKey 是 dedup.go 中的关键函数，行 192-204。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "含 budget 受限的调度算法（page-level fetch windows / parent promotion）。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:compactBlockWindows",
+      "type": "function",
+      "name": "compactBlockWindows",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "lineRange": [
+        225,
+        287
+      ],
+      "summary": "compactBlockWindows 是 dedup.go 中的关键函数，行 225-287。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "含 budget 受限的调度算法（page-level fetch windows / parent promotion）。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:countExternalBlocks",
+      "type": "function",
+      "name": "countExternalBlocks",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "lineRange": [
+        293,
+        330
+      ],
+      "summary": "countExternalBlocks 是 dedup.go 中的关键函数，行 293-330。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "含 budget 受限的调度算法（page-level fetch windows / parent promotion）。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:promoteCheapFrames",
+      "type": "function",
+      "name": "promoteCheapFrames",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "lineRange": [
+        338,
+        354
+      ],
+      "summary": "promoteCheapFrames 是 dedup.go 中的关键函数，行 338-354。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "含 budget 受限的调度算法（page-level fetch windows / parent promotion）。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:distinctBlocks",
+      "type": "function",
+      "name": "distinctBlocks",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "lineRange": [
+        357,
+        366
+      ],
+      "summary": "distinctBlocks 是 dedup.go 中的关键函数，行 357-366。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "含 budget 受限的调度算法（page-level fetch windows / parent promotion）。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:compact",
+      "type": "function",
+      "name": "compact",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "lineRange": [
+        384,
+        427
+      ],
+      "summary": "compact 是 dedup.go 中的关键函数，行 384-427。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "含 budget 受限的调度算法（page-level fetch windows / parent promotion）。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:parentKeyGroups",
+      "type": "function",
+      "name": "parentKeyGroups",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "lineRange": [
+        443,
+        461
+      ],
+      "summary": "parentKeyGroups 是 dedup.go 中的关键函数，行 443-461。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "含 budget 受限的调度算法（page-level fetch windows / parent promotion）。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:recordDedupAttrs",
+      "type": "function",
+      "name": "recordDedupAttrs",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "lineRange": [
+        466,
+        488
+      ],
+      "summary": "recordDedupAttrs 是 dedup.go 中的关键函数，行 466-488。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "含 budget 受限的调度算法（page-level fetch windows / parent promotion）。"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:simConfig",
+      "type": "class",
+      "name": "simConfig",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "lineRange": [
+        111,
+        125
+      ],
+      "summary": "block 子系统的 simConfig 实现，定义在 packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:TestDedupFragmentationSim",
+      "type": "function",
+      "name": "TestDedupFragmentationSim",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "lineRange": [
+        38,
+        98
+      ],
+      "summary": "TestDedupFragmentationSim 是 dedup_sim_test.go 中的关键函数，行 38-98。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:simWorkload",
+      "type": "function",
+      "name": "simWorkload",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "lineRange": [
+        138,
+        163
+      ],
+      "summary": "simWorkload 是 dedup_sim_test.go 中的关键函数，行 138-163。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:plannerDedup",
+      "type": "function",
+      "name": "plannerDedup",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "lineRange": [
+        174,
+        184
+      ],
+      "summary": "plannerDedup 是 dedup_sim_test.go 中的关键函数，行 174-184。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:classifyAll",
+      "type": "function",
+      "name": "classifyAll",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "lineRange": [
+        195,
+        208
+      ],
+      "summary": "classifyAll 是 dedup_sim_test.go 中的关键函数，行 195-208。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:plannerFlatten",
+      "type": "function",
+      "name": "plannerFlatten",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "lineRange": [
+        214,
+        226
+      ],
+      "summary": "plannerFlatten 是 dedup_sim_test.go 中的关键函数，行 214-226。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:plannerRunKnapsack",
+      "type": "function",
+      "name": "plannerRunKnapsack",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "lineRange": [
+        232,
+        306
+      ],
+      "summary": "plannerRunKnapsack 是 dedup_sim_test.go 中的关键函数，行 232-306。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:simResume",
+      "type": "function",
+      "name": "simResume",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "lineRange": [
+        317,
+        369
+      ],
+      "summary": "simResume 是 dedup_sim_test.go 中的关键函数，行 317-369。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:simScenarios",
+      "type": "function",
+      "name": "simScenarios",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "lineRange": [
+        376,
+        390
+      ],
+      "summary": "simScenarios 是 dedup_sim_test.go 中的关键函数，行 376-390。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:runSimChain",
+      "type": "function",
+      "name": "runSimChain",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "lineRange": [
+        398,
+        475
+      ],
+      "summary": "runSimChain 是 dedup_sim_test.go 中的关键函数，行 398-475。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:TestDedupRandomChain_NoCorruption",
+      "type": "function",
+      "name": "TestDedupRandomChain_NoCorruption",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "lineRange": [
+        495,
+        591
+      ],
+      "summary": "TestDedupRandomChain_NoCorruption 是 dedup_sim_test.go 中的关键函数，行 495-591。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup_test.go:TestCacheDedup_FetchRunBudgetPromotesSmallParentRun",
+      "type": "function",
+      "name": "TestCacheDedup_FetchRunBudgetPromotesSmallParentRun",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "lineRange": [
+        17,
+        49
+      ],
+      "summary": "TestCacheDedup_FetchRunBudgetPromotesSmallParentRun 是 dedup_test.go 中的关键函数，行 17-49。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup_test.go:TestDedupPlanPromoteCheapFrames",
+      "type": "function",
+      "name": "TestDedupPlanPromoteCheapFrames",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "lineRange": [
+        51,
+        105
+      ],
+      "summary": "TestDedupPlanPromoteCheapFrames 是 dedup_test.go 中的关键函数，行 51-105。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup_test.go:TestCacheDedup_PerBlockAndGlobalBudgetsCompose",
+      "type": "function",
+      "name": "TestCacheDedup_PerBlockAndGlobalBudgetsCompose",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "lineRange": [
+        111,
+        157
+      ],
+      "summary": "TestCacheDedup_PerBlockAndGlobalBudgetsCompose 是 dedup_test.go 中的关键函数，行 111-157。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup_test.go:TestCacheDedup_ExternallyReferencedFrameNotPromoted",
+      "type": "function",
+      "name": "TestCacheDedup_ExternallyReferencedFrameNotPromoted",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "lineRange": [
+        162,
+        194
+      ],
+      "summary": "TestCacheDedup_ExternallyReferencedFrameNotPromoted 是 dedup_test.go 中的关键函数，行 162-194。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup_test.go:TestParentFetchKey_UsesBuildFrameTable",
+      "type": "function",
+      "name": "TestParentFetchKey_UsesBuildFrameTable",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "lineRange": [
+        199,
+        230
+      ],
+      "summary": "TestParentFetchKey_UsesBuildFrameTable 是 dedup_test.go 中的关键函数，行 199-230。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/dedup_test.go:TestFetchWindowerCompact",
+      "type": "function",
+      "name": "TestFetchWindowerCompact",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "lineRange": [
+        239,
+        298
+      ],
+      "summary": "TestFetchWindowerCompact 是 dedup_test.go 中的关键函数，行 239-298。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/device.go:Slicer",
+      "type": "class",
+      "name": "Slicer",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/device.go",
+      "lineRange": [
+        29,
+        32
+      ],
+      "summary": "block 子系统的 Slicer 实现，定义在 packages/orchestrator/pkg/sandbox/block/device.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple",
+      "languageNotes": "纯接口定义文件，所有具体存储后端都实现这些契约。"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/device.go:ReadonlyDevice",
+      "type": "class",
+      "name": "ReadonlyDevice",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/device.go",
+      "lineRange": [
+        34,
+        42
+      ],
+      "summary": "block 子系统的 ReadonlyDevice 实现，定义在 packages/orchestrator/pkg/sandbox/block/device.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple",
+      "languageNotes": "纯接口定义文件，所有具体存储后端都实现这些契约。"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/device.go:DiffSource",
+      "type": "class",
+      "name": "DiffSource",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/device.go",
+      "lineRange": [
+        59,
+        67
+      ],
+      "summary": "block 子系统的 DiffSource 实现，定义在 packages/orchestrator/pkg/sandbox/block/device.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple",
+      "languageNotes": "纯接口定义文件，所有具体存储后端都实现这些契约。"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/cmd/internal/cmdutil/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/iov.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/metrics/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/cmd/internal/cmdutil/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/iov.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch_writezeroes_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/mounthelper.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/cleaner.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/logger_overlay.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/zero_device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/testutils/diff_byte.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/testutils/page_mmap.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/testutils/pagemap.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/validate.go:runValidate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/validate.go:validateBuild",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/validate.go:openChunker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/validate.go:reportValidation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/validate.go:validationUnits",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/validate.go:validateFrameTable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/validate.go:mergeRanges",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/validate.go:coveredBy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "function:packages/orchestrator/cmd/mount-build-rootfs/main.go:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "function:packages/orchestrator/cmd/mount-build-rootfs/main.go:runEmpty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/mount-build-rootfs/main.go",
+      "target": "function:packages/orchestrator/cmd/mount-build-rootfs/main.go:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/cache.go:Cache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:NewCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:ExportToDiff",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:dedupDrain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:drainDirtyPages",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:Dedup",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:ReadAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:WriteAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:Slice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:sliceDirect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:WriteAtWithoutLock",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:WriteZeroesAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:FileSize",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:address",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:addressBytes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:NewCacheFromProcessMemory",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:copyProcessMemory",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache.go:splitOversizedRanges",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:allocateTestMemory",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCopyFromProcess_FullRange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCopyFromProcess_LargeRanges",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCopyFromProcess_MultipleRanges",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCopyFromProcess_HugepageToRegularPage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheExportToDiff_ZeroBlockMapsToEmpty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheExportToDiff_MixedZeroBlockSplitsIntoEmptyAndDirty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheWriteZeroesAt_AlignedRangeMapsToEmpty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheExportToDiff_NonContiguousDirtyBlocksPreserveRangeOrder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCache_ZeroLengthIsCachedAndSetIsCached",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:compareData",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestSplitOversizedRanges",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCopyFromProcess_Exceed_MAX_RW_COUNT",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCopyFromProcess_MAX_RW_COUNT_Misalignment_Hugepage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:BenchmarkCopyFromHugepagesFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:buildPackedSrcCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:runDedup",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheDedup_NonZeroRangeStartAndMultipleRanges",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheDedup_ContiguousDirtyBlocks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheDedup_EmptyParentMappingSkipsBaseReadAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheDedup_ZeroMatchingPagesGoIntoEmpty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCacheDedup_BestEffortUncachedSkipsBaseReadAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/cache_test.go:TestCache_FileSize_MatchesActualAllocation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/dedup.go:fetchWindower",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:dedupCompare",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:parentFetchKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:compactBlockWindows",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:countExternalBlocks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:promoteCheapFrames",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:distinctBlocks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:compact",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:parentKeyGroups",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup.go:recordDedupAttrs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:simConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:TestDedupFragmentationSim",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:simWorkload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:plannerDedup",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:classifyAll",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:plannerFlatten",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:plannerRunKnapsack",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:simResume",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:simScenarios",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:runSimChain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go:TestDedupRandomChain_NoCorruption",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup_test.go:TestCacheDedup_FetchRunBudgetPromotesSmallParentRun",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup_test.go:TestDedupPlanPromoteCheapFrames",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup_test.go:TestCacheDedup_PerBlockAndGlobalBudgetsCompose",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup_test.go:TestCacheDedup_ExternallyReferencedFrameNotPromoted",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup_test.go:TestParentFetchKey_UsesBuildFrameTable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/dedup_test.go:TestFetchWindowerCompact",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/device.go:Slicer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/device.go:ReadonlyDevice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/device.go:DiffSource",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ]
+}

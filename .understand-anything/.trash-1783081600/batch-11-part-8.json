@@ -1,0 +1,89 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/factories/cmux.go",
+      "type": "file",
+      "name": "cmux.go",
+      "filePath": "packages/orchestrator/pkg/factories/cmux.go",
+      "summary": "基于 cmux 的服务复用工厂，构造在同一端口多路复用 HTTP 与 gRPC 的连接复用器。",
+      "tags": [
+        "factory",
+        "cmux",
+        "networking"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/factories/featureflags_context.go",
+      "type": "file",
+      "name": "featureflags_context.go",
+      "filePath": "packages/orchestrator/pkg/factories/featureflags_context.go",
+      "summary": "为 LaunchDarkly 提供 orchestrator 上下文（节点 ID/commit）的 ContextProvider 实现。",
+      "tags": [
+        "feature-flags",
+        "launchdarkly",
+        "context"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/factories/http.go",
+      "type": "file",
+      "name": "http.go",
+      "filePath": "packages/orchestrator/pkg/factories/http.go",
+      "summary": "Orchestrator HTTP 服务工厂，启动带 tracer/metrics 的标准 HTTP server。",
+      "tags": [
+        "factory",
+        "http",
+        "server"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/factories/cmux.go:NewCMUXServer",
+      "type": "function",
+      "name": "NewCMUXServer",
+      "filePath": "packages/orchestrator/pkg/factories/cmux.go",
+      "lineRange": [
+        19,
+        39
+      ],
+      "summary": "NewCMUXServer 函数（行 19-39）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/factories/http.go:NewHTTPServer",
+      "type": "function",
+      "name": "NewHTTPServer",
+      "filePath": "packages/orchestrator/pkg/factories/http.go",
+      "lineRange": [
+        7,
+        9
+      ],
+      "summary": "NewHTTPServer 函数（行 7-9）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/factories/cmux.go",
+      "target": "function:packages/orchestrator/pkg/factories/cmux.go:NewCMUXServer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/http.go",
+      "target": "function:packages/orchestrator/pkg/factories/http.go:NewHTTPServer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ]
+}

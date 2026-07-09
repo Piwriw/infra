@@ -1,0 +1,150 @@
+[
+  {
+    "order": 1,
+    "title": "项目概览：E2B 基础设施",
+    "description": "E2B Infrastructure 是支撑 E2B (e2b.dev) 开放云平台的底层基础设施，为 AI 代码解释 (AI code interpreting) 提供基于 Firecracker microVM 的安全沙箱执行环境。整个仓库围绕 `packages/` 下的多个 Go 服务展开，结合 Terraform / Nomad 在 GCP 与 AWS 上部署。本步先建立项目地图：理解服务通信链路 `Client → Client-Proxy → API (REST) → Orchestrator (gRPC) → Firecracker VM → Envd`，后续步骤会沿着这条链路逐层深入。",
+    "nodeIds": [
+      "document:README.md",
+      "document:CLAUDE.md",
+      "document:self-host.md"
+    ]
+  },
+  {
+    "order": 2,
+    "title": "API 服务入口",
+    "description": "`packages/api/main.go` 是 E2B API 服务的进程入口，负责装配 Gin 路由、OIDC 鉴权中间件、orchestrator gRPC 代理以及 PostgreSQL / Redis / ClickHouse 客户端。它还提供优雅关闭 (graceful shutdown) 与 pprof 调试端点。从这里开始阅读，可以迅速掌握 API 服务对外暴露了哪些能力、如何把请求转交给下游 orchestrator。",
+    "nodeIds": [
+      "file:packages/api/main.go",
+      "file:packages/api/internal/cfg/model.go",
+      "file:packages/api/internal/handlers/store.go"
+    ],
+    "languageLesson": "Go 在大型服务中常用 `APIStore` 这种 \"god struct\" 模式：把数据库连接、Redis、缓存、集群池、feature flag 等共享依赖集中持有，再由各 handler 方法接收 *APIStore，便于跨 handler 复用同时保持方法签名一致。"
+  },
+  {
+    "order": 3,
+    "title": "REST API 与 OpenAPI 生成",
+    "description": "API 的 HTTP 表面由 OpenAPI 规范定义，并通过 `oapi-codegen` 自动生成 `internal/api/api.gen.go` 中的 ServerInterface、ClientInterface 与所有请求 / 响应类型。这种 \"OpenAPI 作为单一事实来源\" 的方式让 SDK、文档与实现保持一致。本步可看到路由如何把请求映射到 `internal/handlers/` 下的具体业务方法，以及鉴权 (API key / access token / OIDC JWT) 如何在中间件链中插入。",
+    "nodeIds": [
+      "file:packages/api/internal/api/api.gen.go",
+      "file:packages/api/internal/api/error.go",
+      "file:packages/api/internal/handlers/auth.go",
+      "file:packages/api/internal/handlers/apikey.go"
+    ],
+    "languageLesson": "代码生成 (codegen) 在 E2B 仓库里随处可见：OpenAPI → Go、SQL → sqlc、protobuf → Go。生成代码统一放在 `*.gen.go` 中，开发时不要手改；任何 schema 变更都应先改源文件再 `make generate`。"
+  },
+  {
+    "order": 4,
+    "title": "数据层：PostgreSQL / sqlc / 迁移",
+    "description": "`packages/db/` 封装了所有持久化逻辑：`migrations/*.sql` 用 goose 管理 schema 演进，`queries/*/*.sql` 用 sqlc 编译为类型安全的 Go 查询 (`*.sql.go`)。这一层被 API 与 orchestrator 共享，为 sandbox / team / template / build 等核心实体提供 CRUD。理解数据层后，就掌握了 sandbox 生命周期中 \"状态来源\" 的设计：哪些字段属于持久化状态、哪些属于运行时状态。",
+    "nodeIds": [
+      "file:packages/db/sqlc.yaml",
+      "file:packages/db/queries/db.go",
+      "file:packages/db/queries/models.go",
+      "table:packages/db/migrations/20231124185944_create_schemas_and_tables.sql",
+      "table:packages/db/migrations/20240315165236_create_env_builds.sql"
+    ]
+  },
+  {
+    "order": 5,
+    "title": "缓存层：Redis 模板缓存",
+    "description": "`packages/api/internal/cache/templates/` 提供了一套组合缓存：`alias_cache` 按 tag/team 索引模板别名，`template_build_cache` 缓存构建产物，`template_metadata_cache` 组合上面三个子缓存并暴露统一查询接口。它把高频访问的模板元数据放在 Redis，同时通过 invalidation 保证与 PostgreSQL 的一致性。这一步展示了 \"读多写少\" 场景下典型的多层缓存 + DB 兜底模式。",
+    "nodeIds": [
+      "file:packages/api/internal/cache/templates/cache.go",
+      "file:packages/api/internal/cache/templates/alias_cache.go",
+      "file:packages/api/internal/cache/templates/template_build.go",
+      "file:packages/api/internal/cache/templates/template_metadata_cache.go"
+    ]
+  },
+  {
+    "order": 6,
+    "title": "Orchestrator 编排层",
+    "description": "`packages/orchestrator/main.go` 是 orchestrator 进程入口；`pkg/factories/run.go` 负责解析配置、初始化共享依赖、启动 NFS proxy 与 hyperloop server；`pkg/server/main.go` 提供顶层 `Server` 结构来管理 template cache、sandbox factory、proxy 与 metrics。本步揭示 orchestrator 如何把 \"创建一台 sandbox\" 的请求拆解为：模板解析 → 网络装配 → rootfs 挂载 → Firecracker 启动 → envd 握手。",
+    "nodeIds": [
+      "file:packages/orchestrator/main.go",
+      "file:packages/orchestrator/pkg/factories/run.go",
+      "file:packages/orchestrator/pkg/server/main.go",
+      "file:packages/orchestrator/pkg/cfg/model.go",
+      "file:packages/orchestrator/pkg/sandbox/sandbox.go"
+    ],
+    "languageLesson": "Orchestrator 大量使用 \"factory pattern\"：`factories` 包集中提供配置解析、HTTP 服务、cmux 复用、feature flag context provider 等可复用工厂方法；上层 `Server` 只需组合这些工厂，不必关心每个组件的初始化细节。"
+  },
+  {
+    "order": 7,
+    "title": "Sandbox 与反向代理",
+    "description": "sandbox 生命周期 (create / resume / pause / close / shutdown) 由 `pkg/sandbox/sandbox.go` 中的 `Sandbox` 与 `Factory` 编排。每个 sandbox 通过 `pkg/proxy/proxy.go` 中的 `SandboxProxy` 暴露 HTTP / WebSocket：proxy 根据 host header 与 E2B 自定义 header 解析 sandbox ID 与端口，并实施限流。这一层解释了为什么 client 永远只需要访问一个 orchestrator endpoint，而不用关心内部到底运行的是哪台 VM。",
+    "nodeIds": [
+      "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "file:packages/shared/pkg/proxy/handler.go",
+      "file:packages/shared/pkg/proxy/host.go"
+    ]
+  },
+  {
+    "order": 8,
+    "title": "Firecracker 与 microVM 资源",
+    "description": "每个 sandbox 都跑在一个 Firecracker microVM 中。`pkg/sandbox/fc/` 负责 Firecracker HTTP API 的封装、启动脚本构建与 balloon / block / network metrics 采集；`pkg/sandbox/network/` 通过 netlink + iptables 创建/销毁 netns、veth、tap；`pkg/sandbox/nbd/` 实现 Linux NBD (Network Block Device) 请求分发，把 rootfs 暴露给 VM；`pkg/sandbox/uffd/` 用 userfaultfd 实现按需内存加载。理解这一层就能看清 \"一台 sandbox 的物理资源\" 是如何被组装出来的。",
+    "nodeIds": [
+      "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "file:packages/orchestrator/pkg/sandbox/fc/fph_gates.go",
+      "file:packages/orchestrator/pkg/sandbox/network/network.go",
+      "file:packages/orchestrator/pkg/sandbox/network/pool.go",
+      "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "file:packages/orchestrator/pkg/sandbox/nbd/pool.go"
+    ],
+    "languageLesson": "微VM 编排是系统编程：netlink、iptables、NBD、userfaultfd 全是 Linux 内核接口。Go 在这里通过 `syscall` 与 cgo 调用这些能力，本包内大量代码是对低层系统调用的薄封装。"
+  },
+  {
+    "order": 9,
+    "title": "Envd：VM 内守护进程与 gRPC 协议",
+    "description": "Envd 是运行在每台 Firecracker VM 内的用户态守护进程，对外暴露基于 Connect-RPC (HTTP/2 + protobuf) 的 API。`packages/envd/main.go` 是入口；`spec/process/process.proto` 与 `spec/filesystem/filesystem.proto` 定义了进程管理与文件系统操作的 RPC；`packages/shared/pkg/grpc/envd_command.go` 提供跨服务共享的 Go 客户端/桩代码。Sandbox 内的 `Execute`、`Upload`、`FileInfo` 等操作都经由 envd 完成，因此它是 E2B \"在沙箱内运行任意代码\" 能力的最后一公里。",
+    "nodeIds": [
+      "file:packages/envd/main.go",
+      "file:packages/envd/pkg/version.go",
+      "file:packages/envd/spec/process/process.proto",
+      "file:packages/envd/spec/filesystem/filesystem.proto",
+      "file:packages/shared/pkg/grpc/envd_command.go"
+    ],
+    "languageLesson": "Envd 使用 Connect-RPC 而非传统 gRPC：它可以同时复用 HTTP/1.1 与 HTTP/2，并通过标准 `net/http` handler 提供服务，省去 grpc-gateway 的中间层。`pkg/version.go` 必须随行为变更手动 bump，这是 client 校验协议兼容性的关键。"
+  },
+  {
+    "order": 10,
+    "title": "共享能力：可观测性 / 存储 / 特性开关",
+    "description": "`packages/shared/pkg/` 集中提供跨服务复用的横切关注点：`telemetry/` 负责 OpenTelemetry traces/metrics/logs 初始化与 GCP/AWS edge trace 传播；`logger/` 基于 Zap 提供结构化日志与 OTel 编码；`storage/` 封装 GCS/S3 客户端及 LZ4/Zstd 压缩；`featureflags/` 包装 LaunchDarkly，把集群/沙箱/团队上下文注入评估。理解这一层后，就能跨 API / orchestrator / envd 跟踪同一次请求的 trace 与日志。",
+    "nodeIds": [
+      "file:packages/shared/pkg/telemetry/config.go",
+      "file:packages/shared/pkg/telemetry/cloud_trace_propagator.go",
+      "file:packages/shared/pkg/logger/fields.go",
+      "file:packages/shared/pkg/logger/grpc.go",
+      "file:packages/shared/pkg/storage/compress_encode.go",
+      "file:packages/shared/pkg/featureflags/client.go",
+      "file:packages/shared/pkg/featureflags/flags.go"
+    ]
+  },
+  {
+    "order": 11,
+    "title": "部署与 CI/CD",
+    "description": "代码最终通过 GitHub Actions 构建并发布到 GCP / AWS。`packages/api/Dockerfile`、`packages/orchestrator/Dockerfile` 等多阶段构建用 `golang:1.26.3-alpine` 编译，最终产物放进 `alpine:3.22` 或 `scratch` 极简镜像；`.github/workflows/build-and-upload-images.yml` 负责按 staging / foxtrot / juliett / tango 多环境并行打镜像；`integration_tests.yml` 跑 uncompressed / zstd1 / lz4 + dedup 的端到端组合矩阵；`out-of-order-migrations.yml` 校验 PR 不会引入乱序 SQL 迁移。Nomad job 与 Terraform 资源位于 `iac/provider-gcp/`，把镜像真正调度到节点上。",
+    "nodeIds": [
+      "service:packages/api/Dockerfile",
+      "service:packages/orchestrator/Dockerfile",
+      "service:packages/db/Dockerfile",
+      "pipeline:.github/workflows/build-and-upload-images.yml",
+      "pipeline:.github/workflows/integration_tests.yml",
+      "pipeline:.github/workflows/out-of-order-migrations.yml"
+    ],
+    "languageLesson": "多阶段 Docker 构建 (multi-stage build) 是 E2B 减小生产镜像体积的关键：builder 阶段承担编译期依赖 (go toolchain、make)，runtime 阶段只复制编译好的二进制到 alpine/scratch，把镜像从几百 MB 压到几十 MB。"
+  },
+  {
+    "order": 12,
+    "title": "下一步：从哪里继续",
+    "description": "完成这次 tour 后，你已经能从 README 一路追到 envd 内 RPC，并理解 CI/CD 如何把整条链路部署到 GCP。推荐的下一步：(1) 跑 `make local-infra` 启动本地 PostgreSQL/Redis/ClickHouse，再 `make run-local` 启动 API 与 orchestrator；(2) 在 `tests/integration/` 找一个端到端用例 trace 一次真实请求；(3) 阅读 `packages/orchestrator/MODULE_GUIDE.md` 与 `docs/MODULE_GUIDE.md` 中针对子模块的深入讲解；(4) 想自己改 schema 时，从 `packages/db/migrations/` 新增文件开始，再用 `make generate/db` + `make migrate` 完成闭环。",
+    "nodeIds": [
+      "document:DEV.md",
+      "document:DEV-LOCAL.md",
+      "document:CONTRIBUTING.md",
+      "document:docs/MODULE_GUIDE.md",
+      "document:packages/orchestrator/MODULE_GUIDE.md",
+      "document:packages/envd/MODULE_GUIDE.md"
+    ]
+  }
+]

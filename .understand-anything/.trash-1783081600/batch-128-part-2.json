@@ -1,0 +1,597 @@
+{
+  "nodes": [
+    {
+      "id": "config:packages/shared/pkg/fc/firecracker.yml",
+      "type": "config",
+      "name": "firecracker.yml",
+      "filePath": "packages/shared/pkg/fc/firecracker.yml",
+      "summary": "Firecracker 版本配置文件,定义不同版本下 hugepages、free page reporting/hinting、memfd 等特性的可用性矩阵,被 fcversion 包和 generate.go 读取。",
+      "tags": [
+        "configuration",
+        "firecracker",
+        "feature-flags",
+        "versioning"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/fc/generate.go",
+      "type": "file",
+      "name": "generate.go",
+      "filePath": "packages/shared/pkg/fc/generate.go",
+      "summary": "Firecracker 版本特性的代码生成入口文件(go:generate 触发器),解析 firecracker.yml 并生成对应的 Go 特性查询代码。",
+      "tags": [
+        "code-generation",
+        "firecracker",
+        "build-tool"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/fcversion/sandbox_features.go",
+      "type": "file",
+      "name": "sandbox_features.go",
+      "filePath": "packages/shared/pkg/fcversion/sandbox_features.go",
+      "summary": "Firecracker sandbox 特性查询辅助函数集合:HasHugePages、HasFreePageReporting、HasFreePageHinting、HasMemfd,基于 fc version Info 返回布尔值。",
+      "tags": [
+        "firecracker",
+        "feature-flags",
+        "sandbox",
+        "version"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/fcversion/version.go",
+      "type": "file",
+      "name": "version.go",
+      "filePath": "packages/shared/pkg/fcversion/version.go",
+      "summary": "fcversion.Info 类型定义,负责解析形如 'v1.0.0_abcdef' 的 Firecracker 版本字符串,提取 semver 与 commit hash。",
+      "tags": [
+        "firecracker",
+        "semver",
+        "version-parsing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/fcversion/version_test.go",
+      "type": "file",
+      "name": "version_test.go",
+      "filePath": "packages/shared/pkg/fcversion/version_test.go",
+      "summary": "fcversion.Info 解析测试,覆盖带 commit/不带 commit/不带 v 前缀/非法输入等版本字符串场景,以及 HasHugePages 特性查询测试。",
+      "tags": [
+        "test",
+        "firecracker",
+        "version-parsing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/filesystem/entry.go",
+      "type": "file",
+      "name": "entry.go",
+      "filePath": "packages/shared/pkg/filesystem/entry.go",
+      "summary": "filesystem entry 核心实现:GetEntryFromPath/GetEntryInfo 解析文件为 EntryInfo,处理符号链接追踪、文件类型识别、stat 时间与 uid/gid 提取等。",
+      "tags": [
+        "filesystem",
+        "symlink",
+        "entry-info",
+        "stat"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/filesystem/entry_darwin.go",
+      "type": "file",
+      "name": "entry_darwin.go",
+      "filePath": "packages/shared/pkg/filesystem/entry_darwin.go",
+      "summary": "macOS 平台的 extractStatTimes 实现,从 syscall.Stat_t 中提取 atime/ctime/mtime/uid/gid 字段(覆盖 darwin 平台)。",
+      "tags": [
+        "platform-specific",
+        "darwin",
+        "filesystem",
+        "syscall"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/filesystem/entry_linux.go",
+      "type": "file",
+      "name": "entry_linux.go",
+      "filePath": "packages/shared/pkg/filesystem/entry_linux.go",
+      "summary": "Linux 平台的 extractStatTimes 实现,从 syscall.Stat_t 中提取 atime/ctime/mtime/uid/gid 字段(覆盖 linux/amd64 平台)。",
+      "tags": [
+        "platform-specific",
+        "linux",
+        "filesystem",
+        "syscall"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/filesystem/entry_test.go",
+      "type": "file",
+      "name": "entry_test.go",
+      "filePath": "packages/shared/pkg/filesystem/entry_test.go",
+      "summary": "filesystem entry 解析测试集合,覆盖 GetEntryType、EntryInfoFromFileInfo 在符号链接/不同权限/空文件/循环链接/坏符号链接等场景的行为。",
+      "tags": [
+        "test",
+        "filesystem",
+        "symlink",
+        "metadata"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/filesystem/model.go",
+      "type": "file",
+      "name": "model.go",
+      "filePath": "packages/shared/pkg/filesystem/model.go",
+      "summary": "文件系统 EntryInfo 数据模型定义,包含名称、路径、类型、大小、权限、时间戳、uid/gid 和符号链接目标等字段。",
+      "tags": [
+        "data-model",
+        "filesystem",
+        "entry-info"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/filesystem/xattr_metadata_test.go",
+      "type": "file",
+      "name": "xattr_metadata_test.go",
+      "filePath": "packages/shared/pkg/filesystem/xattr_metadata_test.go",
+      "summary": "用户态 xattr metadata 读写测试集合,验证空值/无效 UTF-8/非 user 前缀/外部 xattr 的过滤行为以及重命名后元数据保留。",
+      "tags": [
+        "test",
+        "xattr",
+        "metadata",
+        "filesystem"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/filesystem/xattr_test.go",
+      "type": "file",
+      "name": "xattr_test.go",
+      "filePath": "packages/shared/pkg/filesystem/xattr_test.go",
+      "summary": "TestValidateMetadata 测试用例,验证文件系统元数据字段校验逻辑(类型、值范围、必填字段)。",
+      "tags": [
+        "test",
+        "xattr",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/fcversion/sandbox_features.go:HasHugePages",
+      "type": "function",
+      "name": "HasHugePages",
+      "filePath": "packages/shared/pkg/fcversion/sandbox_features.go",
+      "lineRange": [
+        3,
+        9
+      ],
+      "summary": "判断指定 Firecracker 版本是否支持 HugePages 特性,基于 firecracker.yml 配置。",
+      "tags": [
+        "firecracker",
+        "feature-detection",
+        "hugepages"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/fcversion/sandbox_features.go:HasFreePageReporting",
+      "type": "function",
+      "name": "HasFreePageReporting",
+      "filePath": "packages/shared/pkg/fcversion/sandbox_features.go",
+      "lineRange": [
+        11,
+        13
+      ],
+      "summary": "判断指定 Firecracker 版本是否支持 Free Page Reporting 特性。",
+      "tags": [
+        "firecracker",
+        "feature-detection",
+        "free-page-reporting"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/fcversion/sandbox_features.go:HasFreePageHinting",
+      "type": "function",
+      "name": "HasFreePageHinting",
+      "filePath": "packages/shared/pkg/fcversion/sandbox_features.go",
+      "lineRange": [
+        15,
+        17
+      ],
+      "summary": "判断指定 Firecracker 版本是否支持 Free Page Hinting 特性。",
+      "tags": [
+        "firecracker",
+        "feature-detection",
+        "free-page-hinting"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/fcversion/sandbox_features.go:HasMemfd",
+      "type": "function",
+      "name": "HasMemfd",
+      "filePath": "packages/shared/pkg/fcversion/sandbox_features.go",
+      "lineRange": [
+        19,
+        21
+      ],
+      "summary": "判断指定 Firecracker 版本是否支持 memfd 内存后端。",
+      "tags": [
+        "firecracker",
+        "feature-detection",
+        "memfd"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/fcversion/version.go:Info",
+      "type": "class",
+      "name": "Info",
+      "filePath": "packages/shared/pkg/fcversion/version.go",
+      "lineRange": [
+        9,
+        12
+      ],
+      "summary": "Firecracker 版本信息结构,持有 commitHash 和 lastReleaseVersion 两个 semver 字段。",
+      "tags": [
+        "data-model",
+        "firecracker",
+        "version"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/fcversion/version.go:New",
+      "type": "function",
+      "name": "New",
+      "filePath": "packages/shared/pkg/fcversion/version.go",
+      "lineRange": [
+        18,
+        37
+      ],
+      "summary": "解析形如 'v1.0.0_abcdef' 的版本字符串为 Info,使用 semver 解析前半段、'_' 后提取 commit hash。",
+      "tags": [
+        "parser",
+        "firecracker",
+        "semver"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/filesystem/entry.go:GetEntryFromPath",
+      "type": "function",
+      "name": "GetEntryFromPath",
+      "filePath": "packages/shared/pkg/filesystem/entry.go",
+      "lineRange": [
+        25,
+        41
+      ],
+      "summary": "从路径构造 EntryInfo,可选读取 xattr 用户元数据,元数据读取失败不影响基本信息返回。",
+      "tags": [
+        "filesystem",
+        "entry-info",
+        "xattr"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/filesystem/entry.go:GetEntryInfo",
+      "type": "function",
+      "name": "GetEntryInfo",
+      "filePath": "packages/shared/pkg/filesystem/entry.go",
+      "lineRange": [
+        46,
+        96
+      ],
+      "summary": "从 os.FileInfo 构造 EntryInfo,处理符号链接追踪、文件类型判断、stat 时间/uid/gid 提取等。",
+      "tags": [
+        "filesystem",
+        "entry-info",
+        "symlink",
+        "stat"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/shared/pkg/filesystem/entry.go:getEntryType",
+      "type": "function",
+      "name": "getEntryType",
+      "filePath": "packages/shared/pkg/filesystem/entry.go",
+      "lineRange": [
+        100,
+        111
+      ],
+      "summary": "根据 os.FileMode 判定文件系统条目类型:普通文件/目录/符号链接/未知。",
+      "tags": [
+        "filesystem",
+        "type-detection"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/filesystem/entry.go:followSymlink",
+      "type": "function",
+      "name": "followSymlink",
+      "filePath": "packages/shared/pkg/filesystem/entry.go",
+      "lineRange": [
+        114,
+        122
+      ],
+      "summary": "使用 filepath.EvalSymlinks 解析符号链接目标,失败时回退原路径。",
+      "tags": [
+        "symlink",
+        "filesystem",
+        "path-resolution"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/filesystem/entry.go:statTimes",
+      "type": "class",
+      "name": "statTimes",
+      "filePath": "packages/shared/pkg/filesystem/entry.go",
+      "lineRange": [
+        12,
+        18
+      ],
+      "summary": "平台无关的文件 stat 时间与所有权结构,包含 atime/ctime/mtime/uid/gid。",
+      "tags": [
+        "data-model",
+        "filesystem",
+        "stat"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/filesystem/model.go:EntryInfo",
+      "type": "class",
+      "name": "EntryInfo",
+      "filePath": "packages/shared/pkg/filesystem/model.go",
+      "lineRange": [
+        8,
+        22
+      ],
+      "summary": "文件系统条目信息结构,序列化时通过 yaml/json tag 控制字段命名,包含名称、路径、类型、大小、权限、时间戳、uid/gid、符号链接目标和元数据。",
+      "tags": [
+        "data-model",
+        "filesystem",
+        "serialization"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:packages/shared/pkg/fc/firecracker.yml",
+      "target": "file:packages/shared/pkg/fc/generate.go",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/shared/pkg/fc/firecracker.yml",
+      "target": "file:packages/shared/pkg/fcversion/sandbox_features.go",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/sandbox_features.go",
+      "target": "function:packages/shared/pkg/fcversion/sandbox_features.go:HasHugePages",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/sandbox_features.go",
+      "target": "function:packages/shared/pkg/fcversion/sandbox_features.go:HasFreePageReporting",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/sandbox_features.go",
+      "target": "function:packages/shared/pkg/fcversion/sandbox_features.go:HasFreePageHinting",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/sandbox_features.go",
+      "target": "function:packages/shared/pkg/fcversion/sandbox_features.go:HasMemfd",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/sandbox_features.go",
+      "target": "function:packages/shared/pkg/fcversion/sandbox_features.go:HasHugePages",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/sandbox_features.go",
+      "target": "function:packages/shared/pkg/fcversion/sandbox_features.go:HasFreePageReporting",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/sandbox_features.go",
+      "target": "function:packages/shared/pkg/fcversion/sandbox_features.go:HasFreePageHinting",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/sandbox_features.go",
+      "target": "function:packages/shared/pkg/fcversion/sandbox_features.go:HasMemfd",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/sandbox_features.go",
+      "target": "class:packages/shared/pkg/fcversion/version.go:Info",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/version_test.go",
+      "target": "file:packages/shared/pkg/fcversion/version.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/version_test.go",
+      "target": "file:packages/shared/pkg/fcversion/sandbox_features.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/version.go",
+      "target": "class:packages/shared/pkg/fcversion/version.go:Info",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/version.go",
+      "target": "function:packages/shared/pkg/fcversion/version.go:New",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/version.go",
+      "target": "class:packages/shared/pkg/fcversion/version.go:Info",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/version.go",
+      "target": "function:packages/shared/pkg/fcversion/version.go:New",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry_darwin.go",
+      "target": "class:packages/shared/pkg/filesystem/entry.go:statTimes",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry_linux.go",
+      "target": "class:packages/shared/pkg/filesystem/entry.go:statTimes",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry_test.go",
+      "target": "file:packages/shared/pkg/filesystem/entry.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry.go",
+      "target": "function:packages/shared/pkg/filesystem/entry.go:GetEntryFromPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry.go",
+      "target": "function:packages/shared/pkg/filesystem/entry.go:GetEntryInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry.go",
+      "target": "function:packages/shared/pkg/filesystem/entry.go:getEntryType",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry.go",
+      "target": "function:packages/shared/pkg/filesystem/entry.go:followSymlink",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry.go",
+      "target": "class:packages/shared/pkg/filesystem/entry.go:statTimes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry.go",
+      "target": "function:packages/shared/pkg/filesystem/entry.go:GetEntryFromPath",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry.go",
+      "target": "function:packages/shared/pkg/filesystem/entry.go:GetEntryInfo",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry.go",
+      "target": "class:packages/shared/pkg/filesystem/model.go:EntryInfo",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/model.go",
+      "target": "class:packages/shared/pkg/filesystem/model.go:EntryInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/model.go",
+      "target": "class:packages/shared/pkg/filesystem/model.go:EntryInfo",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/xattr_metadata_test.go",
+      "target": "file:packages/shared/pkg/filesystem/entry.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/xattr_test.go",
+      "target": "file:packages/shared/pkg/filesystem/entry.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

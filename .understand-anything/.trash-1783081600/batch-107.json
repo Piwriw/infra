@@ -1,0 +1,333 @@
+{
+  "nodes": [
+    {
+      "id": "config:packages/envd/internal/services/legacy/buf.gen.yaml",
+      "type": "config",
+      "name": "buf.gen.yaml",
+      "filePath": "packages/envd/internal/services/legacy/buf.gen.yaml",
+      "summary": "buf 代码生成器配置，为 legacy 服务从 .proto 文件生成 Go 代码，并设置 Go 包前缀为 legacy 服务包。",
+      "tags": ["configuration", "code-generation", "protobuf", "buf", "legacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "schema:packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "type": "schema",
+      "name": "legacyfilesystem.proto",
+      "filePath": "packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "summary": "legacy 文件系统服务的 Protocol Buffers 定义，定义 Filesystem gRPC 服务（Stat、MakeDir、Move、ListDir、Remove、WatchDir 等 RPC）以及相关请求/响应消息、文件类型和事件类型枚举。冻结的旧版协议，用于保持与存在 Python SDK bug 期间的旧客户端兼容。",
+      "tags": ["protobuf", "schema-definition", "grpc-service", "filesystem", "legacy", "api-schema"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "schema:packages/envd/internal/services/legacy/legacyprocess.proto",
+      "type": "schema",
+      "name": "legacyprocess.proto",
+      "filePath": "packages/envd/internal/services/legacy/legacyprocess.proto",
+      "summary": "legacy 进程管理服务的 Protocol Buffers 定义，定义 Process gRPC 服务（List、Connect、Start、Update、StreamInput、SendInput、SendSignal 等 RPC），以及进程配置、PTY、事件流、信号枚举等消息类型。冻结的旧版协议。",
+      "tags": ["protobuf", "schema-definition", "grpc-service", "process-management", "legacy", "api-schema"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:packages/envd/internal/services/legacy/readme.md",
+      "type": "document",
+      "name": "readme.md",
+      "filePath": "packages/envd/internal/services/legacy/readme.md",
+      "summary": "legacy 服务包说明文档，解释该目录下的 .proto 文件是历史版本的快照（对应 Python SDK 存在字段兼容性 bug 的时期），用于保持与老客户端（user agent 为 `connect-python`）的兼容性，且明确不允许修改。",
+      "tags": ["documentation", "legacy", "compatibility", "protobuf"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.Stat",
+      "type": "endpoint",
+      "name": "Filesystem.Stat",
+      "filePath": "packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "summary": "获取指定路径文件/目录状态信息的 RPC。",
+      "tags": ["grpc", "filesystem", "stat", "legacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.MakeDir",
+      "type": "endpoint",
+      "name": "Filesystem.MakeDir",
+      "filePath": "packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "summary": "创建目录的 RPC。",
+      "tags": ["grpc", "filesystem", "mkdir", "legacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.Move",
+      "type": "endpoint",
+      "name": "Filesystem.Move",
+      "filePath": "packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "summary": "移动/重命名文件或目录的 RPC。",
+      "tags": ["grpc", "filesystem", "move", "legacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.ListDir",
+      "type": "endpoint",
+      "name": "Filesystem.ListDir",
+      "filePath": "packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "summary": "列出目录内容的 RPC，支持指定递归深度。",
+      "tags": ["grpc", "filesystem", "list", "legacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.Remove",
+      "type": "endpoint",
+      "name": "Filesystem.Remove",
+      "filePath": "packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "summary": "删除文件或目录的 RPC。",
+      "tags": ["grpc", "filesystem", "remove", "legacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.WatchDir",
+      "type": "endpoint",
+      "name": "Filesystem.WatchDir",
+      "filePath": "packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "summary": "流式监听目录变化的 RPC，支持递归监听。",
+      "tags": ["grpc", "filesystem", "watch", "streaming", "legacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.CreateWatcher",
+      "type": "endpoint",
+      "name": "Filesystem.CreateWatcher",
+      "filePath": "packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "summary": "非流式版本：创建一个目录监听器并返回其 ID。",
+      "tags": ["grpc", "filesystem", "watcher", "legacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.GetWatcherEvents",
+      "type": "endpoint",
+      "name": "Filesystem.GetWatcherEvents",
+      "filePath": "packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "summary": "非流式版本：通过 watcher_id 拉取文件系统事件。",
+      "tags": ["grpc", "filesystem", "watcher", "events", "legacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.RemoveWatcher",
+      "type": "endpoint",
+      "name": "Filesystem.RemoveWatcher",
+      "filePath": "packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "summary": "非流式版本：通过 watcher_id 移除已创建的目录监听器。",
+      "tags": ["grpc", "filesystem", "watcher", "legacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/envd/internal/services/legacy/legacyprocess.proto:Process.List",
+      "type": "endpoint",
+      "name": "Process.List",
+      "filePath": "packages/envd/internal/services/legacy/legacyprocess.proto",
+      "summary": "列出当前正在运行的进程的 RPC。",
+      "tags": ["grpc", "process", "list", "legacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/envd/internal/services/legacy/legacyprocess.proto:Process.Connect",
+      "type": "endpoint",
+      "name": "Process.Connect",
+      "filePath": "packages/envd/internal/services/legacy/legacyprocess.proto",
+      "summary": "连接到已存在进程的流式 RPC，接收该进程的事件流。",
+      "tags": ["grpc", "process", "stream", "connect", "legacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/envd/internal/services/legacy/legacyprocess.proto:Process.Start",
+      "type": "endpoint",
+      "name": "Process.Start",
+      "filePath": "packages/envd/internal/services/legacy/legacyprocess.proto",
+      "summary": "启动新进程并返回其事件流的流式 RPC，支持 PTY。",
+      "tags": ["grpc", "process", "start", "streaming", "legacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/envd/internal/services/legacy/legacyprocess.proto:Process.Update",
+      "type": "endpoint",
+      "name": "Process.Update",
+      "filePath": "packages/envd/internal/services/legacy/legacyprocess.proto",
+      "summary": "更新进程配置（如 PTY 尺寸）的 RPC。",
+      "tags": ["grpc", "process", "update", "pty", "legacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/envd/internal/services/legacy/legacyprocess.proto:Process.StreamInput",
+      "type": "endpoint",
+      "name": "Process.StreamInput",
+      "filePath": "packages/envd/internal/services/legacy/legacyprocess.proto",
+      "summary": "以客户端流式方式向进程发送输入的 RPC，确保消息顺序。",
+      "tags": ["grpc", "process", "input", "client-streaming", "legacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/envd/internal/services/legacy/legacyprocess.proto:Process.SendInput",
+      "type": "endpoint",
+      "name": "Process.SendInput",
+      "filePath": "packages/envd/internal/services/legacy/legacyprocess.proto",
+      "summary": "向进程发送一次性输入数据的 RPC。",
+      "tags": ["grpc", "process", "input", "legacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/envd/internal/services/legacy/legacyprocess.proto:Process.SendSignal",
+      "type": "endpoint",
+      "name": "Process.SendSignal",
+      "filePath": "packages/envd/internal/services/legacy/legacyprocess.proto",
+      "summary": "向进程发送信号（SIGTERM/SIGKILL）的 RPC。",
+      "tags": ["grpc", "process", "signal", "legacy"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:packages/envd/internal/services/legacy/buf.gen.yaml",
+      "target": "schema:packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/envd/internal/services/legacy/buf.gen.yaml",
+      "target": "schema:packages/envd/internal/services/legacy/legacyprocess.proto",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:packages/envd/internal/services/legacy/readme.md",
+      "target": "schema:packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:packages/envd/internal/services/legacy/readme.md",
+      "target": "schema:packages/envd/internal/services/legacy/legacyprocess.proto",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:packages/envd/internal/services/legacy/readme.md",
+      "target": "config:packages/envd/internal/services/legacy/buf.gen.yaml",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "schema:packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "target": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.Stat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "target": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.MakeDir",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "target": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.Move",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "target": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.ListDir",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "target": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.Remove",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "target": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.WatchDir",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "target": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.CreateWatcher",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "target": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.GetWatcherEvents",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "target": "endpoint:packages/envd/internal/services/legacy/legacyfilesystem.proto:Filesystem.RemoveWatcher",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/envd/internal/services/legacy/legacyprocess.proto",
+      "target": "endpoint:packages/envd/internal/services/legacy/legacyprocess.proto:Process.List",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/envd/internal/services/legacy/legacyprocess.proto",
+      "target": "endpoint:packages/envd/internal/services/legacy/legacyprocess.proto:Process.Connect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/envd/internal/services/legacy/legacyprocess.proto",
+      "target": "endpoint:packages/envd/internal/services/legacy/legacyprocess.proto:Process.Start",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/envd/internal/services/legacy/legacyprocess.proto",
+      "target": "endpoint:packages/envd/internal/services/legacy/legacyprocess.proto:Process.Update",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/envd/internal/services/legacy/legacyprocess.proto",
+      "target": "endpoint:packages/envd/internal/services/legacy/legacyprocess.proto:Process.StreamInput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/envd/internal/services/legacy/legacyprocess.proto",
+      "target": "endpoint:packages/envd/internal/services/legacy/legacyprocess.proto:Process.SendInput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/envd/internal/services/legacy/legacyprocess.proto",
+      "target": "endpoint:packages/envd/internal/services/legacy/legacyprocess.proto:Process.SendSignal",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ]
+}

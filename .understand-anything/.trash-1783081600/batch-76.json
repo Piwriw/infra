@@ -1,0 +1,1068 @@
+{
+  "nodes": [
+    {
+      "id": "resource:iac/provider-gcp/Makefile",
+      "type": "resource",
+      "name": "Makefile",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "GCP 提供商 Terraform 工作流 Makefile，封装 init、plan、apply、state-migrate 等运维命令。",
+      "tags": ["infrastructure", "build-system", "terraform", "deployment", "automation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:init",
+      "type": "step",
+      "name": "init",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "运行 terraform init 以初始化提供商与后端。",
+      "tags": ["terraform", "init", "backend"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:state-migrate",
+      "type": "step",
+      "name": "state-migrate",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "执行 state 迁移脚本以兼容 Terraform 版本升级。",
+      "tags": ["terraform", "state", "migration"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:apply-init",
+      "type": "step",
+      "name": "apply-init",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "先初始化再 apply，主要用于首次部署。",
+      "tags": ["terraform", "apply", "bootstrap"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:switch",
+      "type": "step",
+      "name": "switch",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "切换 Terraform 工作区（环境）。",
+      "tags": ["terraform", "workspace", "environment"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:destroy",
+      "type": "step",
+      "name": "destroy",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "销毁当前工作区所有资源。",
+      "tags": ["terraform", "destroy", "teardown"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:plan",
+      "type": "step",
+      "name": "plan",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "生成完整 Terraform plan，禁用并行并使用 lockfile。",
+      "tags": ["terraform", "plan", "review"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:terraform",
+      "type": "step",
+      "name": "terraform",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "透传任意 terraform 子命令。",
+      "tags": ["terraform", "passthrough"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:plan-only-jobs",
+      "type": "step",
+      "name": "plan-only-jobs",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "仅 plan Nomad jobs 子模块。",
+      "tags": ["terraform", "plan", "nomad"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:plan-without-jobs",
+      "type": "step",
+      "name": "plan-without-jobs",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "plan 时排除 Nomad jobs 子模块。",
+      "tags": ["terraform", "plan", "nomad"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:apply",
+      "type": "step",
+      "name": "apply",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "执行 terraform apply 并启用锁定文件。",
+      "tags": ["terraform", "apply", "lockfile"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:import",
+      "type": "step",
+      "name": "import",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "透传 terraform import 命令。",
+      "tags": ["terraform", "import"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:move",
+      "type": "step",
+      "name": "move",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "透传 terraform state mv 命令。",
+      "tags": ["terraform", "state", "move"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-gcp/Makefile:provider-login",
+      "type": "step",
+      "name": "provider-login",
+      "filePath": "iac/provider-gcp/Makefile",
+      "summary": "完成 GCP 提供商登录与认证。",
+      "tags": ["gcp", "auth", "login"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf",
+      "type": "resource",
+      "name": "api.tf",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "声明 API 服务的 Artifact Registry 仓库、IAM 与 Postgres/ClickHouse/Redis 等连接密钥资源。",
+      "tags": ["terraform", "api", "secret-manager", "artifact-registry", "infrastructure"],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:google_artifact_registry_repository.custom_environments_repository",
+      "type": "resource",
+      "name": "google_artifact_registry_repository.custom_environments_repository",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "为自定义环境镜像创建 Artifact Registry 仓库。",
+      "tags": ["artifact-registry", "docker", "api"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:google_artifact_registry_repository_iam_member.custom_environments_repository_member",
+      "type": "resource",
+      "name": "google_artifact_registry_repository_iam_member.custom_environments_repository_member",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "授予自定义环境仓库 IAM 权限。",
+      "tags": ["iam", "artifact-registry"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret.postgres_read_replica_connection_string",
+      "type": "resource",
+      "name": "google_secret_manager_secret.postgres_read_replica_connection_string",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "声明 Postgres 读副本连接字符串的 Secret Manager 条目。",
+      "tags": ["secret-manager", "postgres", "replica"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret_version.postgres_read_replica_connection_string",
+      "type": "resource",
+      "name": "google_secret_manager_secret_version.postgres_read_replica_connection_string",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "写入 Postgres 读副本连接字符串的 Secret Manager 版本。",
+      "tags": ["secret-manager", "postgres"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:random_password.api_secret",
+      "type": "resource",
+      "name": "random_password.api_secret",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "生成 API 服务的随机密钥。",
+      "tags": ["random", "secret", "api"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:random_password.clickhouse_password",
+      "type": "resource",
+      "name": "random_password.clickhouse_password",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "生成 ClickHouse 服务的随机密码。",
+      "tags": ["random", "secret", "clickhouse"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:random_password.clickhouse_server_secret",
+      "type": "resource",
+      "name": "random_password.clickhouse_server_secret",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "生成 ClickHouse server 之间的共享密钥。",
+      "tags": ["random", "secret", "clickhouse"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret.api_secret",
+      "type": "resource",
+      "name": "google_secret_manager_secret.api_secret",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "在 Secret Manager 中声明 API 密钥条目。",
+      "tags": ["secret-manager", "api"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret_version.api_secret_value",
+      "type": "resource",
+      "name": "google_secret_manager_secret_version.api_secret_value",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "写入 API 密钥值。",
+      "tags": ["secret-manager", "api"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:random_password.sandbox_access_token_hash_seed",
+      "type": "resource",
+      "name": "random_password.sandbox_access_token_hash_seed",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "生成沙箱访问令牌哈希种子。",
+      "tags": ["random", "secret", "sandbox"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret.sandbox_access_token_hash_seed",
+      "type": "resource",
+      "name": "google_secret_manager_secret.sandbox_access_token_hash_seed",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "在 Secret Manager 中声明沙箱访问令牌哈希种子条目。",
+      "tags": ["secret-manager", "sandbox"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret_version.sandbox_access_token_hash_seed",
+      "type": "resource",
+      "name": "google_secret_manager_secret_version.sandbox_access_token_hash_seed",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "写入沙箱访问令牌哈希种子值。",
+      "tags": ["secret-manager", "sandbox"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.postgres_connection_string",
+      "type": "resource",
+      "name": "data.google_secret_manager_secret_version.postgres_connection_string",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "读取 Postgres 主连接字符串的现有 Secret 版本。",
+      "tags": ["data", "secret-manager", "postgres"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.postgres_read_replica_connection_string",
+      "type": "resource",
+      "name": "data.google_secret_manager_secret_version.postgres_read_replica_connection_string",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "读取 Postgres 读副本连接字符串的现有 Secret 版本。",
+      "tags": ["data", "secret-manager", "postgres"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.posthog_api_key",
+      "type": "resource",
+      "name": "data.google_secret_manager_secret_version.posthog_api_key",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "读取 PostHog 分析 API 密钥。",
+      "tags": ["data", "secret-manager", "analytics"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.api_admin_token",
+      "type": "resource",
+      "name": "data.google_secret_manager_secret_version.api_admin_token",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "读取 API 管理令牌。",
+      "tags": ["data", "secret-manager", "api"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.analytics_collector_host",
+      "type": "resource",
+      "name": "data.google_secret_manager_secret_version.analytics_collector_host",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "读取分析采集器主机地址。",
+      "tags": ["data", "secret-manager", "analytics"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.analytics_collector_api_token",
+      "type": "resource",
+      "name": "data.google_secret_manager_secret_version.analytics_collector_api_token",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "读取分析采集器 API 令牌。",
+      "tags": ["data", "secret-manager", "analytics"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.redis_cluster_url",
+      "type": "resource",
+      "name": "data.google_secret_manager_secret_version.redis_cluster_url",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "读取 Redis 集群连接 URL。",
+      "tags": ["data", "secret-manager", "redis"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.redis_tls_ca_base64",
+      "type": "resource",
+      "name": "data.google_secret_manager_secret_version.redis_tls_ca_base64",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "读取 Redis TLS CA 证书（base64 编码）。",
+      "tags": ["data", "secret-manager", "redis", "tls"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.launch_darkly_api_key",
+      "type": "resource",
+      "name": "data.google_secret_manager_secret_version.launch_darkly_api_key",
+      "filePath": "iac/provider-gcp/api.tf",
+      "summary": "读取 LaunchDarkly 功能开关 API 密钥。",
+      "tags": ["data", "secret-manager", "feature-flags"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/dashboard-api.tf",
+      "type": "resource",
+      "name": "dashboard-api.tf",
+      "filePath": "iac/provider-gcp/dashboard-api.tf",
+      "summary": "声明仪表板 API 所需的密钥读取与账单服务端点数据源。",
+      "tags": ["terraform", "dashboard", "secret-manager", "infrastructure"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/dashboard-api.tf:data.google_secret_manager_secret_version.dashboard_api_admin_token",
+      "type": "resource",
+      "name": "data.google_secret_manager_secret_version.dashboard_api_admin_token",
+      "filePath": "iac/provider-gcp/dashboard-api.tf",
+      "summary": "读取仪表板 API 管理令牌。",
+      "tags": ["data", "secret-manager", "dashboard"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/dashboard-api.tf:data.google_secret_manager_secret_version.ory_project_api_key",
+      "type": "resource",
+      "name": "data.google_secret_manager_secret_version.ory_project_api_key",
+      "filePath": "iac/provider-gcp/dashboard-api.tf",
+      "summary": "读取 Ory 项目 API 密钥。",
+      "tags": ["data", "secret-manager", "auth"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/dashboard-api.tf:data.google_secret_manager_secrets.billing_server_url",
+      "type": "resource",
+      "name": "data.google_secret_manager_secrets.billing_server_url",
+      "filePath": "iac/provider-gcp/dashboard-api.tf",
+      "summary": "列出账单服务端点 URL 关联的 Secret Manager 元数据。",
+      "tags": ["data", "secret-manager", "billing"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/dashboard-api.tf:data.google_secret_manager_secrets.billing_server_api_token",
+      "type": "resource",
+      "name": "data.google_secret_manager_secrets.billing_server_api_token",
+      "filePath": "iac/provider-gcp/dashboard-api.tf",
+      "summary": "列出账单服务 API 令牌关联的 Secret Manager 元数据。",
+      "tags": ["data", "secret-manager", "billing"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/dashboard-api.tf:data.google_secret_manager_secret_version.billing_server_url",
+      "type": "resource",
+      "name": "data.google_secret_manager_secret_version.billing_server_url",
+      "filePath": "iac/provider-gcp/dashboard-api.tf",
+      "summary": "读取账单服务端点 URL 的当前版本。",
+      "tags": ["data", "secret-manager", "billing"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/dashboard-api.tf:data.google_secret_manager_secret_version.billing_server_api_token",
+      "type": "resource",
+      "name": "data.google_secret_manager_secret_version.billing_server_api_token",
+      "filePath": "iac/provider-gcp/dashboard-api.tf",
+      "summary": "读取账单服务 API 令牌的当前版本。",
+      "tags": ["data", "secret-manager", "billing"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/docker-reverse-proxy.tf",
+      "type": "resource",
+      "name": "docker-reverse-proxy.tf",
+      "filePath": "iac/provider-gcp/docker-reverse-proxy.tf",
+      "summary": "为 Docker 反向代理创建服务账号及 Artifact Registry 拉取权限。",
+      "tags": ["terraform", "iam", "docker", "infrastructure"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/docker-reverse-proxy.tf:google_service_account.docker_registry_service_account",
+      "type": "resource",
+      "name": "google_service_account.docker_registry_service_account",
+      "filePath": "iac/provider-gcp/docker-reverse-proxy.tf",
+      "summary": "创建 Docker 反向代理专用的 GCP 服务账号。",
+      "tags": ["service-account", "docker"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/docker-reverse-proxy.tf:google_artifact_registry_repository_iam_member.orchestration_repository_member",
+      "type": "resource",
+      "name": "google_artifact_registry_repository_iam_member.orchestration_repository_member",
+      "filePath": "iac/provider-gcp/docker-reverse-proxy.tf",
+      "summary": "授予 Docker 反向代理服务账号对编排仓库的读取权限。",
+      "tags": ["iam", "artifact-registry"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/docker-reverse-proxy.tf:google_service_account_key.google_service_key",
+      "type": "resource",
+      "name": "google_service_account_key.google_service_key",
+      "filePath": "iac/provider-gcp/docker-reverse-proxy.tf",
+      "summary": "为 Docker 反向代理服务账号生成 JSON 密钥。",
+      "tags": ["service-account", "key"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/main.tf",
+      "type": "resource",
+      "name": "main.tf",
+      "filePath": "iac/provider-gcp/main.tf",
+      "summary": "GCP 提供商根 Terraform 配置，串联 init/cluster/k8s_apps/nomad/redis 等子模块并提供路由域密钥。",
+      "tags": ["terraform", "module", "infrastructure", "orchestration"],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/provider-gcp/main.tf:data.google_secret_manager_secret_version.routing_domains",
+      "type": "resource",
+      "name": "data.google_secret_manager_secret_version.routing_domains",
+      "filePath": "iac/provider-gcp/main.tf",
+      "summary": "读取路由域名配置 Secret。",
+      "tags": ["data", "secret-manager", "routing"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/main.tf:module.init",
+      "type": "resource",
+      "name": "module.init",
+      "filePath": "iac/provider-gcp/main.tf",
+      "summary": "调用 init 子模块完成项目/网络基础初始化。",
+      "tags": ["module", "bootstrap"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/main.tf:module.cluster",
+      "type": "resource",
+      "name": "module.cluster",
+      "filePath": "iac/provider-gcp/main.tf",
+      "summary": "调用 cluster 子模块创建 GKE 集群。",
+      "tags": ["module", "gke", "cluster"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/main.tf:module.k8s_apps",
+      "type": "resource",
+      "name": "module.k8s_apps",
+      "filePath": "iac/provider-gcp/main.tf",
+      "summary": "调用 k8s_apps 子模块部署 Kubernetes 应用。",
+      "tags": ["module", "kubernetes", "apps"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/main.tf:module.nomad",
+      "type": "resource",
+      "name": "module.nomad",
+      "filePath": "iac/provider-gcp/main.tf",
+      "summary": "调用 nomad 子模块部署 Nomad 工作负载。",
+      "tags": ["module", "nomad"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/main.tf:module.redis",
+      "type": "resource",
+      "name": "module.redis",
+      "filePath": "iac/provider-gcp/main.tf",
+      "summary": "调用 redis 子模块部署 Redis 集群。",
+      "tags": ["module", "redis"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/main.tf:module.remote_repository",
+      "type": "resource",
+      "name": "module.remote_repository",
+      "filePath": "iac/provider-gcp/main.tf",
+      "summary": "调用 remote_repository 子模块注册远程仓库引用。",
+      "tags": ["module", "repository"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/moved.tf",
+      "type": "resource",
+      "name": "moved.tf",
+      "filePath": "iac/provider-gcp/moved.tf",
+      "summary": "Terraform moved 块声明，用于在重构时保持 state 兼容性。",
+      "tags": ["terraform", "state", "refactor"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/persistent-volumes.tf",
+      "type": "resource",
+      "name": "persistent-volumes.tf",
+      "filePath": "iac/provider-gcp/persistent-volumes.tf",
+      "summary": "包装 persistent-volume-types 子模块以声明持久卷类型。",
+      "tags": ["terraform", "module", "storage", "persistent-volume"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/persistent-volumes.tf:module.persistent-volume-types",
+      "type": "resource",
+      "name": "module.persistent-volume-types",
+      "filePath": "iac/provider-gcp/persistent-volumes.tf",
+      "summary": "调用 persistent-volume-types 子模块声明 StorageClass 与 PV。",
+      "tags": ["module", "storage", "persistent-volume"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/variables.tf",
+      "type": "resource",
+      "name": "variables.tf",
+      "filePath": "iac/provider-gcp/variables.tf",
+      "summary": "集中声明 119 个 Terraform 输入变量，覆盖集群规模、节点池、端口与各服务参数。",
+      "tags": ["terraform", "variables", "configuration", "infrastructure"],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/provider-gcp/volume_content_signing_key.tf",
+      "type": "resource",
+      "name": "volume_content_signing_key.tf",
+      "filePath": "iac/provider-gcp/volume_content_signing_key.tf",
+      "summary": "生成卷内容签名密钥并通过 output 暴露密钥名与公钥，供持久卷校验使用。",
+      "tags": ["terraform", "tls", "signing", "security", "infrastructure"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/volume_content_signing_key.tf:time_static.volume_token_generation",
+      "type": "resource",
+      "name": "time_static.volume_token_generation",
+      "filePath": "iac/provider-gcp/volume_content_signing_key.tf",
+      "summary": "固定时间戳以保证密钥生成可重复。",
+      "tags": ["time", "deterministic"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/volume_content_signing_key.tf:tls_private_key.volume_token",
+      "type": "resource",
+      "name": "tls_private_key.volume_token",
+      "filePath": "iac/provider-gcp/volume_content_signing_key.tf",
+      "summary": "生成卷内容签名所需的 TLS 私钥。",
+      "tags": ["tls", "private-key", "signing"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:init",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:state-migrate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:apply-init",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:switch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:destroy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:plan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:terraform",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:plan-only-jobs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:plan-without-jobs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:apply",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:import",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:move",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/Makefile",
+      "target": "step:iac/provider-gcp/Makefile:provider-login",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/Makefile",
+      "target": "resource:iac/provider-gcp/main.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:google_artifact_registry_repository.custom_environments_repository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:google_artifact_registry_repository_iam_member.custom_environments_repository_member",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret.postgres_read_replica_connection_string",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret_version.postgres_read_replica_connection_string",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.api_secret",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.clickhouse_password",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.clickhouse_server_secret",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret.api_secret",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret_version.api_secret_value",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.sandbox_access_token_hash_seed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret.sandbox_access_token_hash_seed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret_version.sandbox_access_token_hash_seed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.postgres_connection_string",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.postgres_read_replica_connection_string",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.posthog_api_key",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.api_admin_token",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.analytics_collector_host",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.analytics_collector_api_token",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.redis_cluster_url",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.redis_tls_ca_base64",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/api.tf:data.google_secret_manager_secret_version.launch_darkly_api_key",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf",
+      "target": "resource:iac/provider-gcp/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/dashboard-api.tf",
+      "target": "resource:iac/provider-gcp/dashboard-api.tf:data.google_secret_manager_secret_version.dashboard_api_admin_token",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/dashboard-api.tf",
+      "target": "resource:iac/provider-gcp/dashboard-api.tf:data.google_secret_manager_secret_version.ory_project_api_key",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/dashboard-api.tf",
+      "target": "resource:iac/provider-gcp/dashboard-api.tf:data.google_secret_manager_secrets.billing_server_url",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/dashboard-api.tf",
+      "target": "resource:iac/provider-gcp/dashboard-api.tf:data.google_secret_manager_secrets.billing_server_api_token",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/dashboard-api.tf",
+      "target": "resource:iac/provider-gcp/dashboard-api.tf:data.google_secret_manager_secret_version.billing_server_url",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/dashboard-api.tf",
+      "target": "resource:iac/provider-gcp/dashboard-api.tf:data.google_secret_manager_secret_version.billing_server_api_token",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/docker-reverse-proxy.tf",
+      "target": "resource:iac/provider-gcp/docker-reverse-proxy.tf:google_service_account.docker_registry_service_account",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/docker-reverse-proxy.tf",
+      "target": "resource:iac/provider-gcp/docker-reverse-proxy.tf:google_artifact_registry_repository_iam_member.orchestration_repository_member",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/docker-reverse-proxy.tf",
+      "target": "resource:iac/provider-gcp/docker-reverse-proxy.tf:google_service_account_key.google_service_key",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:data.google_secret_manager_secret_version.routing_domains",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.init",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.cluster",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.k8s_apps",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.nomad",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.redis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/main.tf:module.remote_repository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/api.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/dashboard-api.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/docker-reverse-proxy.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/moved.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/persistent-volumes.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/main.tf",
+      "target": "resource:iac/provider-gcp/volume_content_signing_key.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/persistent-volumes.tf",
+      "target": "resource:iac/provider-gcp/persistent-volumes.tf:module.persistent-volume-types",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/persistent-volumes.tf",
+      "target": "resource:iac/provider-gcp/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/volume_content_signing_key.tf",
+      "target": "resource:iac/provider-gcp/volume_content_signing_key.tf:time_static.volume_token_generation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/volume_content_signing_key.tf",
+      "target": "resource:iac/provider-gcp/volume_content_signing_key.tf:tls_private_key.volume_token",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/volume_content_signing_key.tf",
+      "target": "resource:iac/provider-gcp/persistent-volumes.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret_version.api_secret_value",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.api_secret",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret_version.sandbox_access_token_hash_seed",
+      "target": "resource:iac/provider-gcp/api.tf:random_password.sandbox_access_token_hash_seed",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret_version.postgres_read_replica_connection_string",
+      "target": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret.postgres_read_replica_connection_string",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret.sandbox_access_token_hash_seed",
+      "target": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret_version.sandbox_access_token_hash_seed",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret.api_secret",
+      "target": "resource:iac/provider-gcp/api.tf:google_secret_manager_secret_version.api_secret_value",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/docker-reverse-proxy.tf:google_artifact_registry_repository_iam_member.orchestration_repository_member",
+      "target": "resource:iac/provider-gcp/docker-reverse-proxy.tf:google_service_account.docker_registry_service_account",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/docker-reverse-proxy.tf:google_service_account_key.google_service_key",
+      "target": "resource:iac/provider-gcp/docker-reverse-proxy.tf:google_service_account.docker_registry_service_account",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/volume_content_signing_key.tf:tls_private_key.volume_token",
+      "target": "resource:iac/provider-gcp/volume_content_signing_key.tf:time_static.volume_token_generation",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

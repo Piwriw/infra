@@ -1,0 +1,935 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim.go",
+      "type": "file",
+      "name": "reclaim.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/cgroup/reclaim.go",
+      "summary": "提供 ReclaimLeaked 函数,用于扫描 cgroup 文件系统并回收 sandbox 启动时泄漏的 cgroup 目录。",
+      "tags": [
+        "cgroup",
+        "cleanup",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/cgroup/reclaim.go:ReclaimLeaked",
+      "type": "function",
+      "name": "ReclaimLeaked",
+      "filePath": "packages/orchestrator/pkg/sandbox/cgroup/reclaim.go",
+      "lineRange": [
+        12,
+        35
+      ],
+      "summary": "扫描 cgroup 根目录,回收 sandbox 启动失败时未清理的 cgroup 子树。",
+      "tags": [
+        "cgroup",
+        "cleanup"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go",
+      "type": "file",
+      "name": "reclaim_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go",
+      "summary": "针对 cgroup 名称判定与泄漏列表函数的单元测试。",
+      "tags": [
+        "test",
+        "cgroup",
+        "unit-test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go:TestIsSandboxCgroupName",
+      "type": "function",
+      "name": "TestIsSandboxCgroupName",
+      "filePath": "packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go",
+      "lineRange": [
+        13,
+        19
+      ],
+      "summary": "验证 cgroup 名称是否属于 sandbox 命名空间。",
+      "tags": [
+        "test",
+        "cgroup"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go:TestListSandboxCgroups",
+      "type": "function",
+      "name": "TestListSandboxCgroups",
+      "filePath": "packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go",
+      "lineRange": [
+        21,
+        33
+      ],
+      "summary": "验证 sandbox cgroup 列表解析正确。",
+      "tags": [
+        "test",
+        "cgroup"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "file",
+      "name": "checks.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/checks.go",
+      "summary": "实现 Checks 健康检查循环,周期性调用 sandbox 内 Healthcheck 并跟踪 healthy/stopped 状态。",
+      "tags": [
+        "health-check",
+        "sandbox",
+        "monitoring"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/checks.go:NewChecks",
+      "type": "function",
+      "name": "NewChecks",
+      "filePath": "packages/orchestrator/pkg/sandbox/checks.go",
+      "lineRange": [
+        42,
+        53
+      ],
+      "summary": "NewChecks 构造函数,初始化 Checks 结构体并设置 sandbox 引用。",
+      "tags": [
+        "constructor",
+        "health-check"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/checks.go:Start",
+      "type": "function",
+      "name": "Start",
+      "filePath": "packages/orchestrator/pkg/sandbox/checks.go",
+      "lineRange": [
+        55,
+        68
+      ],
+      "summary": "Start 启动后台采样循环。",
+      "tags": [
+        "hoststats",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/checks.go:Stop",
+      "type": "function",
+      "name": "Stop",
+      "filePath": "packages/orchestrator/pkg/sandbox/checks.go",
+      "lineRange": [
+        70,
+        79
+      ],
+      "summary": "Stop 停止后台采样循环并 flush 最终值。",
+      "tags": [
+        "hoststats",
+        "lifecycle"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/checks.go:logHealth",
+      "type": "function",
+      "name": "logHealth",
+      "filePath": "packages/orchestrator/pkg/sandbox/checks.go",
+      "lineRange": [
+        81,
+        98
+      ],
+      "summary": "根据 healthy 状态和 alwaysReport 标志打印 sandbox 健康日志。",
+      "tags": [
+        "health-check",
+        "logging"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/checks.go:Healthcheck",
+      "type": "function",
+      "name": "Healthcheck",
+      "filePath": "packages/orchestrator/pkg/sandbox/checks.go",
+      "lineRange": [
+        100,
+        128
+      ],
+      "summary": "执行单次健康检查,根据结果更新 healthy 字段并打印日志。",
+      "tags": [
+        "health-check"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/checks.go:Checks",
+      "type": "class",
+      "name": "Checks",
+      "filePath": "packages/orchestrator/pkg/sandbox/checks.go",
+      "lineRange": [
+        26,
+        38
+      ],
+      "summary": "Checks 管理 sandbox 周期健康检查,跟踪 healthy/stopped 状态并提供 Start/Stop 控制。",
+      "tags": [
+        "health-check",
+        "sandbox"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "file",
+      "name": "checks_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/checks_test.go",
+      "summary": "验证 Stop 在 Start 之前调用时不会启动健康检查循环。",
+      "tags": [
+        "test",
+        "health-check",
+        "unit-test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/checks_test.go:TestChecks_StopBeforeStart_DoesNotStartHealthLoop",
+      "type": "function",
+      "name": "TestChecks_StopBeforeStart_DoesNotStartHealthLoop",
+      "filePath": "packages/orchestrator/pkg/sandbox/checks_test.go",
+      "lineRange": [
+        23,
+        50
+      ],
+      "summary": "验证 Stop 在 Start 之前调用不会启动循环。",
+      "tags": [
+        "test",
+        "health-check"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "file",
+      "name": "cleanup.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/cleanup.go",
+      "summary": "提供 Cleanup 任务收集器,支持带上下文和优先级的注册以及在 sandbox 关闭时的串行执行。",
+      "tags": [
+        "cleanup",
+        "lifecycle",
+        "sandbox"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/cleanup.go:NewCleanup",
+      "type": "function",
+      "name": "NewCleanup",
+      "filePath": "packages/orchestrator/pkg/sandbox/cleanup.go",
+      "lineRange": [
+        30,
+        32
+      ],
+      "summary": "NewCleanup 创建 Cleanup 实例并初始化内部任务列表。",
+      "tags": [
+        "constructor",
+        "cleanup"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/cleanup.go:AddNoContext",
+      "type": "function",
+      "name": "AddNoContext",
+      "filePath": "packages/orchestrator/pkg/sandbox/cleanup.go",
+      "lineRange": [
+        34,
+        36
+      ],
+      "summary": "添加不依赖 sandbox context 的清理任务。",
+      "tags": [
+        "cleanup"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/cleanup.go:Add",
+      "type": "function",
+      "name": "Add",
+      "filePath": "packages/orchestrator/pkg/sandbox/cleanup.go",
+      "lineRange": [
+        38,
+        52
+      ],
+      "summary": "添加受 sandbox context 控制的清理任务。",
+      "tags": [
+        "cleanup",
+        "lifecycle"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/cleanup.go:AddPriority",
+      "type": "function",
+      "name": "AddPriority",
+      "filePath": "packages/orchestrator/pkg/sandbox/cleanup.go",
+      "lineRange": [
+        54,
+        68
+      ],
+      "summary": "添加高优先级清理任务,Run 时优先执行。",
+      "tags": [
+        "cleanup",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/cleanup.go:Run",
+      "type": "function",
+      "name": "Run",
+      "filePath": "packages/orchestrator/pkg/sandbox/cleanup.go",
+      "lineRange": [
+        70,
+        76
+      ],
+      "summary": "Run 串行执行已注册的清理任务并返回首个错误。",
+      "tags": [
+        "cleanup",
+        "lifecycle"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/cleanup.go:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "packages/orchestrator/pkg/sandbox/cleanup.go",
+      "lineRange": [
+        78,
+        101
+      ],
+      "summary": "run 内部按优先级顺序执行所有清理任务,捕获 panic。",
+      "tags": [
+        "cleanup",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/cleanup.go:cleanupFiles",
+      "type": "function",
+      "name": "cleanupFiles",
+      "filePath": "packages/orchestrator/pkg/sandbox/cleanup.go",
+      "lineRange": [
+        103,
+        124
+      ],
+      "summary": "回收 sandbox 临时文件列表,根据配置删除。",
+      "tags": [
+        "cleanup",
+        "fs"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/cleanup.go:Cleanup",
+      "type": "class",
+      "name": "Cleanup",
+      "filePath": "packages/orchestrator/pkg/sandbox/cleanup.go",
+      "lineRange": [
+        20,
+        28
+      ],
+      "summary": "Cleanup 在 sandbox 关闭时按优先级顺序执行注册的清理任务,支持 context 取消。",
+      "tags": [
+        "cleanup",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "file",
+      "name": "diffcreator.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "summary": "定义 DiffCreator 接口和 RootfsDiffCreator 接口,用于抽象 rootfs 差异镜像创建流程。",
+      "tags": [
+        "interface",
+        "rootfs",
+        "abstraction"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/diffcreator.go:DiffCreator",
+      "type": "class",
+      "name": "DiffCreator",
+      "filePath": "packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "lineRange": [
+        13,
+        15
+      ],
+      "summary": "DiffCreator 接口,描述从 rootfs 创建差异镜像的 process 方法。",
+      "tags": [
+        "interface",
+        "rootfs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/diffcreator.go:RootfsDiffCreator",
+      "type": "class",
+      "name": "RootfsDiffCreator",
+      "filePath": "packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "lineRange": [
+        17,
+        20
+      ],
+      "summary": "RootfsDiffCreator 接口,与 DiffCreator 等价的 rootfs 差异实现抽象。",
+      "tags": [
+        "interface",
+        "rootfs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "file",
+      "name": "envd.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/envd.go",
+      "summary": "封装与 envd daemon 的 HTTP 通信,提供 freeze/unfreeze/fsfreeze/post-op/collapse 等操作以及 initEnvd 启动流程,并分类 envd-init 退出错误。",
+      "tags": [
+        "envd",
+        "http-client",
+        "freeze",
+        "lifecycle"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/envd.go:classifyEnvdInitExit",
+      "type": "function",
+      "name": "classifyEnvdInitExit",
+      "filePath": "packages/orchestrator/pkg/sandbox/envd.go",
+      "lineRange": [
+        46,
+        59
+      ],
+      "summary": "根据 envd-init 进程退出错误分类为成功/超时/失败,用于上报和重试逻辑。",
+      "tags": [
+        "envd",
+        "error-classification"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/envd.go:doRequestWithInfiniteRetries",
+      "type": "function",
+      "name": "doRequestWithInfiniteRetries",
+      "filePath": "packages/orchestrator/pkg/sandbox/envd.go",
+      "lineRange": [
+        73,
+        127
+      ],
+      "summary": "向 envd 发送 HTTP 请求,失败时按指数退避无限重试。",
+      "tags": [
+        "envd",
+        "http-client",
+        "retry"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/envd.go:callEnvdCollapse",
+      "type": "function",
+      "name": "callEnvdCollapse",
+      "filePath": "packages/orchestrator/pkg/sandbox/envd.go",
+      "lineRange": [
+        166,
+        188
+      ],
+      "summary": "调用 envd Collapse 接口以请求 sandbox 内部执行 collapse(去重/合并)。",
+      "tags": [
+        "envd",
+        "collapse"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/envd.go:postEnvd",
+      "type": "function",
+      "name": "postEnvd",
+      "filePath": "packages/orchestrator/pkg/sandbox/envd.go",
+      "lineRange": [
+        192,
+        209
+      ],
+      "summary": "通过 envd URL 调用指定 path 的 POST 接口,带超时控制。",
+      "tags": [
+        "envd",
+        "http-client"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/envd.go:doEnvdPost",
+      "type": "function",
+      "name": "doEnvdPost",
+      "filePath": "packages/orchestrator/pkg/sandbox/envd.go",
+      "lineRange": [
+        228,
+        244
+      ],
+      "summary": "执行对 envd 的 POST 调用,封装错误与日志。",
+      "tags": [
+        "envd",
+        "http-client"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/envd.go:convertMounts",
+      "type": "function",
+      "name": "convertMounts",
+      "filePath": "packages/orchestrator/pkg/sandbox/envd.go",
+      "lineRange": [
+        246,
+        257
+      ],
+      "summary": "convertMounts 函数。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/envd.go:initEnvd",
+      "type": "function",
+      "name": "initEnvd",
+      "filePath": "packages/orchestrator/pkg/sandbox/envd.go",
+      "lineRange": [
+        259,
+        336
+      ],
+      "summary": "初始化 envd,发送 CA bundle、metrics、start type 等 init payload,等待 envd 就绪。",
+      "tags": [
+        "envd",
+        "init",
+        "lifecycle"
+      ],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cgroup/reclaim.go:ReclaimLeaked",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cgroup/reclaim.go:ReclaimLeaked",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go:TestIsSandboxCgroupName",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go:TestIsSandboxCgroupName",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go:TestListSandboxCgroups",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go:TestListSandboxCgroups",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/checks.go:NewChecks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/checks.go:NewChecks",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/checks.go:Start",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/checks.go:Start",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/checks.go:Stop",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/checks.go:Stop",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/checks.go:logHealth",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/checks.go:Healthcheck",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/checks.go:Healthcheck",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/checks.go:Checks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/checks.go:Checks",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/checks_test.go:TestChecks_StopBeforeStart_DoesNotStartHealthLoop",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/checks_test.go:TestChecks_StopBeforeStart_DoesNotStartHealthLoop",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cleanup.go:NewCleanup",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cleanup.go:NewCleanup",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cleanup.go:AddNoContext",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cleanup.go:AddNoContext",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cleanup.go:Add",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cleanup.go:Add",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cleanup.go:AddPriority",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cleanup.go:AddPriority",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cleanup.go:Run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cleanup.go:Run",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cleanup.go:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/cleanup.go:cleanupFiles",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/cleanup.go:Cleanup",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/cleanup.go:Cleanup",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/diffcreator.go:DiffCreator",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/diffcreator.go:DiffCreator",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/diffcreator.go:RootfsDiffCreator",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/diffcreator.go:RootfsDiffCreator",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/rootfs/direct.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/rootfs/nbd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/rootfs/rootfs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/envd.go:classifyEnvdInitExit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/envd.go:doRequestWithInfiniteRetries",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/envd.go:callEnvdCollapse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/envd.go:postEnvd",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/envd.go:doEnvdPost",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/envd.go:convertMounts",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/envd.go:initEnvd",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd/envd.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd/types.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

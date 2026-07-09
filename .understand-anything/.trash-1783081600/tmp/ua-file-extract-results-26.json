@@ -1,0 +1,3221 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 29,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/db/queries/get_exclusive_builds_for_template_deletion.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 52,
+      "nonEmptyLines": 46,
+      "functions": [
+        {
+          "name": "GetExclusiveBuildsForTemplateDeletion",
+          "startLine": 34,
+          "endLine": 52,
+          "params": [
+            "ctx",
+            "templateID"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetExclusiveBuildsForTemplateDeletionRow",
+          "startLine": 26,
+          "endLine": 29,
+          "methods": [],
+          "properties": [
+            "BuildID",
+            "ClusterNodeID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetExclusiveBuildsForTemplateDeletionRow",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "GetExclusiveBuildsForTemplateDeletion",
+          "line": 34,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetExclusiveBuildsForTemplateDeletion",
+          "callee": "q.db.Query",
+          "lineNumber": 35
+        },
+        {
+          "caller": "GetExclusiveBuildsForTemplateDeletion",
+          "callee": "rows.Close",
+          "lineNumber": 39
+        },
+        {
+          "caller": "GetExclusiveBuildsForTemplateDeletion",
+          "callee": "rows.Next",
+          "lineNumber": 41
+        },
+        {
+          "caller": "GetExclusiveBuildsForTemplateDeletion",
+          "callee": "rows.Scan",
+          "lineNumber": 43
+        },
+        {
+          "caller": "GetExclusiveBuildsForTemplateDeletion",
+          "callee": "append",
+          "lineNumber": 46
+        },
+        {
+          "caller": "GetExclusiveBuildsForTemplateDeletion",
+          "callee": "rows.Err",
+          "lineNumber": 48
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/get_inprogress_builds.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 156,
+      "nonEmptyLines": 144,
+      "functions": [
+        {
+          "name": "GetCancellableTemplateBuildsByTeam",
+          "startLine": 32,
+          "endLine": 55,
+          "params": [
+            "ctx",
+            "teamID"
+          ]
+        },
+        {
+          "name": "GetInProgressTemplateBuilds",
+          "startLine": 74,
+          "endLine": 131,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "GetInProgressTemplateBuildsByTeam",
+          "startLine": 151,
+          "endLine": 156,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetCancellableTemplateBuildsByTeamRow",
+          "startLine": 24,
+          "endLine": 29,
+          "methods": [],
+          "properties": [
+            "BuildID",
+            "TemplateID",
+            "ClusterID",
+            "ClusterNodeID"
+          ]
+        },
+        {
+          "name": "GetInProgressTemplateBuildsRow",
+          "startLine": 68,
+          "endLine": 72,
+          "methods": [],
+          "properties": [
+            "TeamClusterID",
+            "ActiveEnv",
+            "EnvBuild"
+          ]
+        },
+        {
+          "name": "GetInProgressTemplateBuildsByTeamParams",
+          "startLine": 144,
+          "endLine": 148,
+          "methods": [],
+          "properties": [
+            "TeamID",
+            "ExcludeTemplateID",
+            "ExcludeTags"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetCancellableTemplateBuildsByTeamRow",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "GetCancellableTemplateBuildsByTeam",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "GetInProgressTemplateBuildsRow",
+          "line": 68,
+          "isDefault": false
+        },
+        {
+          "name": "GetInProgressTemplateBuilds",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "GetInProgressTemplateBuildsByTeamParams",
+          "line": 144,
+          "isDefault": false
+        },
+        {
+          "name": "GetInProgressTemplateBuildsByTeam",
+          "line": 151,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetCancellableTemplateBuildsByTeam",
+          "callee": "q.db.Query",
+          "lineNumber": 33
+        },
+        {
+          "caller": "GetCancellableTemplateBuildsByTeam",
+          "callee": "rows.Close",
+          "lineNumber": 37
+        },
+        {
+          "caller": "GetCancellableTemplateBuildsByTeam",
+          "callee": "rows.Next",
+          "lineNumber": 39
+        },
+        {
+          "caller": "GetCancellableTemplateBuildsByTeam",
+          "callee": "rows.Scan",
+          "lineNumber": 41
+        },
+        {
+          "caller": "GetCancellableTemplateBuildsByTeam",
+          "callee": "append",
+          "lineNumber": 49
+        },
+        {
+          "caller": "GetCancellableTemplateBuildsByTeam",
+          "callee": "rows.Err",
+          "lineNumber": 51
+        },
+        {
+          "caller": "GetInProgressTemplateBuilds",
+          "callee": "q.db.Query",
+          "lineNumber": 75
+        },
+        {
+          "caller": "GetInProgressTemplateBuilds",
+          "callee": "rows.Close",
+          "lineNumber": 79
+        },
+        {
+          "caller": "GetInProgressTemplateBuilds",
+          "callee": "rows.Next",
+          "lineNumber": 81
+        },
+        {
+          "caller": "GetInProgressTemplateBuilds",
+          "callee": "rows.Scan",
+          "lineNumber": 83
+        },
+        {
+          "caller": "GetInProgressTemplateBuilds",
+          "callee": "append",
+          "lineNumber": 125
+        },
+        {
+          "caller": "GetInProgressTemplateBuilds",
+          "callee": "rows.Err",
+          "lineNumber": 127
+        },
+        {
+          "caller": "GetInProgressTemplateBuildsByTeam",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 152
+        },
+        {
+          "caller": "GetInProgressTemplateBuildsByTeam",
+          "callee": "row.Scan",
+          "lineNumber": 154
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 6,
+        "functionCount": 3,
+        "classCount": 3
+      }
+    },
+    {
+      "path": "packages/db/queries/get_last_snapshot.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 89,
+      "nonEmptyLines": 84,
+      "functions": [
+        {
+          "name": "GetLastSnapshot",
+          "startLine": 42,
+          "endLine": 89,
+          "params": [
+            "ctx",
+            "sandboxID"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetLastSnapshotRow",
+          "startLine": 35,
+          "endLine": 40,
+          "methods": [],
+          "properties": [
+            "Aliases",
+            "Names",
+            "Snapshot",
+            "EnvBuild"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetLastSnapshotRow",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "GetLastSnapshot",
+          "line": 42,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetLastSnapshot",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 43
+        },
+        {
+          "caller": "GetLastSnapshot",
+          "callee": "row.Scan",
+          "lineNumber": 45
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/get_sandbox_record.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 77,
+      "nonEmptyLines": 70,
+      "functions": [
+        {
+          "name": "GetSandboxRecordByTeamAndSandboxID",
+          "startLine": 62,
+          "endLine": 77,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetSandboxRecordByTeamAndSandboxIDParams",
+          "startLine": 45,
+          "endLine": 48,
+          "methods": [],
+          "properties": [
+            "TeamID",
+            "SandboxID"
+          ]
+        },
+        {
+          "name": "GetSandboxRecordByTeamAndSandboxIDRow",
+          "startLine": 50,
+          "endLine": 60,
+          "methods": [],
+          "properties": [
+            "SandboxID",
+            "TemplateID",
+            "Vcpu",
+            "RamMb",
+            "TotalDiskSizeMb",
+            "StartedAt",
+            "StoppedAt",
+            "Domain",
+            "Alias"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetSandboxRecordByTeamAndSandboxIDParams",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "GetSandboxRecordByTeamAndSandboxIDRow",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "GetSandboxRecordByTeamAndSandboxID",
+          "line": 62,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetSandboxRecordByTeamAndSandboxID",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 63
+        },
+        {
+          "caller": "GetSandboxRecordByTeamAndSandboxID",
+          "callee": "row.Scan",
+          "lineNumber": 65
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/queries/get_snapshot_builds.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 52,
+      "nonEmptyLines": 45,
+      "functions": [
+        {
+          "name": "GetSnapshotBuilds",
+          "startLine": 34,
+          "endLine": 52,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetSnapshotBuildsParams",
+          "startLine": 23,
+          "endLine": 26,
+          "methods": [],
+          "properties": [
+            "SandboxID",
+            "TeamID"
+          ]
+        },
+        {
+          "name": "GetSnapshotBuildsRow",
+          "startLine": 28,
+          "endLine": 32,
+          "methods": [],
+          "properties": [
+            "TemplateID",
+            "BuildID",
+            "BuildClusterNodeID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetSnapshotBuildsParams",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "GetSnapshotBuildsRow",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "GetSnapshotBuilds",
+          "line": 34,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetSnapshotBuilds",
+          "callee": "q.db.Query",
+          "lineNumber": 35
+        },
+        {
+          "caller": "GetSnapshotBuilds",
+          "callee": "rows.Close",
+          "lineNumber": 39
+        },
+        {
+          "caller": "GetSnapshotBuilds",
+          "callee": "rows.Next",
+          "lineNumber": 41
+        },
+        {
+          "caller": "GetSnapshotBuilds",
+          "callee": "rows.Scan",
+          "lineNumber": 43
+        },
+        {
+          "caller": "GetSnapshotBuilds",
+          "callee": "append",
+          "lineNumber": 46
+        },
+        {
+          "caller": "GetSnapshotBuilds",
+          "callee": "rows.Err",
+          "lineNumber": 48
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/queries/get_snapshots_with_cursor.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 121,
+      "nonEmptyLines": 114,
+      "functions": [
+        {
+          "name": "GetSnapshotsWithCursor",
+          "startLine": 75,
+          "endLine": 121,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetSnapshotsWithCursorParams",
+          "startLine": 55,
+          "endLine": 61,
+          "methods": [],
+          "properties": [
+            "Limit",
+            "TeamID",
+            "Metadata",
+            "CursorID",
+            "CursorTime"
+          ]
+        },
+        {
+          "name": "GetSnapshotsWithCursorRow",
+          "startLine": 63,
+          "endLine": 73,
+          "methods": [],
+          "properties": [
+            "Aliases",
+            "Names",
+            "Snapshot",
+            "BuildID",
+            "BuildVcpu",
+            "BuildRamMb",
+            "BuildTotalDiskSizeMb",
+            "BuildEnvdVersion",
+            "BuildCreatedAt"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetSnapshotsWithCursorParams",
+          "line": 55,
+          "isDefault": false
+        },
+        {
+          "name": "GetSnapshotsWithCursorRow",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "GetSnapshotsWithCursor",
+          "line": 75,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetSnapshotsWithCursor",
+          "callee": "q.db.Query",
+          "lineNumber": 76
+        },
+        {
+          "caller": "GetSnapshotsWithCursor",
+          "callee": "rows.Close",
+          "lineNumber": 86
+        },
+        {
+          "caller": "GetSnapshotsWithCursor",
+          "callee": "rows.Next",
+          "lineNumber": 88
+        },
+        {
+          "caller": "GetSnapshotsWithCursor",
+          "callee": "rows.Scan",
+          "lineNumber": 90
+        },
+        {
+          "caller": "GetSnapshotsWithCursor",
+          "callee": "append",
+          "lineNumber": 115
+        },
+        {
+          "caller": "GetSnapshotsWithCursor",
+          "callee": "rows.Err",
+          "lineNumber": 117
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/queries/get_team_template.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 100,
+      "nonEmptyLines": 93,
+      "functions": [
+        {
+          "name": "GetTeamTemplate",
+          "startLine": 74,
+          "endLine": 100,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetTeamTemplateParams",
+          "startLine": 56,
+          "endLine": 59,
+          "methods": [],
+          "properties": [
+            "ID",
+            "TeamID"
+          ]
+        },
+        {
+          "name": "GetTeamTemplateRow",
+          "startLine": 61,
+          "endLine": 72,
+          "methods": [],
+          "properties": [
+            "ActiveEnv",
+            "BuildID",
+            "BuildVcpu",
+            "BuildRamMb",
+            "BuildTotalDiskSizeMb",
+            "BuildEnvdVersion",
+            "BuildFirecrackerVersion",
+            "BuildStatus",
+            "Aliases",
+            "Names"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTeamTemplateParams",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamTemplateRow",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamTemplate",
+          "line": 74,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTeamTemplate",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 75
+        },
+        {
+          "caller": "GetTeamTemplate",
+          "callee": "row.Scan",
+          "lineNumber": 77
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/queries/get_team_templates.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 111,
+      "nonEmptyLines": 105,
+      "functions": [
+        {
+          "name": "GetTeamTemplates",
+          "startLine": 71,
+          "endLine": 111,
+          "params": [
+            "ctx",
+            "teamID"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetTeamTemplatesRow",
+          "startLine": 57,
+          "endLine": 69,
+          "methods": [],
+          "properties": [
+            "ActiveEnv",
+            "BuildID",
+            "BuildVcpu",
+            "BuildRamMb",
+            "BuildTotalDiskSizeMb",
+            "BuildEnvdVersion",
+            "BuildFirecrackerVersion",
+            "BuildStatus",
+            "CreatorID",
+            "Aliases",
+            "Names"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTeamTemplatesRow",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamTemplates",
+          "line": 71,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTeamTemplates",
+          "callee": "q.db.Query",
+          "lineNumber": 72
+        },
+        {
+          "caller": "GetTeamTemplates",
+          "callee": "rows.Close",
+          "lineNumber": 76
+        },
+        {
+          "caller": "GetTeamTemplates",
+          "callee": "rows.Next",
+          "lineNumber": 78
+        },
+        {
+          "caller": "GetTeamTemplates",
+          "callee": "rows.Scan",
+          "lineNumber": 80
+        },
+        {
+          "caller": "GetTeamTemplates",
+          "callee": "append",
+          "lineNumber": 105
+        },
+        {
+          "caller": "GetTeamTemplates",
+          "callee": "rows.Err",
+          "lineNumber": 107
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/get_team_templates_with_cursor.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 138,
+      "nonEmptyLines": 130,
+      "functions": [
+        {
+          "name": "GetTeamTemplatesWithCursor",
+          "startLine": 98,
+          "endLine": 138,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetTeamTemplatesWithCursorParams",
+          "startLine": 66,
+          "endLine": 71,
+          "methods": [],
+          "properties": [
+            "TeamID",
+            "CursorCreatedAt",
+            "CursorID",
+            "LimitPlusOne"
+          ]
+        },
+        {
+          "name": "GetTeamTemplatesWithCursorRow",
+          "startLine": 73,
+          "endLine": 90,
+          "methods": [],
+          "properties": [
+            "TemplateID",
+            "CreatedAt",
+            "UpdatedAt",
+            "Public",
+            "BuildCount",
+            "SpawnCount",
+            "LastSpawnedAt",
+            "CreatorID",
+            "BuildID",
+            "BuildVcpu",
+            "BuildRamMb",
+            "BuildTotalDiskSizeMb",
+            "BuildEnvdVersion",
+            "BuildStatus",
+            "Aliases",
+            "Names"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTeamTemplatesWithCursorParams",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamTemplatesWithCursorRow",
+          "line": 73,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamTemplatesWithCursor",
+          "line": 98,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTeamTemplatesWithCursor",
+          "callee": "q.db.Query",
+          "lineNumber": 99
+        },
+        {
+          "caller": "GetTeamTemplatesWithCursor",
+          "callee": "rows.Close",
+          "lineNumber": 108
+        },
+        {
+          "caller": "GetTeamTemplatesWithCursor",
+          "callee": "rows.Next",
+          "lineNumber": 110
+        },
+        {
+          "caller": "GetTeamTemplatesWithCursor",
+          "callee": "rows.Scan",
+          "lineNumber": 112
+        },
+        {
+          "caller": "GetTeamTemplatesWithCursor",
+          "callee": "append",
+          "lineNumber": 132
+        },
+        {
+          "caller": "GetTeamTemplatesWithCursor",
+          "callee": "rows.Err",
+          "lineNumber": 134
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/queries/get_template.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 70,
+      "nonEmptyLines": 60,
+      "functions": [
+        {
+          "name": "GetTemplateByAlias",
+          "startLine": 37,
+          "endLine": 42,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "GetTemplateById",
+          "startLine": 60,
+          "endLine": 70,
+          "params": [
+            "ctx",
+            "templateID"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetTemplateByAliasParams",
+          "startLine": 23,
+          "endLine": 26,
+          "methods": [],
+          "properties": [
+            "Alias",
+            "Namespace"
+          ]
+        },
+        {
+          "name": "GetTemplateByAliasRow",
+          "startLine": 28,
+          "endLine": 32,
+          "methods": [],
+          "properties": [
+            "ID",
+            "TeamID",
+            "Public"
+          ]
+        },
+        {
+          "name": "GetTemplateByIdRow",
+          "startLine": 51,
+          "endLine": 56,
+          "methods": [],
+          "properties": [
+            "ID",
+            "TeamID",
+            "Public",
+            "ClusterID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTemplateByAliasParams",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "GetTemplateByAliasRow",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "GetTemplateByAlias",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "GetTemplateByIdRow",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "GetTemplateById",
+          "line": 60,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTemplateByAlias",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 38
+        },
+        {
+          "caller": "GetTemplateByAlias",
+          "callee": "row.Scan",
+          "lineNumber": 40
+        },
+        {
+          "caller": "GetTemplateById",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 61
+        },
+        {
+          "caller": "GetTemplateById",
+          "callee": "row.Scan",
+          "lineNumber": 63
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 5,
+        "functionCount": 2,
+        "classCount": 3
+      }
+    },
+    {
+      "path": "packages/db/queries/get_template_aliases.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 45,
+      "nonEmptyLines": 40,
+      "functions": [
+        {
+          "name": "GetTemplateAliases",
+          "startLine": 27,
+          "endLine": 45,
+          "params": [
+            "ctx",
+            "envIds"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetTemplateAliasesRow",
+          "startLine": 21,
+          "endLine": 25,
+          "methods": [],
+          "properties": [
+            "Alias",
+            "Namespace",
+            "EnvID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTemplateAliasesRow",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "GetTemplateAliases",
+          "line": 27,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTemplateAliases",
+          "callee": "q.db.Query",
+          "lineNumber": 28
+        },
+        {
+          "caller": "GetTemplateAliases",
+          "callee": "rows.Close",
+          "lineNumber": 32
+        },
+        {
+          "caller": "GetTemplateAliases",
+          "callee": "rows.Next",
+          "lineNumber": 34
+        },
+        {
+          "caller": "GetTemplateAliases",
+          "callee": "rows.Scan",
+          "lineNumber": 36
+        },
+        {
+          "caller": "GetTemplateAliases",
+          "callee": "append",
+          "lineNumber": 39
+        },
+        {
+          "caller": "GetTemplateAliases",
+          "callee": "rows.Err",
+          "lineNumber": 41
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/get_template_build.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 76,
+      "nonEmptyLines": 69,
+      "functions": [
+        {
+          "name": "GetTemplateBuildWithTemplate",
+          "startLine": 33,
+          "endLine": 76,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetTemplateBuildWithTemplateParams",
+          "startLine": 23,
+          "endLine": 26,
+          "methods": [],
+          "properties": [
+            "TemplateID",
+            "BuildID"
+          ]
+        },
+        {
+          "name": "GetTemplateBuildWithTemplateRow",
+          "startLine": 28,
+          "endLine": 31,
+          "methods": [],
+          "properties": [
+            "ActiveEnv",
+            "EnvBuild"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTemplateBuildWithTemplateParams",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "GetTemplateBuildWithTemplateRow",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "GetTemplateBuildWithTemplate",
+          "line": 33,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTemplateBuildWithTemplate",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 34
+        },
+        {
+          "caller": "GetTemplateBuildWithTemplate",
+          "callee": "row.Scan",
+          "lineNumber": 36
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/queries/get_template_by_id.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 64,
+      "nonEmptyLines": 58,
+      "functions": [
+        {
+          "name": "GetTemplateByIDWithAliases",
+          "startLine": 45,
+          "endLine": 64,
+          "params": [
+            "ctx",
+            "id"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetTemplateByIDWithAliasesRow",
+          "startLine": 29,
+          "endLine": 43,
+          "methods": [],
+          "properties": [
+            "ID",
+            "CreatedAt",
+            "UpdatedAt",
+            "Public",
+            "BuildCount",
+            "SpawnCount",
+            "LastSpawnedAt",
+            "TeamID",
+            "CreatedBy",
+            "ClusterID",
+            "Source",
+            "Aliases",
+            "Names"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTemplateByIDWithAliasesRow",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "GetTemplateByIDWithAliases",
+          "line": 45,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTemplateByIDWithAliases",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 46
+        },
+        {
+          "caller": "GetTemplateByIDWithAliases",
+          "callee": "row.Scan",
+          "lineNumber": 48
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/get_template_with_build_by_tag.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 98,
+      "nonEmptyLines": 92,
+      "functions": [
+        {
+          "name": "GetTemplateWithBuildByTag",
+          "startLine": 53,
+          "endLine": 98,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetTemplateWithBuildByTagParams",
+          "startLine": 38,
+          "endLine": 41,
+          "methods": [],
+          "properties": [
+            "Tag",
+            "TemplateID"
+          ]
+        },
+        {
+          "name": "GetTemplateWithBuildByTagRow",
+          "startLine": 43,
+          "endLine": 48,
+          "methods": [],
+          "properties": [
+            "ActiveEnv",
+            "EnvBuild",
+            "Aliases",
+            "Names"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTemplateWithBuildByTagParams",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "GetTemplateWithBuildByTagRow",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "GetTemplateWithBuildByTag",
+          "line": 53,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTemplateWithBuildByTag",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 54
+        },
+        {
+          "caller": "GetTemplateWithBuildByTag",
+          "callee": "row.Scan",
+          "lineNumber": 56
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/queries/get_template_with_builds.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 80,
+      "nonEmptyLines": 75,
+      "functions": [
+        {
+          "name": "GetTemplateBuilds",
+          "startLine": 30,
+          "endLine": 80,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetTemplateBuildsParams",
+          "startLine": 23,
+          "endLine": 28,
+          "methods": [],
+          "properties": [
+            "TemplateID",
+            "CursorTime",
+            "CursorID",
+            "BuildLimit"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTemplateBuildsParams",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "GetTemplateBuilds",
+          "line": 30,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTemplateBuilds",
+          "callee": "q.db.Query",
+          "lineNumber": 31
+        },
+        {
+          "caller": "GetTemplateBuilds",
+          "callee": "rows.Close",
+          "lineNumber": 40
+        },
+        {
+          "caller": "GetTemplateBuilds",
+          "callee": "rows.Next",
+          "lineNumber": 42
+        },
+        {
+          "caller": "GetTemplateBuilds",
+          "callee": "rows.Scan",
+          "lineNumber": 44
+        },
+        {
+          "caller": "GetTemplateBuilds",
+          "callee": "append",
+          "lineNumber": 74
+        },
+        {
+          "caller": "GetTemplateBuilds",
+          "callee": "rows.Err",
+          "lineNumber": 76
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/get_templatealias_by_alias.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 44,
+      "nonEmptyLines": 38,
+      "functions": [
+        {
+          "name": "GetTemplateAliasByAlias",
+          "startLine": 31,
+          "endLine": 44,
+          "params": [
+            "ctx",
+            "alias"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetTemplateAliasByAliasRow",
+          "startLine": 21,
+          "endLine": 29,
+          "methods": [],
+          "properties": [
+            "Alias",
+            "IsRenamable",
+            "EnvID",
+            "Namespace",
+            "ID",
+            "TeamID",
+            "Public"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTemplateAliasByAliasRow",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "GetTemplateAliasByAlias",
+          "line": 31,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTemplateAliasByAlias",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 32
+        },
+        {
+          "caller": "GetTemplateAliasByAlias",
+          "callee": "row.Scan",
+          "lineNumber": 34
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/list_team_snapshot_templates.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 124,
+      "nonEmptyLines": 117,
+      "functions": [
+        {
+          "name": "ListTeamSnapshotTemplates",
+          "startLine": 85,
+          "endLine": 124,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ListTeamSnapshotTemplatesParams",
+          "startLine": 58,
+          "endLine": 64,
+          "methods": [],
+          "properties": [
+            "TeamID",
+            "SandboxID",
+            "CursorTime",
+            "CursorID",
+            "PageLimit"
+          ]
+        },
+        {
+          "name": "ListTeamSnapshotTemplatesRow",
+          "startLine": 66,
+          "endLine": 81,
+          "methods": [],
+          "properties": [
+            "SnapshotID",
+            "SandboxID",
+            "CreatedAt",
+            "TeamID",
+            "BuildID",
+            "Vcpu",
+            "RamMb",
+            "TotalDiskSizeMb",
+            "EnvdVersion",
+            "KernelVersion",
+            "FirecrackerVersion",
+            "ClusterNodeID",
+            "Tag",
+            "Names"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ListTeamSnapshotTemplatesParams",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "ListTeamSnapshotTemplatesRow",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "ListTeamSnapshotTemplates",
+          "line": 85,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "ListTeamSnapshotTemplates",
+          "callee": "q.db.Query",
+          "lineNumber": 86
+        },
+        {
+          "caller": "ListTeamSnapshotTemplates",
+          "callee": "rows.Close",
+          "lineNumber": 96
+        },
+        {
+          "caller": "ListTeamSnapshotTemplates",
+          "callee": "rows.Next",
+          "lineNumber": 98
+        },
+        {
+          "caller": "ListTeamSnapshotTemplates",
+          "callee": "rows.Scan",
+          "lineNumber": 100
+        },
+        {
+          "caller": "ListTeamSnapshotTemplates",
+          "callee": "append",
+          "lineNumber": 118
+        },
+        {
+          "caller": "ListTeamSnapshotTemplates",
+          "callee": "rows.Err",
+          "lineNumber": 120
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/queries/list_template_tags.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 49,
+      "nonEmptyLines": 43,
+      "functions": [
+        {
+          "name": "ListTemplateTags",
+          "startLine": 31,
+          "endLine": 49,
+          "params": [
+            "ctx",
+            "templateID"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ListTemplateTagsRow",
+          "startLine": 22,
+          "endLine": 26,
+          "methods": [],
+          "properties": [
+            "Tag",
+            "BuildID",
+            "CreatedAt"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ListTemplateTagsRow",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "ListTemplateTags",
+          "line": 31,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "ListTemplateTags",
+          "callee": "q.db.Query",
+          "lineNumber": 32
+        },
+        {
+          "caller": "ListTemplateTags",
+          "callee": "rows.Close",
+          "lineNumber": 36
+        },
+        {
+          "caller": "ListTemplateTags",
+          "callee": "rows.Next",
+          "lineNumber": 38
+        },
+        {
+          "caller": "ListTemplateTags",
+          "callee": "rows.Scan",
+          "lineNumber": 40
+        },
+        {
+          "caller": "ListTemplateTags",
+          "callee": "append",
+          "lineNumber": 43
+        },
+        {
+          "caller": "ListTemplateTags",
+          "callee": "rows.Err",
+          "lineNumber": 45
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/models.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 108,
+      "nonEmptyLines": 98,
+      "classes": [
+        {
+          "name": "ActiveEnv",
+          "startLine": 15,
+          "endLine": 27,
+          "methods": [],
+          "properties": [
+            "ID",
+            "CreatedAt",
+            "UpdatedAt",
+            "Public",
+            "BuildCount",
+            "SpawnCount",
+            "LastSpawnedAt",
+            "TeamID",
+            "CreatedBy",
+            "ClusterID",
+            "Source"
+          ]
+        },
+        {
+          "name": "Cluster",
+          "startLine": 29,
+          "endLine": 37,
+          "methods": [],
+          "properties": [
+            "ID",
+            "Endpoint",
+            "EndpointTls",
+            "Token",
+            "SandboxProxyDomain",
+            "AuthOrgID",
+            "Name"
+          ]
+        },
+        {
+          "name": "EnvAlias",
+          "startLine": 39,
+          "endLine": 45,
+          "methods": [],
+          "properties": [
+            "Alias",
+            "IsRenamable",
+            "EnvID",
+            "Namespace",
+            "ID"
+          ]
+        },
+        {
+          "name": "EnvBuild",
+          "startLine": 47,
+          "endLine": 74,
+          "methods": [],
+          "properties": [
+            "ID",
+            "CreatedAt",
+            "UpdatedAt",
+            "FinishedAt",
+            "Status",
+            "Dockerfile",
+            "StartCmd",
+            "Vcpu",
+            "RamMb",
+            "FreeDiskSizeMb",
+            "TotalDiskSizeMb",
+            "KernelVersion",
+            "FirecrackerVersion",
+            "EnvID",
+            "EnvdVersion",
+            "ReadyCmd",
+            "ClusterNodeID",
+            "Reason",
+            "Version",
+            "CpuArchitecture",
+            "CpuFamily",
+            "CpuModel",
+            "CpuModelName",
+            "CpuFlags",
+            "StatusGroup",
+            "TeamID"
+          ]
+        },
+        {
+          "name": "Snapshot",
+          "startLine": 76,
+          "endLine": 90,
+          "methods": [],
+          "properties": [
+            "CreatedAt",
+            "EnvID",
+            "SandboxID",
+            "ID",
+            "Metadata",
+            "BaseEnvID",
+            "SandboxStartedAt",
+            "EnvSecure",
+            "OriginNodeID",
+            "AllowInternetAccess",
+            "AutoPause",
+            "TeamID",
+            "Config"
+          ]
+        },
+        {
+          "name": "UsersTeam",
+          "startLine": 92,
+          "endLine": 100,
+          "methods": [],
+          "properties": [
+            "ID",
+            "UserID",
+            "TeamID",
+            "IsDefault",
+            "AddedBy",
+            "CreatedAt",
+            "UuidID"
+          ]
+        },
+        {
+          "name": "Volume",
+          "startLine": 102,
+          "endLine": 108,
+          "methods": [],
+          "properties": [
+            "ID",
+            "TeamID",
+            "Name",
+            "VolumeType",
+            "CreatedAt"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ActiveEnv",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "Cluster",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "EnvAlias",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "EnvBuild",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "Snapshot",
+          "line": 76,
+          "isDefault": false
+        },
+        {
+          "name": "UsersTeam",
+          "line": 92,
+          "isDefault": false
+        },
+        {
+          "name": "Volume",
+          "line": 102,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 7,
+        "functionCount": 0,
+        "classCount": 7
+      }
+    },
+    {
+      "path": "packages/db/queries/resolve_team.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 37,
+      "nonEmptyLines": 30,
+      "functions": [
+        {
+          "name": "ResolveTeamBySlugAndUser",
+          "startLine": 32,
+          "endLine": 37,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ResolveTeamBySlugAndUserParams",
+          "startLine": 22,
+          "endLine": 25,
+          "methods": [],
+          "properties": [
+            "UserID",
+            "Slug"
+          ]
+        },
+        {
+          "name": "ResolveTeamBySlugAndUserRow",
+          "startLine": 27,
+          "endLine": 30,
+          "methods": [],
+          "properties": [
+            "ID",
+            "Slug"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ResolveTeamBySlugAndUserParams",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "ResolveTeamBySlugAndUserRow",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "ResolveTeamBySlugAndUser",
+          "line": 32,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "ResolveTeamBySlugAndUser",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 33
+        },
+        {
+          "caller": "ResolveTeamBySlugAndUser",
+          "callee": "row.Scan",
+          "lineNumber": 35
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/queries/team_members.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 158,
+      "nonEmptyLines": 139,
+      "functions": [
+        {
+          "name": "AddTeamMember",
+          "startLine": 31,
+          "endLine": 34,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "GetPublicUserID",
+          "startLine": 41,
+          "endLine": 45,
+          "params": [
+            "ctx",
+            "id"
+          ]
+        },
+        {
+          "name": "GetTeamMemberRelation",
+          "startLine": 58,
+          "endLine": 71,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "GetTeamMembers",
+          "startLine": 92,
+          "endLine": 116,
+          "params": [
+            "ctx",
+            "teamID"
+          ]
+        },
+        {
+          "name": "LockTeamMembersForUpdate",
+          "startLine": 124,
+          "endLine": 142,
+          "params": [
+            "ctx",
+            "teamID"
+          ]
+        },
+        {
+          "name": "RemoveTeamMember",
+          "startLine": 155,
+          "endLine": 158,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AddTeamMemberParams",
+          "startLine": 25,
+          "endLine": 29,
+          "methods": [],
+          "properties": [
+            "UserID",
+            "TeamID",
+            "AddedBy"
+          ]
+        },
+        {
+          "name": "GetTeamMemberRelationParams",
+          "startLine": 53,
+          "endLine": 56,
+          "methods": [],
+          "properties": [
+            "TeamID",
+            "UserID"
+          ]
+        },
+        {
+          "name": "GetTeamMembersRow",
+          "startLine": 84,
+          "endLine": 90,
+          "methods": [],
+          "properties": [
+            "UserID",
+            "TeamID",
+            "IsDefault",
+            "AddedBy",
+            "CreatedAt"
+          ]
+        },
+        {
+          "name": "RemoveTeamMemberParams",
+          "startLine": 150,
+          "endLine": 153,
+          "methods": [],
+          "properties": [
+            "TeamID",
+            "UserID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "AddTeamMemberParams",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "AddTeamMember",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "GetPublicUserID",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamMemberRelationParams",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamMemberRelation",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamMembersRow",
+          "line": 84,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamMembers",
+          "line": 92,
+          "isDefault": false
+        },
+        {
+          "name": "LockTeamMembersForUpdate",
+          "line": 124,
+          "isDefault": false
+        },
+        {
+          "name": "RemoveTeamMemberParams",
+          "line": 150,
+          "isDefault": false
+        },
+        {
+          "name": "RemoveTeamMember",
+          "line": 155,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "AddTeamMember",
+          "callee": "q.db.Exec",
+          "lineNumber": 32
+        },
+        {
+          "caller": "GetPublicUserID",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 42
+        },
+        {
+          "caller": "GetPublicUserID",
+          "callee": "row.Scan",
+          "lineNumber": 43
+        },
+        {
+          "caller": "GetTeamMemberRelation",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 59
+        },
+        {
+          "caller": "GetTeamMemberRelation",
+          "callee": "row.Scan",
+          "lineNumber": 61
+        },
+        {
+          "caller": "GetTeamMembers",
+          "callee": "q.db.Query",
+          "lineNumber": 93
+        },
+        {
+          "caller": "GetTeamMembers",
+          "callee": "rows.Close",
+          "lineNumber": 97
+        },
+        {
+          "caller": "GetTeamMembers",
+          "callee": "rows.Next",
+          "lineNumber": 99
+        },
+        {
+          "caller": "GetTeamMembers",
+          "callee": "rows.Scan",
+          "lineNumber": 101
+        },
+        {
+          "caller": "GetTeamMembers",
+          "callee": "append",
+          "lineNumber": 110
+        },
+        {
+          "caller": "GetTeamMembers",
+          "callee": "rows.Err",
+          "lineNumber": 112
+        },
+        {
+          "caller": "LockTeamMembersForUpdate",
+          "callee": "q.db.Query",
+          "lineNumber": 125
+        },
+        {
+          "caller": "LockTeamMembersForUpdate",
+          "callee": "rows.Close",
+          "lineNumber": 129
+        },
+        {
+          "caller": "LockTeamMembersForUpdate",
+          "callee": "rows.Next",
+          "lineNumber": 131
+        },
+        {
+          "caller": "LockTeamMembersForUpdate",
+          "callee": "rows.Scan",
+          "lineNumber": 133
+        },
+        {
+          "caller": "LockTeamMembersForUpdate",
+          "callee": "append",
+          "lineNumber": 136
+        },
+        {
+          "caller": "LockTeamMembersForUpdate",
+          "callee": "rows.Err",
+          "lineNumber": 138
+        },
+        {
+          "caller": "RemoveTeamMember",
+          "callee": "q.db.Exec",
+          "lineNumber": 156
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 10,
+        "functionCount": 6,
+        "classCount": 4
+      }
+    },
+    {
+      "path": "packages/db/queries/update_snapshot_origin_node.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 23,
+      "functions": [
+        {
+          "name": "UpdateSnapshotOriginNode",
+          "startLine": 25,
+          "endLine": 28,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "UpdateSnapshotOriginNodeParams",
+          "startLine": 18,
+          "endLine": 21,
+          "methods": [],
+          "properties": [
+            "OriginNodeID",
+            "SandboxID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UpdateSnapshotOriginNodeParams",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateSnapshotOriginNode",
+          "line": 25,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "UpdateSnapshotOriginNode",
+          "callee": "q.db.Exec",
+          "lineNumber": 26
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/update_template.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 83,
+      "nonEmptyLines": 74,
+      "functions": [
+        {
+          "name": "UpdateTemplate",
+          "startLine": 33,
+          "endLine": 38,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "UpdateTemplateBuild",
+          "startLine": 69,
+          "endLine": 83,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "UpdateTemplateParams",
+          "startLine": 27,
+          "endLine": 31,
+          "methods": [],
+          "properties": [
+            "Public",
+            "TeamID",
+            "TemplateIDOrAlias"
+          ]
+        },
+        {
+          "name": "UpdateTemplateBuildParams",
+          "startLine": 56,
+          "endLine": 67,
+          "methods": [],
+          "properties": [
+            "StartCmd",
+            "ReadyCmd",
+            "Dockerfile",
+            "ClusterNodeID",
+            "CpuArchitecture",
+            "CpuFamily",
+            "CpuModel",
+            "CpuModelName",
+            "CpuFlags",
+            "BuildUuid"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UpdateTemplateParams",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateTemplate",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateTemplateBuildParams",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateTemplateBuild",
+          "line": 69,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "UpdateTemplate",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 34
+        },
+        {
+          "caller": "UpdateTemplate",
+          "callee": "row.Scan",
+          "lineNumber": 36
+        },
+        {
+          "caller": "UpdateTemplateBuild",
+          "callee": "q.db.Exec",
+          "lineNumber": 70
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 2,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/queries/update_template_build_status.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 73,
+      "nonEmptyLines": 64,
+      "functions": [
+        {
+          "name": "FailTemplateBuildAndDeactivate",
+          "startLine": 36,
+          "endLine": 45,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "UpdateEnvBuildStatus",
+          "startLine": 64,
+          "endLine": 73,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "FailTemplateBuildAndDeactivateParams",
+          "startLine": 28,
+          "endLine": 34,
+          "methods": [],
+          "properties": [
+            "Status",
+            "FinishedAt",
+            "Reason",
+            "Version",
+            "BuildID"
+          ]
+        },
+        {
+          "name": "UpdateEnvBuildStatusParams",
+          "startLine": 56,
+          "endLine": 62,
+          "methods": [],
+          "properties": [
+            "Status",
+            "FinishedAt",
+            "Reason",
+            "Version",
+            "BuildID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "FailTemplateBuildAndDeactivateParams",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "FailTemplateBuildAndDeactivate",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateEnvBuildStatusParams",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateEnvBuildStatus",
+          "line": 64,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "FailTemplateBuildAndDeactivate",
+          "callee": "q.db.Exec",
+          "lineNumber": 37
+        },
+        {
+          "caller": "UpdateEnvBuildStatus",
+          "callee": "q.db.Exec",
+          "lineNumber": 65
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 2,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/queries/update_template_spawns.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 23,
+      "functions": [
+        {
+          "name": "UpdateTemplateSpawnCount",
+          "startLine": 25,
+          "endLine": 28,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "UpdateTemplateSpawnCountParams",
+          "startLine": 19,
+          "endLine": 23,
+          "methods": [],
+          "properties": [
+            "SpawnCount",
+            "LastSpawnedAt",
+            "TemplateID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UpdateTemplateSpawnCountParams",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateTemplateSpawnCount",
+          "line": 25,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "UpdateTemplateSpawnCount",
+          "callee": "q.db.Exec",
+          "lineNumber": 26
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/upsert_alias.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 42,
+      "nonEmptyLines": 37,
+      "functions": [
+        {
+          "name": "UpsertTemplateAliasIfNotExists",
+          "startLine": 37,
+          "endLine": 42,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "UpsertTemplateAliasIfNotExistsParams",
+          "startLine": 28,
+          "endLine": 32,
+          "methods": [],
+          "properties": [
+            "Alias",
+            "TemplateID",
+            "Namespace"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UpsertTemplateAliasIfNotExistsParams",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "UpsertTemplateAliasIfNotExists",
+          "line": 37,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "UpsertTemplateAliasIfNotExists",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 38
+        },
+        {
+          "caller": "UpsertTemplateAliasIfNotExists",
+          "callee": "row.Scan",
+          "lineNumber": 40
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/validate_build.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 36,
+      "nonEmptyLines": 31,
+      "functions": [
+        {
+          "name": "ExistsWaitingTemplateBuild",
+          "startLine": 31,
+          "endLine": 36,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ExistsWaitingTemplateBuildParams",
+          "startLine": 26,
+          "endLine": 29,
+          "methods": [],
+          "properties": [
+            "AccessTokenHash",
+            "TemplateID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ExistsWaitingTemplateBuildParams",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "ExistsWaitingTemplateBuild",
+          "line": 31,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "ExistsWaitingTemplateBuild",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 32
+        },
+        {
+          "caller": "ExistsWaitingTemplateBuild",
+          "callee": "row.Scan",
+          "lineNumber": 34
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/volumes.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 140,
+      "nonEmptyLines": 123,
+      "functions": [
+        {
+          "name": "CreateVolume",
+          "startLine": 26,
+          "endLine": 37,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "DeleteVolume",
+          "startLine": 48,
+          "endLine": 51,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "FindVolumesByTeamID",
+          "startLine": 57,
+          "endLine": 81,
+          "params": [
+            "ctx",
+            "teamID"
+          ]
+        },
+        {
+          "name": "GetVolume",
+          "startLine": 92,
+          "endLine": 103,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "GetVolumesByName",
+          "startLine": 116,
+          "endLine": 140,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CreateVolumeParams",
+          "startLine": 20,
+          "endLine": 24,
+          "methods": [],
+          "properties": [
+            "TeamID",
+            "VolumeType",
+            "Name"
+          ]
+        },
+        {
+          "name": "DeleteVolumeParams",
+          "startLine": 43,
+          "endLine": 46,
+          "methods": [],
+          "properties": [
+            "TeamID",
+            "VolumeID"
+          ]
+        },
+        {
+          "name": "GetVolumeParams",
+          "startLine": 87,
+          "endLine": 90,
+          "methods": [],
+          "properties": [
+            "VolumeID",
+            "TeamID"
+          ]
+        },
+        {
+          "name": "GetVolumesByNameParams",
+          "startLine": 111,
+          "endLine": 114,
+          "methods": [],
+          "properties": [
+            "TeamID",
+            "VolumeNames"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreateVolumeParams",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "CreateVolume",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "DeleteVolumeParams",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "DeleteVolume",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "FindVolumesByTeamID",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "GetVolumeParams",
+          "line": 87,
+          "isDefault": false
+        },
+        {
+          "name": "GetVolume",
+          "line": 92,
+          "isDefault": false
+        },
+        {
+          "name": "GetVolumesByNameParams",
+          "line": 111,
+          "isDefault": false
+        },
+        {
+          "name": "GetVolumesByName",
+          "line": 116,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CreateVolume",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 27
+        },
+        {
+          "caller": "CreateVolume",
+          "callee": "row.Scan",
+          "lineNumber": 29
+        },
+        {
+          "caller": "DeleteVolume",
+          "callee": "q.db.Exec",
+          "lineNumber": 49
+        },
+        {
+          "caller": "FindVolumesByTeamID",
+          "callee": "q.db.Query",
+          "lineNumber": 58
+        },
+        {
+          "caller": "FindVolumesByTeamID",
+          "callee": "rows.Close",
+          "lineNumber": 62
+        },
+        {
+          "caller": "FindVolumesByTeamID",
+          "callee": "rows.Next",
+          "lineNumber": 64
+        },
+        {
+          "caller": "FindVolumesByTeamID",
+          "callee": "rows.Scan",
+          "lineNumber": 66
+        },
+        {
+          "caller": "FindVolumesByTeamID",
+          "callee": "append",
+          "lineNumber": 75
+        },
+        {
+          "caller": "FindVolumesByTeamID",
+          "callee": "rows.Err",
+          "lineNumber": 77
+        },
+        {
+          "caller": "GetVolume",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 93
+        },
+        {
+          "caller": "GetVolume",
+          "callee": "row.Scan",
+          "lineNumber": 95
+        },
+        {
+          "caller": "GetVolumesByName",
+          "callee": "q.db.Query",
+          "lineNumber": 117
+        },
+        {
+          "caller": "GetVolumesByName",
+          "callee": "rows.Close",
+          "lineNumber": 121
+        },
+        {
+          "caller": "GetVolumesByName",
+          "callee": "rows.Next",
+          "lineNumber": 123
+        },
+        {
+          "caller": "GetVolumesByName",
+          "callee": "rows.Scan",
+          "lineNumber": 125
+        },
+        {
+          "caller": "GetVolumesByName",
+          "callee": "append",
+          "lineNumber": 134
+        },
+        {
+          "caller": "GetVolumesByName",
+          "callee": "rows.Err",
+          "lineNumber": 136
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 9,
+        "functionCount": 5,
+        "classCount": 4
+      }
+    },
+    {
+      "path": "packages/db/scripts/seed/postgres/seed-db.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 218,
+      "nonEmptyLines": 187,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 19,
+          "endLine": 218,
+          "params": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "context.Background",
+          "lineNumber": 20
+        },
+        {
+          "caller": "main",
+          "callee": "keys.NewSHA256Hashing",
+          "lineNumber": 21
+        },
+        {
+          "caller": "main",
+          "callee": "bufio.NewReader",
+          "lineNumber": 24
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Println",
+          "lineNumber": 25
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Println",
+          "lineNumber": 26
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Printf",
+          "lineNumber": 28
+        },
+        {
+          "caller": "main",
+          "callee": "reader.ReadString",
+          "lineNumber": 29
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Println",
+          "lineNumber": 31
+        },
+        {
+          "caller": "main",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 36
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Println",
+          "lineNumber": 38
+        },
+        {
+          "caller": "main",
+          "callee": "uuid.New",
+          "lineNumber": 43
+        },
+        {
+          "caller": "main",
+          "callee": "keys.GenerateKey",
+          "lineNumber": 45
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Println",
+          "lineNumber": 47
+        },
+        {
+          "caller": "main",
+          "callee": "keys.GenerateKey",
+          "lineNumber": 52
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Printf",
+          "lineNumber": 54
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Println",
+          "lineNumber": 59
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Println",
+          "lineNumber": 60
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Printf",
+          "lineNumber": 61
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Printf",
+          "lineNumber": 62
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Printf",
+          "lineNumber": 63
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Printf",
+          "lineNumber": 64
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Println",
+          "lineNumber": 65
+        },
+        {
+          "caller": "main",
+          "callee": "os.Getenv",
+          "lineNumber": 67
+        },
+        {
+          "caller": "main",
+          "callee": "client.NewClient",
+          "lineNumber": 68
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 70
+        },
+        {
+          "caller": "main",
+          "callee": "db.Close",
+          "lineNumber": 72
+        },
+        {
+          "caller": "main",
+          "callee": "authdb.NewClient",
+          "lineNumber": 74
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 76
+        },
+        {
+          "caller": "main",
+          "callee": "authDb.Close",
+          "lineNumber": 78
+        },
+        {
+          "caller": "main",
+          "callee": "authDb.TestsRawSQL",
+          "lineNumber": 83
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 87
+        },
+        {
+          "caller": "main",
+          "callee": "authDb.TestsRawSQL",
+          "lineNumber": 90
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 94
+        },
+        {
+          "caller": "main",
+          "callee": "authDb.TestsRawSQL",
+          "lineNumber": 97
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 101
+        },
+        {
+          "caller": "main",
+          "callee": "authDb.TestsRawSQL",
+          "lineNumber": 104
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 108
+        },
+        {
+          "caller": "main",
+          "callee": "authDb.TestsRawSQL",
+          "lineNumber": 112
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 116
+        },
+        {
+          "caller": "main",
+          "callee": "authDb.TestsRawSQL",
+          "lineNumber": 119
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 123
+        },
+        {
+          "caller": "main",
+          "callee": "authDb.TestsRawSQL",
+          "lineNumber": 127
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 131
+        },
+        {
+          "caller": "main",
+          "callee": "uuid.New",
+          "lineNumber": 134
+        },
+        {
+          "caller": "main",
+          "callee": "authDb.TestsRawSQL",
+          "lineNumber": 135
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 140
+        },
+        {
+          "caller": "main",
+          "callee": "authDb.Write.UpsertPublicUser",
+          "lineNumber": 143
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 145
+        },
+        {
+          "caller": "main",
+          "callee": "authDb.TestsRawSQL",
+          "lineNumber": 149
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 154
+        },
+        {
+          "caller": "main",
+          "callee": "authDb.TestsRawSQL",
+          "lineNumber": 158
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 163
+        },
+        {
+          "caller": "main",
+          "callee": "strings.TrimPrefix",
+          "lineNumber": 167
+        },
+        {
+          "caller": "main",
+          "callee": "hex.DecodeString",
+          "lineNumber": 168
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 170
+        },
+        {
+          "caller": "main",
+          "callee": "hasher.Hash",
+          "lineNumber": 172
+        },
+        {
+          "caller": "main",
+          "callee": "keys.MaskKey",
+          "lineNumber": 173
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 175
+        },
+        {
+          "caller": "main",
+          "callee": "authDb.Write.CreateAccessToken",
+          "lineNumber": 177
+        },
+        {
+          "caller": "main",
+          "callee": "uuid.New",
+          "lineNumber": 179
+        },
+        {
+          "caller": "main",
+          "callee": "int32",
+          "lineNumber": 183
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 189
+        },
+        {
+          "caller": "main",
+          "callee": "strings.TrimPrefix",
+          "lineNumber": 193
+        },
+        {
+          "caller": "main",
+          "callee": "hex.DecodeString",
+          "lineNumber": 194
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 196
+        },
+        {
+          "caller": "main",
+          "callee": "hasher.Hash",
+          "lineNumber": 198
+        },
+        {
+          "caller": "main",
+          "callee": "keys.MaskKey",
+          "lineNumber": 199
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 201
+        },
+        {
+          "caller": "main",
+          "callee": "authDb.Write.CreateTeamAPIKey",
+          "lineNumber": 203
+        },
+        {
+          "caller": "main",
+          "callee": "int32",
+          "lineNumber": 208
+        },
+        {
+          "caller": "main",
+          "callee": "panic",
+          "lineNumber": 214
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Printf",
+          "lineNumber": 217
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    }
+  ]
+}

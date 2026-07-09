@@ -1,0 +1,42 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/db/queries/template_aliases/check_alias_exists.sql",
+      "type": "file",
+      "name": "check_alias_exists.sql",
+      "filePath": "packages/db/queries/template_aliases/check_alias_exists.sql",
+      "summary": "sqlc 查询文件，定义两个查询：检查别名是否与模板 ID 冲突（用于防止别名遮蔽已存在的 env ID），以及在指定 namespace 内查询别名是否存在。",
+      "tags": ["sql", "sqlc", "alias", "namespace", "query"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/queries/template_aliases/create_alias.sql",
+      "type": "file",
+      "name": "create_alias.sql",
+      "filePath": "packages/db/queries/template_aliases/create_alias.sql",
+      "summary": "sqlc 查询文件，定义 CreateTemplateAlias exec 查询，向 env_aliases 表插入新别名记录。",
+      "tags": ["sql", "sqlc", "alias", "insert", "query"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/queries/template_aliases/delete_old_aliases.sql",
+      "type": "file",
+      "name": "delete_old_aliases.sql",
+      "filePath": "packages/db/queries/template_aliases/delete_old_aliases.sql",
+      "summary": "sqlc 查询文件，定义 DeleteOtherTemplateAliases many 查询，删除指定 env_id 下所有可重命名别名，并返回被删除别名的完整键名（带 namespace 前缀）。",
+      "tags": ["sql", "sqlc", "alias", "delete", "query"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/queries/template_aliases/upsert_alias.sql",
+      "type": "file",
+      "name": "upsert_alias.sql",
+      "filePath": "packages/db/queries/template_aliases/upsert_alias.sql",
+      "summary": "sqlc 查询文件，定义 UpsertTemplateAliasIfNotExists one 查询，使用 ON CONFLICT DO NOTHING 配合 UNION ALL 实现幂等插入：插入新别名或返回已存在的 env_id，避免并发竞争条件。",
+      "tags": ["sql", "sqlc", "alias", "upsert", "idempotent", "query"],
+      "complexity": "moderate",
+      "languageNotes": "通过 CTE + UNION ALL 模式实现幂等 upsert，结合 ON CONFLICT DO NOTHING 避免并发竞态。"
+    }
+  ],
+  "edges": []
+}

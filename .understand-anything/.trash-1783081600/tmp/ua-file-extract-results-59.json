@@ -1,0 +1,95 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/nomad-nodepool-apm/Dockerfile",
+      "language": "dockerfile",
+      "fileCategory": "infra",
+      "totalLines": 29,
+      "nonEmptyLines": 19,
+      "services": [
+        {
+          "name": "builder",
+          "image": "golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION}",
+          "ports": [],
+          "startLine": 5,
+          "endLine": 21
+        },
+        {
+          "name": "alpine",
+          "image": "alpine:${ALPINE_VERSION}",
+          "ports": [],
+          "startLine": 22,
+          "endLine": 30
+        }
+      ],
+      "steps": [
+        {
+          "name": "ARG GOLANG_VERSION=1.26.3",
+          "startLine": 1,
+          "endLine": 1
+        },
+        {
+          "name": "ARG ALPINE_VERSION=3.22",
+          "startLine": 2,
+          "endLine": 2
+        },
+        {
+          "name": "FROM golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION} AS builder",
+          "startLine": 5,
+          "endLine": 5
+        },
+        {
+          "name": "WORKDIR /app",
+          "startLine": 7,
+          "endLine": 7
+        },
+        {
+          "name": "COPY go.mod go.sum ./",
+          "startLine": 10,
+          "endLine": 10
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 13,
+          "endLine": 13
+        },
+        {
+          "name": "COPY . .",
+          "startLine": 16,
+          "endLine": 16
+        },
+        {
+          "name": "RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /nomad-nod",
+          "startLine": 19,
+          "endLine": 19
+        },
+        {
+          "name": "FROM alpine:${ALPINE_VERSION}",
+          "startLine": 22,
+          "endLine": 22
+        },
+        {
+          "name": "COPY --from=builder /nomad-nodepool-apm /nomad-nodepool-apm",
+          "startLine": 24,
+          "endLine": 24
+        },
+        {
+          "name": "ENTRYPOINT [\"/nomad-nodepool-apm\"]",
+          "startLine": 28,
+          "endLine": 28
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "serviceCount": 2,
+        "stepCount": 11
+      }
+    }
+  ]
+}

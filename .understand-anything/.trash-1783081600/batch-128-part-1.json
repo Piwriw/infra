@@ -1,0 +1,1234 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/shared/pkg/cache/memory.go",
+      "type": "file",
+      "name": "memory.go",
+      "filePath": "packages/shared/pkg/cache/memory.go",
+      "summary": "基于 ttlcache 和 singleflight 实现的泛型内存缓存,支持 TTL、可选后台刷新、回调去重以及上下文取消处理,用于服务间共享数据的高性能缓存。",
+      "tags": [
+        "cache",
+        "generic",
+        "ttl",
+        "singleflight",
+        "background-refresh"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "使用 Go 1.18+ 泛型参数化值类型,内置 singleflight 防止缓存击穿。"
+    },
+    {
+      "id": "file:packages/shared/pkg/cache/memory_test.go",
+      "type": "file",
+      "name": "memory_test.go",
+      "filePath": "packages/shared/pkg/cache/memory_test.go",
+      "summary": "MemoryCache 单元测试集合,覆盖 NewCache、Set/Get、TTL、Delete、GetOrSet 缓存命中/未命中/回调错误/后台刷新/singleflight 去重/上下文取消/回调超时/ExtractKeyFunc 等行为。",
+      "tags": [
+        "test",
+        "cache",
+        "singleflight",
+        "ttl",
+        "background-refresh"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/dockerhub/repository_aws.go",
+      "type": "file",
+      "name": "repository_aws.go",
+      "filePath": "packages/shared/pkg/dockerhub/repository_aws.go",
+      "summary": "AWS ECR 远程容器镜像仓库客户端,通过 ECR GetAuthorizationToken 获取鉴权凭据后使用 go-containerregistry 拉取多平台镜像。",
+      "tags": [
+        "aws",
+        "ecr",
+        "docker",
+        "container-registry",
+        "auth"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/dockerhub/repository_noop.go",
+      "type": "file",
+      "name": "repository_noop.go",
+      "filePath": "packages/shared/pkg/dockerhub/repository_noop.go",
+      "summary": "空操作(Noop)远程仓库实现,用于禁用镜像拉取或测试场景,提供相同接口但 GetImage 始终返回错误。",
+      "tags": [
+        "noop",
+        "docker",
+        "stub",
+        "testing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/dockerhub/repository_test.go",
+      "type": "file",
+      "name": "repository_test.go",
+      "filePath": "packages/shared/pkg/dockerhub/repository_test.go",
+      "summary": "测试 removeRegistryFromTag 辅助函数,验证从镜像 tag 中剥离 registry 前缀的逻辑。",
+      "tags": [
+        "test",
+        "docker",
+        "tag-parsing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/edge/events.go",
+      "type": "file",
+      "name": "events.go",
+      "filePath": "packages/shared/pkg/edge/events.go",
+      "summary": "沙箱目录事件的 gRPC metadata 序列化与反序列化,定义 SandboxCatalogCreateEvent/DeleteEvent 及其解析错误,用于在 edge 组件间传递沙箱生命周期事件。",
+      "tags": [
+        "grpc-metadata",
+        "event",
+        "sandbox",
+        "serialization",
+        "edge"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/events/delivery.go",
+      "type": "file",
+      "name": "delivery.go",
+      "filePath": "packages/shared/pkg/events/delivery.go",
+      "summary": "事件投递接口定义文件,声明 Delivery 接口和用于依赖注入上下文的 DeliveryKey。",
+      "tags": [
+        "interface",
+        "event-delivery",
+        "dependency-injection"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/events/delivery_noop.go",
+      "type": "file",
+      "name": "delivery_noop.go",
+      "filePath": "packages/shared/pkg/events/delivery_noop.go",
+      "summary": "事件投递的空操作实现,符合 Delivery 接口但不实际发布事件,用于禁用事件流或测试。",
+      "tags": [
+        "noop",
+        "event-delivery",
+        "stub"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "type": "file",
+      "name": "delivery_redis_pubsub.go",
+      "filePath": "packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "summary": "基于 Redis Pub/Sub 的事件投递实现,使用 XADD/PUBLISH 将沙箱事件广播到订阅者,支持按 sandbox id 路由的 shouldPublish 过滤。",
+      "tags": [
+        "redis",
+        "pubsub",
+        "event-delivery",
+        "broadcast"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/events/delivery_redis_streams.go",
+      "type": "file",
+      "name": "delivery_redis_streams.go",
+      "filePath": "packages/shared/pkg/events/delivery_redis_streams.go",
+      "summary": "基于 Redis Streams 的事件投递实现,通过 XADD 持久化事件到 stream,适合需要消费者组和事件回溯的场景。",
+      "tags": [
+        "redis",
+        "streams",
+        "event-delivery",
+        "persistence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/events/migration.go",
+      "type": "file",
+      "name": "migration.go",
+      "filePath": "packages/shared/pkg/events/migration.go",
+      "summary": "SandboxEvent 的版本迁移工具,在 v1(lifecycle category/label)与 v2(点分命名 Type)之间双向转换,保持旧客户端兼容性。",
+      "tags": [
+        "event-migration",
+        "backward-compatibility",
+        "versioning"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/events/migration_test.go",
+      "type": "file",
+      "name": "migration_test.go",
+      "filePath": "packages/shared/pkg/events/migration_test.go",
+      "summary": "LegacySandboxEventMigrationMapping 的表驱动测试,验证旧版 lifecycle category/label 字段到新版 Type 字段的迁移映射。",
+      "tags": [
+        "test",
+        "event-migration",
+        "compatibility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/events/sandbox.go",
+      "type": "file",
+      "name": "sandbox.go",
+      "filePath": "packages/shared/pkg/events/sandbox.go",
+      "summary": "SandboxEvent 结构体定义,包含沙箱事件的所有字段以及事件类型/结构版本的常量。",
+      "tags": [
+        "data-model",
+        "event",
+        "sandbox"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/memory.go:NewMemoryCache",
+      "type": "function",
+      "name": "NewMemoryCache",
+      "filePath": "packages/shared/pkg/cache/memory.go",
+      "lineRange": [
+        52,
+        68
+      ],
+      "summary": "构造一个 MemoryCache 实例,初始化 ttlcache 并填充默认的 RefreshTimeout/CallbackTimeout。",
+      "tags": [
+        "constructor",
+        "cache",
+        "initialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/memory.go:GetWithoutTouch",
+      "type": "function",
+      "name": "GetWithoutTouch",
+      "filePath": "packages/shared/pkg/cache/memory.go",
+      "lineRange": [
+        71,
+        80
+      ],
+      "summary": "从缓存中按 key 取值,使用 ttlcache 的 disable-touch 选项避免刷新过期时间。",
+      "tags": [
+        "cache",
+        "read",
+        "no-touch"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/memory.go:Set",
+      "type": "function",
+      "name": "Set",
+      "filePath": "packages/shared/pkg/cache/memory.go",
+      "lineRange": [
+        83,
+        88
+      ],
+      "summary": "以默认 TTL 将值写入缓存,同时记录 lastRefresh 时间戳。",
+      "tags": [
+        "cache",
+        "write",
+        "ttl"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/memory.go:Delete",
+      "type": "function",
+      "name": "Delete",
+      "filePath": "packages/shared/pkg/cache/memory.go",
+      "lineRange": [
+        91,
+        93
+      ],
+      "summary": "从缓存中按 key 删除条目,封装 ttlcache.Delete。",
+      "tags": [
+        "cache",
+        "delete"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/memory.go:GetOrSet",
+      "type": "function",
+      "name": "GetOrSet",
+      "filePath": "packages/shared/pkg/cache/memory.go",
+      "lineRange": [
+        98,
+        131
+      ],
+      "summary": "缓存读取/回填核心方法:缓存命中且未到刷新间隔直接返回;缓存未命中通过 singleflight 触发数据回调;命中但已过期时启动后台刷新并返回陈旧值。",
+      "tags": [
+        "cache",
+        "singleflight",
+        "background-refresh",
+        "stale-while-revalidate"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/memory.go:refresh",
+      "type": "function",
+      "name": "refresh",
+      "filePath": "packages/shared/pkg/cache/memory.go",
+      "lineRange": [
+        162,
+        182
+      ],
+      "summary": "后台刷新单个 key 的缓存值,使用 RefreshTimeout 控制超时,失败时删除缓存条目以强制下次重新拉取。",
+      "tags": [
+        "background-refresh",
+        "cache",
+        "error-recovery"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/cache/memory.go:Config",
+      "type": "class",
+      "name": "Config",
+      "filePath": "packages/shared/pkg/cache/memory.go",
+      "lineRange": [
+        21,
+        35
+      ],
+      "summary": "MemoryCache 的泛型配置结构,包含 TTL、RefreshInterval、CallbackTimeout、RefreshTimeout 和可选的 ExtractKeyFunc。",
+      "tags": [
+        "config",
+        "cache",
+        "generic"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/cache/memory.go:Item",
+      "type": "class",
+      "name": "Item",
+      "filePath": "packages/shared/pkg/cache/memory.go",
+      "lineRange": [
+        38,
+        42
+      ],
+      "summary": "缓存条目包装结构,存储 value、lastRefresh 时间戳和 singleflight 组,用于后台刷新协调。",
+      "tags": [
+        "data-model",
+        "cache",
+        "singleflight"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/cache/memory.go:MemoryCache",
+      "type": "class",
+      "name": "MemoryCache",
+      "filePath": "packages/shared/pkg/cache/memory.go",
+      "lineRange": [
+        45,
+        49
+      ],
+      "summary": "泛型内存缓存类型,组合 ttlcache 实例、Config 和 fetchGroup,对外暴露 Get/Set/GetOrSet 等方法。",
+      "tags": [
+        "cache",
+        "generic",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/dockerhub/repository_aws.go:AWSRemoteRepository",
+      "type": "class",
+      "name": "AWSRemoteRepository",
+      "filePath": "packages/shared/pkg/dockerhub/repository_aws.go",
+      "lineRange": [
+        18,
+        21
+      ],
+      "summary": "AWS ECR 远程仓库实现,持有 repositoryURL 与 ecr.Client,提供 GetImage/Close 等方法。",
+      "tags": [
+        "aws",
+        "ecr",
+        "repository",
+        "docker"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/dockerhub/repository_aws.go:NewAWSRemoteRepository",
+      "type": "function",
+      "name": "NewAWSRemoteRepository",
+      "filePath": "packages/shared/pkg/dockerhub/repository_aws.go",
+      "lineRange": [
+        23,
+        35
+      ],
+      "summary": "使用 AWS SDK 默认配置创建 ECR 客户端并包装为 AWSRemoteRepository 实例。",
+      "tags": [
+        "constructor",
+        "aws",
+        "ecr"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/dockerhub/repository_aws.go:GetImage",
+      "type": "function",
+      "name": "GetImage",
+      "filePath": "packages/shared/pkg/dockerhub/repository_aws.go",
+      "lineRange": [
+        37,
+        59
+      ],
+      "summary": "按 tag 和 platform 从 ECR 拉取容器镜像,流程包括去除 registry 前缀、获取 ECR 鉴权 token、用 go-containerregistry 拉取镜像。",
+      "tags": [
+        "ecr",
+        "image-pull",
+        "docker",
+        "auth"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/dockerhub/repository_aws.go:getAuthToken",
+      "type": "function",
+      "name": "getAuthToken",
+      "filePath": "packages/shared/pkg/dockerhub/repository_aws.go",
+      "lineRange": [
+        61,
+        90
+      ],
+      "summary": "调用 ECR GetAuthorizationToken 获取 base64 编码的鉴权数据,解码并解析为 username:password 形式的 go-containerregistry Authenticator。",
+      "tags": [
+        "ecr",
+        "auth",
+        "base64"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/dockerhub/repository_noop.go:NoopRemoteRepository",
+      "type": "class",
+      "name": "NoopRemoteRepository",
+      "filePath": "packages/shared/pkg/dockerhub/repository_noop.go",
+      "lineRange": [
+        12,
+        12
+      ],
+      "summary": "空操作远程仓库类型,GetImage 总是返回禁用镜像拉取的错误,用于测试或关闭镜像层。",
+      "tags": [
+        "noop",
+        "docker",
+        "stub"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/dockerhub/repository_noop.go:NewNoopRemoteRepository",
+      "type": "function",
+      "name": "NewNoopRemoteRepository",
+      "filePath": "packages/shared/pkg/dockerhub/repository_noop.go",
+      "lineRange": [
+        14,
+        16
+      ],
+      "summary": "构造 NoopRemoteRepository 实例的工厂函数。",
+      "tags": [
+        "constructor",
+        "noop"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/edge/events.go:SandboxEventFieldMissingError",
+      "type": "class",
+      "name": "SandboxEventFieldMissingError",
+      "filePath": "packages/shared/pkg/edge/events.go",
+      "lineRange": [
+        30,
+        33
+      ],
+      "summary": "gRPC metadata 解析时缺失必填字段时返回的错误类型,包含事件名和字段名。",
+      "tags": [
+        "error",
+        "event",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/edge/events.go:SandboxCatalogCreateEvent",
+      "type": "class",
+      "name": "SandboxCatalogCreateEvent",
+      "filePath": "packages/shared/pkg/edge/events.go",
+      "lineRange": [
+        39,
+        45
+      ],
+      "summary": "沙箱创建事件结构,包含 sandbox id、execution id、orchestrator id、最大存活时间和启动时间。",
+      "tags": [
+        "data-model",
+        "event",
+        "sandbox"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/edge/events.go:SandboxCatalogDeleteEvent",
+      "type": "class",
+      "name": "SandboxCatalogDeleteEvent",
+      "filePath": "packages/shared/pkg/edge/events.go",
+      "lineRange": [
+        47,
+        50
+      ],
+      "summary": "沙箱删除事件结构,包含 sandbox id 和 execution id。",
+      "tags": [
+        "data-model",
+        "event",
+        "sandbox"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/edge/events.go:SerializeSandboxCatalogCreateEvent",
+      "type": "function",
+      "name": "SerializeSandboxCatalogCreateEvent",
+      "filePath": "packages/shared/pkg/edge/events.go",
+      "lineRange": [
+        52,
+        64
+      ],
+      "summary": "将 SandboxCatalogCreateEvent 序列化为 gRPC metadata.MD,使用预定义的 header 键名。",
+      "tags": [
+        "serialization",
+        "grpc-metadata",
+        "event"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/edge/events.go:SerializeSandboxCatalogDeleteEvent",
+      "type": "function",
+      "name": "SerializeSandboxCatalogDeleteEvent",
+      "filePath": "packages/shared/pkg/edge/events.go",
+      "lineRange": [
+        66,
+        75
+      ],
+      "summary": "将 SandboxCatalogDeleteEvent 序列化为 gRPC metadata.MD。",
+      "tags": [
+        "serialization",
+        "grpc-metadata",
+        "event"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/edge/events.go:ParseSandboxCatalogCreateEvent",
+      "type": "function",
+      "name": "ParseSandboxCatalogCreateEvent",
+      "filePath": "packages/shared/pkg/edge/events.go",
+      "lineRange": [
+        77,
+        120
+      ],
+      "summary": "从 gRPC metadata.MD 解析出 SandboxCatalogCreateEvent,校验必填字段并转换时间/lifetime 格式。",
+      "tags": [
+        "deserialization",
+        "grpc-metadata",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/edge/events.go:ParseSandboxCatalogDeleteEvent",
+      "type": "function",
+      "name": "ParseSandboxCatalogDeleteEvent",
+      "filePath": "packages/shared/pkg/edge/events.go",
+      "lineRange": [
+        122,
+        137
+      ],
+      "summary": "从 gRPC metadata.MD 解析出 SandboxCatalogDeleteEvent,校验必填字段。",
+      "tags": [
+        "deserialization",
+        "grpc-metadata",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/events/delivery_noop.go:NoopDelivery",
+      "type": "class",
+      "name": "NoopDelivery",
+      "filePath": "packages/shared/pkg/events/delivery_noop.go",
+      "lineRange": [
+        5,
+        5
+      ],
+      "summary": "事件投递的空操作实现类型,Publish/Close 均为 noop。",
+      "tags": [
+        "noop",
+        "event-delivery"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/events/delivery_noop.go:NewNoopDelivery",
+      "type": "function",
+      "name": "NewNoopDelivery",
+      "filePath": "packages/shared/pkg/events/delivery_noop.go",
+      "lineRange": [
+        7,
+        9
+      ],
+      "summary": "构造 NoopDelivery 实例的工厂函数。",
+      "tags": [
+        "constructor",
+        "noop"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/events/delivery_redis_pubsub.go:RedisPubSubDelivery",
+      "type": "class",
+      "name": "RedisPubSubDelivery",
+      "filePath": "packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "lineRange": [
+        11,
+        14
+      ],
+      "summary": "基于 Redis Pub/Sub 的事件投递类型,持有 redis client 和过滤器配置。",
+      "tags": [
+        "redis",
+        "pubsub",
+        "event-delivery"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/events/delivery_redis_pubsub.go:NewRedisPubSubDelivery",
+      "type": "function",
+      "name": "NewRedisPubSubDelivery",
+      "filePath": "packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "lineRange": [
+        18,
+        23
+      ],
+      "summary": "构造 RedisPubSubDelivery 实例,接收 redis client 和 filters。",
+      "tags": [
+        "constructor",
+        "redis",
+        "pubsub"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/events/delivery_redis_pubsub.go:Publish",
+      "type": "function",
+      "name": "Publish",
+      "filePath": "packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "lineRange": [
+        25,
+        41
+      ],
+      "summary": "将 SandboxEvent 序列化为 JSON 后通过 Redis PUBLISH 广播,支持按过滤器决定是否发送。",
+      "tags": [
+        "redis",
+        "pubsub",
+        "publish",
+        "event"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/events/delivery_redis_streams.go:RedisStreamsDelivery",
+      "type": "class",
+      "name": "RedisStreamsDelivery",
+      "filePath": "packages/shared/pkg/events/delivery_redis_streams.go",
+      "lineRange": [
+        11,
+        14
+      ],
+      "summary": "基于 Redis Streams 的事件投递类型,使用 XADD 持久化事件。",
+      "tags": [
+        "redis",
+        "streams",
+        "event-delivery"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/events/delivery_redis_streams.go:NewRedisStreamsDelivery",
+      "type": "function",
+      "name": "NewRedisStreamsDelivery",
+      "filePath": "packages/shared/pkg/events/delivery_redis_streams.go",
+      "lineRange": [
+        18,
+        23
+      ],
+      "summary": "构造 RedisStreamsDelivery 实例,接收 redis client 和 stream filters。",
+      "tags": [
+        "constructor",
+        "redis",
+        "streams"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/events/delivery_redis_streams.go:Publish",
+      "type": "function",
+      "name": "Publish",
+      "filePath": "packages/shared/pkg/events/delivery_redis_streams.go",
+      "lineRange": [
+        25,
+        52
+      ],
+      "summary": "将 SandboxEvent 序列化为 JSON 后通过 Redis XADD 写入 stream,过滤器控制是否推送。",
+      "tags": [
+        "redis",
+        "streams",
+        "publish",
+        "event"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/events/delivery.go:Delivery",
+      "type": "class",
+      "name": "Delivery",
+      "filePath": "packages/shared/pkg/events/delivery.go",
+      "lineRange": [
+        10,
+        13
+      ],
+      "summary": "事件投递接口定义,声明 Publish 和 Close 方法,作为 NoopDelivery/RedisPubSubDelivery/RedisStreamsDelivery 的共同抽象。",
+      "tags": [
+        "interface",
+        "event-delivery"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/events/migration.go:SandboxEventType",
+      "type": "class",
+      "name": "SandboxEventType",
+      "filePath": "packages/shared/pkg/events/migration.go",
+      "lineRange": [
+        6,
+        10
+      ],
+      "summary": "沙箱事件类型配对结构,关联新版 Type 与旧版 LegacyCategory/LegacyLabel,用于迁移。",
+      "tags": [
+        "data-model",
+        "event",
+        "migration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/events/migration.go:LegacySandboxEventMigrationMapping",
+      "type": "function",
+      "name": "LegacySandboxEventMigrationMapping",
+      "filePath": "packages/shared/pkg/events/migration.go",
+      "lineRange": [
+        47,
+        95
+      ],
+      "summary": "在 v1 和 v2 沙箱事件格式之间双向迁移:在 v1 旧版字段映射到新版 Type;在 v2 反向补齐 LegacyCategory/LegacyLabel 以兼容旧消费者。",
+      "tags": [
+        "migration",
+        "backward-compatibility",
+        "event"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/shared/pkg/events/sandbox.go:SandboxEvent",
+      "type": "class",
+      "name": "SandboxEvent",
+      "filePath": "packages/shared/pkg/events/sandbox.go",
+      "lineRange": [
+        36,
+        56
+      ],
+      "summary": "沙箱事件结构体,包含 Type、Version、EventCategory、EventLabel 等字段及对应事件类型常量。",
+      "tags": [
+        "data-model",
+        "event",
+        "sandbox"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/shared/pkg/cache/memory_test.go",
+      "target": "file:packages/shared/pkg/cache/memory.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_aws.go",
+      "target": "class:packages/shared/pkg/dockerhub/repository_aws.go:AWSRemoteRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_aws.go",
+      "target": "function:packages/shared/pkg/dockerhub/repository_aws.go:NewAWSRemoteRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_aws.go",
+      "target": "function:packages/shared/pkg/dockerhub/repository_aws.go:GetImage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_aws.go",
+      "target": "function:packages/shared/pkg/dockerhub/repository_aws.go:getAuthToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_aws.go",
+      "target": "class:packages/shared/pkg/dockerhub/repository_aws.go:AWSRemoteRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_aws.go",
+      "target": "function:packages/shared/pkg/dockerhub/repository_aws.go:NewAWSRemoteRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_aws.go",
+      "target": "function:packages/shared/pkg/dockerhub/repository_aws.go:GetImage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_noop.go",
+      "target": "class:packages/shared/pkg/dockerhub/repository_noop.go:NoopRemoteRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_noop.go",
+      "target": "function:packages/shared/pkg/dockerhub/repository_noop.go:NewNoopRemoteRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_noop.go",
+      "target": "class:packages/shared/pkg/dockerhub/repository_noop.go:NoopRemoteRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_noop.go",
+      "target": "function:packages/shared/pkg/dockerhub/repository_noop.go:NewNoopRemoteRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_test.go",
+      "target": "file:packages/shared/pkg/dockerhub/repository_aws.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "class:packages/shared/pkg/edge/events.go:SandboxEventFieldMissingError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "class:packages/shared/pkg/edge/events.go:SandboxCatalogCreateEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "class:packages/shared/pkg/edge/events.go:SandboxCatalogDeleteEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "function:packages/shared/pkg/edge/events.go:SerializeSandboxCatalogCreateEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "function:packages/shared/pkg/edge/events.go:SerializeSandboxCatalogDeleteEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "function:packages/shared/pkg/edge/events.go:ParseSandboxCatalogCreateEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "function:packages/shared/pkg/edge/events.go:ParseSandboxCatalogDeleteEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "class:packages/shared/pkg/edge/events.go:SandboxCatalogCreateEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "class:packages/shared/pkg/edge/events.go:SandboxCatalogDeleteEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "function:packages/shared/pkg/edge/events.go:SerializeSandboxCatalogCreateEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "function:packages/shared/pkg/edge/events.go:SerializeSandboxCatalogDeleteEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "function:packages/shared/pkg/edge/events.go:ParseSandboxCatalogCreateEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "function:packages/shared/pkg/edge/events.go:ParseSandboxCatalogDeleteEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_noop.go",
+      "target": "class:packages/shared/pkg/events/delivery_noop.go:NoopDelivery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_noop.go",
+      "target": "function:packages/shared/pkg/events/delivery_noop.go:NewNoopDelivery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_noop.go",
+      "target": "class:packages/shared/pkg/events/delivery_noop.go:NoopDelivery",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_noop.go",
+      "target": "function:packages/shared/pkg/events/delivery_noop.go:NewNoopDelivery",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_noop.go",
+      "target": "class:packages/shared/pkg/events/delivery.go:Delivery",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "target": "class:packages/shared/pkg/events/delivery_redis_pubsub.go:RedisPubSubDelivery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "target": "function:packages/shared/pkg/events/delivery_redis_pubsub.go:NewRedisPubSubDelivery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "target": "function:packages/shared/pkg/events/delivery_redis_pubsub.go:Publish",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "target": "class:packages/shared/pkg/events/delivery_redis_pubsub.go:RedisPubSubDelivery",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "target": "function:packages/shared/pkg/events/delivery_redis_pubsub.go:NewRedisPubSubDelivery",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "target": "class:packages/shared/pkg/events/delivery.go:Delivery",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_streams.go",
+      "target": "class:packages/shared/pkg/events/delivery_redis_streams.go:RedisStreamsDelivery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_streams.go",
+      "target": "function:packages/shared/pkg/events/delivery_redis_streams.go:NewRedisStreamsDelivery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_streams.go",
+      "target": "function:packages/shared/pkg/events/delivery_redis_streams.go:Publish",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_streams.go",
+      "target": "class:packages/shared/pkg/events/delivery_redis_streams.go:RedisStreamsDelivery",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_streams.go",
+      "target": "function:packages/shared/pkg/events/delivery_redis_streams.go:NewRedisStreamsDelivery",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_streams.go",
+      "target": "class:packages/shared/pkg/events/delivery.go:Delivery",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery.go",
+      "target": "class:packages/shared/pkg/events/delivery.go:Delivery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery.go",
+      "target": "class:packages/shared/pkg/events/delivery.go:Delivery",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/events/migration.go",
+      "target": "class:packages/shared/pkg/events/migration.go:SandboxEventType",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/events/migration.go",
+      "target": "function:packages/shared/pkg/events/migration.go:LegacySandboxEventMigrationMapping",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/events/migration.go",
+      "target": "class:packages/shared/pkg/events/migration.go:SandboxEventType",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/events/migration.go",
+      "target": "function:packages/shared/pkg/events/migration.go:LegacySandboxEventMigrationMapping",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/events/migration.go",
+      "target": "class:packages/shared/pkg/events/sandbox.go:SandboxEvent",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/events/migration_test.go",
+      "target": "file:packages/shared/pkg/events/migration.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/events/sandbox.go",
+      "target": "class:packages/shared/pkg/events/sandbox.go:SandboxEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/events/sandbox.go",
+      "target": "class:packages/shared/pkg/events/sandbox.go:SandboxEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "class:packages/shared/pkg/cache/memory.go:Config",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "class:packages/shared/pkg/cache/memory.go:Item",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "class:packages/shared/pkg/cache/memory.go:MemoryCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "function:packages/shared/pkg/cache/memory.go:NewMemoryCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "function:packages/shared/pkg/cache/memory.go:GetWithoutTouch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "function:packages/shared/pkg/cache/memory.go:Set",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "function:packages/shared/pkg/cache/memory.go:Delete",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "function:packages/shared/pkg/cache/memory.go:GetOrSet",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "function:packages/shared/pkg/cache/memory.go:refresh",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "class:packages/shared/pkg/cache/memory.go:Config",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "class:packages/shared/pkg/cache/memory.go:Item",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "class:packages/shared/pkg/cache/memory.go:MemoryCache",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "function:packages/shared/pkg/cache/memory.go:NewMemoryCache",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "function:packages/shared/pkg/cache/memory.go:GetWithoutTouch",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

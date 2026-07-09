@@ -1,0 +1,720 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/envd/internal/services/fsfreeze/fsfreeze_other.go",
+      "type": "file",
+      "name": "fsfreeze_other.go",
+      "filePath": "packages/envd/internal/services/fsfreeze/fsfreeze_other.go",
+      "summary": "非 Linux 平台的 Freezer 空实现（noopFreezer），保证跨平台编译通过。",
+      "tags": [
+        "platform-specific",
+        "stub",
+        "filesystem"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/internal/services/legacy/conversion.go",
+      "type": "file",
+      "name": "conversion.go",
+      "filePath": "packages/envd/internal/services/legacy/conversion.go",
+      "summary": "实现 legacy 协议与新 spec 协议间的双向转换器：通过反射注册转换函数，将响应、流事件和 start/keepalive 事件翻译回老客户端期望的格式。",
+      "tags": [
+        "legacy",
+        "conversion",
+        "adapter",
+        "serialization"
+      ],
+      "complexity": "complex",
+      "languageNotes": "使用 Go 1.26 泛型 addConverter[TIn, TOut] 注册类型驱动的转换映射。"
+    },
+    {
+      "id": "file:packages/envd/internal/services/legacy/conversion_test.go",
+      "type": "file",
+      "name": "conversion_test.go",
+      "filePath": "packages/envd/internal/services/legacy/conversion_test.go",
+      "summary": "覆盖 legacy 转换器的字段格式化、整体响应转换和单值转换等核心行为。",
+      "tags": [
+        "test",
+        "legacy",
+        "conversion"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/envd/internal/services/legacy/interceptor.go",
+      "type": "file",
+      "name": "interceptor.go",
+      "filePath": "packages/envd/internal/services/legacy/interceptor.go",
+      "summary": "ConversionInterceptor：识别 connect-python 等破损 User-Agent，对响应做 legacy 协议降级转换。",
+      "tags": [
+        "middleware",
+        "legacy",
+        "interceptor",
+        "connect-rpc"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/envd/internal/services/legacy/interceptor_test.go",
+      "type": "file",
+      "name": "interceptor_test.go",
+      "filePath": "packages/envd/internal/services/legacy/interceptor_test.go",
+      "summary": "测试 ConversionInterceptor 在 Unary 调用、流式 handler 与 User-Agent 标记响应头的行为。",
+      "tags": [
+        "test",
+        "legacy",
+        "interceptor"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/envd/internal/services/legacy/legacyfilesystem.pb.go",
+      "type": "file",
+      "name": "legacyfilesystem.pb.go",
+      "filePath": "packages/envd/internal/services/legacy/legacyfilesystem.pb.go",
+      "summary": "自动生成的 protobuf Go 代码，定义旧版 filesystem 协议的消息类型（MoveRequest、ListDirResponse、WatchDirResponse 等）。",
+      "tags": [
+        "generated",
+        "protobuf",
+        "legacy",
+        "type-definition"
+      ],
+      "complexity": "complex",
+      "languageNotes": "protoc-gen-go 生成的代码，包含 26 个消息类型及其 Getter/Reset/ProtoReflect 方法。"
+    },
+    {
+      "id": "file:packages/envd/internal/services/legacy/legacyprocess.pb.go",
+      "type": "file",
+      "name": "legacyprocess.pb.go",
+      "filePath": "packages/envd/internal/services/legacy/legacyprocess.pb.go",
+      "summary": "自动生成的 protobuf Go 代码，定义旧版 process 协议的消息类型（StartRequest、ProcessEvent、KillRequest 等）。",
+      "tags": [
+        "generated",
+        "protobuf",
+        "legacy",
+        "type-definition"
+      ],
+      "complexity": "complex",
+      "languageNotes": "protoc-gen-go 生成的代码，包含 47 个消息类型与相关枚举。"
+    },
+    {
+      "id": "file:packages/envd/internal/services/legacy/stream.go",
+      "type": "file",
+      "name": "stream.go",
+      "filePath": "packages/envd/internal/services/legacy/stream.go",
+      "summary": "streamConverter 包装 connect.StreamingHandlerConn，在 Send 时通过 maybeConvertValue 把响应消息转换为 legacy 格式。",
+      "tags": [
+        "legacy",
+        "streaming",
+        "adapter",
+        "wrapper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/internal/services/memory/collapse.go",
+      "type": "file",
+      "name": "collapse.go",
+      "filePath": "packages/envd/internal/services/memory/collapse.go",
+      "summary": "定义 Stats 结构体，描述 envd 匿名堆在快照前合并为透明大页（THP）的统计指标。",
+      "tags": [
+        "memory",
+        "stats",
+        "snapshot",
+        "data-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/internal/services/memory/collapse_linux.go",
+      "type": "file",
+      "name": "collapse_linux.go",
+      "filePath": "packages/envd/internal/services/memory/collapse_linux.go",
+      "summary": "Linux 平台通过 MADV_COLLAPSE 将 envd 自身匿名堆合并为 2MiB 透明大页，缩短冷启动恢复时的页错误延迟。",
+      "tags": [
+        "platform-specific",
+        "linux",
+        "memory",
+        "optimization"
+      ],
+      "complexity": "complex",
+      "languageNotes": "解析 /proc/self/maps 与 smaps，按 anon RW 区域逐段调用 madvise MADV_COLLAPSE。"
+    },
+    {
+      "id": "file:packages/envd/internal/services/memory/collapse_other.go",
+      "type": "file",
+      "name": "collapse_other.go",
+      "filePath": "packages/envd/internal/services/memory/collapse_other.go",
+      "summary": "非 Linux 平台的 CollapseSelf 空实现，保证跨平台编译通过。",
+      "tags": [
+        "platform-specific",
+        "stub",
+        "memory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/internal/services/memory/collapse_test.go",
+      "type": "file",
+      "name": "collapse_test.go",
+      "filePath": "packages/envd/internal/services/memory/collapse_test.go",
+      "summary": "测试 collapse 子系统的 anon RW 区域解析、范围合并、CollapseSelf 行为及统计拆分逻辑。",
+      "tags": [
+        "test",
+        "memory",
+        "linux"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/envd/internal/services/process/connect.go",
+      "type": "file",
+      "name": "connect.go",
+      "filePath": "packages/envd/internal/services/process/connect.go",
+      "summary": "实现 process 服务的 Connect 流式 RPC：将指定进程的 stdout/stderr 数据事件与退出事件实时推送给客户端。",
+      "tags": [
+        "api-handler",
+        "process",
+        "streaming",
+        "rpc-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/legacy/conversion.go:addConverter",
+      "type": "function",
+      "name": "addConverter",
+      "filePath": "packages/envd/internal/services/legacy/conversion.go",
+      "lineRange": [
+        33,
+        55
+      ],
+      "summary": "泛型工具：基于输入/输出类型注册 proto 和 any 两种转换函数到全局映射表。",
+      "tags": [
+        "conversion",
+        "generic",
+        "registry"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/legacy/conversion.go:init",
+      "type": "function",
+      "name": "init",
+      "filePath": "packages/envd/internal/services/legacy/conversion.go",
+      "lineRange": [
+        57,
+        129
+      ],
+      "summary": "包初始化时注册所有 legacy 文件系统响应/事件的类型转换规则。",
+      "tags": [
+        "initialization",
+        "conversion",
+        "legacy"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/envd/internal/services/legacy/conversion.go:maybeConvertResponse",
+      "type": "function",
+      "name": "maybeConvertResponse",
+      "filePath": "packages/envd/internal/services/legacy/conversion.go",
+      "lineRange": [
+        143,
+        176
+      ],
+      "summary": "对 Unary 响应做按类型的 legacy 转换，命中已注册类型则替换响应体。",
+      "tags": [
+        "conversion",
+        "legacy",
+        "serialization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/envd/internal/services/legacy/interceptor.go:ConversionInterceptor",
+      "type": "class",
+      "name": "ConversionInterceptor",
+      "filePath": "packages/envd/internal/services/legacy/interceptor.go",
+      "lineRange": [
+        29,
+        29
+      ],
+      "summary": "Connect RPC 拦截器：对破损 User-Agent 客户端透明地降级响应到 legacy 协议。",
+      "tags": [
+        "middleware",
+        "interceptor",
+        "legacy"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/legacy/interceptor.go:WrapUnary",
+      "type": "function",
+      "name": "WrapUnary",
+      "filePath": "packages/envd/internal/services/legacy/interceptor.go",
+      "lineRange": [
+        31,
+        44
+      ],
+      "summary": "包装 Unary 处理函数：在响应阶段按需调用 maybeConvertResponse 进行 legacy 转换。",
+      "tags": [
+        "middleware",
+        "interceptor",
+        "legacy"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/legacy/interceptor.go:WrapStreamingHandler",
+      "type": "function",
+      "name": "WrapStreamingHandler",
+      "filePath": "packages/envd/internal/services/legacy/interceptor.go",
+      "lineRange": [
+        51,
+        59
+      ],
+      "summary": "包装流式 handler：用 streamConverter 包装 conn 以便对 Send 的消息进行 legacy 转换。",
+      "tags": [
+        "middleware",
+        "streaming",
+        "legacy"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/envd/internal/services/legacy/stream.go:streamConverter",
+      "type": "class",
+      "name": "streamConverter",
+      "filePath": "packages/envd/internal/services/legacy/stream.go",
+      "lineRange": [
+        9,
+        11
+      ],
+      "summary": "装饰 connect.StreamingHandlerConn，对 Send 的负载透明调用 maybeConvertValue 转换为 legacy 格式。",
+      "tags": [
+        "wrapper",
+        "streaming",
+        "legacy",
+        "adapter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/envd/internal/services/memory/collapse.go:Stats",
+      "type": "class",
+      "name": "Stats",
+      "filePath": "packages/envd/internal/services/memory/collapse.go",
+      "lineRange": [
+        18,
+        24
+      ],
+      "summary": "记录 CollapseSelf 的统计：扫描区域数、尝试 chunk 数、真实合并数、已是大页数与跳过数。",
+      "tags": [
+        "data-model",
+        "memory",
+        "stats"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/memory/collapse_linux.go:CollapseSelf",
+      "type": "function",
+      "name": "CollapseSelf",
+      "filePath": "packages/envd/internal/services/memory/collapse_linux.go",
+      "lineRange": [
+        36,
+        75
+      ],
+      "summary": "对当前进程的匿名 RW 区域按 2MiB 对齐扫描，调用 madvise MADV_COLLAPSE 合并为透明大页，返回统计结果。",
+      "tags": [
+        "memory",
+        "optimization",
+        "linux"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/envd/internal/services/memory/collapse_linux.go:anonHugePagesBytes",
+      "type": "function",
+      "name": "anonHugePagesBytes",
+      "filePath": "packages/envd/internal/services/memory/collapse_linux.go",
+      "lineRange": [
+        100,
+        126
+      ],
+      "summary": "解析 /proc/self/smaps_rollup 取得 AnonHugePages 字节数，用于计算合并前后的差值。",
+      "tags": [
+        "memory",
+        "parsing",
+        "linux"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/memory/collapse_linux.go:anonRWRegions",
+      "type": "function",
+      "name": "anonRWRegions",
+      "filePath": "packages/envd/internal/services/memory/collapse_linux.go",
+      "lineRange": [
+        132,
+        145
+      ],
+      "summary": "解析 /proc/self/maps 返回所有可读写的匿名内存区域列表。",
+      "tags": [
+        "memory",
+        "parsing",
+        "linux"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/memory/collapse_linux.go:collapseRange",
+      "type": "function",
+      "name": "collapseRange",
+      "filePath": "packages/envd/internal/services/memory/collapse_linux.go",
+      "lineRange": [
+        152,
+        172
+      ],
+      "summary": "对给定地址区间按 2MiB 步长逐个调用 madvise MADV_COLLAPSE，统计成功/已是大页/失败次数。",
+      "tags": [
+        "memory",
+        "optimization",
+        "linux"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/connect.go:Connect",
+      "type": "function",
+      "name": "Connect",
+      "filePath": "packages/envd/internal/services/process/connect.go",
+      "lineRange": [
+        15,
+        17
+      ],
+      "summary": "process Connect 流式 RPC 入口，委托日志包装器调用 handleConnect。",
+      "tags": [
+        "api-handler",
+        "process",
+        "streaming"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/connect.go:handleConnect",
+      "type": "function",
+      "name": "handleConnect",
+      "filePath": "packages/envd/internal/services/process/connect.go",
+      "lineRange": [
+        19,
+        124
+      ],
+      "summary": "实现进程连接流：fork 进程的 DataEvent 与 EndEvent，将 stdout/stderr 数据与退出事件实时推送到客户端流。",
+      "tags": [
+        "api-handler",
+        "process",
+        "streaming"
+      ],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/envd/internal/services/legacy/conversion.go",
+      "target": "function:packages/envd/internal/services/legacy/conversion.go:addConverter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/legacy/conversion.go",
+      "target": "function:packages/envd/internal/services/legacy/conversion.go:init",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/legacy/conversion.go",
+      "target": "function:packages/envd/internal/services/legacy/conversion.go:maybeConvertResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/legacy/interceptor.go",
+      "target": "class:packages/envd/internal/services/legacy/interceptor.go:ConversionInterceptor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/legacy/interceptor.go",
+      "target": "function:packages/envd/internal/services/legacy/interceptor.go:WrapUnary",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/legacy/interceptor.go",
+      "target": "function:packages/envd/internal/services/legacy/interceptor.go:WrapStreamingHandler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/legacy/stream.go",
+      "target": "class:packages/envd/internal/services/legacy/stream.go:streamConverter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/memory/collapse.go",
+      "target": "class:packages/envd/internal/services/memory/collapse.go:Stats",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/memory/collapse_linux.go",
+      "target": "function:packages/envd/internal/services/memory/collapse_linux.go:CollapseSelf",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/memory/collapse_linux.go",
+      "target": "function:packages/envd/internal/services/memory/collapse_linux.go:anonHugePagesBytes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/memory/collapse_linux.go",
+      "target": "function:packages/envd/internal/services/memory/collapse_linux.go:anonRWRegions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/memory/collapse_linux.go",
+      "target": "function:packages/envd/internal/services/memory/collapse_linux.go:collapseRange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/connect.go",
+      "target": "function:packages/envd/internal/services/process/connect.go:Connect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/connect.go",
+      "target": "function:packages/envd/internal/services/process/connect.go:handleConnect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/memory/collapse.go",
+      "target": "class:packages/envd/internal/services/memory/collapse.go:Stats",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/memory/collapse_linux.go",
+      "target": "function:packages/envd/internal/services/memory/collapse_linux.go:CollapseSelf",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/legacy/conversion.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/legacy/conversion_test.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/legacy/conversion_test.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystemconnect/filesystem.connect.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/legacy/conversion_test.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystemconnect/mocks/mocks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/legacy/interceptor_test.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/legacy/interceptor_test.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystemconnect/filesystem.connect.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/legacy/interceptor_test.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystemconnect/mocks/mocks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/connect.go",
+      "target": "file:packages/envd/internal/logs/interceptor.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/connect.go",
+      "target": "file:packages/envd/internal/logs/logger.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/connect.go",
+      "target": "file:packages/envd/internal/permissions/authenticate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/connect.go",
+      "target": "file:packages/envd/internal/permissions/keepalive.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/connect.go",
+      "target": "file:packages/envd/internal/permissions/path.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/connect.go",
+      "target": "file:packages/envd/internal/permissions/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/connect.go",
+      "target": "file:packages/envd/internal/services/spec/process/process.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/legacy/conversion.go",
+      "target": "file:packages/envd/internal/services/legacy/conversion_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/envd/internal/services/legacy/interceptor.go",
+      "target": "file:packages/envd/internal/services/legacy/interceptor_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/envd/internal/services/memory/collapse.go",
+      "target": "file:packages/envd/internal/services/memory/collapse_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/envd/internal/services/memory/collapse_linux.go",
+      "target": "file:packages/envd/internal/services/memory/collapse_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:packages/envd/internal/services/legacy/interceptor.go:WrapUnary",
+      "target": "function:packages/envd/internal/services/legacy/conversion.go:maybeConvertResponse",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:packages/envd/internal/services/legacy/stream.go:streamConverter",
+      "target": "file:packages/envd/internal/services/legacy/conversion.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:packages/envd/internal/services/memory/collapse_linux.go:CollapseSelf",
+      "target": "function:packages/envd/internal/services/memory/collapse_linux.go:anonRWRegions",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:packages/envd/internal/services/memory/collapse_linux.go:CollapseSelf",
+      "target": "function:packages/envd/internal/services/memory/collapse_linux.go:anonHugePagesBytes",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:packages/envd/internal/services/memory/collapse_linux.go:CollapseSelf",
+      "target": "function:packages/envd/internal/services/memory/collapse_linux.go:collapseRange",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:packages/envd/internal/services/process/connect.go:Connect",
+      "target": "function:packages/envd/internal/services/process/connect.go:handleConnect",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/fsfreeze/fsfreeze_other.go",
+      "target": "file:packages/envd/internal/services/fsfreeze/fsfreeze.go",
+      "type": "implements",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "file:packages/envd/internal/services/legacy/conversion.go",
+      "target": "file:packages/envd/internal/services/legacy/legacyfilesystem.pb.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

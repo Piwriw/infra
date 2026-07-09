@@ -1,0 +1,1280 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/portmap/recover.go",
+      "type": "file",
+      "name": "recover.go",
+      "filePath": "packages/orchestrator/pkg/portmap/recover.go",
+      "summary": "为 PMAP RPC handler 添加 panic-recovery 装饰层，避免 PMAP server 上的 panic 跨 RPC 传播。",
+      "tags": [
+        "middleware",
+        "recovery",
+        "portmap",
+        "panic-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/portmap/recover.go:recovery",
+      "type": "class",
+      "name": "recovery",
+      "filePath": "packages/orchestrator/pkg/portmap/recover.go",
+      "lineRange": [
+        13,
+        16
+      ],
+      "summary": "包装 PMAP handler，在每个 RPC 上做 deferred recover。",
+      "tags": [
+        "wrapper",
+        "recovery",
+        "portmap"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/portmap/recover.go:recovery",
+      "type": "class",
+      "name": "recovery",
+      "filePath": "packages/orchestrator/pkg/portmap/recover.go",
+      "lineRange": [
+        13,
+        16
+      ],
+      "summary": "包装 PMAP handler，在每个 RPC 上做 deferred recover。",
+      "tags": [
+        "wrapper",
+        "recovery",
+        "portmap"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/portmap/server.go",
+      "type": "file",
+      "name": "server.go",
+      "filePath": "packages/orchestrator/pkg/portmap/server.go",
+      "summary": "PMAP 服务的入口：将 handler 与 logging/recovery 中间件链式组装，提供 NewPortMap/RegisterPort/Serve/run 等 API，使用 rfc1057.Server 监听 TCP 连接并为每个连接开 goroutine 运行。",
+      "tags": [
+        "portmap",
+        "rpc",
+        "network",
+        "server"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/portmap/server.go:Server",
+      "type": "class",
+      "name": "Server",
+      "filePath": "packages/orchestrator/pkg/portmap/server.go",
+      "lineRange": [
+        23,
+        26
+      ],
+      "summary": "PMAP RPC 服务器：包装 handlers 实例与 rfc1057.Server，提供 RegisterPort/Serve API。",
+      "tags": [
+        "server",
+        "rpc"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/portmap/server.go:Server",
+      "type": "class",
+      "name": "Server",
+      "filePath": "packages/orchestrator/pkg/portmap/server.go",
+      "lineRange": [
+        23,
+        26
+      ],
+      "summary": "PMAP RPC 服务器：包装 handlers 实例与 rfc1057.Server，提供 RegisterPort/Serve API。",
+      "tags": [
+        "server",
+        "rpc"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/portmap/server_test.go",
+      "type": "file",
+      "name": "server_test.go",
+      "filePath": "packages/orchestrator/pkg/portmap/server_test.go",
+      "summary": "PMAP Server 的集成测试：启动 Server、注册 NFS v3 与 mountd 端口、通过 RPC 客户端查询并断言可读到。",
+      "tags": [
+        "test",
+        "portmap",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/portmap/server_test.go:TestPortMapServer",
+      "type": "function",
+      "name": "TestPortMapServer",
+      "filePath": "packages/orchestrator/pkg/portmap/server_test.go",
+      "lineRange": [
+        13,
+        55
+      ],
+      "summary": "端到端验证 PMAP Server：在随机端口上启动服务并通过 RPC 客户端执行 GETPORT。",
+      "tags": [
+        "test",
+        "portmap",
+        "rpc"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/portmap/server_test.go:TestPortMapServer",
+      "type": "function",
+      "name": "TestPortMapServer",
+      "filePath": "packages/orchestrator/pkg/portmap/server_test.go",
+      "lineRange": [
+        13,
+        55
+      ],
+      "summary": "端到端验证 PMAP Server：在随机端口上启动服务并通过 RPC 客户端执行 GETPORT。",
+      "tags": [
+        "test",
+        "portmap",
+        "rpc"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/proxy/metrics.go",
+      "type": "file",
+      "name": "metrics.go",
+      "filePath": "packages/orchestrator/pkg/proxy/metrics.go",
+      "summary": "为 SandboxProxy 定义 OTel 指标：每个 sandbox 的并发连接数直方图、连接持续时间直方图、被限流阻断的连接计数器。",
+      "tags": [
+        "metrics",
+        "telemetry",
+        "ingress-proxy"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/proxy/metrics.go:Metrics",
+      "type": "class",
+      "name": "Metrics",
+      "filePath": "packages/orchestrator/pkg/proxy/metrics.go",
+      "lineRange": [
+        15,
+        19
+      ],
+      "summary": "捆绑 Histogram/Counter 等 OTel 指标，提供 RecordConnectionsPerSandbox/RecordConnectionDuration/RecordConnectionBlocked 方法。",
+      "tags": [
+        "metrics",
+        "telemetry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/proxy/metrics.go:Metrics",
+      "type": "class",
+      "name": "Metrics",
+      "filePath": "packages/orchestrator/pkg/proxy/metrics.go",
+      "lineRange": [
+        15,
+        19
+      ],
+      "summary": "捆绑 Histogram/Counter 等 OTel 指标，提供 RecordConnectionsPerSandbox/RecordConnectionDuration/RecordConnectionBlocked 方法。",
+      "tags": [
+        "metrics",
+        "telemetry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "type": "file",
+      "name": "proxy.go",
+      "filePath": "packages/orchestrator/pkg/proxy/proxy.go",
+      "summary": "SandboxProxy 是 orchestrator 的入站反向代理：基于 shared/proxy.ReverseProxy，根据请求解析 sandbox id 和目标端口，将流量转发到 envd 或自定义 sandbox 端口；同时强制 traffic-access-token 校验、连接数限制与 OTel 指标埋点。",
+      "tags": [
+        "reverse-proxy",
+        "ingress",
+        "load-balancing",
+        "telemetry"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/proxy/proxy.go:SandboxProxy",
+      "type": "class",
+      "name": "SandboxProxy",
+      "filePath": "packages/orchestrator/pkg/proxy/proxy.go",
+      "lineRange": [
+        39,
+        42
+      ],
+      "summary": "反向代理实现：解析请求路由到 sandbox、提供 traffic token 校验与连接限流、订阅 sandbox Map 在网络释放时清理 limiter 条目。",
+      "tags": [
+        "reverse-proxy",
+        "ingress"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/proxy/proxy.go:SandboxProxy",
+      "type": "class",
+      "name": "SandboxProxy",
+      "filePath": "packages/orchestrator/pkg/proxy/proxy.go",
+      "lineRange": [
+        39,
+        42
+      ],
+      "summary": "反向代理实现：解析请求路由到 sandbox、提供 traffic token 校验与连接限流、订阅 sandbox Map 在网络释放时清理 limiter 条目。",
+      "tags": [
+        "reverse-proxy",
+        "ingress"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/artifact/names.go",
+      "type": "file",
+      "name": "names.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/artifact/names.go",
+      "summary": "为 sandbox 的核心 artifact 文件名定义常量：FirecrackerBinaryName、KernelFileName、RootfsFileName，供模板管理与上传流程统一引用。",
+      "tags": [
+        "constants",
+        "artifact"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/metrics/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/metrics/main.go",
+      "summary": "为 block cache Chunker.Slice() 提供 OTel FloatTimerFactory，记录切片服务的耗时（伴随 BytesReturned 维度）。",
+      "tags": [
+        "metrics",
+        "telemetry",
+        "block-cache"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/metrics/main.go:Metrics",
+      "type": "class",
+      "name": "Metrics",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/metrics/main.go",
+      "lineRange": [
+        13,
+        15
+      ],
+      "summary": "持有 ChunkSliceTimerFactory 字段，专供 Chunker 计时。",
+      "tags": [
+        "metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/metrics/main.go:Metrics",
+      "type": "class",
+      "name": "Metrics",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/metrics/main.go",
+      "lineRange": [
+        13,
+        15
+      ],
+      "summary": "持有 ChunkSliceTimerFactory 字段，专供 Chunker 计时。",
+      "tags": [
+        "metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/mocks/mockreadonlydevice.go",
+      "type": "file",
+      "name": "mockreadonlydevice.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/mocks/mockreadonlydevice.go",
+      "summary": "由 mockery 生成，仅用于测试的 ReadonlyDevice 接口 mock，含 MockReadonlyDevice 与各方法的期望对象。",
+      "tags": [
+        "test",
+        "mock",
+        "generated"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "file",
+      "name": "build_upload.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/build_upload.go",
+      "summary": "定义 sandbox rootfs/memfile diff 上传到对象存储的核心抽象 Upload：通过 feature flags 解析每个文件类型的压缩配置，决定走 V3 或 V4 上传路径，发布上传完成的 future 信号以便跨 orchestrator 协同。",
+      "tags": [
+        "upload",
+        "snapshot",
+        "feature-flag",
+        "compression"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/build_upload.go:Upload",
+      "type": "class",
+      "name": "Upload",
+      "filePath": "packages/orchestrator/pkg/sandbox/build_upload.go",
+      "lineRange": [
+        22,
+        35
+      ],
+      "summary": "封装一次 snapshot 上传所需的全部状态（snapshot、storage、压缩配置、useCase、metadata、future）以及 Run/Wait/Finish/publish 方法。",
+      "tags": [
+        "upload",
+        "snapshot"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/build_upload.go:Upload",
+      "type": "class",
+      "name": "Upload",
+      "filePath": "packages/orchestrator/pkg/sandbox/build_upload.go",
+      "lineRange": [
+        22,
+        35
+      ],
+      "summary": "封装一次 snapshot 上传所需的全部状态（snapshot、storage、压缩配置、useCase、metadata、future）以及 Run/Wait/Finish/publish 方法。",
+      "tags": [
+        "upload",
+        "snapshot"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "file",
+      "name": "build_upload_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "summary": "为 resolveCompressConfig 与 NewUpload 等行为编写单元测试：使用 LD testdata 配置 V4 标志、验证 V3/V4 祖先头合成与 nil dst 跳过合成逻辑、filesystem snapshot 跳过 memfile compress config 等场景。",
+      "tags": [
+        "test",
+        "upload",
+        "feature-flag"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "file",
+      "name": "build_upload_v3.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "summary": "实现 Upload 的 V3（非压缩）路径：使用 errgroup 并发上传 memfile/rootfs diff 及它们的 header、snapfile、metadata，append ancestor build 并最终 publish header。",
+      "tags": [
+        "upload",
+        "v3",
+        "storage"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/build_upload_v3.go:runV3",
+      "type": "function",
+      "name": "runV3",
+      "filePath": "packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "lineRange": [
+        17,
+        154
+      ],
+      "summary": "V3 上传主流程：并发上传 memfile/rootfs headers 与 bodies、snapfile、metadata，并 append ancestor builds + publish 最终 header。",
+      "tags": [
+        "upload",
+        "v3"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/build_upload_v3.go:finalizeV3",
+      "type": "function",
+      "name": "finalizeV3",
+      "filePath": "packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "lineRange": [
+        158,
+        166
+      ],
+      "summary": "在 header 副本上清除 IncompletePendingUpload 字段，作为 V3 publish 前的最后一步。",
+      "tags": [
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/build_upload_v3.go:runV3",
+      "type": "function",
+      "name": "runV3",
+      "filePath": "packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "lineRange": [
+        17,
+        154
+      ],
+      "summary": "V3 上传主流程：并发上传 memfile/rootfs headers 与 bodies、snapfile、metadata，并 append ancestor builds + publish 最终 header。",
+      "tags": [
+        "upload",
+        "v3"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/build_upload_v3.go:finalizeV3",
+      "type": "function",
+      "name": "finalizeV3",
+      "filePath": "packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "lineRange": [
+        158,
+        166
+      ],
+      "summary": "在 header 副本上清除 IncompletePendingUpload 字段，作为 V3 publish 前的最后一步。",
+      "tags": [
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "file",
+      "name": "build_upload_v4.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "summary": "实现 Upload 的 V4（带压缩/framed）路径：使用 uploadFramed 将 memfile/rootfs body 与 header 合并上传，并在并发上传 snapfile/metadata 之后完成发布。",
+      "tags": [
+        "upload",
+        "v4",
+        "compression"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/build_upload_v4.go:runV4",
+      "type": "function",
+      "name": "runV4",
+      "filePath": "packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "lineRange": [
+        18,
+        72
+      ],
+      "summary": "V4 上传主流程：并发调用 uploadFramed 上传 memfile/rootfs diff，并行上传 snapfile 与 metadata。",
+      "tags": [
+        "upload",
+        "v4"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/build_upload_v4.go:uploadFramed",
+      "type": "function",
+      "name": "uploadFramed",
+      "filePath": "packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "lineRange": [
+        74,
+        131
+      ],
+      "summary": "使用 storage.UploadFramed 把 diff 文件作为 frame 上传，并附带 layer 大小的 metadata。",
+      "tags": [
+        "upload",
+        "v4",
+        "compression"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/build_upload_v4.go:appendAncestorBuilds",
+      "type": "function",
+      "name": "appendAncestorBuilds",
+      "filePath": "packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "lineRange": [
+        153,
+        189
+      ],
+      "summary": "为当前 build 的 header 追加源自 ancestor 的 mapping，确保 dedup 关系链在 V4 上传中保留。",
+      "tags": [
+        "upload",
+        "v4",
+        "dedup"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/build_upload_v4.go:runV4",
+      "type": "function",
+      "name": "runV4",
+      "filePath": "packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "lineRange": [
+        18,
+        72
+      ],
+      "summary": "V4 上传主流程：并发调用 uploadFramed 上传 memfile/rootfs diff，并行上传 snapfile 与 metadata。",
+      "tags": [
+        "upload",
+        "v4"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/build_upload_v4.go:uploadFramed",
+      "type": "function",
+      "name": "uploadFramed",
+      "filePath": "packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "lineRange": [
+        74,
+        131
+      ],
+      "summary": "使用 storage.UploadFramed 把 diff 文件作为 frame 上传，并附带 layer 大小的 metadata。",
+      "tags": [
+        "upload",
+        "v4",
+        "compression"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/build_upload_v4.go:appendAncestorBuilds",
+      "type": "function",
+      "name": "appendAncestorBuilds",
+      "filePath": "packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "lineRange": [
+        153,
+        189
+      ],
+      "summary": "为当前 build 的 header 追加源自 ancestor 的 mapping，确保 dedup 关系链在 V4 上传中保留。",
+      "tags": [
+        "upload",
+        "v4",
+        "dedup"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/cgroup/manager.go",
+      "type": "file",
+      "name": "manager.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/cgroup/manager.go",
+      "summary": "cgroup v2 Manager 实现：在 /sys/fs/cgroup/e2b 下按 sandbox 创建 cgroup、暴露 CgroupHandle 让调用方通过 FD 把进程 attach 到 cgroup、跟踪 CPU/内存使用并支持 kill/remove；同时提供 IsSandboxCgroupName 工具用于沙箱 cgroup 列举。",
+      "tags": [
+        "cgroup",
+        "linux",
+        "resource-control",
+        "sandbox-lifecycle"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/cgroup/manager.go:Stats",
+      "type": "class",
+      "name": "Stats",
+      "filePath": "packages/orchestrator/pkg/sandbox/cgroup/manager.go",
+      "lineRange": [
+        37,
+        44
+      ],
+      "summary": "结构体：保存 cgroup 的 CPU 用户/系统微秒、内存使用量与 memory peak。",
+      "tags": [
+        "data-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/cgroup/manager.go:CgroupHandle",
+      "type": "class",
+      "name": "CgroupHandle",
+      "filePath": "packages/orchestrator/pkg/sandbox/cgroup/manager.go",
+      "lineRange": [
+        55,
+        63
+      ],
+      "summary": "单 sandbox 的 cgroup 句柄：暴露 GetFD、ReleaseCgroupFD、GetStats、Kill/Remove 等 API，使用 memory.peak FD 支持 per-FD 重置。",
+      "tags": [
+        "cgroup",
+        "lifecycle"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/cgroup/manager.go:Manager",
+      "type": "class",
+      "name": "Manager",
+      "filePath": "packages/orchestrator/pkg/sandbox/cgroup/manager.go",
+      "lineRange": [
+        336,
+        350
+      ],
+      "summary": "cgroup Manager 接口：Initialize、Create、Destroy；可在 NewManager 或 NewNoopManager 之间切换。",
+      "tags": [
+        "interface",
+        "cgroup"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/cgroup/manager.go:Stats",
+      "type": "class",
+      "name": "Stats",
+      "filePath": "packages/orchestrator/pkg/sandbox/cgroup/manager.go",
+      "lineRange": [
+        37,
+        44
+      ],
+      "summary": "结构体：保存 cgroup 的 CPU 用户/系统微秒、内存使用量与 memory peak。",
+      "tags": [
+        "data-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/cgroup/manager.go:CgroupHandle",
+      "type": "class",
+      "name": "CgroupHandle",
+      "filePath": "packages/orchestrator/pkg/sandbox/cgroup/manager.go",
+      "lineRange": [
+        55,
+        63
+      ],
+      "summary": "单 sandbox 的 cgroup 句柄：暴露 GetFD、ReleaseCgroupFD、GetStats、Kill/Remove 等 API，使用 memory.peak FD 支持 per-FD 重置。",
+      "tags": [
+        "cgroup",
+        "lifecycle"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/cgroup/manager.go:Manager",
+      "type": "class",
+      "name": "Manager",
+      "filePath": "packages/orchestrator/pkg/sandbox/cgroup/manager.go",
+      "lineRange": [
+        336,
+        350
+      ],
+      "summary": "cgroup Manager 接口：Initialize、Create、Destroy；可在 NewManager 或 NewNoopManager 之间切换。",
+      "tags": [
+        "interface",
+        "cgroup"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/cgroup/manager_test.go",
+      "type": "file",
+      "name": "manager_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/cgroup/manager_test.go",
+      "summary": "cgroup Manager 的全套集成测试：覆盖 Initialize/Create/Destroy、handle FD 生命周期、kill/remove、stats 解析、events populated 等行为。多数用例依赖系统为 writable cgroup。",
+      "tags": [
+        "test",
+        "cgroup",
+        "integration",
+        "linux-only"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/cgroup/noop.go",
+      "type": "file",
+      "name": "noop.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/cgroup/noop.go",
+      "summary": "提供一个不执行真实 cgroup 操作的 Manager/Handle 实现，用于 CLI 工具或不需要真实 cgroup 记账的测试场景。",
+      "tags": [
+        "cgroup",
+        "noop",
+        "testing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/cgroup/noop.go:noopManager",
+      "type": "class",
+      "name": "noopManager",
+      "filePath": "packages/orchestrator/pkg/sandbox/cgroup/noop.go",
+      "lineRange": [
+        7,
+        7
+      ],
+      "summary": "Manager 的 noop 实现，所有方法直接返回 nil；Create 返回的 handle 不含真实 cgroup FD。",
+      "tags": [
+        "cgroup",
+        "noop"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/cgroup/noop.go:noopManager",
+      "type": "class",
+      "name": "noopManager",
+      "filePath": "packages/orchestrator/pkg/sandbox/cgroup/noop.go",
+      "lineRange": [
+        7,
+        7
+      ],
+      "summary": "Manager 的 noop 实现，所有方法直接返回 nil；Create 返回的 handle 不含真实 cgroup FD。",
+      "tags": [
+        "cgroup",
+        "noop"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/portmap/recover.go",
+      "target": "class:packages/orchestrator/pkg/portmap/recover.go:recovery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/portmap/recover.go:recovery",
+      "target": "function:packages/orchestrator/pkg/portmap/recover.go:PMAPPROC_NULL",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/portmap/server.go",
+      "target": "class:packages/orchestrator/pkg/portmap/server.go:Server",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/portmap/server.go:Server",
+      "target": "function:packages/orchestrator/pkg/portmap/server.go:NewPortMap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/portmap/server.go:Server",
+      "target": "function:packages/orchestrator/pkg/portmap/server.go:RegisterPort",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/portmap/server.go:Server",
+      "target": "function:packages/orchestrator/pkg/portmap/server.go:Serve",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/portmap/server_test.go",
+      "target": "function:packages/orchestrator/pkg/portmap/server_test.go:TestPortMapServer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/metrics.go",
+      "target": "class:packages/orchestrator/pkg/proxy/metrics.go:Metrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/proxy/metrics.go:Metrics",
+      "target": "function:packages/orchestrator/pkg/proxy/metrics.go:NewMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/proxy/metrics.go:Metrics",
+      "target": "function:packages/orchestrator/pkg/proxy/metrics.go:RecordConnectionsPerSandbox",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "class:packages/orchestrator/pkg/proxy/proxy.go:SandboxProxy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/proxy/proxy.go:SandboxProxy",
+      "target": "function:packages/orchestrator/pkg/proxy/proxy.go:NewSandboxProxy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/proxy/proxy.go:SandboxProxy",
+      "target": "function:packages/orchestrator/pkg/proxy/proxy.go:Start",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/proxy/proxy.go:SandboxProxy",
+      "target": "function:packages/orchestrator/pkg/proxy/proxy.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/proxy/proxy.go:SandboxProxy",
+      "target": "function:packages/orchestrator/pkg/proxy/proxy.go:RemoveFromPool",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/proxy/proxy.go:SandboxProxy",
+      "target": "function:packages/orchestrator/pkg/proxy/proxy.go:GetAddr",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/metrics/main.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/metrics/main.go:Metrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/sandbox/block/metrics/main.go:Metrics",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/metrics/main.go:NewMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/build_upload.go:Upload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/sandbox/build_upload.go:Upload",
+      "target": "function:packages/orchestrator/pkg/sandbox/build_upload.go:NewUpload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/sandbox/build_upload.go:Upload",
+      "target": "function:packages/orchestrator/pkg/sandbox/build_upload.go:Run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/sandbox/build_upload.go:Upload",
+      "target": "function:packages/orchestrator/pkg/sandbox/build_upload.go:Wait",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/sandbox/build_upload.go:Upload",
+      "target": "function:packages/orchestrator/pkg/sandbox/build_upload.go:Finish",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/sandbox/build_upload.go:Upload",
+      "target": "function:packages/orchestrator/pkg/sandbox/build_upload.go:layerSizeMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/build_upload.go:resolveCompressConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/build_upload.go:validateCompressConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/build_upload_v3.go:runV3",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/build_upload_v3.go:finalizeV3",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/build_upload_v4.go:runV4",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/build_upload_v4.go:uploadFramed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/build_upload_v4.go:appendAncestorBuilds",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cgroup/manager.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/cgroup/manager.go:Stats",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cgroup/manager.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/cgroup/manager.go:CgroupHandle",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cgroup/manager.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/cgroup/manager.go:Manager",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/sandbox/cgroup/manager.go:CgroupHandle",
+      "target": "function:packages/orchestrator/pkg/sandbox/cgroup/manager.go:GetFD",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/sandbox/cgroup/manager.go:CgroupHandle",
+      "target": "function:packages/orchestrator/pkg/sandbox/cgroup/manager.go:ReleaseCgroupFD",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/sandbox/cgroup/manager.go:CgroupHandle",
+      "target": "function:packages/orchestrator/pkg/sandbox/cgroup/manager.go:GetStats",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/sandbox/cgroup/manager.go:CgroupHandle",
+      "target": "function:packages/orchestrator/pkg/sandbox/cgroup/manager.go:Kill",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/sandbox/cgroup/manager.go:CgroupHandle",
+      "target": "function:packages/orchestrator/pkg/sandbox/cgroup/manager.go:Remove",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/sandbox/cgroup/manager.go:CgroupHandle",
+      "target": "function:packages/orchestrator/pkg/sandbox/cgroup/manager.go:Path",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cgroup/noop.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/cgroup/noop.go:noopManager",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/sandbox/cgroup/noop.go:noopManager",
+      "target": "function:packages/orchestrator/pkg/sandbox/cgroup/noop.go:Initialize",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/sandbox/cgroup/noop.go:noopManager",
+      "target": "function:packages/orchestrator/pkg/sandbox/cgroup/noop.go:Create",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/sandbox/cgroup/noop.go:noopManager",
+      "target": "function:packages/orchestrator/pkg/sandbox/cgroup/noop.go:Destroy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/mocks/mockreadonlydevice.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/mocks/mockfile.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/mocks/mocktemplate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "target": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/cgroup/manager.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/manager_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/portmap/server.go",
+      "target": "file:packages/orchestrator/pkg/portmap/server_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

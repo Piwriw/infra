@@ -1,0 +1,96 @@
+{
+  "nodes": [
+    {
+      "id": "resource:iac/provider-aws/modules/redis/main.tf",
+      "type": "resource",
+      "name": "main.tf",
+      "filePath": "iac/provider-aws/modules/redis/main.tf",
+      "summary": "AWS Redis (Valkey) 集群 Terraform 模块，定义安全组与 ElastiCache 复制组实例，并下载 Amazon 根 CA 证书用于 TLS 加密通信。",
+      "tags": ["infrastructure", "deployment", "terraform-module", "redis", "aws-elasticache"],
+      "complexity": "moderate",
+      "languageNotes": "使用 aws_elasticache_replication_group 资源部署 Valkey 8.2 集群，启用 transit_encryption 且要求 TLS；通过 data.http 下载 Amazon 根 CA 证书并 base64 编码后作为模块输出供客户端连接使用。"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/redis/aws_security_group.instance",
+      "type": "resource",
+      "name": "aws_security_group.instance",
+      "filePath": "iac/provider-aws/modules/redis/main.tf",
+      "lineRange": [1, 22],
+      "summary": "为 ElastiCache 集群创建 AWS 安全组，允许来自指定安全组的入站 TCP 流量以及所有出站流量。",
+      "tags": ["aws-security-group", "network", "firewall"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/redis/aws_elasticache_replication_group.instance",
+      "type": "resource",
+      "name": "aws_elasticache_replication_group.instance",
+      "filePath": "iac/provider-aws/modules/redis/main.tf",
+      "lineRange": [24, 49],
+      "summary": "ElastiCache 复制组资源，运行 Valkey 8.2 引擎，开启自动故障转移、传输加密并强制使用 TLS，使用模块安全组与子网组。",
+      "tags": ["aws-elasticache", "valkey", "redis", "tls-encryption", "high-availability"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/redis/outputs.tf",
+      "type": "resource",
+      "name": "outputs.tf",
+      "filePath": "iac/provider-aws/modules/redis/outputs.tf",
+      "summary": "导出 Redis 模块的输出值，包括配置终端节点地址与 base64 编码的 CA 证书 PEM，供调用方建立 TLS 加密连接。",
+      "tags": ["infrastructure", "outputs", "terraform-module", "tls-certificate"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/redis/variables.tf",
+      "type": "resource",
+      "name": "variables.tf",
+      "filePath": "iac/provider-aws/modules/redis/variables.tf",
+      "summary": "Redis 模块输入变量定义，包括名称前缀、集群名、VPC ID、端口、副本数量、实例类型、子网组以及允许的入站安全组列表。",
+      "tags": ["infrastructure", "variables", "terraform-module", "input"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/provider-aws/modules/redis/main.tf",
+      "target": "resource:iac/provider-aws/modules/redis/aws_security_group.instance",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/redis/main.tf",
+      "target": "resource:iac/provider-aws/modules/redis/aws_elasticache_replication_group.instance",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/redis/aws_elasticache_replication_group.instance",
+      "target": "resource:iac/provider-aws/modules/redis/aws_security_group.instance",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/redis/aws_elasticache_replication_group.instance",
+      "target": "resource:iac/provider-aws/modules/redis/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/redis/aws_security_group.instance",
+      "target": "resource:iac/provider-aws/modules/redis/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/redis/outputs.tf",
+      "target": "resource:iac/provider-aws/modules/redis/aws_elasticache_replication_group.instance",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

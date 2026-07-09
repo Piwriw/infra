@@ -1,0 +1,32 @@
+{
+  "nodes": [
+    {
+      "id": "table:packages/db/pkg/auth/sql_queries/users/delete_public_user.sql:DeletePublicUser",
+      "type": "table",
+      "name": "DeletePublicUser",
+      "filePath": "packages/db/pkg/auth/sql_queries/users/delete_public_user.sql",
+      "summary": "sqlc 查询，通过用户 UUID 从 public.users 表中删除用户记录。",
+      "tags": ["sqlc", "delete", "users", "sql-query"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/db/pkg/auth/sql_queries/users/lock_public_user_for_update.sql:LockPublicUserForUpdate",
+      "type": "table",
+      "name": "LockPublicUserForUpdate",
+      "filePath": "packages/db/pkg/auth/sql_queries/users/lock_public_user_for_update.sql",
+      "summary": "sqlc 查询，使用 SELECT ... FOR UPDATE 对 public.users 表中的指定用户记录加行级悲观锁，以支持事务中的读-改-写流程。",
+      "tags": ["sqlc", "select", "pessimistic-lock", "users", "sql-query"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/db/pkg/auth/sql_queries/users/upsert_public_user.sql:UpsertPublicUser",
+      "type": "table",
+      "name": "UpsertPublicUser",
+      "filePath": "packages/db/pkg/auth/sql_queries/users/upsert_public_user.sql",
+      "summary": "sqlc 查询，使用 INSERT ... ON CONFLICT DO NOTHING 实现 public.users 表的 upsert 语义：插入新用户，冲突时保持现有记录不变。",
+      "tags": ["sqlc", "upsert", "insert", "users", "sql-query"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": []
+}

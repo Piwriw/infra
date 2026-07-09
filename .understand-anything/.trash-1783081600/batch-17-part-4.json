@@ -1,0 +1,1864 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "type": "file",
+      "name": "handlers.go",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "summary": "TCP 出口防火墙的连接处理：根据协议（HTTP/TLS/其他）做域名/CIDR 放行检查并转发到 upstream。",
+      "tags": [
+        "tcp-firewall",
+        "egress",
+        "domain-filter",
+        "cidr-filter"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/handlers.go:markDSCP",
+      "type": "function",
+      "name": "markDSCP",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "lineRange": [
+        36,
+        56
+      ],
+      "summary": "为 socket 同时设置 IPv4 IP_TOS 与 IPv6 TCLASS，任一成功即可；容忍非匹配协议的 ENOPROTOOPT。",
+      "tags": [
+        "qos",
+        "socket-option"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/handlers.go:domainHandler",
+      "type": "function",
+      "name": "domainHandler",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "lineRange": [
+        59,
+        100
+      ],
+      "summary": "针对携带主机名的连接（HTTP Host/TLS SNI）做放行判定，匹配域名时按主机名拨号防 DNS 欺骗。",
+      "tags": [
+        "egress",
+        "domain",
+        "anti-spoof"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/handlers.go:cidrOnlyHandler",
+      "type": "function",
+      "name": "cidrOnlyHandler",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "lineRange": [],
+      "summary": "针对非 HTTP/TLS 协议的连接，仅做 CIDR 放行检查后按原始 dstIP 转发。",
+      "tags": [
+        "egress",
+        "cidr"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/handlers.go:proxy",
+      "type": "function",
+      "name": "proxy",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "lineRange": [],
+      "summary": "建立到 upstream 的连接并双向拷贝，记录 connection duration。",
+      "tags": [
+        "proxy",
+        "io-copy"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/handlers.go:proxyWithIPVerification",
+      "type": "function",
+      "name": "proxyWithIPVerification",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "lineRange": [],
+      "summary": "拨号后再次校验连接到的 IP 不在私有/保留段，防止 DNS rebinding 与 /etc/hosts 篡改。",
+      "tags": [
+        "proxy",
+        "ip-verification",
+        "anti-spoof"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/handlers.go:isEgressAllowed",
+      "type": "function",
+      "name": "isEgressAllowed",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "lineRange": [],
+      "summary": "判定 sandbox 出站请求是否在域名/CIDR 白名单，返回放行结果与匹配类型。",
+      "tags": [
+        "egress-policy"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/handlers.go:matchDomain",
+      "type": "function",
+      "name": "matchDomain",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "lineRange": [],
+      "summary": "域名通配符匹配（支持 * 通配）。",
+      "tags": [
+        "domain-match"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/handlers.go:isIPInAlwaysDeniedCIDRs",
+      "type": "function",
+      "name": "isIPInAlwaysDeniedCIDRs",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "lineRange": [],
+      "summary": "检查 IP 是否落在 always-denied CIDR 段（私有、loopback、链路本地等）。",
+      "tags": [
+        "cidr-block"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "type": "file",
+      "name": "handlers_test.go",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "summary": "matchDomain、isEgressAllowed、always-denied CIDR 的单元测试。",
+      "tags": [
+        "test",
+        "tcp-firewall",
+        "egress"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/handlers_test.go:TestMatchDomain",
+      "type": "function",
+      "name": "TestMatchDomain",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "lineRange": [],
+      "summary": "域名通配符匹配规则测试。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/handlers_test.go:TestIsEgressAllowed",
+      "type": "function",
+      "name": "TestIsEgressAllowed",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "lineRange": [],
+      "summary": "Egress allow 决策规则测试。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/handlers_test.go:TestAlwaysDeniedCIDRs",
+      "type": "function",
+      "name": "TestAlwaysDeniedCIDRs",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "lineRange": [],
+      "summary": "always-denied CIDR 段匹配测试。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/tcpfirewall/listener.go",
+      "type": "file",
+      "name": "listener.go",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/listener.go",
+      "summary": "resilientListener：把 EMFILE/ENFILE/EAGAIN/ECONNABORTED 等瞬时 Accept 错误转为带延迟重试。",
+      "tags": [
+        "network-listener",
+        "retry",
+        "error-resilience"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/tcpfirewall/listener.go:resilientListener",
+      "type": "class",
+      "name": "resilientListener",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/listener.go",
+      "lineRange": [
+        22,
+        27
+      ],
+      "summary": "在 net.Listener 之上加 EMFILE 等瞬时错误的退避重试封装。",
+      "tags": [
+        "adapter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/listener.go:Accept",
+      "type": "function",
+      "name": "Accept",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/listener.go",
+      "lineRange": [
+        29,
+        48
+      ],
+      "summary": "循环 Accept，对瞬时错误做日志并退避重试，受 ctx 取消控制。",
+      "tags": [
+        "accept",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "type": "file",
+      "name": "metrics.go",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "summary": "TCP 防火墙的 OpenTelemetry 指标：连接数/错误数/放行决策/连接时长，并提供 ConnectionTracker。",
+      "tags": [
+        "metrics",
+        "telemetry",
+        "otlp"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/tcpfirewall/metrics.go:Metrics",
+      "type": "class",
+      "name": "Metrics",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "lineRange": [
+        57,
+        66
+      ],
+      "summary": "持有 TCP firewall 所有 OpenTelemetry 计数器/直方图以及 active connections gauge。",
+      "tags": [
+        "metrics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/tcpfirewall/metrics.go:ConnectionTracker",
+      "type": "class",
+      "name": "ConnectionTracker",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "lineRange": [
+        118,
+        122
+      ],
+      "summary": "在连接建立到关闭期间追踪 active connection 数与时长。",
+      "tags": [
+        "tracker"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:NewMetrics",
+      "type": "function",
+      "name": "NewMetrics",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "lineRange": [
+        69,
+        91
+      ],
+      "summary": "构造并注册所有 TCP firewall 计数器/直方图/gauge。",
+      "tags": [
+        "constructor",
+        "telemetry"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:RecordConnection",
+      "type": "function",
+      "name": "RecordConnection",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "lineRange": [
+        94,
+        98
+      ],
+      "summary": "按 protocol 记录一条新连接。",
+      "tags": [
+        "counter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:RecordError",
+      "type": "function",
+      "name": "RecordError",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "lineRange": [
+        101,
+        106
+      ],
+      "summary": "按 error_type + protocol 记录一条错误。",
+      "tags": [
+        "counter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:RecordDecision",
+      "type": "function",
+      "name": "RecordDecision",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "lineRange": [
+        109,
+        115
+      ],
+      "summary": "按 decision + protocol + match_type 记录一条放行决策。",
+      "tags": [
+        "counter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:TrackConnection",
+      "type": "function",
+      "name": "TrackConnection",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "lineRange": [
+        125,
+        133
+      ],
+      "summary": "开启一条 connection tracker，返回调用方在 close 时回收。",
+      "tags": [
+        "tracker"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:RecordConnectionsPerSandbox",
+      "type": "function",
+      "name": "RecordConnectionsPerSandbox",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "lineRange": [
+        146,
+        148
+      ],
+      "summary": "记录单个 sandbox 当前并发连接数到直方图。",
+      "tags": [
+        "histogram"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "type": "file",
+      "name": "proxy.go",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "summary": "TCP 防火墙的核心 Proxy：通过 iptables 把 sandbox 出口流量按端口拆分到 HTTP/TLS/其他三组 listener。",
+      "tags": [
+        "tcp-firewall",
+        "iptables",
+        "egress-proxy",
+        "protocol-detection"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/tcpfirewall/proxy.go:Proxy",
+      "type": "class",
+      "name": "Proxy",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "lineRange": [
+        28,
+        43
+      ],
+      "summary": "TCP 出口防火墙的代理实例，订阅 sandbox map 并按端口做 iptables 路由。",
+      "tags": [
+        "proxy",
+        "network"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/tcpfirewall/proxy.go:proxyRule",
+      "type": "class",
+      "name": "proxyRule",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "lineRange": [
+        133,
+        137
+      ],
+      "summary": "单条 iptables REDIRECT 规则的描述：dst port、proxy port、人类可读描述。",
+      "tags": [
+        "internal"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/tcpfirewall/proxy.go:connectionHandler",
+      "type": "class",
+      "name": "connectionHandler",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "lineRange": [
+        196,
+        206
+      ],
+      "summary": "把 handlerFunc 适配到 tcpproxy.Target 的连接处理器，串联 sandbox 查询、限流、原 dst 获取与指标。",
+      "tags": [
+        "adapter"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:New",
+      "type": "function",
+      "name": "New",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "lineRange": [
+        45,
+        68
+      ],
+      "summary": "构造 Proxy 并把 sandbox DSCP TOS 值写入全局变量；订阅 sandbox map。",
+      "tags": [
+        "constructor"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:Start",
+      "type": "function",
+      "name": "Start",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "lineRange": [
+        76,
+        131
+      ],
+      "summary": "在 HTTP/TLS/其他三个端口启动 tcpproxy 监听，并按协议注册路由。",
+      "tags": [
+        "listener",
+        "route"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:OnInsert",
+      "type": "function",
+      "name": "OnInsert",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "lineRange": [
+        70,
+        71
+      ],
+      "summary": "sandbox 插入 map 时的回调（空实现，预留扩展）。",
+      "tags": [
+        "subscription"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:OnNetworkRelease",
+      "type": "function",
+      "name": "OnNetworkRelease",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "lineRange": [
+        72,
+        74
+      ],
+      "summary": "sandbox 网络释放时清除该 lifecycle 的限流槽位。",
+      "tags": [
+        "subscription",
+        "limiter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:OnSlotCreate",
+      "type": "function",
+      "name": "OnSlotCreate",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "lineRange": [
+        151,
+        160
+      ],
+      "summary": "为新网络 slot 注入所有 iptables REDIRECT 规则。",
+      "tags": [
+        "iptables"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:OnSlotDelete",
+      "type": "function",
+      "name": "OnSlotDelete",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "lineRange": [
+        162,
+        172
+      ],
+      "summary": "在网络 slot 销毁时删除所有 REDIRECT 规则，错误聚合返回。",
+      "tags": [
+        "iptables"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:Close",
+      "type": "function",
+      "name": "Close",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "lineRange": [
+        174,
+        180
+      ],
+      "summary": "关闭内嵌 tcpproxy。",
+      "tags": [
+        "lifecycle"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:CABundle",
+      "type": "function",
+      "name": "CABundle",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "lineRange": [
+        182,
+        184
+      ],
+      "summary": "返回空字符串表示本 proxy 不注入 CA bundle。",
+      "tags": [
+        "interface"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:SupportsBYOP",
+      "type": "function",
+      "name": "SupportsBYOP",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "lineRange": [
+        186,
+        188
+      ],
+      "summary": "返回 false 表示当前 proxy 不支持 BYOP dialer。",
+      "tags": [
+        "interface"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:HandleConn",
+      "type": "function",
+      "name": "HandleConn",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "lineRange": [
+        221,
+        281
+      ],
+      "summary": "对每条连接按 source addr 查找 sandbox、申请限流槽、获取原始 dst 后交给 handler。",
+      "tags": [
+        "handler",
+        "lookup",
+        "limiter"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:ruleArgs",
+      "type": "function",
+      "name": "ruleArgs",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "lineRange": [
+        139,
+        149
+      ],
+      "summary": "构造单条 iptables REDIRECT 规则的命令行参数。",
+      "tags": [
+        "iptables"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:newConnectionHandler",
+      "type": "function",
+      "name": "newConnectionHandler",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "lineRange": [
+        208,
+        219
+      ],
+      "summary": "装配 connectionHandler 适配器。",
+      "tags": [
+        "factory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/tcpfirewall/proxy_test.go",
+      "type": "file",
+      "name": "proxy_test.go",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy_test.go",
+      "summary": "resilientListener 在 EMFILE 等瞬时错误下的重试以及 isTransientAcceptError 的测试。",
+      "tags": [
+        "test",
+        "tcp-firewall",
+        "listener"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/proxy_test.go:TestResilientListener_EMFILEWithContainer",
+      "type": "function",
+      "name": "TestResilientListener_EMFILEWithContainer",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy_test.go",
+      "lineRange": [],
+      "summary": "在 EMFILE 错误注入下验证 resilientListener 持续重试 Accept。",
+      "tags": [
+        "test",
+        "listener"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/proxy_test.go:TestIsTransientAcceptError",
+      "type": "function",
+      "name": "TestIsTransientAcceptError",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/proxy_test.go",
+      "lineRange": [],
+      "summary": "isTransientAcceptError 对 EMFILE/ENFILE/EAGAIN/ECONNABORTED 的判定。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/tcpfirewall/utils.go",
+      "type": "file",
+      "name": "utils.go",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/utils.go",
+      "summary": "getOriginalDst：通过 SO_ORIGINAL_DST 获取 iptables DNAT 之前的原始目的 IP/端口。",
+      "tags": [
+        "utility",
+        "socket-option",
+        "dnat"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/tcpfirewall/utils.go:getOriginalDst",
+      "type": "function",
+      "name": "getOriginalDst",
+      "filePath": "packages/orchestrator/pkg/tcpfirewall/utils.go",
+      "lineRange": [
+        14,
+        57
+      ],
+      "summary": "用 SO_ORIGINAL_DST 解析 sockaddr_in 并返回原始目的 IPv4 与端口。",
+      "tags": [
+        "syscall",
+        "socket-option"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/dscp_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/host.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/slot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_kv.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_memory.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/handlers.go:markDSCP",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/handlers.go:domainHandler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/handlers.go:cidrOnlyHandler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/handlers.go:proxy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/handlers.go:proxyWithIPVerification",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/handlers.go:isEgressAllowed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/handlers.go:matchDomain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/handlers.go:isIPInAlwaysDeniedCIDRs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/handlers_test.go:TestMatchDomain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/handlers_test.go:TestIsEgressAllowed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/handlers_test.go:TestAlwaysDeniedCIDRs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/listener.go",
+      "target": "class:packages/orchestrator/pkg/tcpfirewall/listener.go:resilientListener",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/listener.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/listener.go:Accept",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "class:packages/orchestrator/pkg/tcpfirewall/metrics.go:Metrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "class:packages/orchestrator/pkg/tcpfirewall/metrics.go:ConnectionTracker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:NewMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:RecordConnection",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:RecordError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:RecordDecision",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:TrackConnection",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:RecordConnectionsPerSandbox",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "class:packages/orchestrator/pkg/tcpfirewall/proxy.go:Proxy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "class:packages/orchestrator/pkg/tcpfirewall/proxy.go:proxyRule",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "class:packages/orchestrator/pkg/tcpfirewall/proxy.go:connectionHandler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:New",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:Start",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:OnInsert",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:OnNetworkRelease",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:OnSlotCreate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:OnSlotDelete",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:CABundle",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:SupportsBYOP",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:HandleConn",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:ruleArgs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:newConnectionHandler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy_test.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy_test.go:TestResilientListener_EMFILEWithContainer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy_test.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy_test.go:TestIsTransientAcceptError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/utils.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/utils.go:getOriginalDst",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/handlers_test.go:TestMatchDomain",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/handlers_test.go:TestIsEgressAllowed",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/handlers_test.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/handlers_test.go:TestAlwaysDeniedCIDRs",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/listener.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/listener.go:Accept",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "class:packages/orchestrator/pkg/tcpfirewall/metrics.go:Metrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:NewMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:RecordConnection",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:RecordError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:RecordDecision",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "class:packages/orchestrator/pkg/tcpfirewall/metrics.go:ConnectionTracker",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:TrackConnection",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:Close",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/metrics.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/metrics.go:RecordConnectionsPerSandbox",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "class:packages/orchestrator/pkg/tcpfirewall/proxy.go:Proxy",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:New",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:OnInsert",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:OnNetworkRelease",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:Start",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:OnSlotCreate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:OnSlotDelete",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:Close",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:CABundle",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:SupportsBYOP",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy.go:HandleConn",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy_test.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy_test.go:TestResilientListener_EMFILEWithContainer",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/tcpfirewall/proxy_test.go",
+      "target": "function:packages/orchestrator/pkg/tcpfirewall/proxy_test.go:TestIsTransientAcceptError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

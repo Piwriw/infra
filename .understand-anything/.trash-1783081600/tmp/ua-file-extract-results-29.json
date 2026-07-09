@@ -1,0 +1,6587 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 29,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/orchestrator/pkg/template/server/delete_template.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 52,
+      "nonEmptyLines": 41,
+      "functions": [
+        {
+          "name": "TemplateBuildDelete",
+          "startLine": 22,
+          "endLine": 52,
+          "params": [
+            "ctx",
+            "in"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TemplateBuildDelete",
+          "line": 22,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "tracer.Start",
+          "lineNumber": 23
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "trace.WithAttributes",
+          "lineNumber": 23
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "telemetry.WithTemplateID",
+          "lineNumber": 24
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "in.GetTemplateID",
+          "lineNumber": 24
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "telemetry.WithBuildID",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "in.GetBuildID",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "childSpan.End",
+          "lineNumber": 27
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "s.wg.Add",
+          "lineNumber": 29
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "s.wg.Done",
+          "lineNumber": 30
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "in.GetTemplateID",
+          "lineNumber": 32
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "in.GetBuildID",
+          "lineNumber": 32
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "errors.New",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "s.buildCache.Get",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "in.GetBuildID",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "buildInfo.IsRunning",
+          "lineNumber": 37
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "logger.L().Info",
+          "lineNumber": 39
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "logger.L",
+          "lineNumber": 39
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "logger.WithTemplateID",
+          "lineNumber": 39
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "in.GetTemplateID",
+          "lineNumber": 39
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "logger.WithBuildID",
+          "lineNumber": 39
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "in.GetBuildID",
+          "lineNumber": 39
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "telemetry.ReportEvent",
+          "lineNumber": 40
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "buildInfo.SetFail",
+          "lineNumber": 41
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "builderrors.ErrCanceled.Error",
+          "lineNumber": 42
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "template.Delete",
+          "lineNumber": 46
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "in.GetTemplateID",
+          "lineNumber": 46
+        },
+        {
+          "caller": "TemplateBuildDelete",
+          "callee": "in.GetBuildID",
+          "lineNumber": 46
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/template/server/drain_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 46,
+      "nonEmptyLines": 34,
+      "functions": [
+        {
+          "name": "TestWaitReturnsErrorWhileBuildsInFlight",
+          "startLine": 16,
+          "endLine": 30,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestWaitStopsAtContextDeadlineDuringGracePeriod",
+          "startLine": 32,
+          "endLine": 46,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestWaitReturnsErrorWhileBuildsInFlight",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "TestWaitStopsAtContextDeadlineDuringGracePeriod",
+          "line": 32,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestWaitReturnsErrorWhileBuildsInFlight",
+          "callee": "t.Parallel",
+          "lineNumber": 17
+        },
+        {
+          "caller": "TestWaitReturnsErrorWhileBuildsInFlight",
+          "callee": "logger.NewNopLogger",
+          "lineNumber": 20
+        },
+        {
+          "caller": "TestWaitReturnsErrorWhileBuildsInFlight",
+          "callee": "s.wg.Add",
+          "lineNumber": 23
+        },
+        {
+          "caller": "TestWaitReturnsErrorWhileBuildsInFlight",
+          "callee": "s.wg.Done",
+          "lineNumber": 24
+        },
+        {
+          "caller": "TestWaitReturnsErrorWhileBuildsInFlight",
+          "callee": "context.WithCancel",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestWaitReturnsErrorWhileBuildsInFlight",
+          "callee": "t.Context",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestWaitReturnsErrorWhileBuildsInFlight",
+          "callee": "cancel",
+          "lineNumber": 27
+        },
+        {
+          "caller": "TestWaitReturnsErrorWhileBuildsInFlight",
+          "callee": "require.ErrorIs",
+          "lineNumber": 29
+        },
+        {
+          "caller": "TestWaitReturnsErrorWhileBuildsInFlight",
+          "callee": "s.Wait",
+          "lineNumber": 29
+        },
+        {
+          "caller": "TestWaitStopsAtContextDeadlineDuringGracePeriod",
+          "callee": "t.Parallel",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestWaitStopsAtContextDeadlineDuringGracePeriod",
+          "callee": "logger.NewNopLogger",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TestWaitStopsAtContextDeadlineDuringGracePeriod",
+          "callee": "context.WithTimeout",
+          "lineNumber": 42
+        },
+        {
+          "caller": "TestWaitStopsAtContextDeadlineDuringGracePeriod",
+          "callee": "t.Context",
+          "lineNumber": 42
+        },
+        {
+          "caller": "TestWaitStopsAtContextDeadlineDuringGracePeriod",
+          "callee": "cancel",
+          "lineNumber": 43
+        },
+        {
+          "caller": "TestWaitStopsAtContextDeadlineDuringGracePeriod",
+          "callee": "require.ErrorIs",
+          "lineNumber": 45
+        },
+        {
+          "caller": "TestWaitStopsAtContextDeadlineDuringGracePeriod",
+          "callee": "s.Wait",
+          "lineNumber": 45
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/template/server/main.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 180,
+      "nonEmptyLines": 155,
+      "functions": [
+        {
+          "name": "New",
+          "startLine": 60,
+          "endLine": 136,
+          "params": [
+            "ctx",
+            "config",
+            "featureFlags",
+            "meterProvider",
+            "logger",
+            "buildLogger",
+            "sandboxFactory",
+            "proxy",
+            "templateCache",
+            "templatePersistence",
+            "buildPersistence",
+            "uploads"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 138,
+          "endLine": 156,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "Wait",
+          "startLine": 162,
+          "endLine": 180,
+          "params": [
+            "ctx"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "closeable",
+          "startLine": 33,
+          "endLine": 35,
+          "methods": [
+            "Close"
+          ],
+          "properties": []
+        },
+        {
+          "name": "ServerStore",
+          "startLine": 42,
+          "endLine": 58,
+          "methods": [
+            "Close",
+            "Wait"
+          ],
+          "properties": [
+            "logger",
+            "builder",
+            "buildCache",
+            "buildLogger",
+            "featureFlags",
+            "artifactsregistry",
+            "templateStorage",
+            "buildStorage",
+            "wg",
+            "activeBuilds",
+            "closers"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ServerStore",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "New",
+          "line": 60,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 138,
+          "isDefault": false
+        },
+        {
+          "name": "Wait",
+          "line": 162,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "New",
+          "callee": "logger.Info",
+          "lineNumber": 74
+        },
+        {
+          "caller": "New",
+          "callee": "make",
+          "lineNumber": 76
+        },
+        {
+          "caller": "New",
+          "callee": "func() {\n\t\tif e == nil {\n\t\t\treturn\n\t\t}\n\n\t\tfor _, closer := range closers {\n\t\t\tif err := closer.Close(); err != nil {\n\t\t\t\tlogger.Error(ctx, \"error closing resource\", zap.Error(err))\n\t\t\t}\n\t\t}\n\t}",
+          "lineNumber": 77
+        },
+        {
+          "caller": "New",
+          "callee": "closer.Close",
+          "lineNumber": 83
+        },
+        {
+          "caller": "New",
+          "callee": "logger.Error",
+          "lineNumber": 84
+        },
+        {
+          "caller": "New",
+          "callee": "zap.Error",
+          "lineNumber": 84
+        },
+        {
+          "caller": "New",
+          "callee": "artifactsregistry.GetArtifactsRegistryProvider",
+          "lineNumber": 89
+        },
+        {
+          "caller": "New",
+          "callee": "fmt.Errorf",
+          "lineNumber": 91
+        },
+        {
+          "caller": "New",
+          "callee": "dockerhub.GetRemoteRepository",
+          "lineNumber": 94
+        },
+        {
+          "caller": "New",
+          "callee": "fmt.Errorf",
+          "lineNumber": 96
+        },
+        {
+          "caller": "New",
+          "callee": "append",
+          "lineNumber": 98
+        },
+        {
+          "caller": "New",
+          "callee": "cache.NewBuildCache",
+          "lineNumber": 100
+        },
+        {
+          "caller": "New",
+          "callee": "metrics.NewBuildMetrics",
+          "lineNumber": 101
+        },
+        {
+          "caller": "New",
+          "callee": "fmt.Errorf",
+          "lineNumber": 103
+        },
+        {
+          "caller": "New",
+          "callee": "build.NewBuilder",
+          "lineNumber": 106
+        },
+        {
+          "caller": "Close",
+          "callee": "ctx.Done",
+          "lineNumber": 140
+        },
+        {
+          "caller": "Close",
+          "callee": "errors.New",
+          "lineNumber": 141
+        },
+        {
+          "caller": "Close",
+          "callee": "closer.Close",
+          "lineNumber": 145
+        },
+        {
+          "caller": "Close",
+          "callee": "errors.Join",
+          "lineNumber": 147
+        },
+        {
+          "caller": "Close",
+          "callee": "fmt.Errorf",
+          "lineNumber": 151
+        },
+        {
+          "caller": "Wait",
+          "callee": "s.logger.Info",
+          "lineNumber": 163
+        },
+        {
+          "caller": "Wait",
+          "callee": "zap.Int64",
+          "lineNumber": 163
+        },
+        {
+          "caller": "Wait",
+          "callee": "s.activeBuilds.Load",
+          "lineNumber": 163
+        },
+        {
+          "caller": "Wait",
+          "callee": "utils.WaitGroupWait",
+          "lineNumber": 164
+        },
+        {
+          "caller": "Wait",
+          "callee": "fmt.Errorf",
+          "lineNumber": 165
+        },
+        {
+          "caller": "Wait",
+          "callee": "env.IsLocal",
+          "lineNumber": 168
+        },
+        {
+          "caller": "Wait",
+          "callee": "s.logger.Info",
+          "lineNumber": 169
+        },
+        {
+          "caller": "Wait",
+          "callee": "time.After",
+          "lineNumber": 171
+        },
+        {
+          "caller": "Wait",
+          "callee": "ctx.Done",
+          "lineNumber": 172
+        },
+        {
+          "caller": "Wait",
+          "callee": "ctx.Err",
+          "lineNumber": 173
+        },
+        {
+          "caller": "Wait",
+          "callee": "s.logger.Info",
+          "lineNumber": 177
+        }
+      ],
+      "metrics": {
+        "importCount": 49,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/template/server/template_status.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 103,
+      "nonEmptyLines": 82,
+      "functions": [
+        {
+          "name": "TemplateBuildStatus",
+          "startLine": 21,
+          "endLine": 103,
+          "params": [
+            "ctx",
+            "in"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TemplateBuildStatus",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "tracer.Start",
+          "lineNumber": 22
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "span.End",
+          "lineNumber": 23
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "s.buildCache.Get",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "in.GetBuildID",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "fmt.Errorf",
+          "lineNumber": 27
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "in.GetLimit",
+          "lineNumber": 31
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "in.GetLimit",
+          "lineNumber": 32
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "in.GetDirection",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "time.Now().Add",
+          "lineNumber": 40
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "time.Now",
+          "lineNumber": 40
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "time.Now",
+          "lineNumber": 40
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "in.GetStart",
+          "lineNumber": 41
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "s.AsTime",
+          "lineNumber": 42
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "in.GetEnd",
+          "lineNumber": 44
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "e.AsTime",
+          "lineNumber": 45
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "buildInfo.GetLogs",
+          "lineNumber": 48
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "slices.SortStableFunc",
+          "lineNumber": 51
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "b.GetTimestamp().AsTime().Compare",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "b.GetTimestamp().AsTime",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "b.GetTimestamp",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "a.GetTimestamp().AsTime",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "a.GetTimestamp",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "a.GetTimestamp().AsTime().Compare",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "a.GetTimestamp().AsTime",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "a.GetTimestamp",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "b.GetTimestamp().AsTime",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "b.GetTimestamp",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "make",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "int32",
+          "lineNumber": 60
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "entry.GetLevel().Number",
+          "lineNumber": 63
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "entry.GetLevel",
+          "lineNumber": 63
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "in.GetLevel().Number",
+          "lineNumber": 63
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "in.GetLevel",
+          "lineNumber": 63
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "entry.GetTimestamp().AsTime().Before",
+          "lineNumber": 67
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "entry.GetTimestamp().AsTime",
+          "lineNumber": 67
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "entry.GetTimestamp",
+          "lineNumber": 67
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "entry.GetTimestamp().AsTime().After",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "entry.GetTimestamp().AsTime",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "entry.GetTimestamp",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "in.GetOffset",
+          "lineNumber": 76
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "uint32",
+          "lineNumber": 80
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "len",
+          "lineNumber": 80
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "append",
+          "lineNumber": 84
+        },
+        {
+          "caller": "TemplateBuildStatus",
+          "callee": "buildInfo.GetResult",
+          "lineNumber": 87
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/template/server/template_status_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 138,
+      "nonEmptyLines": 113,
+      "functions": [
+        {
+          "name": "TestTemplateBuildStatus_DirectionOrdering",
+          "startLine": 27,
+          "endLine": 82,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "newTestServerStore",
+          "startLine": 84,
+          "endLine": 99,
+          "params": [
+            "t",
+            "logLines"
+          ]
+        },
+        {
+          "name": "writeTestBuildLogs",
+          "startLine": 101,
+          "endLine": 112,
+          "params": [
+            "t",
+            "buildLogs",
+            "lines"
+          ]
+        },
+        {
+          "name": "stringToZapLevel",
+          "startLine": 114,
+          "endLine": 127,
+          "params": [
+            "level"
+          ]
+        },
+        {
+          "name": "epochToTime",
+          "startLine": 129,
+          "endLine": 134,
+          "params": [
+            "epoch"
+          ]
+        },
+        {
+          "name": "timeToEpoch",
+          "startLine": 136,
+          "endLine": 138,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "testLogLine",
+          "startLine": 21,
+          "endLine": 25,
+          "methods": [],
+          "properties": [
+            "ts",
+            "message",
+            "level"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestTemplateBuildStatus_DirectionOrdering",
+          "line": 27,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "t.Parallel",
+          "lineNumber": 28
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "time.Now().UTC",
+          "lineNumber": 30
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "time.Now",
+          "lineNumber": 30
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "now.Add",
+          "lineNumber": 31
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "timeToEpoch",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "now.Add",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "timeToEpoch",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "now.Add",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "timeToEpoch",
+          "lineNumber": 35
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "timeToEpoch",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "newTestServerStore",
+          "lineNumber": 39
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "t.Run",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "t.Parallel",
+          "lineNumber": 60
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "serverStore.TemplateBuildStatus",
+          "lineNumber": 62
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "t.Context",
+          "lineNumber": 62
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "timestamppb.New",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "now.Add",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "timestamppb.New",
+          "lineNumber": 66
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "now.Add",
+          "lineNumber": 66
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "require.NoError",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "response.GetLogEntries",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "require.Len",
+          "lineNumber": 72
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "len",
+          "lineNumber": 72
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "make",
+          "lineNumber": 74
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "len",
+          "lineNumber": 74
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "entry.GetMessage",
+          "lineNumber": 76
+        },
+        {
+          "caller": "TestTemplateBuildStatus_DirectionOrdering",
+          "callee": "assert.Equal",
+          "lineNumber": 79
+        },
+        {
+          "caller": "newTestServerStore",
+          "callee": "t.Helper",
+          "lineNumber": 85
+        },
+        {
+          "caller": "newTestServerStore",
+          "callee": "buildlogger.NewLogEntryLogger",
+          "lineNumber": 87
+        },
+        {
+          "caller": "newTestServerStore",
+          "callee": "writeTestBuildLogs",
+          "lineNumber": 88
+        },
+        {
+          "caller": "newTestServerStore",
+          "callee": "templatecache.NewBuildCache",
+          "lineNumber": 90
+        },
+        {
+          "caller": "newTestServerStore",
+          "callee": "t.Context",
+          "lineNumber": 90
+        },
+        {
+          "caller": "newTestServerStore",
+          "callee": "noop.NewMeterProvider",
+          "lineNumber": 90
+        },
+        {
+          "caller": "newTestServerStore",
+          "callee": "uuid.NewString",
+          "lineNumber": 91
+        },
+        {
+          "caller": "newTestServerStore",
+          "callee": "buildCache.Create",
+          "lineNumber": 93
+        },
+        {
+          "caller": "newTestServerStore",
+          "callee": "require.NoError",
+          "lineNumber": 94
+        },
+        {
+          "caller": "writeTestBuildLogs",
+          "callee": "t.Helper",
+          "lineNumber": 102
+        },
+        {
+          "caller": "writeTestBuildLogs",
+          "callee": "buildLogs.Write",
+          "lineNumber": 105
+        },
+        {
+          "caller": "writeTestBuildLogs",
+          "callee": "stringToZapLevel",
+          "lineNumber": 106
+        },
+        {
+          "caller": "writeTestBuildLogs",
+          "callee": "epochToTime",
+          "lineNumber": 107
+        },
+        {
+          "caller": "writeTestBuildLogs",
+          "callee": "require.NoError",
+          "lineNumber": 110
+        },
+        {
+          "caller": "epochToTime",
+          "callee": "int64",
+          "lineNumber": 130
+        },
+        {
+          "caller": "epochToTime",
+          "callee": "int64",
+          "lineNumber": 131
+        },
+        {
+          "caller": "epochToTime",
+          "callee": "float64",
+          "lineNumber": 131
+        },
+        {
+          "caller": "epochToTime",
+          "callee": "time.Unix(sec, nsec).UTC",
+          "lineNumber": 133
+        },
+        {
+          "caller": "epochToTime",
+          "callee": "time.Unix",
+          "lineNumber": 133
+        },
+        {
+          "caller": "timeToEpoch",
+          "callee": "float64",
+          "lineNumber": 137
+        },
+        {
+          "caller": "timeToEpoch",
+          "callee": "t.UnixNano",
+          "lineNumber": 137
+        },
+        {
+          "caller": "timeToEpoch",
+          "callee": "float64",
+          "lineNumber": 137
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/template/server/upload_layer_files_template.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 46,
+      "nonEmptyLines": 36,
+      "functions": [
+        {
+          "name": "InitLayerFileUpload",
+          "startLine": 16,
+          "endLine": 46,
+          "params": [
+            "ctx",
+            "in"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "InitLayerFileUpload",
+          "line": 16,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "InitLayerFileUpload",
+          "callee": "tracer.Start",
+          "lineNumber": 17
+        },
+        {
+          "caller": "InitLayerFileUpload",
+          "callee": "childSpan.End",
+          "lineNumber": 18
+        },
+        {
+          "caller": "InitLayerFileUpload",
+          "callee": "in.GetTemplateID",
+          "lineNumber": 21
+        },
+        {
+          "caller": "InitLayerFileUpload",
+          "callee": "in.GetCacheScope",
+          "lineNumber": 23
+        },
+        {
+          "caller": "InitLayerFileUpload",
+          "callee": "paths.GetLayerFilesCachePath",
+          "lineNumber": 26
+        },
+        {
+          "caller": "InitLayerFileUpload",
+          "callee": "in.GetHash",
+          "lineNumber": 26
+        },
+        {
+          "caller": "InitLayerFileUpload",
+          "callee": "s.buildStorage.OpenBlob",
+          "lineNumber": 27
+        },
+        {
+          "caller": "InitLayerFileUpload",
+          "callee": "fmt.Errorf",
+          "lineNumber": 29
+        },
+        {
+          "caller": "InitLayerFileUpload",
+          "callee": "s.buildStorage.UploadSignedURL",
+          "lineNumber": 32
+        },
+        {
+          "caller": "InitLayerFileUpload",
+          "callee": "fmt.Errorf",
+          "lineNumber": 34
+        },
+        {
+          "caller": "InitLayerFileUpload",
+          "callee": "obj.Exists",
+          "lineNumber": 37
+        },
+        {
+          "caller": "InitLayerFileUpload",
+          "callee": "fmt.Errorf",
+          "lineNumber": 39
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/template/template/main.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 39,
+      "nonEmptyLines": 29,
+      "functions": [
+        {
+          "name": "Delete",
+          "startLine": 17,
+          "endLine": 39,
+          "params": [
+            "ctx",
+            "artifactRegistry",
+            "templateStorage",
+            "templateId",
+            "buildId"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Delete",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Delete",
+          "callee": "tracer.Start",
+          "lineNumber": 18
+        },
+        {
+          "caller": "Delete",
+          "callee": "childSpan.End",
+          "lineNumber": 19
+        },
+        {
+          "caller": "Delete",
+          "callee": "templateStorage.DeleteObjectsWithPrefix",
+          "lineNumber": 21
+        },
+        {
+          "caller": "Delete",
+          "callee": "fmt.Errorf",
+          "lineNumber": 23
+        },
+        {
+          "caller": "Delete",
+          "callee": "artifactRegistry.Delete",
+          "lineNumber": 26
+        },
+        {
+          "caller": "Delete",
+          "callee": "errors.Is",
+          "lineNumber": 29
+        },
+        {
+          "caller": "Delete",
+          "callee": "telemetry.ReportEvent",
+          "lineNumber": 33
+        },
+        {
+          "caller": "Delete",
+          "callee": "err.Error",
+          "lineNumber": 33
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/units/units.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 15,
+      "nonEmptyLines": 12,
+      "functions": [
+        {
+          "name": "MBToBytes",
+          "startLine": 8,
+          "endLine": 10,
+          "params": [
+            "mb"
+          ]
+        },
+        {
+          "name": "BytesToMB",
+          "startLine": 13,
+          "endLine": 15,
+          "params": [
+            "b"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "MBToBytes",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "BytesToMB",
+          "line": 13,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/version/main.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 3,
+      "nonEmptyLines": 2,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/dir_create.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 100,
+      "nonEmptyLines": 79,
+      "functions": [
+        {
+          "name": "CreateDir",
+          "startLine": 21,
+          "endLine": 88,
+          "params": [
+            "ctx",
+            "request"
+          ]
+        },
+        {
+          "name": "processError",
+          "startLine": 90,
+          "endLine": 100,
+          "params": [
+            "ctx",
+            "s",
+            "err"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreateDir",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CreateDir",
+          "callee": "tracer.Start",
+          "lineNumber": 22
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "func() {\n\t\tsetSpanStatus(span, err)\n\t\tspan.End()\n\t}",
+          "lineNumber": 23
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "setSpanStatus",
+          "lineNumber": 24
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "span.End",
+          "lineNumber": 25
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "s.getFilesystemAndPath",
+          "lineNumber": 28
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "errResponse.Err",
+          "lineNumber": 30
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "fs.Close",
+          "lineNumber": 32
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "utils.DerefOrDefault",
+          "lineNumber": 34
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "utils.DerefOrDefault",
+          "lineNumber": 35
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "os.FileMode",
+          "lineNumber": 36
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "utils.DerefOrDefault",
+          "lineNumber": 36
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "uint32",
+          "lineNumber": 36
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "span.AddEvent",
+          "lineNumber": 38
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "trace.WithAttributes",
+          "lineNumber": 38
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "attribute.String",
+          "lineNumber": 39
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "attribute.Int64",
+          "lineNumber": 40
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "int64",
+          "lineNumber": 40
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "attribute.Int64",
+          "lineNumber": 41
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "int64",
+          "lineNumber": 41
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "attribute.Int64",
+          "lineNumber": 42
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "int64",
+          "lineNumber": 42
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "request.GetCreateParents",
+          "lineNumber": 45
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "ensureDirs",
+          "lineNumber": 46
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "filepath.Dir",
+          "lineNumber": 46
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "fmt.Errorf",
+          "lineNumber": 47
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "fs.Mkdir",
+          "lineNumber": 53
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "request.GetCreateParents",
+          "lineNumber": 54
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "errors.Is",
+          "lineNumber": 54
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "processError",
+          "lineNumber": 55
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "fs.Stat",
+          "lineNumber": 58
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "fmt.Errorf",
+          "lineNumber": 60
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "stat.IsDir",
+          "lineNumber": 62
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "processError",
+          "lineNumber": 63
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "fs.Chown",
+          "lineNumber": 70
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "int",
+          "lineNumber": 70
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "int",
+          "lineNumber": 70
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "processError",
+          "lineNumber": 71
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "fs.Chmod",
+          "lineNumber": 75
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "processError",
+          "lineNumber": 76
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "fs.Stat",
+          "lineNumber": 80
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "fmt.Errorf",
+          "lineNumber": 82
+        },
+        {
+          "caller": "CreateDir",
+          "callee": "toEntry",
+          "lineNumber": 85
+        },
+        {
+          "caller": "processError",
+          "callee": "errors.Is",
+          "lineNumber": 91
+        },
+        {
+          "caller": "processError",
+          "callee": "newAPIError(ctx, codes.AlreadyExists, http.StatusConflict, orchestrator.UserErrorCode_PATH_ALREADY_EXISTS, \"%s: %s\", s, err.Error()).Err",
+          "lineNumber": 92
+        },
+        {
+          "caller": "processError",
+          "callee": "newAPIError",
+          "lineNumber": 92
+        },
+        {
+          "caller": "processError",
+          "callee": "err.Error",
+          "lineNumber": 92
+        },
+        {
+          "caller": "processError",
+          "callee": "errors.Is",
+          "lineNumber": 95
+        },
+        {
+          "caller": "processError",
+          "callee": "newAPIError(ctx, codes.NotFound, http.StatusNotFound, orchestrator.UserErrorCode_PATH_NOT_FOUND, \"%s: %s\", s, err.Error()).Err",
+          "lineNumber": 96
+        },
+        {
+          "caller": "processError",
+          "callee": "newAPIError",
+          "lineNumber": 96
+        },
+        {
+          "caller": "processError",
+          "callee": "err.Error",
+          "lineNumber": 96
+        },
+        {
+          "caller": "processError",
+          "callee": "fmt.Errorf",
+          "lineNumber": 99
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/dir_create_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 159,
+      "nonEmptyLines": 126,
+      "functions": [
+        {
+          "name": "TestDirCreate",
+          "startLine": 17,
+          "endLine": 159,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestDirCreate",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Parallel",
+          "lineNumber": 18
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "setupTestService",
+          "lineNumber": 20
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Run",
+          "lineNumber": 22
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Parallel",
+          "lineNumber": 23
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "s.CreateDir",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Context",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.NoError",
+          "lineNumber": 30
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "os.Stat",
+          "lineNumber": 32
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "filepath.Join",
+          "lineNumber": 32
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.NoError",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.True",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "fi.IsDir",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Run",
+          "lineNumber": 37
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Parallel",
+          "lineNumber": 38
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "s.CreateDir",
+          "lineNumber": 41
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Context",
+          "lineNumber": 41
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.NoError",
+          "lineNumber": 46
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "os.Stat",
+          "lineNumber": 48
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "filepath.Join",
+          "lineNumber": 48
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.NoError",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.True",
+          "lineNumber": 50
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "fi.IsDir",
+          "lineNumber": 50
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Run",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Parallel",
+          "lineNumber": 54
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "s.CreateDir",
+          "lineNumber": 57
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Context",
+          "lineNumber": 57
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "requireGRPCError",
+          "lineNumber": 62
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Run",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Parallel",
+          "lineNumber": 66
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "uint32",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "uint32",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "uint32",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "s.CreateDir",
+          "lineNumber": 73
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Context",
+          "lineNumber": 73
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "new",
+          "lineNumber": 76
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "new",
+          "lineNumber": 77
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "new",
+          "lineNumber": 78
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.NoError",
+          "lineNumber": 80
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "os.Stat",
+          "lineNumber": 82
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "filepath.Join",
+          "lineNumber": 82
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.NoError",
+          "lineNumber": 83
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.Equal",
+          "lineNumber": 84
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "os.FileMode",
+          "lineNumber": 84
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "fi.Mode().Perm",
+          "lineNumber": 84
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "fi.Mode",
+          "lineNumber": 84
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Run",
+          "lineNumber": 87
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Parallel",
+          "lineNumber": 88
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "os.Mkdir",
+          "lineNumber": 91
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "filepath.Join",
+          "lineNumber": 91
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.NoError",
+          "lineNumber": 92
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "s.CreateDir",
+          "lineNumber": 94
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Context",
+          "lineNumber": 94
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "requireGRPCError",
+          "lineNumber": 98
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Run",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Parallel",
+          "lineNumber": 102
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "filepath.Join",
+          "lineNumber": 105
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "os.WriteFile",
+          "lineNumber": 106
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.NoError",
+          "lineNumber": 107
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "s.CreateDir",
+          "lineNumber": 109
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Context",
+          "lineNumber": 109
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "requireGRPCError",
+          "lineNumber": 114
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Run",
+          "lineNumber": 117
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Parallel",
+          "lineNumber": 118
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "filepath.Join",
+          "lineNumber": 121
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "os.FileMode",
+          "lineNumber": 123
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "os.MkdirAll",
+          "lineNumber": 124
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.NoError",
+          "lineNumber": 125
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "os.Chmod",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.NoError",
+          "lineNumber": 129
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "os.Chown",
+          "lineNumber": 132
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.NoError",
+          "lineNumber": 133
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "uint32",
+          "lineNumber": 136
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "new",
+          "lineNumber": 141
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "new(uint32",
+          "lineNumber": 142
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "new",
+          "lineNumber": 142
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "new(uint32",
+          "lineNumber": 143
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "new",
+          "lineNumber": 143
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "s.CreateDir",
+          "lineNumber": 145
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Context",
+          "lineNumber": 145
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.NoError",
+          "lineNumber": 146
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "s.getFilesystemAndPath",
+          "lineNumber": 148
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "t.Context",
+          "lineNumber": 148
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.Nil",
+          "lineNumber": 149
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "assert.Equal",
+          "lineNumber": 150
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "assertDir",
+          "lineNumber": 152
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "os.Stat",
+          "lineNumber": 154
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.NoError",
+          "lineNumber": 155
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "require.Equal",
+          "lineNumber": 157
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "fi.Mode().Perm",
+          "lineNumber": 157
+        },
+        {
+          "caller": "TestDirCreate",
+          "callee": "fi.Mode",
+          "lineNumber": 157
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/dir_list.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 119,
+      "nonEmptyLines": 98,
+      "functions": [
+        {
+          "name": "ListDir",
+          "startLine": 28,
+          "endLine": 76,
+          "params": [
+            "ctx",
+            "request"
+          ]
+        },
+        {
+          "name": "listRecursive",
+          "startLine": 78,
+          "endLine": 119,
+          "params": [
+            "ctx",
+            "fs",
+            "path",
+            "depth"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ListDir",
+          "line": 28,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "ListDir",
+          "callee": "tracer.Start",
+          "lineNumber": 32
+        },
+        {
+          "caller": "ListDir",
+          "callee": "func() {\n\t\tsetSpanStatus(span, err)\n\t\tspan.End()\n\t}",
+          "lineNumber": 33
+        },
+        {
+          "caller": "ListDir",
+          "callee": "setSpanStatus",
+          "lineNumber": 34
+        },
+        {
+          "caller": "ListDir",
+          "callee": "span.End",
+          "lineNumber": 35
+        },
+        {
+          "caller": "ListDir",
+          "callee": "s.getFilesystemAndPath",
+          "lineNumber": 38
+        },
+        {
+          "caller": "ListDir",
+          "callee": "errResponse.Err",
+          "lineNumber": 40
+        },
+        {
+          "caller": "ListDir",
+          "callee": "fs.Close",
+          "lineNumber": 42
+        },
+        {
+          "caller": "ListDir",
+          "callee": "span.AddEvent",
+          "lineNumber": 44
+        },
+        {
+          "caller": "ListDir",
+          "callee": "trace.WithAttributes",
+          "lineNumber": 44
+        },
+        {
+          "caller": "ListDir",
+          "callee": "attribute.String",
+          "lineNumber": 45
+        },
+        {
+          "caller": "ListDir",
+          "callee": "int",
+          "lineNumber": 48
+        },
+        {
+          "caller": "ListDir",
+          "callee": "request.GetDepth",
+          "lineNumber": 48
+        },
+        {
+          "caller": "ListDir",
+          "callee": "max",
+          "lineNumber": 49
+        },
+        {
+          "caller": "ListDir",
+          "callee": "newAPIError(ctx,\n\t\t\tcodes.InvalidArgument,\n\t\t\thttp.StatusBadRequest,\n\t\t\torchestrator.UserErrorCode_DEPTH_OUT_OF_RANGE,\n\t\t\t\"depth must be between %d and %d\", minDepth, maxDepth,\n\t\t).Err",
+          "lineNumber": 52
+        },
+        {
+          "caller": "ListDir",
+          "callee": "newAPIError",
+          "lineNumber": 52
+        },
+        {
+          "caller": "ListDir",
+          "callee": "s.listRecursive",
+          "lineNumber": 60
+        },
+        {
+          "caller": "ListDir",
+          "callee": "errors.Is",
+          "lineNumber": 62
+        },
+        {
+          "caller": "ListDir",
+          "callee": "newAPIError(ctx,\n\t\t\t\tcodes.NotFound,\n\t\t\t\thttp.StatusNotFound,\n\t\t\t\torchestrator.UserErrorCode_PATH_NOT_FOUND,\n\t\t\t\t\"failed to read: %q not found.\",\n\t\t\t\trequest.GetPath(),\n\t\t\t).Err",
+          "lineNumber": 63
+        },
+        {
+          "caller": "ListDir",
+          "callee": "newAPIError",
+          "lineNumber": 63
+        },
+        {
+          "caller": "ListDir",
+          "callee": "request.GetPath",
+          "lineNumber": 68
+        },
+        {
+          "caller": "ListDir",
+          "callee": "fmt.Errorf",
+          "lineNumber": 72
+        },
+        {
+          "caller": "listRecursive",
+          "callee": "fs.ReadDir",
+          "lineNumber": 88
+        },
+        {
+          "caller": "listRecursive",
+          "callee": "fmt.Errorf",
+          "lineNumber": 90
+        },
+        {
+          "caller": "listRecursive",
+          "callee": "filepath.Join",
+          "lineNumber": 95
+        },
+        {
+          "caller": "listRecursive",
+          "callee": "item.Name",
+          "lineNumber": 95
+        },
+        {
+          "caller": "listRecursive",
+          "callee": "append",
+          "lineNumber": 96
+        },
+        {
+          "caller": "listRecursive",
+          "callee": "toEntry",
+          "lineNumber": 97
+        },
+        {
+          "caller": "listRecursive",
+          "callee": "item.IsDir",
+          "lineNumber": 100
+        },
+        {
+          "caller": "listRecursive",
+          "callee": "s.listRecursive",
+          "lineNumber": 101
+        },
+        {
+          "caller": "listRecursive",
+          "callee": "errors.Is",
+          "lineNumber": 103
+        },
+        {
+          "caller": "listRecursive",
+          "callee": "logger.L().Warn",
+          "lineNumber": 104
+        },
+        {
+          "caller": "listRecursive",
+          "callee": "logger.L",
+          "lineNumber": 104
+        },
+        {
+          "caller": "listRecursive",
+          "callee": "zap.String",
+          "lineNumber": 105
+        },
+        {
+          "caller": "listRecursive",
+          "callee": "append",
+          "lineNumber": 114
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 1,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/dir_list_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 123,
+      "nonEmptyLines": 94,
+      "functions": [
+        {
+          "name": "TestListDir_Depth",
+          "startLine": 16,
+          "endLine": 112,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "getPaths",
+          "startLine": 114,
+          "endLine": 123,
+          "params": [
+            "t",
+            "items"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestListDir_Depth",
+          "line": 16,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "t.Parallel",
+          "lineNumber": 17
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "setupTestService",
+          "lineNumber": 19
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "os.MkdirAll",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "filepath.Join",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "require.NoError",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "os.WriteFile",
+          "lineNumber": 28
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "filepath.Join",
+          "lineNumber": 28
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "require.NoError",
+          "lineNumber": 29
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "os.WriteFile",
+          "lineNumber": 31
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "filepath.Join",
+          "lineNumber": 31
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "require.NoError",
+          "lineNumber": 32
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "os.MkdirAll",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "filepath.Join",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "require.NoError",
+          "lineNumber": 35
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "os.WriteFile",
+          "lineNumber": 37
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "filepath.Join",
+          "lineNumber": 37
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "require.NoError",
+          "lineNumber": 38
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "t.Context",
+          "lineNumber": 40
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "t.Run",
+          "lineNumber": 42
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "t.Parallel",
+          "lineNumber": 43
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "s.ListDir",
+          "lineNumber": 50
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "require.NoError",
+          "lineNumber": 51
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "require.NotNil",
+          "lineNumber": 52
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "getPaths",
+          "lineNumber": 54
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "resp.GetFiles",
+          "lineNumber": 54
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "require.ElementsMatch",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "t.Run",
+          "lineNumber": 58
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "t.Parallel",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "s.ListDir",
+          "lineNumber": 66
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "require.NoError",
+          "lineNumber": 67
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "require.NotNil",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "getPaths",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "resp.GetFiles",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "require.ElementsMatch",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "t.Run",
+          "lineNumber": 74
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "t.Parallel",
+          "lineNumber": 75
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "s.ListDir",
+          "lineNumber": 82
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "require.NoError",
+          "lineNumber": 83
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "require.NotNil",
+          "lineNumber": 84
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "getPaths",
+          "lineNumber": 86
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "resp.GetFiles",
+          "lineNumber": 86
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "require.ElementsMatch",
+          "lineNumber": 87
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "t.Run",
+          "lineNumber": 90
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "t.Parallel",
+          "lineNumber": 91
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "s.ListDir",
+          "lineNumber": 97
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "requireGRPCError",
+          "lineNumber": 98
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "t.Run",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "t.Parallel",
+          "lineNumber": 102
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "s.ListDir",
+          "lineNumber": 109
+        },
+        {
+          "caller": "TestListDir_Depth",
+          "callee": "requireGRPCError",
+          "lineNumber": 110
+        },
+        {
+          "caller": "getPaths",
+          "callee": "t.Helper",
+          "lineNumber": 115
+        },
+        {
+          "caller": "getPaths",
+          "callee": "make",
+          "lineNumber": 117
+        },
+        {
+          "caller": "getPaths",
+          "callee": "len",
+          "lineNumber": 117
+        },
+        {
+          "caller": "getPaths",
+          "callee": "append",
+          "lineNumber": 119
+        },
+        {
+          "caller": "getPaths",
+          "callee": "item.GetEntry().GetPath",
+          "lineNumber": 119
+        },
+        {
+          "caller": "getPaths",
+          "callee": "item.GetEntry",
+          "lineNumber": 119
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/errors.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 21,
+      "functions": [
+        {
+          "name": "newAPIError",
+          "startLine": 17,
+          "endLine": 28,
+          "params": [
+            "ctx",
+            "grpcCode",
+            "httpStatus",
+            "userErrorCode",
+            "userErrorMessage"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "newAPIError",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 18
+        },
+        {
+          "caller": "newAPIError",
+          "callee": "status.New",
+          "lineNumber": 20
+        },
+        {
+          "caller": "newAPIError",
+          "callee": "s.WithDetails",
+          "lineNumber": 21
+        },
+        {
+          "caller": "newAPIError",
+          "callee": "logger.L().Error",
+          "lineNumber": 22
+        },
+        {
+          "caller": "newAPIError",
+          "callee": "logger.L",
+          "lineNumber": 22
+        },
+        {
+          "caller": "newAPIError",
+          "callee": "zap.Error",
+          "lineNumber": 22
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/file_create.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 125,
+      "nonEmptyLines": 100,
+      "functions": [
+        {
+          "name": "CreateFile",
+          "startLine": 24,
+          "endLine": 125,
+          "params": [
+            "server"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreateFile",
+          "line": 24,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CreateFile",
+          "callee": "tracer.Start",
+          "lineNumber": 25
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "server.Context",
+          "lineNumber": 25
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "func() {\n\t\tsetSpanStatus(span, err)\n\t\tspan.End()\n\t}",
+          "lineNumber": 26
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "setSpanStatus",
+          "lineNumber": 27
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "span.End",
+          "lineNumber": 28
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "server.Recv",
+          "lineNumber": 31
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "fmt.Errorf",
+          "lineNumber": 33
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "req.GetStart",
+          "lineNumber": 36
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "s.getFilesystemAndPath",
+          "lineNumber": 41
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "errResponse.Err",
+          "lineNumber": 43
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "fs.Close",
+          "lineNumber": 45
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "utils.DerefOrDefault",
+          "lineNumber": 47
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "utils.DerefOrDefault",
+          "lineNumber": 48
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "utils.DerefOrDefault",
+          "lineNumber": 49
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "uint32",
+          "lineNumber": 49
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "span.AddEvent",
+          "lineNumber": 51
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "trace.WithAttributes",
+          "lineNumber": 51
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "attribute.String",
+          "lineNumber": 52
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "attribute.Int64",
+          "lineNumber": 53
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "int64",
+          "lineNumber": 53
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "attribute.Int64",
+          "lineNumber": 54
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "int64",
+          "lineNumber": 54
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "attribute.Int64",
+          "lineNumber": 55
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "int64",
+          "lineNumber": 55
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "filepath.Dir",
+          "lineNumber": 58
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "start.GetForce",
+          "lineNumber": 59
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "ensureDirs",
+          "lineNumber": 60
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "fmt.Errorf",
+          "lineNumber": 61
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "start.GetForce",
+          "lineNumber": 66
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "fs.OpenFile",
+          "lineNumber": 72
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "os.FileMode(mode).Perm",
+          "lineNumber": 72
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "os.FileMode",
+          "lineNumber": 72
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "fmt.Errorf",
+          "lineNumber": 74
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "func() {\n\t\tcloseErr := file.Close()\n\t\tif closeErr != nil {\n\t\t\tlogger.L().Error(ctx, \"failed to close file\", zap.Error(closeErr))\n\t\t}\n\t}",
+          "lineNumber": 77
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "file.Close",
+          "lineNumber": 78
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "logger.L().Error",
+          "lineNumber": 80
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "logger.L",
+          "lineNumber": 80
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "zap.Error",
+          "lineNumber": 80
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "server.Recv",
+          "lineNumber": 85
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "fmt.Errorf",
+          "lineNumber": 87
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "req.GetMessage",
+          "lineNumber": 90
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "file.Write",
+          "lineNumber": 92
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "m.Content.GetContent",
+          "lineNumber": 92
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "fmt.Errorf",
+          "lineNumber": 93
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "file.Sync",
+          "lineNumber": 97
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "fmt.Errorf",
+          "lineNumber": 98
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "fs.Chown",
+          "lineNumber": 101
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "int",
+          "lineNumber": 101
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "int",
+          "lineNumber": 101
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "fmt.Errorf",
+          "lineNumber": 102
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "fs.Chmod",
+          "lineNumber": 106
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "os.FileMode",
+          "lineNumber": 106
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "fmt.Errorf",
+          "lineNumber": 107
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "fs.Stat",
+          "lineNumber": 110
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "fmt.Errorf",
+          "lineNumber": 112
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "toEntry",
+          "lineNumber": 115
+        },
+        {
+          "caller": "CreateFile",
+          "callee": "server.SendAndClose",
+          "lineNumber": 117
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/file_create_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 137,
+      "nonEmptyLines": 106,
+      "functions": [
+        {
+          "name": "Recv",
+          "startLine": 24,
+          "endLine": 31,
+          "params": []
+        },
+        {
+          "name": "SendAndClose",
+          "startLine": 33,
+          "endLine": 37,
+          "params": [
+            "resp"
+          ]
+        },
+        {
+          "name": "Context",
+          "startLine": 39,
+          "endLine": 43,
+          "params": []
+        },
+        {
+          "name": "TestFileCreate",
+          "startLine": 45,
+          "endLine": 137,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "mockCreateFileServer",
+          "startLine": 19,
+          "endLine": 22,
+          "methods": [
+            "Recv",
+            "SendAndClose",
+            "Context"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "Recv",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "SendAndClose",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "Context",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "TestFileCreate",
+          "line": 45,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Recv",
+          "callee": "m.Called",
+          "lineNumber": 25
+        },
+        {
+          "caller": "Recv",
+          "callee": "args.Get",
+          "lineNumber": 26
+        },
+        {
+          "caller": "Recv",
+          "callee": "args.Error",
+          "lineNumber": 27
+        },
+        {
+          "caller": "Recv",
+          "callee": "args.Get",
+          "lineNumber": 30
+        },
+        {
+          "caller": "Recv",
+          "callee": "args.Error",
+          "lineNumber": 30
+        },
+        {
+          "caller": "SendAndClose",
+          "callee": "m.Called",
+          "lineNumber": 34
+        },
+        {
+          "caller": "SendAndClose",
+          "callee": "args.Error",
+          "lineNumber": 36
+        },
+        {
+          "caller": "Context",
+          "callee": "m.Called",
+          "lineNumber": 40
+        },
+        {
+          "caller": "Context",
+          "callee": "args.Get",
+          "lineNumber": 42
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "t.Parallel",
+          "lineNumber": 46
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "setupTestService",
+          "lineNumber": 48
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "t.Run",
+          "lineNumber": 50
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "t.Parallel",
+          "lineNumber": 51
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"Context\").Return",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "t.Context",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"Recv\").Return(&orchestrator.CreateFileRequest{\n\t\t\tMessage: &orchestrator.CreateFileRequest_Start{\n\t\t\t\tStart: &orchestrator.VolumeFileCreateStart{\n\t\t\t\t\tVolume: volumeInfo,\n\t\t\t\t\tPath:   filename,\n\t\t\t\t},\n\t\t\t},\n\t\t}, nil).Once",
+          "lineNumber": 58
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"Recv\").Return",
+          "lineNumber": 58
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On",
+          "lineNumber": 58
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"Recv\").Return(&orchestrator.CreateFileRequest{\n\t\t\tMessage: &orchestrator.CreateFileRequest_Content{\n\t\t\t\tContent: &orchestrator.VolumeFileCreateContent{\n\t\t\t\t\tContent: []byte(\"hello world\"),\n\t\t\t\t},\n\t\t\t},\n\t\t}, nil).Once",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"Recv\").Return",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"Recv\").Return(&orchestrator.CreateFileRequest{\n\t\t\tMessage: &orchestrator.CreateFileRequest_Finish{\n\t\t\t\tFinish: &orchestrator.VolumeFileCreateFinish{},\n\t\t\t},\n\t\t}, nil).Once",
+          "lineNumber": 77
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"Recv\").Return",
+          "lineNumber": 77
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On",
+          "lineNumber": 77
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"SendAndClose\", mock.Anything).Return(nil).Once",
+          "lineNumber": 83
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"SendAndClose\", mock.Anything).Return",
+          "lineNumber": 83
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On",
+          "lineNumber": 83
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "s.CreateFile",
+          "lineNumber": 85
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "require.NoError",
+          "lineNumber": 86
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "os.ReadFile",
+          "lineNumber": 88
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "filepath.Join",
+          "lineNumber": 88
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "require.NoError",
+          "lineNumber": 89
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "require.Equal",
+          "lineNumber": 90
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "string",
+          "lineNumber": 90
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.AssertExpectations",
+          "lineNumber": 91
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "t.Run",
+          "lineNumber": 94
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "t.Parallel",
+          "lineNumber": 95
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"Context\").Return",
+          "lineNumber": 99
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On",
+          "lineNumber": 99
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "t.Context",
+          "lineNumber": 99
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"Recv\").Return(&orchestrator.CreateFileRequest{\n\t\t\tMessage: &orchestrator.CreateFileRequest_Start{\n\t\t\t\tStart: &orchestrator.VolumeFileCreateStart{\n\t\t\t\t\tVolume: volumeInfo,\n\t\t\t\t\tPath:   filename,\n\t\t\t\t\tForce:  true,\n\t\t\t\t},\n\t\t\t},\n\t\t}, nil).Once",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"Recv\").Return",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"Recv\").Return(&orchestrator.CreateFileRequest{\n\t\t\tMessage: &orchestrator.CreateFileRequest_Finish{\n\t\t\t\tFinish: &orchestrator.VolumeFileCreateFinish{},\n\t\t\t},\n\t\t}, nil).Once",
+          "lineNumber": 111
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"Recv\").Return",
+          "lineNumber": 111
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On",
+          "lineNumber": 111
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"SendAndClose\", mock.Anything).Return(nil).Once",
+          "lineNumber": 117
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"SendAndClose\", mock.Anything).Return",
+          "lineNumber": 117
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On",
+          "lineNumber": 117
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "s.CreateFile",
+          "lineNumber": 119
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "require.NoError",
+          "lineNumber": 120
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "os.Stat",
+          "lineNumber": 122
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "filepath.Join",
+          "lineNumber": 122
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "require.NoError",
+          "lineNumber": 123
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.AssertExpectations",
+          "lineNumber": 124
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "t.Run",
+          "lineNumber": 127
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "t.Parallel",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"Context\").Return",
+          "lineNumber": 131
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On",
+          "lineNumber": 131
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "t.Context",
+          "lineNumber": 131
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"Recv\").Return(nil, io.EOF).Once",
+          "lineNumber": 132
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On(\"Recv\").Return",
+          "lineNumber": 132
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "mockServer.On",
+          "lineNumber": 132
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "s.CreateFile",
+          "lineNumber": 134
+        },
+        {
+          "caller": "TestFileCreate",
+          "callee": "require.Error",
+          "lineNumber": 135
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/file_get.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 101,
+      "nonEmptyLines": 84,
+      "functions": [
+        {
+          "name": "GetFile",
+          "startLine": 18,
+          "endLine": 101,
+          "params": [
+            "request",
+            "server"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetFile",
+          "line": 18,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetFile",
+          "callee": "tracer.Start",
+          "lineNumber": 19
+        },
+        {
+          "caller": "GetFile",
+          "callee": "server.Context",
+          "lineNumber": 19
+        },
+        {
+          "caller": "GetFile",
+          "callee": "func() {\n\t\tsetSpanStatus(span, err)\n\t\tspan.End()\n\t}",
+          "lineNumber": 20
+        },
+        {
+          "caller": "GetFile",
+          "callee": "setSpanStatus",
+          "lineNumber": 21
+        },
+        {
+          "caller": "GetFile",
+          "callee": "span.End",
+          "lineNumber": 22
+        },
+        {
+          "caller": "GetFile",
+          "callee": "s.getFilesystemAndPath",
+          "lineNumber": 25
+        },
+        {
+          "caller": "GetFile",
+          "callee": "errResponse.Err",
+          "lineNumber": 27
+        },
+        {
+          "caller": "GetFile",
+          "callee": "fs.Close",
+          "lineNumber": 29
+        },
+        {
+          "caller": "GetFile",
+          "callee": "span.AddEvent",
+          "lineNumber": 31
+        },
+        {
+          "caller": "GetFile",
+          "callee": "trace.WithAttributes",
+          "lineNumber": 31
+        },
+        {
+          "caller": "GetFile",
+          "callee": "attribute.String",
+          "lineNumber": 32
+        },
+        {
+          "caller": "GetFile",
+          "callee": "fs.Open",
+          "lineNumber": 35
+        },
+        {
+          "caller": "GetFile",
+          "callee": "fmt.Errorf",
+          "lineNumber": 37
+        },
+        {
+          "caller": "GetFile",
+          "callee": "f.Close",
+          "lineNumber": 39
+        },
+        {
+          "caller": "GetFile",
+          "callee": "span.AddEvent",
+          "lineNumber": 41
+        },
+        {
+          "caller": "GetFile",
+          "callee": "fs.Stat",
+          "lineNumber": 42
+        },
+        {
+          "caller": "GetFile",
+          "callee": "fmt.Errorf",
+          "lineNumber": 44
+        },
+        {
+          "caller": "GetFile",
+          "callee": "span.AddEvent",
+          "lineNumber": 47
+        },
+        {
+          "caller": "GetFile",
+          "callee": "trace.WithAttributes",
+          "lineNumber": 47
+        },
+        {
+          "caller": "GetFile",
+          "callee": "attribute.Int64",
+          "lineNumber": 48
+        },
+        {
+          "caller": "GetFile",
+          "callee": "info.Size",
+          "lineNumber": 48
+        },
+        {
+          "caller": "GetFile",
+          "callee": "server.Send",
+          "lineNumber": 50
+        },
+        {
+          "caller": "GetFile",
+          "callee": "info.Size",
+          "lineNumber": 53
+        },
+        {
+          "caller": "GetFile",
+          "callee": "fmt.Errorf",
+          "lineNumber": 57
+        },
+        {
+          "caller": "GetFile",
+          "callee": "make",
+          "lineNumber": 60
+        },
+        {
+          "caller": "GetFile",
+          "callee": "span.AddEvent",
+          "lineNumber": 62
+        },
+        {
+          "caller": "GetFile",
+          "callee": "f.Read",
+          "lineNumber": 63
+        },
+        {
+          "caller": "GetFile",
+          "callee": "span.AddEvent",
+          "lineNumber": 65
+        },
+        {
+          "caller": "GetFile",
+          "callee": "trace.WithAttributes",
+          "lineNumber": 65
+        },
+        {
+          "caller": "GetFile",
+          "callee": "attribute.Int",
+          "lineNumber": 66
+        },
+        {
+          "caller": "GetFile",
+          "callee": "server.Send",
+          "lineNumber": 68
+        },
+        {
+          "caller": "GetFile",
+          "callee": "fmt.Errorf",
+          "lineNumber": 75
+        },
+        {
+          "caller": "GetFile",
+          "callee": "errors.Is",
+          "lineNumber": 83
+        },
+        {
+          "caller": "GetFile",
+          "callee": "fmt.Errorf",
+          "lineNumber": 84
+        },
+        {
+          "caller": "GetFile",
+          "callee": "span.AddEvent",
+          "lineNumber": 87
+        },
+        {
+          "caller": "GetFile",
+          "callee": "server.Send",
+          "lineNumber": 92
+        },
+        {
+          "caller": "GetFile",
+          "callee": "fmt.Errorf",
+          "lineNumber": 97
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/file_get_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 97,
+      "nonEmptyLines": 71,
+      "functions": [
+        {
+          "name": "Send",
+          "startLine": 23,
+          "endLine": 27,
+          "params": [
+            "resp"
+          ]
+        },
+        {
+          "name": "Context",
+          "startLine": 29,
+          "endLine": 33,
+          "params": []
+        },
+        {
+          "name": "TestFileGet",
+          "startLine": 35,
+          "endLine": 97,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "mockGetFileServer",
+          "startLine": 18,
+          "endLine": 21,
+          "methods": [
+            "Send",
+            "Context"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "Send",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "Context",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "TestFileGet",
+          "line": 35,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Send",
+          "callee": "m.Called",
+          "lineNumber": 24
+        },
+        {
+          "caller": "Send",
+          "callee": "args.Error",
+          "lineNumber": 26
+        },
+        {
+          "caller": "Context",
+          "callee": "m.Called",
+          "lineNumber": 30
+        },
+        {
+          "caller": "Context",
+          "callee": "args.Get",
+          "lineNumber": 32
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "t.Parallel",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "setupTestService",
+          "lineNumber": 38
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "t.Run",
+          "lineNumber": 40
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "t.Parallel",
+          "lineNumber": 41
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "os.WriteFile",
+          "lineNumber": 45
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "filepath.Join",
+          "lineNumber": 45
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "require.NoError",
+          "lineNumber": 46
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mockServer.On(\"Context\").Return",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mockServer.On",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "t.Context",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mockServer.On(\"Send\", mock.MatchedBy(func(resp *orchestrator.GetFileResponse) bool {\n\t\t\t_, ok := resp.GetMessage().(*orchestrator.GetFileResponse_Start)\n\n\t\t\treturn ok\n\t\t})).Return(nil).Once",
+          "lineNumber": 52
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mockServer.On(\"Send\", mock.MatchedBy(func(resp *orchestrator.GetFileResponse) bool {\n\t\t\t_, ok := resp.GetMessage().(*orchestrator.GetFileResponse_Start)\n\n\t\t\treturn ok\n\t\t})).Return",
+          "lineNumber": 52
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mockServer.On",
+          "lineNumber": 52
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mock.MatchedBy",
+          "lineNumber": 52
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "resp.GetMessage",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mockServer.On(\"Send\", mock.MatchedBy(func(resp *orchestrator.GetFileResponse) bool {\n\t\t\tc, ok := resp.GetMessage().(*orchestrator.GetFileResponse_Content)\n\t\t\tif !ok {\n\t\t\t\treturn false\n\t\t\t}\n\n\t\t\treturn string(c.Content.GetContent()) == \"hello world\"\n\t\t})).Return(nil).Once",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mockServer.On(\"Send\", mock.MatchedBy(func(resp *orchestrator.GetFileResponse) bool {\n\t\t\tc, ok := resp.GetMessage().(*orchestrator.GetFileResponse_Content)\n\t\t\tif !ok {\n\t\t\t\treturn false\n\t\t\t}\n\n\t\t\treturn string(c.Content.GetContent()) == \"hello world\"\n\t\t})).Return",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mockServer.On",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mock.MatchedBy",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "resp.GetMessage",
+          "lineNumber": 60
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "string",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "c.Content.GetContent",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mockServer.On(\"Send\", mock.MatchedBy(func(resp *orchestrator.GetFileResponse) bool {\n\t\t\t_, ok := resp.GetMessage().(*orchestrator.GetFileResponse_Finish)\n\n\t\t\treturn ok\n\t\t})).Return(nil).Once",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mockServer.On(\"Send\", mock.MatchedBy(func(resp *orchestrator.GetFileResponse) bool {\n\t\t\t_, ok := resp.GetMessage().(*orchestrator.GetFileResponse_Finish)\n\n\t\t\treturn ok\n\t\t})).Return",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mockServer.On",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mock.MatchedBy",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "resp.GetMessage",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "s.GetFile",
+          "lineNumber": 75
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "require.NoError",
+          "lineNumber": 80
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mockServer.AssertExpectations",
+          "lineNumber": 81
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "t.Run",
+          "lineNumber": 84
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "t.Parallel",
+          "lineNumber": 85
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mockServer.On(\"Context\").Return",
+          "lineNumber": 88
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "mockServer.On",
+          "lineNumber": 88
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "t.Context",
+          "lineNumber": 88
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "s.GetFile",
+          "lineNumber": 90
+        },
+        {
+          "caller": "TestFileGet",
+          "callee": "require.Error",
+          "lineNumber": 95
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/path_delete.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 63,
+      "nonEmptyLines": 51,
+      "functions": [
+        {
+          "name": "DeletePath",
+          "startLine": 18,
+          "endLine": 63,
+          "params": [
+            "ctx",
+            "request"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DeletePath",
+          "line": 18,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "DeletePath",
+          "callee": "tracer.Start",
+          "lineNumber": 19
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "func() {\n\t\tsetSpanStatus(span, err)\n\t\tspan.End()\n\t}",
+          "lineNumber": 20
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "setSpanStatus",
+          "lineNumber": 21
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "span.End",
+          "lineNumber": 22
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "s.getFilesystemAndPath",
+          "lineNumber": 25
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "errResponse.Err",
+          "lineNumber": 27
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "fs.Close",
+          "lineNumber": 29
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "s.isRoot",
+          "lineNumber": 31
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "newAPIError(ctx,\n\t\t\tcodes.InvalidArgument,\n\t\t\thttp.StatusBadRequest,\n\t\t\torchestrator.UserErrorCode_CANNOT_DELETE_ROOT,\n\t\t\t\"cannot delete root\",\n\t\t).Err",
+          "lineNumber": 32
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "newAPIError",
+          "lineNumber": 32
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "span.AddEvent",
+          "lineNumber": 40
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "trace.WithAttributes",
+          "lineNumber": 40
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "attribute.String",
+          "lineNumber": 41
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "fs.Lstat",
+          "lineNumber": 45
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "os.IsNotExist",
+          "lineNumber": 46
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "newAPIError(ctx,\n\t\t\t\tcodes.NotFound,\n\t\t\t\thttp.StatusNotFound,\n\t\t\t\torchestrator.UserErrorCode_PATH_NOT_FOUND,\n\t\t\t\t\"failed to delete: %q not found.\", request.GetPath(),\n\t\t\t).Err",
+          "lineNumber": 47
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "newAPIError",
+          "lineNumber": 47
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "request.GetPath",
+          "lineNumber": 51
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "fmt.Errorf",
+          "lineNumber": 55
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "fs.RemoveAll",
+          "lineNumber": 58
+        },
+        {
+          "caller": "DeletePath",
+          "callee": "fmt.Errorf",
+          "lineNumber": 59
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/path_delete_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 159,
+      "nonEmptyLines": 119,
+      "functions": [
+        {
+          "name": "TestDeletePath",
+          "startLine": 16,
+          "endLine": 159,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestDeletePath",
+          "line": 16,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Parallel",
+          "lineNumber": 17
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "setupTestService",
+          "lineNumber": 19
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Run",
+          "lineNumber": 21
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Parallel",
+          "lineNumber": 22
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "filepath.Join",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "os.WriteFile",
+          "lineNumber": 27
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.NoError",
+          "lineNumber": 28
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "s.DeletePath",
+          "lineNumber": 30
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Context",
+          "lineNumber": 30
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.NoError",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "os.Stat",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.ErrorIs",
+          "lineNumber": 37
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Run",
+          "lineNumber": 40
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Parallel",
+          "lineNumber": 41
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "filepath.Join",
+          "lineNumber": 44
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "os.Mkdir",
+          "lineNumber": 46
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.NoError",
+          "lineNumber": 47
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "s.DeletePath",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Context",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.NoError",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "os.Stat",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.ErrorIs",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Run",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Parallel",
+          "lineNumber": 60
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "filepath.Join",
+          "lineNumber": 63
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "os.Mkdir",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.NoError",
+          "lineNumber": 66
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "os.WriteFile",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "filepath.Join",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.NoError",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "filepath.Join",
+          "lineNumber": 72
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "os.Mkdir",
+          "lineNumber": 73
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.NoError",
+          "lineNumber": 74
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "os.WriteFile",
+          "lineNumber": 76
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "filepath.Join",
+          "lineNumber": 76
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.NoError",
+          "lineNumber": 77
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "s.DeletePath",
+          "lineNumber": 79
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Context",
+          "lineNumber": 79
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.NoError",
+          "lineNumber": 83
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "os.Stat",
+          "lineNumber": 86
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.ErrorIs",
+          "lineNumber": 87
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Run",
+          "lineNumber": 90
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Parallel",
+          "lineNumber": 91
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "s.DeletePath",
+          "lineNumber": 93
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Context",
+          "lineNumber": 93
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "requireGRPCError",
+          "lineNumber": 97
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Run",
+          "lineNumber": 100
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Parallel",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "s.DeletePath",
+          "lineNumber": 103
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Context",
+          "lineNumber": 103
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "requireGRPCError",
+          "lineNumber": 107
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Run",
+          "lineNumber": 110
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Parallel",
+          "lineNumber": 111
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "filepath.Join",
+          "lineNumber": 115
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "filepath.Join",
+          "lineNumber": 116
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "os.WriteFile",
+          "lineNumber": 118
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.NoError",
+          "lineNumber": 119
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "os.Symlink",
+          "lineNumber": 121
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.NoError",
+          "lineNumber": 122
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "s.DeletePath",
+          "lineNumber": 124
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Context",
+          "lineNumber": 124
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.NoError",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "os.Lstat",
+          "lineNumber": 131
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.ErrorIs",
+          "lineNumber": 132
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "os.Stat",
+          "lineNumber": 135
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.NoError",
+          "lineNumber": 136
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Run",
+          "lineNumber": 139
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Parallel",
+          "lineNumber": 140
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "filepath.Join",
+          "lineNumber": 144
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "os.Symlink",
+          "lineNumber": 146
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.NoError",
+          "lineNumber": 147
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "s.DeletePath",
+          "lineNumber": 149
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "t.Context",
+          "lineNumber": 149
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.NoError",
+          "lineNumber": 153
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "os.Lstat",
+          "lineNumber": 156
+        },
+        {
+          "caller": "TestDeletePath",
+          "callee": "require.ErrorIs",
+          "lineNumber": 157
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/path_stat.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 52,
+      "nonEmptyLines": 41,
+      "functions": [
+        {
+          "name": "StatPath",
+          "startLine": 18,
+          "endLine": 52,
+          "params": [
+            "ctx",
+            "request"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "StatPath",
+          "line": 18,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "StatPath",
+          "callee": "tracer.Start",
+          "lineNumber": 19
+        },
+        {
+          "caller": "StatPath",
+          "callee": "func() {\n\t\tsetSpanStatus(span, err)\n\t\tspan.End()\n\t}",
+          "lineNumber": 20
+        },
+        {
+          "caller": "StatPath",
+          "callee": "setSpanStatus",
+          "lineNumber": 21
+        },
+        {
+          "caller": "StatPath",
+          "callee": "span.End",
+          "lineNumber": 22
+        },
+        {
+          "caller": "StatPath",
+          "callee": "s.getFilesystemAndPath",
+          "lineNumber": 25
+        },
+        {
+          "caller": "StatPath",
+          "callee": "errResponse.Err",
+          "lineNumber": 27
+        },
+        {
+          "caller": "StatPath",
+          "callee": "fs.Close",
+          "lineNumber": 29
+        },
+        {
+          "caller": "StatPath",
+          "callee": "span.AddEvent",
+          "lineNumber": 31
+        },
+        {
+          "caller": "StatPath",
+          "callee": "trace.WithAttributes",
+          "lineNumber": 31
+        },
+        {
+          "caller": "StatPath",
+          "callee": "attribute.String",
+          "lineNumber": 32
+        },
+        {
+          "caller": "StatPath",
+          "callee": "fs.GetEntry",
+          "lineNumber": 35
+        },
+        {
+          "caller": "StatPath",
+          "callee": "os.IsNotExist",
+          "lineNumber": 37
+        },
+        {
+          "caller": "StatPath",
+          "callee": "newAPIError(ctx,\n\t\t\t\tcodes.NotFound,\n\t\t\t\thttp.StatusNotFound,\n\t\t\t\torchestrator.UserErrorCode_PATH_NOT_FOUND,\n\t\t\t\t\"failed to stat: %q not found.\", request.GetPath(),\n\t\t\t).Err",
+          "lineNumber": 38
+        },
+        {
+          "caller": "StatPath",
+          "callee": "newAPIError",
+          "lineNumber": 38
+        },
+        {
+          "caller": "StatPath",
+          "callee": "request.GetPath",
+          "lineNumber": 42
+        },
+        {
+          "caller": "StatPath",
+          "callee": "fmt.Errorf",
+          "lineNumber": 46
+        },
+        {
+          "caller": "StatPath",
+          "callee": "fromEntryInfo",
+          "lineNumber": 49
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/path_stat_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 79,
+      "nonEmptyLines": 62,
+      "functions": [
+        {
+          "name": "TestStat",
+          "startLine": 16,
+          "endLine": 79,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestStat",
+          "line": 16,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestStat",
+          "callee": "t.Parallel",
+          "lineNumber": 17
+        },
+        {
+          "caller": "TestStat",
+          "callee": "setupTestService",
+          "lineNumber": 19
+        },
+        {
+          "caller": "TestStat",
+          "callee": "t.Run",
+          "lineNumber": 21
+        },
+        {
+          "caller": "TestStat",
+          "callee": "t.Parallel",
+          "lineNumber": 22
+        },
+        {
+          "caller": "TestStat",
+          "callee": "os.WriteFile",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TestStat",
+          "callee": "filepath.Join",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TestStat",
+          "callee": "require.NoError",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestStat",
+          "callee": "s.StatPath",
+          "lineNumber": 28
+        },
+        {
+          "caller": "TestStat",
+          "callee": "t.Context",
+          "lineNumber": 28
+        },
+        {
+          "caller": "TestStat",
+          "callee": "require.NoError",
+          "lineNumber": 32
+        },
+        {
+          "caller": "TestStat",
+          "callee": "require.Equal",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestStat",
+          "callee": "resp.GetEntry().GetType",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestStat",
+          "callee": "resp.GetEntry",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestStat",
+          "callee": "require.Equal",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestStat",
+          "callee": "resp.GetEntry().GetPath",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestStat",
+          "callee": "resp.GetEntry",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestStat",
+          "callee": "t.Run",
+          "lineNumber": 37
+        },
+        {
+          "caller": "TestStat",
+          "callee": "t.Parallel",
+          "lineNumber": 38
+        },
+        {
+          "caller": "TestStat",
+          "callee": "os.Mkdir",
+          "lineNumber": 41
+        },
+        {
+          "caller": "TestStat",
+          "callee": "filepath.Join",
+          "lineNumber": 41
+        },
+        {
+          "caller": "TestStat",
+          "callee": "require.NoError",
+          "lineNumber": 42
+        },
+        {
+          "caller": "TestStat",
+          "callee": "s.StatPath",
+          "lineNumber": 44
+        },
+        {
+          "caller": "TestStat",
+          "callee": "t.Context",
+          "lineNumber": 44
+        },
+        {
+          "caller": "TestStat",
+          "callee": "require.NoError",
+          "lineNumber": 48
+        },
+        {
+          "caller": "TestStat",
+          "callee": "require.Equal",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestStat",
+          "callee": "resp.GetEntry().GetType",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestStat",
+          "callee": "resp.GetEntry",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestStat",
+          "callee": "t.Run",
+          "lineNumber": 52
+        },
+        {
+          "caller": "TestStat",
+          "callee": "t.Parallel",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TestStat",
+          "callee": "s.StatPath",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestStat",
+          "callee": "t.Context",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestStat",
+          "callee": "requireGRPCError",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestStat",
+          "callee": "t.Run",
+          "lineNumber": 62
+        },
+        {
+          "caller": "TestStat",
+          "callee": "t.Parallel",
+          "lineNumber": 63
+        },
+        {
+          "caller": "TestStat",
+          "callee": "os.WriteFile",
+          "lineNumber": 67
+        },
+        {
+          "caller": "TestStat",
+          "callee": "filepath.Join",
+          "lineNumber": 67
+        },
+        {
+          "caller": "TestStat",
+          "callee": "require.NoError",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestStat",
+          "callee": "os.Symlink",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestStat",
+          "callee": "filepath.Join",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestStat",
+          "callee": "require.NoError",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestStat",
+          "callee": "s.StatPath",
+          "lineNumber": 72
+        },
+        {
+          "caller": "TestStat",
+          "callee": "t.Context",
+          "lineNumber": 72
+        },
+        {
+          "caller": "TestStat",
+          "callee": "require.NoError",
+          "lineNumber": 76
+        },
+        {
+          "caller": "TestStat",
+          "callee": "require.Equal",
+          "lineNumber": 77
+        },
+        {
+          "caller": "TestStat",
+          "callee": "resp.GetEntry().GetType",
+          "lineNumber": 77
+        },
+        {
+          "caller": "TestStat",
+          "callee": "resp.GetEntry",
+          "lineNumber": 77
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/path_update.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 93,
+      "nonEmptyLines": 76,
+      "functions": [
+        {
+          "name": "UpdatePath",
+          "startLine": 18,
+          "endLine": 93,
+          "params": [
+            "ctx",
+            "request"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UpdatePath",
+          "line": 18,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "UpdatePath",
+          "callee": "tracer.Start",
+          "lineNumber": 19
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "func() {\n\t\tsetSpanStatus(span, err)\n\t\tspan.End()\n\t}",
+          "lineNumber": 20
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "setSpanStatus",
+          "lineNumber": 21
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "span.End",
+          "lineNumber": 22
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "s.getFilesystemAndPath",
+          "lineNumber": 25
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "errResponse.Err",
+          "lineNumber": 27
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "fs.Close",
+          "lineNumber": 29
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "attribute.String",
+          "lineNumber": 33
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "append",
+          "lineNumber": 36
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "attribute.Int64",
+          "lineNumber": 36
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "int64",
+          "lineNumber": 36
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "request.GetUid",
+          "lineNumber": 36
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "append",
+          "lineNumber": 39
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "attribute.Int64",
+          "lineNumber": 39
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "int64",
+          "lineNumber": 39
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "request.GetGid",
+          "lineNumber": 39
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "append",
+          "lineNumber": 42
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "attribute.Int64",
+          "lineNumber": 42
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "int64",
+          "lineNumber": 42
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "request.GetMode",
+          "lineNumber": 42
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "span.AddEvent",
+          "lineNumber": 44
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "trace.WithAttributes",
+          "lineNumber": 44
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "fs.Chmod",
+          "lineNumber": 47
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "os.FileMode",
+          "lineNumber": 47
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "request.GetMode",
+          "lineNumber": 47
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "os.IsNotExist",
+          "lineNumber": 48
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "newAPIError(ctx,\n\t\t\t\t\tcodes.NotFound,\n\t\t\t\t\thttp.StatusNotFound,\n\t\t\t\t\torchestrator.UserErrorCode_PATH_NOT_FOUND,\n\t\t\t\t\t\"failed to chmod: %q not found.\", request.GetPath(),\n\t\t\t\t).Err",
+          "lineNumber": 49
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "newAPIError",
+          "lineNumber": 49
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "request.GetPath",
+          "lineNumber": 53
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "fmt.Errorf",
+          "lineNumber": 57
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "int",
+          "lineNumber": 64
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "request.GetUid",
+          "lineNumber": 64
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "int",
+          "lineNumber": 69
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "request.GetGid",
+          "lineNumber": 69
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "fs.Chown",
+          "lineNumber": 72
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "os.IsNotExist",
+          "lineNumber": 73
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "newAPIError(ctx, codes.NotFound, http.StatusBadRequest, orchestrator.UserErrorCode_PATH_NOT_FOUND, \"failed to chown: %q not found.\", request.GetPath()).Err",
+          "lineNumber": 74
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "newAPIError",
+          "lineNumber": 74
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "request.GetPath",
+          "lineNumber": 74
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "fmt.Errorf",
+          "lineNumber": 77
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "fs.Stat",
+          "lineNumber": 81
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "os.IsNotExist",
+          "lineNumber": 83
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "newAPIError(ctx, codes.NotFound, http.StatusBadRequest, orchestrator.UserErrorCode_PATH_NOT_FOUND, \"failed to stat: %q not found.\", request.GetPath()).Err",
+          "lineNumber": 84
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "newAPIError",
+          "lineNumber": 84
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "request.GetPath",
+          "lineNumber": 84
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "fmt.Errorf",
+          "lineNumber": 87
+        },
+        {
+          "caller": "UpdatePath",
+          "callee": "toEntry",
+          "lineNumber": 90
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/service.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 237,
+      "nonEmptyLines": 194,
+      "functions": [
+        {
+          "name": "New",
+          "startLine": 46,
+          "endLine": 48,
+          "params": [
+            "config",
+            "builder"
+          ]
+        },
+        {
+          "name": "getVolumeRootPath",
+          "startLine": 55,
+          "endLine": 78,
+          "params": [
+            "ctx",
+            "volume"
+          ]
+        },
+        {
+          "name": "getFilesystemAndPath",
+          "startLine": 80,
+          "endLine": 130,
+          "params": [
+            "ctx",
+            "request"
+          ]
+        },
+        {
+          "name": "isRoot",
+          "startLine": 132,
+          "endLine": 134,
+          "params": [
+            "path"
+          ]
+        },
+        {
+          "name": "toEntry",
+          "startLine": 136,
+          "endLine": 140,
+          "params": [
+            "fullVolumePath",
+            "fileInfo"
+          ]
+        },
+        {
+          "name": "fromEntryInfo",
+          "startLine": 142,
+          "endLine": 156,
+          "params": [
+            "fullVolumePath",
+            "entryInfo"
+          ]
+        },
+        {
+          "name": "toType",
+          "startLine": 158,
+          "endLine": 169,
+          "params": [
+            "fileType"
+          ]
+        },
+        {
+          "name": "toTimestampFromTime",
+          "startLine": 171,
+          "endLine": 177,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "setSpanStatus",
+          "startLine": 179,
+          "endLine": 188,
+          "params": [
+            "span",
+            "err"
+          ]
+        },
+        {
+          "name": "ensureDirs",
+          "startLine": 190,
+          "endLine": 237,
+          "params": [
+            "fs",
+            "dirPath",
+            "uid",
+            "gid"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Service",
+          "startLine": 37,
+          "endLine": 42,
+          "methods": [
+            "getVolumeRootPath",
+            "getFilesystemAndPath",
+            "isRoot"
+          ],
+          "properties": [
+            "builder",
+            "config"
+          ]
+        },
+        {
+          "name": "volumePathRequest",
+          "startLine": 50,
+          "endLine": 53,
+          "methods": [
+            "GetVolume",
+            "GetPath"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "Service",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "New",
+          "line": 46,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "volume.GetVolumeType",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "pkg.TryParseUUID",
+          "lineNumber": 58
+        },
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "volume.GetTeamId",
+          "lineNumber": 58
+        },
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "newAPIError(ctx, codes.InvalidArgument, http.StatusBadRequest, orchestrator.UserErrorCode_INVALID_REQUEST, \"invalid team ID %q\", volume.GetTeamId()).Err",
+          "lineNumber": 60
+        },
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "newAPIError",
+          "lineNumber": 60
+        },
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "volume.GetTeamId",
+          "lineNumber": 60
+        },
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "pkg.TryParseUUID",
+          "lineNumber": 63
+        },
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "volume.GetVolumeId",
+          "lineNumber": 63
+        },
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "newAPIError(ctx, codes.InvalidArgument, http.StatusBadRequest, orchestrator.UserErrorCode_INVALID_REQUEST, \"invalid volume ID %q\", volume.GetVolumeId()).Err",
+          "lineNumber": 65
+        },
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "newAPIError",
+          "lineNumber": 65
+        },
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "volume.GetVolumeId",
+          "lineNumber": 65
+        },
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "s.builder.BuildVolumePath",
+          "lineNumber": 68
+        },
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "errors.Is",
+          "lineNumber": 70
+        },
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "newAPIError(ctx, codes.Internal, http.StatusInternalServerError, orchestrator.UserErrorCode_NOT_SUPPORTED, \"unknown volume type\").Err",
+          "lineNumber": 71
+        },
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "newAPIError",
+          "lineNumber": 71
+        },
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "newAPIError(ctx, codes.Internal, http.StatusInternalServerError, orchestrator.UserErrorCode_UNKNOWN_USER_ERROR_CODE, \"failed to build volume path: %v\", err).Err",
+          "lineNumber": 74
+        },
+        {
+          "caller": "getVolumeRootPath",
+          "callee": "newAPIError",
+          "lineNumber": 74
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "request.GetVolume",
+          "lineNumber": 81
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "volume.GetVolumeType",
+          "lineNumber": 82
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "pkg.TryParseUUID",
+          "lineNumber": 84
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "volume.GetTeamId",
+          "lineNumber": 84
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "newAPIError",
+          "lineNumber": 86
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "volume.GetTeamId",
+          "lineNumber": 90
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "pkg.TryParseUUID",
+          "lineNumber": 94
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "volume.GetVolumeId",
+          "lineNumber": 94
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "newAPIError",
+          "lineNumber": 96
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "volume.GetVolumeId",
+          "lineNumber": 100
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "s.builder.Chroot",
+          "lineNumber": 104
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "errors.Is",
+          "lineNumber": 106
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "newAPIError",
+          "lineNumber": 107
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "newAPIError",
+          "lineNumber": 115
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "request.GetPath",
+          "lineNumber": 123
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "filepath.IsAbs",
+          "lineNumber": 124
+        },
+        {
+          "caller": "getFilesystemAndPath",
+          "callee": "filepath.Clean",
+          "lineNumber": 127
+        },
+        {
+          "caller": "toEntry",
+          "callee": "filesystem.GetEntryInfo",
+          "lineNumber": 137
+        },
+        {
+          "caller": "toEntry",
+          "callee": "fromEntryInfo",
+          "lineNumber": 139
+        },
+        {
+          "caller": "fromEntryInfo",
+          "callee": "toType",
+          "lineNumber": 145
+        },
+        {
+          "caller": "fromEntryInfo",
+          "callee": "uint32",
+          "lineNumber": 148
+        },
+        {
+          "caller": "fromEntryInfo",
+          "callee": "toTimestampFromTime",
+          "lineNumber": 151
+        },
+        {
+          "caller": "fromEntryInfo",
+          "callee": "toTimestampFromTime",
+          "lineNumber": 153
+        },
+        {
+          "caller": "fromEntryInfo",
+          "callee": "toTimestampFromTime",
+          "lineNumber": 154
+        },
+        {
+          "caller": "toTimestampFromTime",
+          "callee": "t.IsZero",
+          "lineNumber": 172
+        },
+        {
+          "caller": "toTimestampFromTime",
+          "callee": "timestamppb.New",
+          "lineNumber": 176
+        },
+        {
+          "caller": "setSpanStatus",
+          "callee": "span.RecordError",
+          "lineNumber": 181
+        },
+        {
+          "caller": "setSpanStatus",
+          "callee": "span.SetStatus",
+          "lineNumber": 182
+        },
+        {
+          "caller": "setSpanStatus",
+          "callee": "err.Error",
+          "lineNumber": 182
+        },
+        {
+          "caller": "setSpanStatus",
+          "callee": "span.SetStatus",
+          "lineNumber": 187
+        },
+        {
+          "caller": "ensureDirs",
+          "callee": "fs.Stat",
+          "lineNumber": 199
+        },
+        {
+          "caller": "ensureDirs",
+          "callee": "os.IsNotExist",
+          "lineNumber": 206
+        },
+        {
+          "caller": "ensureDirs",
+          "callee": "fmt.Errorf",
+          "lineNumber": 207
+        },
+        {
+          "caller": "ensureDirs",
+          "callee": "append",
+          "lineNumber": 210
+        },
+        {
+          "caller": "ensureDirs",
+          "callee": "filepath.Clean",
+          "lineNumber": 212
+        },
+        {
+          "caller": "ensureDirs",
+          "callee": "filepath.Dir",
+          "lineNumber": 212
+        },
+        {
+          "caller": "ensureDirs",
+          "callee": "fs.MkdirAll",
+          "lineNumber": 219
+        },
+        {
+          "caller": "ensureDirs",
+          "callee": "fmt.Errorf",
+          "lineNumber": 220
+        },
+        {
+          "caller": "ensureDirs",
+          "callee": "len",
+          "lineNumber": 225
+        },
+        {
+          "caller": "ensureDirs",
+          "callee": "fs.Chmod",
+          "lineNumber": 227
+        },
+        {
+          "caller": "ensureDirs",
+          "callee": "fmt.Errorf",
+          "lineNumber": 228
+        },
+        {
+          "caller": "ensureDirs",
+          "callee": "fs.Chown",
+          "lineNumber": 231
+        },
+        {
+          "caller": "ensureDirs",
+          "callee": "int",
+          "lineNumber": 231
+        },
+        {
+          "caller": "ensureDirs",
+          "callee": "int",
+          "lineNumber": 231
+        },
+        {
+          "caller": "ensureDirs",
+          "callee": "fmt.Errorf",
+          "lineNumber": 232
+        }
+      ],
+      "metrics": {
+        "importCount": 12,
+        "exportCount": 2,
+        "functionCount": 10,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/service_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 251,
+      "nonEmptyLines": 205,
+      "functions": [
+        {
+          "name": "TestGetVolumeRootPath",
+          "startLine": 21,
+          "endLine": 126,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestRelPath",
+          "startLine": 128,
+          "endLine": 160,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestEnsureParentDirs",
+          "startLine": 162,
+          "endLine": 251,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestGetVolumeRootPath",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "TestRelPath",
+          "line": 128,
+          "isDefault": false
+        },
+        {
+          "name": "TestEnsureParentDirs",
+          "line": 162,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "t.Parallel",
+          "lineNumber": 22
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "uuid.NewString",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "uuid.NewString",
+          "lineNumber": 27
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "filepath.Join",
+          "lineNumber": 28
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 30
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 31
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "chrooted.NewBuilder",
+          "lineNumber": 41
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "t.Run",
+          "lineNumber": 45
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "t.Parallel",
+          "lineNumber": 46
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "v.getVolumeRootPath",
+          "lineNumber": 54
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "t.Context",
+          "lineNumber": 54
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "require.NoError",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "require.Equal",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "t.Run",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "t.Parallel",
+          "lineNumber": 60
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "t.Run",
+          "lineNumber": 112
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "t.Parallel",
+          "lineNumber": 113
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "v.getVolumeRootPath",
+          "lineNumber": 120
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "t.Context",
+          "lineNumber": 120
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "require.Error",
+          "lineNumber": 121
+        },
+        {
+          "caller": "TestGetVolumeRootPath",
+          "callee": "requireGRPCError",
+          "lineNumber": 122
+        },
+        {
+          "caller": "TestRelPath",
+          "callee": "t.Parallel",
+          "lineNumber": 129
+        },
+        {
+          "caller": "TestRelPath",
+          "callee": "t.Run",
+          "lineNumber": 148
+        },
+        {
+          "caller": "TestRelPath",
+          "callee": "t.Parallel",
+          "lineNumber": 149
+        },
+        {
+          "caller": "TestRelPath",
+          "callee": "filepath.IsAbs",
+          "lineNumber": 152
+        },
+        {
+          "caller": "TestRelPath",
+          "callee": "filepath.Clean",
+          "lineNumber": 155
+        },
+        {
+          "caller": "TestRelPath",
+          "callee": "assert.Equal",
+          "lineNumber": 157
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "t.Parallel",
+          "lineNumber": 163
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "os.Geteuid",
+          "lineNumber": 167
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "t.Skip",
+          "lineNumber": 168
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "t.TempDir",
+          "lineNumber": 171
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "t.Context",
+          "lineNumber": 173
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "chrooted.Chroot",
+          "lineNumber": 174
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "require.NoError",
+          "lineNumber": 175
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "t.Cleanup",
+          "lineNumber": 176
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "fs.Close",
+          "lineNumber": 177
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "assert.NoError",
+          "lineNumber": 178
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "t.Run",
+          "lineNumber": 181
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "t.Parallel",
+          "lineNumber": 182
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "ensureDirs",
+          "lineNumber": 184
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "require.NoError",
+          "lineNumber": 185
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "t.Run",
+          "lineNumber": 188
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "t.Parallel",
+          "lineNumber": 189
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "ensureDirs",
+          "lineNumber": 191
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "require.NoError",
+          "lineNumber": 192
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "assertDir",
+          "lineNumber": 194
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "t.Run",
+          "lineNumber": 197
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "t.Parallel",
+          "lineNumber": 198
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "ensureDirs",
+          "lineNumber": 200
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "require.NoError",
+          "lineNumber": 201
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "assertDir",
+          "lineNumber": 203
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "assertDir",
+          "lineNumber": 204
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "assertDir",
+          "lineNumber": 205
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "t.Run",
+          "lineNumber": 208
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "t.Parallel",
+          "lineNumber": 209
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "fs.Mkdir",
+          "lineNumber": 212
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "require.NoError",
+          "lineNumber": 213
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "fs.Chmod",
+          "lineNumber": 215
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "require.NoError",
+          "lineNumber": 216
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "fs.Chown",
+          "lineNumber": 218
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "require.NoError",
+          "lineNumber": 219
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "ensureDirs",
+          "lineNumber": 222
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "require.NoError",
+          "lineNumber": 223
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "assertDir",
+          "lineNumber": 226
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "t.Run",
+          "lineNumber": 229
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "t.Parallel",
+          "lineNumber": 230
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "fs.MkdirAll",
+          "lineNumber": 233
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "require.NoError",
+          "lineNumber": 234
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "fs.Chmod",
+          "lineNumber": 236
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "require.NoError",
+          "lineNumber": 237
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "fs.Chmod",
+          "lineNumber": 239
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "require.NoError",
+          "lineNumber": 240
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "ensureDirs",
+          "lineNumber": 243
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "require.NoError",
+          "lineNumber": 244
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "assertDir",
+          "lineNumber": 247
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "assertDir",
+          "lineNumber": 248
+        },
+        {
+          "caller": "TestEnsureParentDirs",
+          "callee": "assertDir",
+          "lineNumber": 249
+        }
+      ],
+      "metrics": {
+        "importCount": 11,
+        "exportCount": 3,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/utils_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 94,
+      "nonEmptyLines": 69,
+      "functions": [
+        {
+          "name": "setupTestService",
+          "startLine": 25,
+          "endLine": 58,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "assertDir",
+          "startLine": 60,
+          "endLine": 73,
+          "params": [
+            "t",
+            "fs",
+            "path",
+            "uid",
+            "gid",
+            "mode"
+          ]
+        },
+        {
+          "name": "requireGRPCError",
+          "startLine": 75,
+          "endLine": 94,
+          "params": [
+            "t",
+            "err",
+            "expectedGRPCCode",
+            "expectedUserErrorCode"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "setupTestService",
+          "callee": "t.Helper",
+          "lineNumber": 26
+        },
+        {
+          "caller": "setupTestService",
+          "callee": "os.Geteuid",
+          "lineNumber": 28
+        },
+        {
+          "caller": "setupTestService",
+          "callee": "t.Skip",
+          "lineNumber": 29
+        },
+        {
+          "caller": "setupTestService",
+          "callee": "t.TempDir",
+          "lineNumber": 32
+        },
+        {
+          "caller": "setupTestService",
+          "callee": "uuid.New",
+          "lineNumber": 33
+        },
+        {
+          "caller": "setupTestService",
+          "callee": "uuid.New",
+          "lineNumber": 34
+        },
+        {
+          "caller": "setupTestService",
+          "callee": "chrooted.NewBuilder",
+          "lineNumber": 42
+        },
+        {
+          "caller": "setupTestService",
+          "callee": "New",
+          "lineNumber": 43
+        },
+        {
+          "caller": "setupTestService",
+          "callee": "teamID.String",
+          "lineNumber": 47
+        },
+        {
+          "caller": "setupTestService",
+          "callee": "volumeID.String",
+          "lineNumber": 48
+        },
+        {
+          "caller": "setupTestService",
+          "callee": "s.getVolumeRootPath",
+          "lineNumber": 51
+        },
+        {
+          "caller": "setupTestService",
+          "callee": "t.Context",
+          "lineNumber": 51
+        },
+        {
+          "caller": "setupTestService",
+          "callee": "require.NoError",
+          "lineNumber": 52
+        },
+        {
+          "caller": "setupTestService",
+          "callee": "os.MkdirAll",
+          "lineNumber": 54
+        },
+        {
+          "caller": "setupTestService",
+          "callee": "require.NoError",
+          "lineNumber": 55
+        },
+        {
+          "caller": "assertDir",
+          "callee": "t.Helper",
+          "lineNumber": 61
+        },
+        {
+          "caller": "assertDir",
+          "callee": "fs.Stat",
+          "lineNumber": 63
+        },
+        {
+          "caller": "assertDir",
+          "callee": "require.NoError",
+          "lineNumber": 64
+        },
+        {
+          "caller": "assertDir",
+          "callee": "assert.Equal",
+          "lineNumber": 66
+        },
+        {
+          "caller": "assertDir",
+          "callee": "mode.Perm",
+          "lineNumber": 66
+        },
+        {
+          "caller": "assertDir",
+          "callee": "info.Mode().Perm",
+          "lineNumber": 66
+        },
+        {
+          "caller": "assertDir",
+          "callee": "info.Mode",
+          "lineNumber": 66
+        },
+        {
+          "caller": "assertDir",
+          "callee": "info.Sys",
+          "lineNumber": 68
+        },
+        {
+          "caller": "assertDir",
+          "callee": "require.True",
+          "lineNumber": 69
+        },
+        {
+          "caller": "assertDir",
+          "callee": "require.NotNil",
+          "lineNumber": 70
+        },
+        {
+          "caller": "assertDir",
+          "callee": "assert.Equal",
+          "lineNumber": 71
+        },
+        {
+          "caller": "assertDir",
+          "callee": "assert.Equal",
+          "lineNumber": 72
+        },
+        {
+          "caller": "requireGRPCError",
+          "callee": "t.Helper",
+          "lineNumber": 76
+        },
+        {
+          "caller": "requireGRPCError",
+          "callee": "require.Error",
+          "lineNumber": 78
+        },
+        {
+          "caller": "requireGRPCError",
+          "callee": "status.FromError",
+          "lineNumber": 80
+        },
+        {
+          "caller": "requireGRPCError",
+          "callee": "require.Truef",
+          "lineNumber": 81
+        },
+        {
+          "caller": "requireGRPCError",
+          "callee": "err.Error",
+          "lineNumber": 81
+        },
+        {
+          "caller": "requireGRPCError",
+          "callee": "require.Equalf",
+          "lineNumber": 83
+        },
+        {
+          "caller": "requireGRPCError",
+          "callee": "status.Code",
+          "lineNumber": 83
+        },
+        {
+          "caller": "requireGRPCError",
+          "callee": "status.Code",
+          "lineNumber": 83
+        },
+        {
+          "caller": "requireGRPCError",
+          "callee": "status.Details",
+          "lineNumber": 85
+        },
+        {
+          "caller": "requireGRPCError",
+          "callee": "require.Equalf",
+          "lineNumber": 87
+        },
+        {
+          "caller": "requireGRPCError",
+          "callee": "userError.GetCode",
+          "lineNumber": 87
+        },
+        {
+          "caller": "requireGRPCError",
+          "callee": "userError.GetCode",
+          "lineNumber": 87
+        },
+        {
+          "caller": "requireGRPCError",
+          "callee": "require.Fail",
+          "lineNumber": 93
+        }
+      ],
+      "metrics": {
+        "importCount": 11,
+        "exportCount": 0,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/volume_create.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 37,
+      "nonEmptyLines": 28,
+      "functions": [
+        {
+          "name": "CreateVolume",
+          "startLine": 16,
+          "endLine": 37,
+          "params": [
+            "ctx",
+            "request"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreateVolume",
+          "line": 16,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CreateVolume",
+          "callee": "tracer.Start",
+          "lineNumber": 17
+        },
+        {
+          "caller": "CreateVolume",
+          "callee": "func() {\n\t\tsetSpanStatus(span, err)\n\t\tspan.End()\n\t}",
+          "lineNumber": 18
+        },
+        {
+          "caller": "CreateVolume",
+          "callee": "setSpanStatus",
+          "lineNumber": 19
+        },
+        {
+          "caller": "CreateVolume",
+          "callee": "span.End",
+          "lineNumber": 20
+        },
+        {
+          "caller": "CreateVolume",
+          "callee": "s.getVolumeRootPath",
+          "lineNumber": 23
+        },
+        {
+          "caller": "CreateVolume",
+          "callee": "request.GetVolume",
+          "lineNumber": 23
+        },
+        {
+          "caller": "CreateVolume",
+          "callee": "fmt.Errorf",
+          "lineNumber": 25
+        },
+        {
+          "caller": "CreateVolume",
+          "callee": "span.AddEvent",
+          "lineNumber": 28
+        },
+        {
+          "caller": "CreateVolume",
+          "callee": "trace.WithAttributes",
+          "lineNumber": 28
+        },
+        {
+          "caller": "CreateVolume",
+          "callee": "attribute.String",
+          "lineNumber": 29
+        },
+        {
+          "caller": "CreateVolume",
+          "callee": "os.MkdirAll",
+          "lineNumber": 32
+        },
+        {
+          "caller": "CreateVolume",
+          "callee": "fmt.Errorf",
+          "lineNumber": 33
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/volume_delete.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 40,
+      "nonEmptyLines": 31,
+      "functions": [
+        {
+          "name": "DeleteVolume",
+          "startLine": 16,
+          "endLine": 40,
+          "params": [
+            "ctx",
+            "request"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DeleteVolume",
+          "line": 16,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "DeleteVolume",
+          "callee": "tracer.Start",
+          "lineNumber": 20
+        },
+        {
+          "caller": "DeleteVolume",
+          "callee": "func() {\n\t\tsetSpanStatus(span, err)\n\t\tspan.End()\n\t}",
+          "lineNumber": 21
+        },
+        {
+          "caller": "DeleteVolume",
+          "callee": "setSpanStatus",
+          "lineNumber": 22
+        },
+        {
+          "caller": "DeleteVolume",
+          "callee": "span.End",
+          "lineNumber": 23
+        },
+        {
+          "caller": "DeleteVolume",
+          "callee": "s.getVolumeRootPath",
+          "lineNumber": 26
+        },
+        {
+          "caller": "DeleteVolume",
+          "callee": "request.GetVolume",
+          "lineNumber": 26
+        },
+        {
+          "caller": "DeleteVolume",
+          "callee": "fmt.Errorf",
+          "lineNumber": 28
+        },
+        {
+          "caller": "DeleteVolume",
+          "callee": "span.AddEvent",
+          "lineNumber": 31
+        },
+        {
+          "caller": "DeleteVolume",
+          "callee": "trace.WithAttributes",
+          "lineNumber": 31
+        },
+        {
+          "caller": "DeleteVolume",
+          "callee": "attribute.String",
+          "lineNumber": 32
+        },
+        {
+          "caller": "DeleteVolume",
+          "callee": "os.RemoveAll",
+          "lineNumber": 35
+        },
+        {
+          "caller": "DeleteVolume",
+          "callee": "fmt.Errorf",
+          "lineNumber": 36
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/volumes/volume_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 36,
+      "nonEmptyLines": 26,
+      "functions": [
+        {
+          "name": "TestVolume",
+          "startLine": 14,
+          "endLine": 36,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestVolume",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestVolume",
+          "callee": "t.Parallel",
+          "lineNumber": 15
+        },
+        {
+          "caller": "TestVolume",
+          "callee": "setupTestService",
+          "lineNumber": 17
+        },
+        {
+          "caller": "TestVolume",
+          "callee": "s.CreateVolume",
+          "lineNumber": 20
+        },
+        {
+          "caller": "TestVolume",
+          "callee": "t.Context",
+          "lineNumber": 20
+        },
+        {
+          "caller": "TestVolume",
+          "callee": "require.NoError",
+          "lineNumber": 23
+        },
+        {
+          "caller": "TestVolume",
+          "callee": "os.Stat",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TestVolume",
+          "callee": "require.NoError",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestVolume",
+          "callee": "s.DeleteVolume",
+          "lineNumber": 29
+        },
+        {
+          "caller": "TestVolume",
+          "callee": "t.Context",
+          "lineNumber": 29
+        },
+        {
+          "caller": "TestVolume",
+          "callee": "require.NoError",
+          "lineNumber": 32
+        },
+        {
+          "caller": "TestVolume",
+          "callee": "os.Stat",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestVolume",
+          "callee": "require.ErrorIs",
+          "lineNumber": 35
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    }
+  ]
+}

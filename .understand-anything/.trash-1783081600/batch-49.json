@@ -1,0 +1,112 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/mocks/billychange.go",
+      "type": "file",
+      "name": "billychange.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/mocks/billychange.go",
+      "summary": "由 mockery 自动生成的 mock 文件，模拟 billy.Change 接口（Chmod/Chown/Chtimes/Lchown），供 nfsproxy recovery 包的单元测试使用。",
+      "tags": ["test", "mock", "billy", "nfs", "auto-generated"],
+      "complexity": "complex",
+      "languageNotes": "典型的 mockery 输出：每个方法生成 Expecter + Call 结构体以支持 EXPECT().Method().Return() 链式调用。"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/mocks/billyfile.go",
+      "type": "file",
+      "name": "billyfile.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/mocks/billyfile.go",
+      "summary": "由 mockery 自动生成的 mock 文件，模拟 billy.File 接口（Close/Lock/Name/Read/ReadAt/Seek/Truncate/Unlock/Write），用于在测试中替换真实的文件句柄。",
+      "tags": ["test", "mock", "billy", "file-interface", "auto-generated"],
+      "complexity": "complex",
+      "languageNotes": "为 billy.Filesystem 抽象提供 47 个 mock 方法，覆盖读写/定位/截断等文件操作。"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/mocks/billyfs.go",
+      "type": "file",
+      "name": "billyfs.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/mocks/billyfs.go",
+      "summary": "由 mockery 自动生成的 mock 文件，模拟 billy.Filesystem 接口（Chroot/Create/Join/Lstat/MkdirAll/Open/OpenFile/ReadDir/Readlink/Remove/Rename/Root/Stat/Symlink/TempFile），是本批最大规模的 mock。",
+      "tags": ["test", "mock", "billy", "filesystem", "auto-generated"],
+      "complexity": "complex",
+      "languageNotes": "939 行、94 个导出符号，覆盖完整的 billy.Filesystem 抽象层。"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/mocks/nfshandler.go",
+      "type": "file",
+      "name": "nfshandler.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/mocks/nfshandler.go",
+      "summary": "由 mockery 自动生成的 mock 文件，模拟 nfs.Handler 接口（Change/FSStat/FromHandle/HandleLimit/InvalidateHandle/Mount/ToHandle），用于在测试中伪造 NFS 后端处理器。",
+      "tags": ["test", "mock", "nfs", "handler", "auto-generated"],
+      "complexity": "complex",
+      "languageNotes": "对应 github.com/willscott/go-nfs 的 Handler 接口，是 NFS 请求路由的核心抽象。"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/recovery/recovery_test.go",
+      "type": "file",
+      "name": "recovery_test.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/recovery/recovery_test.go",
+      "summary": "recovery 包的单元测试套件，使用 mocks 验证包装后的 File/Filesystem/Change/Handler 在底层 mock 触发 panic 时能正确恢复并返回错误，同时验证正常路径与错误传播行为。",
+      "tags": ["test", "panic-recovery", "unit-test", "nfsproxy", "validation"],
+      "complexity": "complex",
+      "languageNotes": "17 个并行测试函数（t.Parallel()），覆盖 file/fs/change/handler 四类包装器；使用 testify/require 与 mockery 的 RunAndReturn 模拟 panic 场景。"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/recovery/recovery_test.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/mocks/billychange.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/recovery/recovery_test.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/mocks/billyfile.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/recovery/recovery_test.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/mocks/billyfs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/recovery/recovery_test.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/mocks/nfshandler.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/recovery/recovery_test.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/mocks/billychange.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/recovery/recovery_test.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/mocks/billyfile.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/recovery/recovery_test.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/mocks/billyfs.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/recovery/recovery_test.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/mocks/nfshandler.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

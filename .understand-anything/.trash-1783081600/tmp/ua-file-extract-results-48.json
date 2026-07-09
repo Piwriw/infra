@@ -1,0 +1,1344 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 8,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/clickhouse/pkg/clickhouse.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 79,
+      "nonEmptyLines": 63,
+      "functions": [
+        {
+          "name": "NewDriver",
+          "startLine": 34,
+          "endLine": 49,
+          "params": [
+            "connectionString"
+          ]
+        },
+        {
+          "name": "New",
+          "startLine": 51,
+          "endLine": 58,
+          "params": [
+            "connectionString"
+          ]
+        },
+        {
+          "name": "EndpointFromDSN",
+          "startLine": 64,
+          "endLine": 74,
+          "params": [
+            "dsn"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 77,
+          "endLine": 79,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "SandboxQueriesProvider",
+          "startLine": 13,
+          "endLine": 17,
+          "methods": [
+            "QuerySandboxTimeRange",
+            "QuerySandboxMetrics",
+            "QueryLatestMetrics"
+          ],
+          "properties": []
+        },
+        {
+          "name": "Clickhouse",
+          "startLine": 19,
+          "endLine": 28,
+          "methods": [
+            "Close",
+            "QueryTeamMetrics",
+            "QueryMaxStartRateTeamMetrics",
+            "QueryMaxConcurrentTeamMetrics"
+          ],
+          "properties": []
+        },
+        {
+          "name": "Client",
+          "startLine": 30,
+          "endLine": 32,
+          "methods": [
+            "Close"
+          ],
+          "properties": [
+            "conn"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "SandboxQueriesProvider",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "Clickhouse",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "Client",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "NewDriver",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "New",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "EndpointFromDSN",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 77,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewDriver",
+          "callee": "clickhouse.ParseDSN",
+          "lineNumber": 35
+        },
+        {
+          "caller": "NewDriver",
+          "callee": "fmt.Errorf",
+          "lineNumber": 37
+        },
+        {
+          "caller": "NewDriver",
+          "callee": "clickhouse.Open",
+          "lineNumber": 43
+        },
+        {
+          "caller": "NewDriver",
+          "callee": "fmt.Errorf",
+          "lineNumber": 45
+        },
+        {
+          "caller": "New",
+          "callee": "NewDriver",
+          "lineNumber": 52
+        },
+        {
+          "caller": "New",
+          "callee": "fmt.Errorf",
+          "lineNumber": 54
+        },
+        {
+          "caller": "EndpointFromDSN",
+          "callee": "clickhouse.ParseDSN",
+          "lineNumber": 65
+        },
+        {
+          "caller": "EndpointFromDSN",
+          "callee": "errors.New",
+          "lineNumber": 67
+        },
+        {
+          "caller": "EndpointFromDSN",
+          "callee": "len",
+          "lineNumber": 69
+        },
+        {
+          "caller": "EndpointFromDSN",
+          "callee": "errors.New",
+          "lineNumber": 70
+        },
+        {
+          "caller": "Close",
+          "callee": "c.conn.Close",
+          "lineNumber": 78
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 7,
+        "functionCount": 4,
+        "classCount": 3
+      }
+    },
+    {
+      "path": "packages/clickhouse/pkg/dates.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 6,
+      "nonEmptyLines": 4,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/clickhouse/pkg/mock.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 42,
+      "nonEmptyLines": 31,
+      "functions": [
+        {
+          "name": "NewNoopClient",
+          "startLine": 12,
+          "endLine": 14,
+          "params": []
+        },
+        {
+          "name": "Close",
+          "startLine": 16,
+          "endLine": 18,
+          "params": []
+        },
+        {
+          "name": "QuerySandboxTimeRange",
+          "startLine": 20,
+          "endLine": 22,
+          "params": []
+        },
+        {
+          "name": "QuerySandboxMetrics",
+          "startLine": 24,
+          "endLine": 26,
+          "params": []
+        },
+        {
+          "name": "QueryLatestMetrics",
+          "startLine": 28,
+          "endLine": 30,
+          "params": []
+        },
+        {
+          "name": "QueryTeamMetrics",
+          "startLine": 32,
+          "endLine": 34,
+          "params": []
+        },
+        {
+          "name": "QueryMaxStartRateTeamMetrics",
+          "startLine": 36,
+          "endLine": 38,
+          "params": []
+        },
+        {
+          "name": "QueryMaxConcurrentTeamMetrics",
+          "startLine": 40,
+          "endLine": 42,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "NoopClient",
+          "startLine": 8,
+          "endLine": 8,
+          "methods": [
+            "Close",
+            "QuerySandboxTimeRange",
+            "QuerySandboxMetrics",
+            "QueryLatestMetrics",
+            "QueryTeamMetrics",
+            "QueryMaxStartRateTeamMetrics",
+            "QueryMaxConcurrentTeamMetrics"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "NoopClient",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "NewNoopClient",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "QuerySandboxTimeRange",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "QuerySandboxMetrics",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "QueryLatestMetrics",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "QueryTeamMetrics",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "QueryMaxStartRateTeamMetrics",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "QueryMaxConcurrentTeamMetrics",
+          "line": 40,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 9,
+        "functionCount": 8,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/clickhouse/pkg/sandbox.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 140,
+      "nonEmptyLines": 122,
+      "functions": [
+        {
+          "name": "QueryLatestMetrics",
+          "startLine": 47,
+          "endLine": 71,
+          "params": [
+            "ctx",
+            "sandboxIDs",
+            "teamID"
+          ]
+        },
+        {
+          "name": "QuerySandboxTimeRange",
+          "startLine": 99,
+          "endLine": 111,
+          "params": [
+            "ctx",
+            "sandboxID",
+            "teamID"
+          ]
+        },
+        {
+          "name": "QuerySandboxMetrics",
+          "startLine": 113,
+          "endLine": 140,
+          "params": [
+            "ctx",
+            "sandboxID",
+            "teamID",
+            "start",
+            "end",
+            "step"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Metrics",
+          "startLine": 14,
+          "endLine": 25,
+          "methods": [],
+          "properties": [
+            "SandboxID",
+            "TeamID",
+            "Timestamp",
+            "CPUCount",
+            "CPUUsedPercent",
+            "MemTotal",
+            "MemUsed",
+            "MemCache",
+            "DiskTotal",
+            "DiskUsed"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Metrics",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "QueryLatestMetrics",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "QuerySandboxTimeRange",
+          "line": 99,
+          "isDefault": false
+        },
+        {
+          "name": "QuerySandboxMetrics",
+          "line": 113,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "QueryLatestMetrics",
+          "callee": "len",
+          "lineNumber": 48
+        },
+        {
+          "caller": "QueryLatestMetrics",
+          "callee": "make",
+          "lineNumber": 49
+        },
+        {
+          "caller": "QueryLatestMetrics",
+          "callee": "c.conn.Query",
+          "lineNumber": 52
+        },
+        {
+          "caller": "QueryLatestMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 57
+        },
+        {
+          "caller": "QueryLatestMetrics",
+          "callee": "rows.Close",
+          "lineNumber": 59
+        },
+        {
+          "caller": "QueryLatestMetrics",
+          "callee": "rows.Next",
+          "lineNumber": 62
+        },
+        {
+          "caller": "QueryLatestMetrics",
+          "callee": "rows.ScanStruct",
+          "lineNumber": 64
+        },
+        {
+          "caller": "QueryLatestMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 65
+        },
+        {
+          "caller": "QueryLatestMetrics",
+          "callee": "append",
+          "lineNumber": 67
+        },
+        {
+          "caller": "QueryLatestMetrics",
+          "callee": "rows.Err",
+          "lineNumber": 70
+        },
+        {
+          "caller": "QuerySandboxTimeRange",
+          "callee": "c.conn.QueryRow(ctx, sandboxMetricsTimeRangeSelectQuery,\n\t\tclickhouse.Named(\"sandbox_id\", sandboxID),\n\t\tclickhouse.Named(\"team_id\", teamID),\n\t).Scan",
+          "lineNumber": 102
+        },
+        {
+          "caller": "QuerySandboxTimeRange",
+          "callee": "c.conn.QueryRow",
+          "lineNumber": 102
+        },
+        {
+          "caller": "QuerySandboxTimeRange",
+          "callee": "clickhouse.Named",
+          "lineNumber": 103
+        },
+        {
+          "caller": "QuerySandboxTimeRange",
+          "callee": "clickhouse.Named",
+          "lineNumber": 104
+        },
+        {
+          "caller": "QuerySandboxTimeRange",
+          "callee": "fmt.Errorf",
+          "lineNumber": 107
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "c.conn.Query",
+          "lineNumber": 114
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "clickhouse.Named",
+          "lineNumber": 115
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "clickhouse.Named",
+          "lineNumber": 116
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "clickhouse.DateNamed",
+          "lineNumber": 117
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "clickhouse.DateNamed",
+          "lineNumber": 118
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "clickhouse.Named",
+          "lineNumber": 119
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "strconv.Itoa",
+          "lineNumber": 119
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "int",
+          "lineNumber": 119
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "step.Seconds",
+          "lineNumber": 119
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 122
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "rows.Close",
+          "lineNumber": 125
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "rows.Next",
+          "lineNumber": 127
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "rows.ScanStruct",
+          "lineNumber": 129
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 130
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "append",
+          "lineNumber": 132
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "rows.Err",
+          "lineNumber": 135
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 136
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/clickhouse/pkg/switcher.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 93,
+      "nonEmptyLines": 77,
+      "functions": [
+        {
+          "name": "NewSwitchingClient",
+          "startLine": 26,
+          "endLine": 56,
+          "params": [
+            "ctx",
+            "ff",
+            "defaultDSN",
+            "alternateDSNs"
+          ]
+        },
+        {
+          "name": "WithAllowNoopDefault",
+          "startLine": 63,
+          "endLine": 65,
+          "params": [
+            "allow"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 67,
+          "endLine": 69,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "QuerySandboxTimeRange",
+          "startLine": 71,
+          "endLine": 73,
+          "params": [
+            "ctx",
+            "sandboxID",
+            "teamID"
+          ]
+        },
+        {
+          "name": "QuerySandboxMetrics",
+          "startLine": 75,
+          "endLine": 77,
+          "params": [
+            "ctx",
+            "sandboxID",
+            "teamID",
+            "start",
+            "end",
+            "step"
+          ]
+        },
+        {
+          "name": "QueryLatestMetrics",
+          "startLine": 79,
+          "endLine": 81,
+          "params": [
+            "ctx",
+            "sandboxIDs",
+            "teamID"
+          ]
+        },
+        {
+          "name": "QueryTeamMetrics",
+          "startLine": 83,
+          "endLine": 85,
+          "params": [
+            "ctx",
+            "teamID",
+            "start",
+            "end",
+            "step"
+          ]
+        },
+        {
+          "name": "QueryMaxStartRateTeamMetrics",
+          "startLine": 87,
+          "endLine": 89,
+          "params": [
+            "ctx",
+            "teamID",
+            "start",
+            "end",
+            "step"
+          ]
+        },
+        {
+          "name": "QueryMaxConcurrentTeamMetrics",
+          "startLine": 91,
+          "endLine": 93,
+          "params": [
+            "ctx",
+            "teamID",
+            "start",
+            "end"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SwitchingClient",
+          "startLine": 16,
+          "endLine": 18,
+          "methods": [
+            "Close",
+            "QuerySandboxTimeRange",
+            "QuerySandboxMetrics",
+            "QueryLatestMetrics",
+            "QueryTeamMetrics",
+            "QueryMaxStartRateTeamMetrics",
+            "QueryMaxConcurrentTeamMetrics"
+          ],
+          "properties": [
+            "switcher"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "SwitchingClient",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "NewSwitchingClient",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "WithAllowNoopDefault",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "QuerySandboxTimeRange",
+          "line": 71,
+          "isDefault": false
+        },
+        {
+          "name": "QuerySandboxMetrics",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "QueryLatestMetrics",
+          "line": 79,
+          "isDefault": false
+        },
+        {
+          "name": "QueryTeamMetrics",
+          "line": 83,
+          "isDefault": false
+        },
+        {
+          "name": "QueryMaxStartRateTeamMetrics",
+          "line": 87,
+          "isDefault": false
+        },
+        {
+          "name": "QueryMaxConcurrentTeamMetrics",
+          "line": 91,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewSwitchingClient",
+          "callee": "append",
+          "lineNumber": 36
+        },
+        {
+          "caller": "NewSwitchingClient",
+          "callee": "switching.New[Clickhouse]",
+          "lineNumber": 40
+        },
+        {
+          "caller": "NewSwitchingClient",
+          "callee": "New",
+          "lineNumber": 46
+        },
+        {
+          "caller": "NewSwitchingClient",
+          "callee": "append",
+          "lineNumber": 47
+        },
+        {
+          "caller": "NewSwitchingClient",
+          "callee": "switching.WithNoopFactory",
+          "lineNumber": 47
+        },
+        {
+          "caller": "NewSwitchingClient",
+          "callee": "NewNoopClient",
+          "lineNumber": 48
+        },
+        {
+          "caller": "WithAllowNoopDefault",
+          "callee": "Option",
+          "lineNumber": 64
+        },
+        {
+          "caller": "Close",
+          "callee": "s.switcher.Close",
+          "lineNumber": 68
+        },
+        {
+          "caller": "QuerySandboxTimeRange",
+          "callee": "s.switcher.Resolve(ctx).QuerySandboxTimeRange",
+          "lineNumber": 72
+        },
+        {
+          "caller": "QuerySandboxTimeRange",
+          "callee": "s.switcher.Resolve",
+          "lineNumber": 72
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "s.switcher.Resolve(ctx).QuerySandboxMetrics",
+          "lineNumber": 76
+        },
+        {
+          "caller": "QuerySandboxMetrics",
+          "callee": "s.switcher.Resolve",
+          "lineNumber": 76
+        },
+        {
+          "caller": "QueryLatestMetrics",
+          "callee": "s.switcher.Resolve(ctx).QueryLatestMetrics",
+          "lineNumber": 80
+        },
+        {
+          "caller": "QueryLatestMetrics",
+          "callee": "s.switcher.Resolve",
+          "lineNumber": 80
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "s.switcher.Resolve(ctx).QueryTeamMetrics",
+          "lineNumber": 84
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "s.switcher.Resolve",
+          "lineNumber": 84
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "s.switcher.Resolve(ctx).QueryMaxStartRateTeamMetrics",
+          "lineNumber": 88
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "s.switcher.Resolve",
+          "lineNumber": 88
+        },
+        {
+          "caller": "QueryMaxConcurrentTeamMetrics",
+          "callee": "s.switcher.Resolve(ctx).QueryMaxConcurrentTeamMetrics",
+          "lineNumber": 92
+        },
+        {
+          "caller": "QueryMaxConcurrentTeamMetrics",
+          "callee": "s.switcher.Resolve",
+          "lineNumber": 92
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 10,
+        "functionCount": 9,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/clickhouse/pkg/team.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 182,
+      "nonEmptyLines": 159,
+      "functions": [
+        {
+          "name": "QueryTeamMetrics",
+          "startLine": 57,
+          "endLine": 83,
+          "params": [
+            "ctx",
+            "teamID",
+            "start",
+            "end",
+            "step"
+          ]
+        },
+        {
+          "name": "QueryMaxStartRateTeamMetrics",
+          "startLine": 108,
+          "endLine": 139,
+          "params": [
+            "ctx",
+            "teamID",
+            "start",
+            "end",
+            "step"
+          ]
+        },
+        {
+          "name": "QueryMaxConcurrentTeamMetrics",
+          "startLine": 151,
+          "endLine": 182,
+          "params": [
+            "ctx",
+            "teamID",
+            "start",
+            "end"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "TeamMetrics",
+          "startLine": 14,
+          "endLine": 18,
+          "methods": [],
+          "properties": [
+            "Timestamp",
+            "SandboxStartedRate",
+            "ConcurrentSandboxes"
+          ]
+        },
+        {
+          "name": "MaxTeamMetric",
+          "startLine": 85,
+          "endLine": 88,
+          "methods": [],
+          "properties": [
+            "Timestamp",
+            "Value"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TeamMetrics",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "QueryTeamMetrics",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "MaxTeamMetric",
+          "line": 85,
+          "isDefault": false
+        },
+        {
+          "name": "QueryMaxStartRateTeamMetrics",
+          "line": 108,
+          "isDefault": false
+        },
+        {
+          "name": "QueryMaxConcurrentTeamMetrics",
+          "line": 151,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "c.conn.Query",
+          "lineNumber": 58
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "clickhouse.Named",
+          "lineNumber": 59
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "clickhouse.DateNamed",
+          "lineNumber": 60
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "clickhouse.DateNamed",
+          "lineNumber": 61
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "clickhouse.Named",
+          "lineNumber": 62
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "strconv.Itoa",
+          "lineNumber": 62
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "int",
+          "lineNumber": 62
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "step.Seconds",
+          "lineNumber": 62
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 65
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "rows.Close",
+          "lineNumber": 68
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "rows.Next",
+          "lineNumber": 70
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "rows.ScanStruct",
+          "lineNumber": 72
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 73
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "append",
+          "lineNumber": 75
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "rows.Err",
+          "lineNumber": 78
+        },
+        {
+          "caller": "QueryTeamMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 79
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "c.conn.Query",
+          "lineNumber": 109
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "clickhouse.Named",
+          "lineNumber": 110
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "clickhouse.Named",
+          "lineNumber": 111
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "strconv.Itoa",
+          "lineNumber": 111
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "int",
+          "lineNumber": 111
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "step.Seconds",
+          "lineNumber": 111
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "clickhouse.DateNamed",
+          "lineNumber": 112
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "clickhouse.DateNamed",
+          "lineNumber": 113
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 116
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "rows.Close",
+          "lineNumber": 118
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "rows.Next",
+          "lineNumber": 121
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "rows.Err",
+          "lineNumber": 122
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 123
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "time.Now",
+          "lineNumber": 128
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "rows.Scan",
+          "lineNumber": 133
+        },
+        {
+          "caller": "QueryMaxStartRateTeamMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 135
+        },
+        {
+          "caller": "QueryMaxConcurrentTeamMetrics",
+          "callee": "c.conn.Query",
+          "lineNumber": 152
+        },
+        {
+          "caller": "QueryMaxConcurrentTeamMetrics",
+          "callee": "clickhouse.Named",
+          "lineNumber": 153
+        },
+        {
+          "caller": "QueryMaxConcurrentTeamMetrics",
+          "callee": "clickhouse.DateNamed",
+          "lineNumber": 154
+        },
+        {
+          "caller": "QueryMaxConcurrentTeamMetrics",
+          "callee": "clickhouse.DateNamed",
+          "lineNumber": 155
+        },
+        {
+          "caller": "QueryMaxConcurrentTeamMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 158
+        },
+        {
+          "caller": "QueryMaxConcurrentTeamMetrics",
+          "callee": "rows.Close",
+          "lineNumber": 161
+        },
+        {
+          "caller": "QueryMaxConcurrentTeamMetrics",
+          "callee": "rows.Next",
+          "lineNumber": 164
+        },
+        {
+          "caller": "QueryMaxConcurrentTeamMetrics",
+          "callee": "rows.Err",
+          "lineNumber": 165
+        },
+        {
+          "caller": "QueryMaxConcurrentTeamMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 166
+        },
+        {
+          "caller": "QueryMaxConcurrentTeamMetrics",
+          "callee": "time.Now",
+          "lineNumber": 171
+        },
+        {
+          "caller": "QueryMaxConcurrentTeamMetrics",
+          "callee": "rows.Scan",
+          "lineNumber": 176
+        },
+        {
+          "caller": "QueryMaxConcurrentTeamMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 178
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 5,
+        "functionCount": 3,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/clickhouse/pkg/utils/sandbox.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 47,
+      "nonEmptyLines": 37,
+      "functions": [
+        {
+          "name": "GetSandboxStartEndTime",
+          "startLine": 14,
+          "endLine": 47,
+          "params": [
+            "ctx",
+            "clickhouseStore",
+            "teamID",
+            "sandboxID",
+            "qStart",
+            "qEnd"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetSandboxStartEndTime",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetSandboxStartEndTime",
+          "callee": "time.Unix",
+          "lineNumber": 18
+        },
+        {
+          "caller": "GetSandboxStartEndTime",
+          "callee": "time.Unix",
+          "lineNumber": 22
+        },
+        {
+          "caller": "GetSandboxStartEndTime",
+          "callee": "start.IsZero",
+          "lineNumber": 25
+        },
+        {
+          "caller": "GetSandboxStartEndTime",
+          "callee": "end.IsZero",
+          "lineNumber": 25
+        },
+        {
+          "caller": "GetSandboxStartEndTime",
+          "callee": "clickhouseStore.QuerySandboxTimeRange",
+          "lineNumber": 26
+        },
+        {
+          "caller": "GetSandboxStartEndTime",
+          "callee": "logger.L().Error",
+          "lineNumber": 28
+        },
+        {
+          "caller": "GetSandboxStartEndTime",
+          "callee": "logger.L",
+          "lineNumber": 28
+        },
+        {
+          "caller": "GetSandboxStartEndTime",
+          "callee": "logger.WithSandboxID",
+          "lineNumber": 29
+        },
+        {
+          "caller": "GetSandboxStartEndTime",
+          "callee": "logger.WithTeamID",
+          "lineNumber": 30
+        },
+        {
+          "caller": "GetSandboxStartEndTime",
+          "callee": "zap.Error",
+          "lineNumber": 31
+        },
+        {
+          "caller": "GetSandboxStartEndTime",
+          "callee": "fmt.Errorf",
+          "lineNumber": 34
+        },
+        {
+          "caller": "GetSandboxStartEndTime",
+          "callee": "start.IsZero",
+          "lineNumber": 37
+        },
+        {
+          "caller": "GetSandboxStartEndTime",
+          "callee": "end.IsZero",
+          "lineNumber": 41
+        }
+      ],
+      "metrics": {
+        "importCount": 6,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/clickhouse/pkg/utils/validate.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 26,
+      "nonEmptyLines": 20,
+      "functions": [
+        {
+          "name": "ValidateRange",
+          "startLine": 11,
+          "endLine": 26,
+          "params": [
+            "start",
+            "end"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ValidateRange",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "ValidateRange",
+          "callee": "start.After",
+          "lineNumber": 12
+        },
+        {
+          "caller": "ValidateRange",
+          "callee": "fmt.Errorf",
+          "lineNumber": 13
+        },
+        {
+          "caller": "ValidateRange",
+          "callee": "end.After",
+          "lineNumber": 16
+        },
+        {
+          "caller": "ValidateRange",
+          "callee": "fmt.Errorf",
+          "lineNumber": 17
+        },
+        {
+          "caller": "ValidateRange",
+          "callee": "start.After",
+          "lineNumber": 21
+        },
+        {
+          "caller": "ValidateRange",
+          "callee": "errors.New",
+          "lineNumber": 22
+        }
+      ],
+      "metrics": {
+        "importCount": 6,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,985 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/api/internal/handlers/template_alias_test.go",
+      "type": "file",
+      "name": "template_alias_test.go",
+      "filePath": "packages/api/internal/handlers/template_alias_test.go",
+      "summary": "测试模板别名查询逻辑，覆盖未存在、已存在、跨团队访问以及已迁移（tag transfer）等场景。",
+      "tags": [
+        "test",
+        "template",
+        "alias",
+        "api-handler"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/api/internal/handlers/template_build_logs.go",
+      "type": "file",
+      "name": "template_build_logs.go",
+      "filePath": "packages/api/internal/handlers/template_build_logs.go",
+      "summary": "获取指定模板构建的日志流（按 step/level 过滤），用于前端展示构建进度。",
+      "tags": [
+        "api-handler",
+        "template",
+        "build",
+        "logs"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/api/internal/handlers/template_build_status.go",
+      "type": "file",
+      "name": "template_build_status.go",
+      "filePath": "packages/api/internal/handlers/template_build_status.go",
+      "summary": "返回模板构建（build）的当前状态、推理原因以及最近相关日志条目。",
+      "tags": [
+        "api-handler",
+        "template",
+        "build",
+        "status"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/api/internal/handlers/template_delete.go",
+      "type": "file",
+      "name": "template_delete.go",
+      "filePath": "packages/api/internal/handlers/template_delete.go",
+      "summary": "软删除团队下的模板（软删除通过 DB 标志实现），并级联清理相关缓存条目。",
+      "tags": [
+        "api-handler",
+        "template",
+        "delete",
+        "soft-delete"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/api/internal/handlers/template_get.go",
+      "type": "file",
+      "name": "template_get.go",
+      "filePath": "packages/api/internal/handlers/template_get.go",
+      "summary": "根据别名或 ID 获取模板详情，包括最新 build 状态和元数据。",
+      "tags": [
+        "api-handler",
+        "template",
+        "get"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_alias_test.go:queryTemplateAliasForTeam",
+      "type": "function",
+      "name": "queryTemplateAliasForTeam",
+      "filePath": "packages/api/internal/handlers/template_alias_test.go",
+      "lineRange": [
+        25,
+        50
+      ],
+      "summary": "测试辅助函数：按 (teamID, alias) 查询模板别名记录。",
+      "tags": [
+        "template"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_alias_test.go:TestQueryNotExistingTemplateAlias",
+      "type": "function",
+      "name": "TestQueryNotExistingTemplateAlias",
+      "filePath": "packages/api/internal/handlers/template_alias_test.go",
+      "lineRange": [
+        52,
+        84
+      ],
+      "summary": "未存在的模板别名应返回错误。",
+      "tags": [
+        "test",
+        "exported",
+        "template"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_alias_test.go:TestQueryExistingTemplateAlias",
+      "type": "function",
+      "name": "TestQueryExistingTemplateAlias",
+      "filePath": "packages/api/internal/handlers/template_alias_test.go",
+      "lineRange": [
+        86,
+        127
+      ],
+      "summary": "已存在的模板别名应返回正确模板。",
+      "tags": [
+        "test",
+        "exported",
+        "template"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_alias_test.go:TestQueryExistingTemplateAliasAsNotOwnerTeam",
+      "type": "function",
+      "name": "TestQueryExistingTemplateAliasAsNotOwnerTeam",
+      "filePath": "packages/api/internal/handlers/template_alias_test.go",
+      "lineRange": [
+        129,
+        170
+      ],
+      "summary": "非拥有者团队应无法读取模板别名。",
+      "tags": [
+        "test",
+        "exported",
+        "template"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_alias_test.go:TestTaggedTemplateAliasTransferredTemplate",
+      "type": "function",
+      "name": "TestTaggedTemplateAliasTransferredTemplate",
+      "filePath": "packages/api/internal/handlers/template_alias_test.go",
+      "lineRange": [
+        177,
+        232
+      ],
+      "summary": "已迁移（tag transfer）的别名应解析到新模板。",
+      "tags": [
+        "test",
+        "exported",
+        "template"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_alias_test.go:TestQueryTaggedTemplateAlias",
+      "type": "function",
+      "name": "TestQueryTaggedTemplateAlias",
+      "filePath": "packages/api/internal/handlers/template_alias_test.go",
+      "lineRange": [
+        234,
+        333
+      ],
+      "summary": "通过 tag 解析的模板别名应返回正确模板。",
+      "tags": [
+        "test",
+        "exported",
+        "template"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_build_logs.go:GetTemplatesTemplateIDBuildsBuildIDLogs",
+      "type": "function",
+      "name": "GetTemplatesTemplateIDBuildsBuildIDLogs",
+      "filePath": "packages/api/internal/handlers/template_build_logs.go",
+      "lineRange": [
+        19,
+        106
+      ],
+      "summary": "函数 GetTemplatesTemplateIDBuildsBuildIDLogs（在 packages/api/internal/handlers/template_build_logs.go）。",
+      "tags": [
+        "exported",
+        "getter",
+        "template"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_build_status.go:GetTemplatesTemplateIDBuildsBuildIDStatus",
+      "type": "function",
+      "name": "GetTemplatesTemplateIDBuildsBuildIDStatus",
+      "filePath": "packages/api/internal/handlers/template_build_status.go",
+      "lineRange": [
+        28,
+        147
+      ],
+      "summary": "函数 GetTemplatesTemplateIDBuildsBuildIDStatus（在 packages/api/internal/handlers/template_build_status.go）。",
+      "tags": [
+        "exported",
+        "getter",
+        "template"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_build_status.go:getCorrespondingTemplateBuildStatus",
+      "type": "function",
+      "name": "getCorrespondingTemplateBuildStatus",
+      "filePath": "packages/api/internal/handlers/template_build_status.go",
+      "lineRange": [
+        149,
+        164
+      ],
+      "summary": "根据 orchestrator 状态字符串推断对应的 API build 状态枚举。",
+      "tags": [
+        "template"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_build_status.go:getAPIReason",
+      "type": "function",
+      "name": "getAPIReason",
+      "filePath": "packages/api/internal/handlers/template_build_status.go",
+      "lineRange": [
+        166,
+        176
+      ],
+      "summary": "将 orchestrator 内部 reason 转换为对外的友好 API reason。",
+      "tags": [
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_build_status.go:filterStepLogs",
+      "type": "function",
+      "name": "filterStepLogs",
+      "filePath": "packages/api/internal/handlers/template_build_status.go",
+      "lineRange": [
+        178,
+        182
+      ],
+      "summary": "按 step/level 过滤构建日志条目。",
+      "tags": [
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_build_status.go:getAPILogEntry",
+      "type": "function",
+      "name": "getAPILogEntry",
+      "filePath": "packages/api/internal/handlers/template_build_status.go",
+      "lineRange": [
+        184,
+        198
+      ],
+      "summary": "将内部 log entry 转换为 API 输出格式。",
+      "tags": [
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_build_status.go:apiToLogLevel",
+      "type": "function",
+      "name": "apiToLogLevel",
+      "filePath": "packages/api/internal/handlers/template_build_status.go",
+      "lineRange": [
+        200,
+        208
+      ],
+      "summary": "将 API 输入的 log level 字符串映射到内部日志级别。",
+      "tags": [
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_delete.go:softDeleteTemplate",
+      "type": "function",
+      "name": "softDeleteTemplate",
+      "filePath": "packages/api/internal/handlers/template_delete.go",
+      "lineRange": [
+        26,
+        55
+      ],
+      "summary": "通过设置 DB 标志软删除模板，避免立即物理删除。",
+      "tags": [
+        "mutation",
+        "template"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_delete.go:DeleteTemplatesTemplateID",
+      "type": "function",
+      "name": "DeleteTemplatesTemplateID",
+      "filePath": "packages/api/internal/handlers/template_delete.go",
+      "lineRange": [
+        58,
+        141
+      ],
+      "summary": "模板删除入口：解析别名/ID、执行软删除并刷新缓存。",
+      "tags": [
+        "exported",
+        "mutation",
+        "template"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_get.go:GetTemplatesTemplateID",
+      "type": "function",
+      "name": "GetTemplatesTemplateID",
+      "filePath": "packages/api/internal/handlers/template_get.go",
+      "lineRange": [
+        26,
+        123
+      ],
+      "summary": "根据模板别名或 ID 返回模板详情。",
+      "tags": [
+        "exported",
+        "getter",
+        "template"
+      ],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "function:packages/api/internal/handlers/template_alias_test.go:queryTemplateAliasForTeam",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "function:packages/api/internal/handlers/template_alias_test.go:TestQueryNotExistingTemplateAlias",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "function:packages/api/internal/handlers/template_alias_test.go:TestQueryNotExistingTemplateAlias",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "function:packages/api/internal/handlers/template_alias_test.go:TestQueryExistingTemplateAlias",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "function:packages/api/internal/handlers/template_alias_test.go:TestQueryExistingTemplateAlias",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "function:packages/api/internal/handlers/template_alias_test.go:TestQueryExistingTemplateAliasAsNotOwnerTeam",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "function:packages/api/internal/handlers/template_alias_test.go:TestQueryExistingTemplateAliasAsNotOwnerTeam",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "function:packages/api/internal/handlers/template_alias_test.go:TestTaggedTemplateAliasTransferredTemplate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "function:packages/api/internal/handlers/template_alias_test.go:TestTaggedTemplateAliasTransferredTemplate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "function:packages/api/internal/handlers/template_alias_test.go:TestQueryTaggedTemplateAlias",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "function:packages/api/internal/handlers/template_alias_test.go:TestQueryTaggedTemplateAlias",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_logs.go",
+      "target": "function:packages/api/internal/handlers/template_build_logs.go:GetTemplatesTemplateIDBuildsBuildIDLogs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_logs.go",
+      "target": "function:packages/api/internal/handlers/template_build_logs.go:GetTemplatesTemplateIDBuildsBuildIDLogs",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "function:packages/api/internal/handlers/template_build_status.go:GetTemplatesTemplateIDBuildsBuildIDStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "function:packages/api/internal/handlers/template_build_status.go:GetTemplatesTemplateIDBuildsBuildIDStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "function:packages/api/internal/handlers/template_build_status.go:getCorrespondingTemplateBuildStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "function:packages/api/internal/handlers/template_build_status.go:getAPIReason",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "function:packages/api/internal/handlers/template_build_status.go:filterStepLogs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "function:packages/api/internal/handlers/template_build_status.go:getAPILogEntry",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "function:packages/api/internal/handlers/template_build_status.go:apiToLogLevel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_delete.go",
+      "target": "function:packages/api/internal/handlers/template_delete.go:softDeleteTemplate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_delete.go",
+      "target": "function:packages/api/internal/handlers/template_delete.go:DeleteTemplatesTemplateID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_delete.go",
+      "target": "function:packages/api/internal/handlers/template_delete.go:DeleteTemplatesTemplateID",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "function:packages/api/internal/handlers/template_get.go:GetTemplatesTemplateID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "function:packages/api/internal/handlers/template_get.go:GetTemplatesTemplateID",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "file:packages/api/internal/cache/templates/alias_cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "file:packages/api/internal/cache/templates/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "file:packages/api/internal/cache/templates/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "file:packages/api/internal/cache/templates/errors_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "file:packages/api/internal/cache/templates/errors.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "file:packages/api/internal/cache/templates/template_build_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "file:packages/api/internal/cache/templates/template_build.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "file:packages/api/internal/cache/templates/template_metadata_cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_alias_test.go",
+      "target": "file:packages/api/internal/cache/templates/template_metadata_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_logs.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_logs.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_logs.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_logs.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_logs.go",
+      "target": "file:packages/api/internal/cache/templates/alias_cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_logs.go",
+      "target": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_logs.go",
+      "target": "file:packages/api/internal/cache/templates/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_logs.go",
+      "target": "file:packages/api/internal/cache/templates/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_logs.go",
+      "target": "file:packages/api/internal/cache/templates/errors_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_logs.go",
+      "target": "file:packages/api/internal/cache/templates/errors.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_logs.go",
+      "target": "file:packages/api/internal/cache/templates/template_build_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_logs.go",
+      "target": "file:packages/api/internal/cache/templates/template_build.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_logs.go",
+      "target": "file:packages/api/internal/cache/templates/template_metadata_cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_logs.go",
+      "target": "file:packages/api/internal/cache/templates/template_metadata_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "file:packages/api/internal/cache/templates/alias_cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "file:packages/api/internal/cache/templates/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "file:packages/api/internal/cache/templates/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "file:packages/api/internal/cache/templates/errors_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "file:packages/api/internal/cache/templates/errors.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "file:packages/api/internal/cache/templates/template_build_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "file:packages/api/internal/cache/templates/template_build.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "file:packages/api/internal/cache/templates/template_metadata_cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_build_status.go",
+      "target": "file:packages/api/internal/cache/templates/template_metadata_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_delete.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_delete.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_delete.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_delete.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_delete.go",
+      "target": "file:packages/api/internal/sandbox/aliases.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_delete.go",
+      "target": "file:packages/api/internal/sandbox/sandbox_envd_secret.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_delete.go",
+      "target": "file:packages/api/internal/sandbox/store_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_delete.go",
+      "target": "file:packages/api/internal/sandbox/store.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/utils/counter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/utils/error_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/utils/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/utils/grpc.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/utils/messages.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/utils/pagination_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/utils/pagination.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/utils/result.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/utils/sandboxes_list_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/utils/sandboxes_list.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/utils/split_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/utils/split.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/utils/templates_list.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_get.go",
+      "target": "file:packages/api/internal/utils/writer.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

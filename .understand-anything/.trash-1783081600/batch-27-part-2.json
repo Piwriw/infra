@@ -1,0 +1,1025 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "type": "file",
+      "name": "empty.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/empty.go",
+      "summary": "Empty 后端实现：在内存中按 block size 返回全零字节，含可写 header 元数据。 完全派生自内存，无 mmap/file 依赖；常用于注入 base 为零的基础镜像。",
+      "tags": [
+        "block-storage",
+        "zero-backend",
+        "header"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "type": "file",
+      "name": "fetch_session.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "summary": "fetchSession：同 chunk 并发读取的协调器，使用 cond var 在 advance/setDone 时唤醒所有 waiter。 支持 partial-progress 推进、fail 传播、context cancellation，并通过 cache 回查。",
+      "tags": [
+        "concurrency",
+        "session",
+        "block-storage",
+        "cond-var"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "type": "file",
+      "name": "fetch_session_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "summary": "fetchSession 并发测试：覆盖快路径、渐进推进、setDone 唤醒所有、失败传播、context 取消。 并发场景通过 goroutine 与 sync.WaitGroup 注入竞争。",
+      "tags": [
+        "test",
+        "session",
+        "concurrency"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/iov.go",
+      "type": "file",
+      "name": "iov.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/iov.go",
+      "summary": "Linux IOV/drain 工具：探测系统 IOV_MAX 与对齐的 process_vm_readv 最大 iov 数量。 drainIovs 是泛型化工具，将结构体数组的字节向量逐块写入目标 fd，简化多区域复制。",
+      "tags": [
+        "utility",
+        "syscall",
+        "iov",
+        "linux"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "type": "file",
+      "name": "local.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/local.go",
+      "summary": "文件型后端 Local：将指定 rootfs 文件按 block size 暴露，提供 Header/Slice 等。 适用于本地 envd 镜像文件直接 slice 给 overlay 层。",
+      "tags": [
+        "block-storage",
+        "file-backend",
+        "local-fs"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "type": "file",
+      "name": "memfd.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "summary": "memfd 后端 + 异步 memfd 缓存：复制 memfd 数据到 mmap cache，包装为 MemfdCache。 DedupedMemfdCache 在异步复制中合并 base/dirty 节流，符合 Dedup 流程。",
+      "tags": [
+        "block-storage",
+        "memfd",
+        "async",
+        "dedup"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "type": "file",
+      "name": "memfd_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "summary": "memfd / memfd-dedup 测试，注入伪 originalDevice 验证 pwritevAll 的 iovec 拼接。 覆盖 detaches、compare/drain、non-adjacent、non-zero start 等关键路径。",
+      "tags": [
+        "test",
+        "memfd",
+        "dedup"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "type": "file",
+      "name": "overlay.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "summary": "Overlay：将 cached dirty writes 应用于 device 只读 base，实现 CoW 风格的回写。 支持 ReadAt / WriteAt / WriteZeroesAt / EjectCache（冻结 dirty 层后落入 device）。",
+      "tags": [
+        "block-storage",
+        "overlay",
+        "copy-on-write"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/empty.go:Empty",
+      "type": "class",
+      "name": "Empty",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/empty.go",
+      "lineRange": [
+        15,
+        17
+      ],
+      "summary": "block 子系统的 Empty 实现，定义在 packages/orchestrator/pkg/sandbox/block/empty.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/empty.go:NewEmpty",
+      "type": "function",
+      "name": "NewEmpty",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/empty.go",
+      "lineRange": [
+        21,
+        33
+      ],
+      "summary": "NewEmpty 是 empty.go 中的关键函数，行 21-33。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/empty.go:Slice",
+      "type": "function",
+      "name": "Slice",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/empty.go",
+      "lineRange": [
+        56,
+        66
+      ],
+      "summary": "Slice 是 empty.go 中的关键函数，行 56-66。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/fetch_session.go:fetchSession",
+      "type": "class",
+      "name": "fetchSession",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "lineRange": [
+        14,
+        33
+      ],
+      "summary": "block 子系统的 fetchSession 实现，定义在 packages/orchestrator/pkg/sandbox/block/fetch_session.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/fetch_session.go:newFetchSession",
+      "type": "function",
+      "name": "newFetchSession",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "lineRange": [
+        54,
+        63
+      ],
+      "summary": "newFetchSession 是 fetch_session.go 中的关键函数，行 54-63。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/fetch_session.go:registerAndWait",
+      "type": "function",
+      "name": "registerAndWait",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "lineRange": [
+        67,
+        126
+      ],
+      "summary": "registerAndWait 是 fetch_session.go 中的关键函数，行 67-126。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/fetch_session.go:failIfRunning",
+      "type": "function",
+      "name": "failIfRunning",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "lineRange": [
+        161,
+        170
+      ],
+      "summary": "failIfRunning 是 fetch_session.go 中的关键函数，行 161-170。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go:makeTestCacheForSession",
+      "type": "function",
+      "name": "makeTestCacheForSession",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "lineRange": [
+        19,
+        28
+      ],
+      "summary": "makeTestCacheForSession 是 fetch_session_test.go 中的关键函数，行 19-28。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go:TestFetchSession_ProgressiveAdvance",
+      "type": "function",
+      "name": "TestFetchSession_ProgressiveAdvance",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "lineRange": [
+        46,
+        93
+      ],
+      "summary": "TestFetchSession_ProgressiveAdvance 是 fetch_session_test.go 中的关键函数，行 46-93。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go:TestFetchSession_SetDoneUnblocksAll",
+      "type": "function",
+      "name": "TestFetchSession_SetDoneUnblocksAll",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "lineRange": [
+        95,
+        124
+      ],
+      "summary": "TestFetchSession_SetDoneUnblocksAll 是 fetch_session_test.go 中的关键函数，行 95-124。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go:TestFetchSession_NonZeroChunkOffset",
+      "type": "function",
+      "name": "TestFetchSession_NonZeroChunkOffset",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "lineRange": [
+        249,
+        294
+      ],
+      "summary": "TestFetchSession_NonZeroChunkOffset 是 fetch_session_test.go 中的关键函数，行 249-294。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go:TestFetchSession_ConcurrentWaitersAndCancel",
+      "type": "function",
+      "name": "TestFetchSession_ConcurrentWaitersAndCancel",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "lineRange": [
+        296,
+        352
+      ],
+      "summary": "TestFetchSession_ConcurrentWaitersAndCancel 是 fetch_session_test.go 中的关键函数，行 296-352。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/iov.go:drainIovs",
+      "type": "function",
+      "name": "drainIovs",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/iov.go",
+      "lineRange": [
+        46,
+        76
+      ],
+      "summary": "drainIovs 是 iov.go 中的关键函数，行 46-76。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/local.go:Local",
+      "type": "class",
+      "name": "Local",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/local.go",
+      "lineRange": [
+        17,
+        22
+      ],
+      "summary": "block 子系统的 Local 实现，定义在 packages/orchestrator/pkg/sandbox/block/local.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/local.go:NewLocal",
+      "type": "function",
+      "name": "NewLocal",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/local.go",
+      "lineRange": [
+        26,
+        54
+      ],
+      "summary": "NewLocal 是 local.go 中的关键函数，行 26-54。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/local.go:Slice",
+      "type": "function",
+      "name": "Slice",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/local.go",
+      "lineRange": [
+        86,
+        101
+      ],
+      "summary": "Slice 是 local.go 中的关键函数，行 86-101。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/local.go:UpdateHeaderSize",
+      "type": "function",
+      "name": "UpdateHeaderSize",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/local.go",
+      "lineRange": [
+        111,
+        129
+      ],
+      "summary": "UpdateHeaderSize 是 local.go 中的关键函数，行 111-129。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/memfd.go:Memfd",
+      "type": "class",
+      "name": "Memfd",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "lineRange": [
+        26,
+        29
+      ],
+      "summary": "block 子系统的 Memfd 实现，定义在 packages/orchestrator/pkg/sandbox/block/memfd.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/memfd.go:MemfdCache",
+      "type": "class",
+      "name": "MemfdCache",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "lineRange": [
+        127,
+        131
+      ],
+      "summary": "block 子系统的 MemfdCache 实现，定义在 packages/orchestrator/pkg/sandbox/block/memfd.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/memfd.go:DedupedMemfdCache",
+      "type": "class",
+      "name": "DedupedMemfdCache",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "lineRange": [
+        235,
+        239
+      ],
+      "summary": "block 子系统的 DedupedMemfdCache 实现，定义在 packages/orchestrator/pkg/sandbox/block/memfd.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:NewFromFd",
+      "type": "function",
+      "name": "NewFromFd",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "lineRange": [
+        31,
+        46
+      ],
+      "summary": "NewFromFd 是 memfd.go 中的关键函数，行 31-46。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:Close",
+      "type": "function",
+      "name": "Close",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "lineRange": [
+        61,
+        71
+      ],
+      "summary": "Close 是 memfd.go 中的关键函数，行 61-71。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:NewCacheFromMemfd",
+      "type": "function",
+      "name": "NewCacheFromMemfd",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "lineRange": [
+        75,
+        101
+      ],
+      "summary": "NewCacheFromMemfd 是 memfd.go 中的关键函数，行 75-101。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:copyFromMemfd",
+      "type": "function",
+      "name": "copyFromMemfd",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "lineRange": [
+        103,
+        121
+      ],
+      "summary": "copyFromMemfd 是 memfd.go 中的关键函数，行 103-121。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:NewCacheFromMemfdAsync",
+      "type": "function",
+      "name": "NewCacheFromMemfdAsync",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "lineRange": [
+        137,
+        172
+      ],
+      "summary": "NewCacheFromMemfdAsync 是 memfd.go 中的关键函数，行 137-172。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:NewCacheFromMemfdDeduped",
+      "type": "function",
+      "name": "NewCacheFromMemfdDeduped",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "lineRange": [
+        241,
+        266
+      ],
+      "summary": "NewCacheFromMemfdDeduped 是 memfd.go 中的关键函数，行 241-266。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:runDedup",
+      "type": "function",
+      "name": "runDedup",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "lineRange": [
+        268,
+        319
+      ],
+      "summary": "runDedup 是 memfd.go 中的关键函数，行 268-319。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:pwritevAll",
+      "type": "function",
+      "name": "pwritevAll",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "lineRange": [
+        394,
+        427
+      ],
+      "summary": "pwritevAll 是 memfd.go 中的关键函数，行 394-427。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/memfd_test.go:fakeOriginalDevice",
+      "type": "class",
+      "name": "fakeOriginalDevice",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "lineRange": [
+        51,
+        55
+      ],
+      "summary": "block 子系统的 fakeOriginalDevice 实现，定义在 packages/orchestrator/pkg/sandbox/block/memfd_test.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/memfd_test.go:erroringOriginalDevice",
+      "type": "class",
+      "name": "erroringOriginalDevice",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "lineRange": [
+        86,
+        90
+      ],
+      "summary": "block 子系统的 erroringOriginalDevice 实现，定义在 packages/orchestrator/pkg/sandbox/block/memfd_test.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/memfd_test.go:newTestMemfd",
+      "type": "function",
+      "name": "newTestMemfd",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "lineRange": [
+        21,
+        39
+      ],
+      "summary": "newTestMemfd 是 memfd_test.go 中的关键函数，行 21-39。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/memfd_test.go:ReadAt",
+      "type": "function",
+      "name": "ReadAt",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "lineRange": [
+        57,
+        68
+      ],
+      "summary": "ReadAt 是 memfd_test.go 中的关键函数，行 57-68。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/memfd_test.go:TestNewCacheFromMemfdDeduped_DetachesCompareAndDrain",
+      "type": "function",
+      "name": "TestNewCacheFromMemfdDeduped_DetachesCompareAndDrain",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "lineRange": [
+        205,
+        250
+      ],
+      "summary": "TestNewCacheFromMemfdDeduped_DetachesCompareAndDrain 是 memfd_test.go 中的关键函数，行 205-250。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/overlay.go:Overlay",
+      "type": "class",
+      "name": "Overlay",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "lineRange": [
+        14,
+        19
+      ],
+      "summary": "block 子系统的 Overlay 实现，定义在 packages/orchestrator/pkg/sandbox/block/overlay.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/overlay.go:ReadAt",
+      "type": "function",
+      "name": "ReadAt",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "lineRange": [
+        33,
+        53
+      ],
+      "summary": "ReadAt 是 overlay.go 中的关键函数，行 33-53。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/iov.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/iov.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/iov.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/empty.go:Empty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/empty.go:NewEmpty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/empty.go:Slice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/fetch_session.go:fetchSession",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/fetch_session.go:newFetchSession",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/fetch_session.go:registerAndWait",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/fetch_session.go:failIfRunning",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go:makeTestCacheForSession",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go:TestFetchSession_ProgressiveAdvance",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go:TestFetchSession_SetDoneUnblocksAll",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go:TestFetchSession_NonZeroChunkOffset",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go:TestFetchSession_ConcurrentWaitersAndCancel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/iov.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/iov.go:drainIovs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/local.go:Local",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/local.go:NewLocal",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/local.go:Slice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/local.go:UpdateHeaderSize",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/memfd.go:Memfd",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/memfd.go:MemfdCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/memfd.go:DedupedMemfdCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:NewFromFd",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:NewCacheFromMemfd",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:copyFromMemfd",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:NewCacheFromMemfdAsync",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:NewCacheFromMemfdDeduped",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:runDedup",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/memfd.go:pwritevAll",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/memfd_test.go:fakeOriginalDevice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/memfd_test.go:erroringOriginalDevice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/memfd_test.go:newTestMemfd",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/memfd_test.go:ReadAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/memfd_test.go:TestNewCacheFromMemfdDeduped_DetachesCompareAndDrain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/overlay.go:Overlay",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/overlay.go:ReadAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ]
+}

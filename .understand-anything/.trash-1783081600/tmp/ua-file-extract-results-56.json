@@ -1,0 +1,225 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/dashboard-api/Dockerfile",
+      "language": "dockerfile",
+      "fileCategory": "infra",
+      "totalLines": 54,
+      "nonEmptyLines": 39,
+      "services": [
+        {
+          "name": "builder",
+          "image": "golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION}",
+          "ports": [],
+          "startLine": 4,
+          "endLine": 49
+        },
+        {
+          "name": "alpine",
+          "image": "alpine:${ALPINE_VERSION}",
+          "ports": [],
+          "startLine": 50,
+          "endLine": 55
+        }
+      ],
+      "steps": [
+        {
+          "name": "ARG GOLANG_VERSION=1.26.3",
+          "startLine": 1,
+          "endLine": 1
+        },
+        {
+          "name": "ARG ALPINE_VERSION=3.22",
+          "startLine": 2,
+          "endLine": 2
+        },
+        {
+          "name": "FROM golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION} AS builder",
+          "startLine": 4,
+          "endLine": 4
+        },
+        {
+          "name": "RUN apk add --no-cache make",
+          "startLine": 6,
+          "endLine": 6
+        },
+        {
+          "name": "WORKDIR /build/shared",
+          "startLine": 9,
+          "endLine": 9
+        },
+        {
+          "name": "COPY ./shared/go.mod ./shared/go.sum ./",
+          "startLine": 10,
+          "endLine": 10
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 11,
+          "endLine": 11
+        },
+        {
+          "name": "WORKDIR /build/clickhouse",
+          "startLine": 13,
+          "endLine": 13
+        },
+        {
+          "name": "COPY ./clickhouse/go.mod ./clickhouse/go.sum ./",
+          "startLine": 14,
+          "endLine": 14
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 15,
+          "endLine": 15
+        },
+        {
+          "name": "WORKDIR /build/db",
+          "startLine": 17,
+          "endLine": 17
+        },
+        {
+          "name": "COPY ./db/go.mod ./db/go.sum ./",
+          "startLine": 18,
+          "endLine": 18
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 19,
+          "endLine": 19
+        },
+        {
+          "name": "WORKDIR /build/auth",
+          "startLine": 21,
+          "endLine": 21
+        },
+        {
+          "name": "COPY ./auth/go.mod ./auth/go.sum ./",
+          "startLine": 22,
+          "endLine": 22
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 23,
+          "endLine": 23
+        },
+        {
+          "name": "WORKDIR /build/dashboard-api",
+          "startLine": 25,
+          "endLine": 25
+        },
+        {
+          "name": "COPY ./dashboard-api/go.mod ./dashboard-api/go.sum ./",
+          "startLine": 26,
+          "endLine": 26
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 27,
+          "endLine": 27
+        },
+        {
+          "name": "WORKDIR /build",
+          "startLine": 30,
+          "endLine": 30
+        },
+        {
+          "name": "COPY ./auth/pkg ./auth/pkg",
+          "startLine": 32,
+          "endLine": 32
+        },
+        {
+          "name": "COPY ./clickhouse/pkg ./clickhouse/pkg",
+          "startLine": 33,
+          "endLine": 33
+        },
+        {
+          "name": "COPY ./shared/pkg ./shared/pkg",
+          "startLine": 34,
+          "endLine": 34
+        },
+        {
+          "name": "COPY ./db/client ./db/client",
+          "startLine": 35,
+          "endLine": 35
+        },
+        {
+          "name": "COPY ./db/queries ./db/queries",
+          "startLine": 36,
+          "endLine": 36
+        },
+        {
+          "name": "COPY ./db/pkg ./db/pkg",
+          "startLine": 37,
+          "endLine": 37
+        },
+        {
+          "name": "COPY ./dashboard-api/internal ./dashboard-api/internal",
+          "startLine": 39,
+          "endLine": 39
+        },
+        {
+          "name": "COPY ./dashboard-api/main.go ./dashboard-api/main.go",
+          "startLine": 40,
+          "endLine": 40
+        },
+        {
+          "name": "COPY ./dashboard-api/Makefile ./dashboard-api/Makefile",
+          "startLine": 41,
+          "endLine": 41
+        },
+        {
+          "name": "WORKDIR /build/dashboard-api",
+          "startLine": 43,
+          "endLine": 43
+        },
+        {
+          "name": "ARG COMMIT_SHA",
+          "startLine": 45,
+          "endLine": 45
+        },
+        {
+          "name": "ARG EXPECTED_MIGRATION_TIMESTAMP",
+          "startLine": 46,
+          "endLine": 46
+        },
+        {
+          "name": "RUN --mount=type=cache,target=/root/.cache/go-build make build C",
+          "startLine": 47,
+          "endLine": 47
+        },
+        {
+          "name": "RUN chmod +x /build/dashboard-api/bin/dashboard-api",
+          "startLine": 48,
+          "endLine": 48
+        },
+        {
+          "name": "FROM alpine:${ALPINE_VERSION}",
+          "startLine": 50,
+          "endLine": 50
+        },
+        {
+          "name": "COPY --from=builder /build/dashboard-api/bin/dashboard-api .",
+          "startLine": 52,
+          "endLine": 52
+        },
+        {
+          "name": "ENTRYPOINT [\"./dashboard-api\"]",
+          "startLine": 54,
+          "endLine": 54
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "serviceCount": 2,
+        "stepCount": 37
+      }
+    }
+  ]
+}

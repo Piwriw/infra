@@ -1,0 +1,87 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/db/pkg/dashboard/sql_queries/templates/check_ready_template_tag_exists.sql",
+      "type": "file",
+      "name": "check_ready_template_tag_exists.sql",
+      "filePath": "packages/db/pkg/dashboard/sql_queries/templates/check_ready_template_tag_exists.sql",
+      "summary": "sqlc 风格的查询，检查指定模板下是否存在处于 ready 状态的指定 tag 构建分配，返回布尔值。",
+      "tags": ["sqlc", "template", "tag-existence", "sql-query"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/sql_queries/templates/count_template_tags.sql",
+      "type": "file",
+      "name": "count_template_tags.sql",
+      "filePath": "packages/db/pkg/dashboard/sql_queries/templates/count_template_tags.sql",
+      "summary": "sqlc 查询，统计指定模板下处于 ready 状态的构建分配中不重复的 tag 数量。",
+      "tags": ["sqlc", "template", "tag-count", "sql-query"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/sql_queries/templates/get_default_templates.sql",
+      "type": "file",
+      "name": "get_default_templates.sql",
+      "filePath": "packages/db/pkg/dashboard/sql_queries/templates/get_default_templates.sql",
+      "summary": "sqlc 查询，通过连接 env_defaults 与 active_envs，取出每个默认模板最新的已上传构建及其硬件配置。",
+      "tags": ["sqlc", "default-template", "lateral-join", "sql-query"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/sql_queries/templates/list_team_templates.sql",
+      "type": "file",
+      "name": "list_team_templates.sql",
+      "filePath": "packages/db/pkg/dashboard/sql_queries/templates/list_team_templates.sql",
+      "summary": "Dashboard 团队模板列表的多版本 sqlc 查询集合，按不同排序键（created_at、updated_at、last_spawned_at 等）的升序/降序组合分别提供 UNION 团队自有模板与全局默认模板，支持基于 keyset 的游标分页与搜索过滤。",
+      "tags": ["sqlc", "template-listing", "keyset-pagination", "union-query", "sort-variants"],
+      "complexity": "complex",
+      "languageNotes": "文件包含多组排序分支（asc/desc），每条都通过 UNION 合并团队模板与默认模板，并借助 LATERAL 子查询解析当前页对应的 build 字段。"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/sql_queries/templates/list_template_tag_assignments_by_tag.sql",
+      "type": "file",
+      "name": "list_template_tag_assignments_by_tag.sql",
+      "filePath": "packages/db/pkg/dashboard/sql_queries/templates/list_template_tag_assignments_by_tag.sql",
+      "summary": "sqlc 查询，列出指定模板与 tag 下处于 ready 状态的构建分配记录，使用 (assigned_at, assignment_id) 元组进行游标分页。",
+      "tags": ["sqlc", "template", "tag-assignments", "keyset-pagination"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/sql_queries/templates/list_template_tag_groups_by_latest_asc.sql",
+      "type": "file",
+      "name": "list_template_tag_groups_by_latest_asc.sql",
+      "filePath": "packages/db/pkg/dashboard/sql_queries/templates/list_template_tag_groups_by_latest_asc.sql",
+      "summary": "sqlc 查询，对指定模板下 ready 状态的构建分配按 tag 分组，按最近分配时间升序返回 tag 组窗口及其分配明细，支持基于时间游标的分页与子串搜索。",
+      "tags": ["sqlc", "template", "tag-groups", "window-function", "keyset-pagination"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/sql_queries/templates/list_template_tag_groups_by_latest_desc.sql",
+      "type": "file",
+      "name": "list_template_tag_groups_by_latest_desc.sql",
+      "filePath": "packages/db/pkg/dashboard/sql_queries/templates/list_template_tag_groups_by_latest_desc.sql",
+      "summary": "sqlc 查询，与 latest_asc 相对应，按最近分配时间降序返回指定模板下 ready 状态的 tag 组窗口及明细。",
+      "tags": ["sqlc", "template", "tag-groups", "window-function", "keyset-pagination"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/sql_queries/templates/list_template_tag_groups_by_name_asc.sql",
+      "type": "file",
+      "name": "list_template_tag_groups_by_name_asc.sql",
+      "filePath": "packages/db/pkg/dashboard/sql_queries/templates/list_template_tag_groups_by_name_asc.sql",
+      "summary": "sqlc 查询，按 tag 名称升序对指定模板下 ready 状态的构建分配进行分组分页，支持基于 tag 字符串游标的 keyset 分页与子串搜索。",
+      "tags": ["sqlc", "template", "tag-groups", "sort-by-name", "keyset-pagination"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/sql_queries/templates/list_template_tag_groups_by_name_desc.sql",
+      "type": "file",
+      "name": "list_template_tag_groups_by_name_desc.sql",
+      "filePath": "packages/db/pkg/dashboard/sql_queries/templates/list_template_tag_groups_by_name_desc.sql",
+      "summary": "sqlc 查询，与 name_asc 相对应，按 tag 名称降序对指定模板下 ready 状态的构建分配进行分组分页。",
+      "tags": ["sqlc", "template", "tag-groups", "sort-by-name", "keyset-pagination"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": []
+}

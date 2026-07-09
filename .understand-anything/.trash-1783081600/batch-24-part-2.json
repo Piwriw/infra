@@ -1,0 +1,996 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "type": "file",
+      "name": "invalidate_unstarted_builds_test.go",
+      "filePath": "packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "summary": "集成测试：使未开始的构建失效（特定标签、模板、状态过滤）。",
+      "tags": [
+        "test",
+        "integration",
+        "database",
+        "template-build"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_InvalidatesWaitingBuilds",
+      "type": "function",
+      "name": "TestInvalidateUnstartedTemplateBuilds_InvalidatesWaitingBuilds",
+      "filePath": "packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "lineRange": [
+        14,
+        36
+      ],
+      "summary": "验证使未开始的（等待中）构建失效。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_OnlyAffectsSpecificTag",
+      "type": "function",
+      "name": "TestInvalidateUnstartedTemplateBuilds_OnlyAffectsSpecificTag",
+      "filePath": "packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "lineRange": [
+        38,
+        70
+      ],
+      "summary": "验证失效仅作用于指定标签。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_DoesNotAffectOtherTemplates",
+      "type": "function",
+      "name": "TestInvalidateUnstartedTemplateBuilds_DoesNotAffectOtherTemplates",
+      "filePath": "packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "lineRange": [
+        72,
+        102
+      ],
+      "summary": "验证不影响其他模板的构建。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_DoesNotAffectNonWaitingBuilds",
+      "type": "function",
+      "name": "TestInvalidateUnstartedTemplateBuilds_DoesNotAffectNonWaitingBuilds",
+      "filePath": "packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "lineRange": [
+        104,
+        139
+      ],
+      "summary": "验证不影响非等待状态的构建。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_MultipleWaitingBuilds",
+      "type": "function",
+      "name": "TestInvalidateUnstartedTemplateBuilds_MultipleWaitingBuilds",
+      "filePath": "packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "lineRange": [
+        141,
+        171
+      ],
+      "summary": "验证同时失效多个等待构建。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_MultipleTagsInSingleCall",
+      "type": "function",
+      "name": "TestInvalidateUnstartedTemplateBuilds_MultipleTagsInSingleCall",
+      "filePath": "packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "lineRange": [
+        173,
+        216
+      ],
+      "summary": "验证单次调用传入多个标签的失效。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/retry/errors_test.go",
+      "type": "file",
+      "name": "errors_test.go",
+      "filePath": "packages/db/pkg/retry/errors_test.go",
+      "summary": "测试 IsRetriable 对各类错误（PostgreSQL、网络、连接、上下文、消息）的判定。",
+      "tags": [
+        "test",
+        "retry",
+        "error-handling"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_NilError",
+      "type": "function",
+      "name": "TestIsRetriable_NilError",
+      "filePath": "packages/db/pkg/retry/errors_test.go",
+      "lineRange": [
+        15,
+        18
+      ],
+      "summary": "测试 nil 错误不被视为可重试。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_ContextErrors",
+      "type": "function",
+      "name": "TestIsRetriable_ContextErrors",
+      "filePath": "packages/db/pkg/retry/errors_test.go",
+      "lineRange": [
+        20,
+        37
+      ],
+      "summary": "测试上下文取消/超时错误的可重试判定。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_PostgreSQLErrors",
+      "type": "function",
+      "name": "TestIsRetriable_PostgreSQLErrors",
+      "filePath": "packages/db/pkg/retry/errors_test.go",
+      "lineRange": [
+        39,
+        87
+      ],
+      "summary": "测试 PostgreSQL 各类 SQLSTATE 错误的可重试判定。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_NetworkErrors",
+      "type": "function",
+      "name": "TestIsRetriable_NetworkErrors",
+      "filePath": "packages/db/pkg/retry/errors_test.go",
+      "lineRange": [
+        89,
+        109
+      ],
+      "summary": "测试网络错误的可重试判定。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_ConnectError",
+      "type": "function",
+      "name": "TestIsRetriable_ConnectError",
+      "filePath": "packages/db/pkg/retry/errors_test.go",
+      "lineRange": [
+        111,
+        118
+      ],
+      "summary": "测试 net.OpError 类型的可重试判定。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_NetError",
+      "type": "function",
+      "name": "TestIsRetriable_NetError",
+      "filePath": "packages/db/pkg/retry/errors_test.go",
+      "lineRange": [
+        120,
+        129
+      ],
+      "summary": "测试 net.Error 接口实现的错误判定。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_ErrorMessages",
+      "type": "function",
+      "name": "TestIsRetriable_ErrorMessages",
+      "filePath": "packages/db/pkg/retry/errors_test.go",
+      "lineRange": [
+        131,
+        154
+      ],
+      "summary": "基于错误消息文本判定是否可重试。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_WrappedErrors",
+      "type": "function",
+      "name": "TestIsRetriable_WrappedErrors",
+      "filePath": "packages/db/pkg/retry/errors_test.go",
+      "lineRange": [
+        156,
+        166
+      ],
+      "summary": "测试 errors.Wrap/Is 链路下的错误可重试判定。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/pool/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/db/pkg/pool/main.go",
+      "summary": "pgxpool 连接池构造器：解析连接串、配置重试、初始化遥测池并返回 DBTX 接口。",
+      "tags": [
+        "connection-pool",
+        "pgx",
+        "infrastructure"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/pool/main.go:New",
+      "type": "function",
+      "name": "New",
+      "filePath": "packages/db/pkg/pool/main.go",
+      "lineRange": [
+        18,
+        76
+      ],
+      "summary": "构造带 OpenTelemetry、重试包装的 pgxpool.Pool，并返回 types.DBTX 抽象。",
+      "tags": [
+        "connection-pool",
+        "factory"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/queries/get_default_templates.sql.go",
+      "type": "file",
+      "name": "get_default_templates.sql.go",
+      "filePath": "packages/db/pkg/dashboard/queries/get_default_templates.sql.go",
+      "summary": "sqlc 生成的查询代码：获取团队的默认模板列表。",
+      "tags": [
+        "sqlc-generated",
+        "template-query",
+        "database"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/dashboard/queries/get_default_templates.sql.go:GetDefaultTemplates",
+      "type": "function",
+      "name": "GetDefaultTemplates",
+      "filePath": "packages/db/pkg/dashboard/queries/get_default_templates.sql.go",
+      "lineRange": [
+        54,
+        83
+      ],
+      "summary": "执行 sqlc 生成的 SQL，返回团队默认模板列表。",
+      "tags": [
+        "sqlc-generated",
+        "query"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/queries/update_team.sql.go",
+      "type": "file",
+      "name": "update_team.sql.go",
+      "filePath": "packages/db/pkg/dashboard/queries/update_team.sql.go",
+      "summary": "sqlc 生成的查询代码：更新团队记录及其返回行结构。",
+      "tags": [
+        "sqlc-generated",
+        "team-query",
+        "database"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/dashboard/queries/update_team.sql.go:UpdateTeam",
+      "type": "function",
+      "name": "UpdateTeam",
+      "filePath": "packages/db/pkg/dashboard/queries/update_team.sql.go",
+      "lineRange": [
+        43,
+        54
+      ],
+      "summary": "执行 sqlc 生成的 SQL，更新团队记录并返回更新后的行。",
+      "tags": [
+        "sqlc-generated",
+        "query",
+        "mutation"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_InvalidatesWaitingBuilds",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_OnlyAffectsSpecificTag",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_DoesNotAffectOtherTemplates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_DoesNotAffectNonWaitingBuilds",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_MultipleWaitingBuilds",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_MultipleTagsInSingleCall",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_InvalidatesWaitingBuilds",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_OnlyAffectsSpecificTag",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_DoesNotAffectOtherTemplates",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_DoesNotAffectNonWaitingBuilds",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_MultipleWaitingBuilds",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go:TestInvalidateUnstartedTemplateBuilds_MultipleTagsInSingleCall",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/pkg/testutils/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/pkg/testutils/queries.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/pkg/types/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/pkg/types/types_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/pkg/types/types.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/active_template_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/check_alias_exists.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/create_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/create_new_snapshot.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/create_snapshot_template_env.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/create_template_build_assignment.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/create_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/delete_old_aliases.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/delete_template_build_assignment.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/delete_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/exists_template_snapshots.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/finish_template_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_active_clusters.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_build_info.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_builds_paginated.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_builds_statuses.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_concurrent_template_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_exclusive_builds_for_template_deletion.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_inprogress_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_last_snapshot.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_sandbox_record.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_snapshot_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_snapshots_with_cursor.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_team_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_team_templates_with_cursor.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_team_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_template_aliases.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_template_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_template_by_id.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_template_with_build_by_tag.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_template_with_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/get_templatealias_by_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/list_team_snapshot_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/list_template_tags.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/models.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/resolve_team.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/team_members.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/update_snapshot_origin_node.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/update_template_build_status.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/update_template_spawns.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/update_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/upsert_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/validate_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/invalidate_unstarted_builds_test.go",
+      "target": "file:packages/db/queries/volumes.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors_test.go",
+      "target": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_NilError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors_test.go",
+      "target": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_ContextErrors",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors_test.go",
+      "target": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_PostgreSQLErrors",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors_test.go",
+      "target": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_NetworkErrors",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors_test.go",
+      "target": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_ConnectError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors_test.go",
+      "target": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_NetError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors_test.go",
+      "target": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_ErrorMessages",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors_test.go",
+      "target": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_WrappedErrors",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors_test.go",
+      "target": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_NilError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors_test.go",
+      "target": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_ContextErrors",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors_test.go",
+      "target": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_PostgreSQLErrors",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors_test.go",
+      "target": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_NetworkErrors",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors_test.go",
+      "target": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_ConnectError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors_test.go",
+      "target": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_NetError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors_test.go",
+      "target": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_ErrorMessages",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors_test.go",
+      "target": "function:packages/db/pkg/retry/errors_test.go:TestIsRetriable_WrappedErrors",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/pool/main.go",
+      "target": "function:packages/db/pkg/pool/main.go:New",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/pool/main.go",
+      "target": "function:packages/db/pkg/pool/main.go:New",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/pool/main.go",
+      "target": "file:packages/db/pkg/retry/config.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/pool/main.go",
+      "target": "file:packages/db/pkg/retry/errors_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/pool/main.go",
+      "target": "file:packages/db/pkg/retry/errors.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/pool/main.go",
+      "target": "file:packages/db/pkg/retry/wrapper_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/pool/main.go",
+      "target": "file:packages/db/pkg/retry/wrapper.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/pool/main.go",
+      "target": "file:packages/db/pkg/types/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/pool/main.go",
+      "target": "file:packages/db/pkg/types/types_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/pool/main.go",
+      "target": "file:packages/db/pkg/types/types.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/get_default_templates.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/get_default_templates.sql.go:GetDefaultTemplates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/get_default_templates.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/get_default_templates.sql.go:GetDefaultTemplates",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/update_team.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/update_team.sql.go:UpdateTeam",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/update_team.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/update_team.sql.go:UpdateTeam",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

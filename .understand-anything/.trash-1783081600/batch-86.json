@@ -1,0 +1,71 @@
+{
+  "nodes": [
+    {
+      "id": "resource:iac/provider-gcp/persistent-volume-types/main.tf",
+      "type": "resource",
+      "name": "main.tf",
+      "filePath": "iac/provider-gcp/persistent-volume-types/main.tf",
+      "summary": "Terraform 主配置文件,用于在 GCP 上创建 Filestore 实例作为持久化 NFS 卷,支持配置容量、层、性能和网络等参数。",
+      "tags": ["infrastructure", "terraform", "gcp", "filestore", "nfs"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/persistent-volume-types/output.tf",
+      "type": "resource",
+      "name": "output.tf",
+      "filePath": "iac/provider-gcp/persistent-volume-types/output.tf",
+      "summary": "Terraform 输出定义,暴露 NFS 版本号以及用于客户端挂载的 NFS 位置字符串(ip 与导出 key 的拼接)。",
+      "tags": ["infrastructure", "terraform", "output", "nfs"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/persistent-volume-types/variables.tf",
+      "type": "resource",
+      "name": "variables.tf",
+      "filePath": "iac/provider-gcp/persistent-volume-types/variables.tf",
+      "summary": "Terraform 变量定义,声明 NFS 版本、前缀、key、tier、location、容量、网络等模块输入,并对 NFS 版本做校验。",
+      "tags": ["infrastructure", "terraform", "variable", "configuration"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/persistent-volume-types/main.tf:google_filestore_instance.persistent-volumes",
+      "type": "resource",
+      "name": "google_filestore_instance.persistent-volumes",
+      "filePath": "iac/provider-gcp/persistent-volume-types/main.tf",
+      "lineRange": [6, 33],
+      "summary": "在 GCP 上配置 Filestore 实例,作为 orchestrator 使用的持久化 NFS 卷,默认启用删除保护以避免误删导致 orchestrator 大量错误。",
+      "tags": ["gcp", "filestore", "nfs", "persistent-volume", "deletion-protection"],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/provider-gcp/persistent-volume-types/main.tf",
+      "target": "resource:iac/provider-gcp/persistent-volume-types/main.tf:google_filestore_instance.persistent-volumes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/persistent-volume-types/output.tf",
+      "target": "resource:iac/provider-gcp/persistent-volume-types/main.tf:google_filestore_instance.persistent-volumes",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/persistent-volume-types/output.tf",
+      "target": "resource:iac/provider-gcp/persistent-volume-types/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/persistent-volume-types/main.tf",
+      "target": "resource:iac/provider-gcp/persistent-volume-types/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

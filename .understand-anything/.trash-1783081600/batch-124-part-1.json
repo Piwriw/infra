@@ -1,0 +1,1482 @@
+{
+  "nodes": [
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-client/main.tf",
+      "type": "resource",
+      "name": "nodepool-client/main.tf",
+      "filePath": "iac/provider-aws/modules/nodepool-client/main.tf",
+      "summary": "Terraform 模块,用于在 AWS 上为 orchestrator 客户端节点池配置 IAM 角色策略、启动模板与 Auto Scaling Group,以 EC2 实例形式运行 sandbox 运行环境。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws",
+        "nodepool",
+        "ec2",
+        "autoscaling"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh:max",
+      "type": "function",
+      "name": "max",
+      "filePath": "iac/provider-aws/modules/nodepool-client/scripts/start-client.sh",
+      "lineRange": [
+        141,
+        147
+      ],
+      "summary": "返回两个数中的较大值,用于 hugepages/内存等数值计算。",
+      "tags": [
+        "utility",
+        "math",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh:min",
+      "type": "function",
+      "name": "min",
+      "filePath": "iac/provider-aws/modules/nodepool-client/scripts/start-client.sh",
+      "lineRange": [
+        149,
+        155
+      ],
+      "summary": "返回两个数中的较小值,用于 hugepages 等数值裁剪。",
+      "tags": [
+        "utility",
+        "math",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh:ensure_even",
+      "type": "function",
+      "name": "ensure_even",
+      "filePath": "iac/provider-aws/modules/nodepool-client/scripts/start-client.sh",
+      "lineRange": [
+        157,
+        163
+      ],
+      "summary": "将输入的整数向上舍入到最近的偶数,用于 hugepages 配置对齐。",
+      "tags": [
+        "utility",
+        "math",
+        "shell",
+        "hugepages"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh:remove_decimal",
+      "type": "function",
+      "name": "remove_decimal",
+      "filePath": "iac/provider-aws/modules/nodepool-client/scripts/start-client.sh",
+      "lineRange": [
+        165,
+        167
+      ],
+      "summary": "去除数值的浮点尾数,转换为整数。",
+      "tags": [
+        "utility",
+        "math",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh",
+      "type": "file",
+      "name": "start-client.sh",
+      "filePath": "iac/provider-aws/modules/nodepool-client/scripts/start-client.sh",
+      "summary": "EC2 User Data 启动脚本,用于在客户端节点上引导 Nomad/Consul 客户端进程、配置 hugepages 与 CPU,并将 GCS/S3 模板、firecracker 内核等下载到本地。",
+      "tags": [
+        "script",
+        "bootstrap",
+        "ec2",
+        "nomad",
+        "consul",
+        "firecracker"
+      ],
+      "complexity": "complex",
+      "languageNotes": "bash 脚本使用大量数值工具函数(hugepages 计算)与 systemd unit 文件内嵌"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-client/variables.tf",
+      "type": "resource",
+      "name": "nodepool-client/variables.tf",
+      "filePath": "iac/provider-aws/modules/nodepool-client/variables.tf",
+      "summary": "客户端节点池模块的输入变量定义,涵盖 IAM、桶、子网、节点池配置以及 firecracker 相关 S3 桶 ARN 等参数。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "configuration",
+        "variables"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-control-server/main.tf",
+      "type": "resource",
+      "name": "nodepool-control-server/main.tf",
+      "filePath": "iac/provider-aws/modules/nodepool-control-server/main.tf",
+      "summary": "Terraform 模块,为 Nomad/Consul 控制平面节点池提供 IAM 角色、启动模板与 Auto Scaling Group,负责承载集群管理器。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws",
+        "control-plane",
+        "autoscaling"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/provider-aws/modules/nodepool-control-server/scripts/start-server.sh",
+      "type": "file",
+      "name": "start-server.sh",
+      "filePath": "iac/provider-aws/modules/nodepool-control-server/scripts/start-server.sh",
+      "summary": "EC2 User Data 启动脚本,在控制服务器节点上引导 Nomad/Consul server 模式并加入集群。",
+      "tags": [
+        "script",
+        "bootstrap",
+        "ec2",
+        "nomad",
+        "consul",
+        "control-plane"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-control-server/variables.tf",
+      "type": "resource",
+      "name": "nodepool-control-server/variables.tf",
+      "filePath": "iac/provider-aws/modules/nodepool-control-server/variables.tf",
+      "summary": "控制服务器节点池模块的输入变量定义,包括集群大小、机器类型、安全组、目标组 ARN 以及 Nomad/Consul ACL/Gossip token 等。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "configuration",
+        "variables"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/provider-aws/nomad-cluster-disk-image/main.pkr.hcl",
+      "type": "file",
+      "name": "main.pkr.hcl",
+      "filePath": "iac/provider-aws/nomad-cluster-disk-image/main.pkr.hcl",
+      "summary": "Packer 模板,用于在 AWS 上构建统一的 Nomad 集群节点基础镜像,预装 Docker、Nomad、Consul、Firecracker 与 envd 等运行时依赖。",
+      "tags": [
+        "packer",
+        "ami",
+        "image-build",
+        "aws",
+        "infrastructure"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "pipeline:iac/provider-aws/nomad-cluster-disk-image/Makefile",
+      "type": "pipeline",
+      "name": "Makefile",
+      "filePath": "iac/provider-aws/nomad-cluster-disk-image/Makefile",
+      "summary": "Packer 镜像构建 Makefile,提供 init/build/format 等目标,用于生成 Nomad 集群的 AWS AMI。",
+      "tags": [
+        "build-system",
+        "packer",
+        "makefile",
+        "infrastructure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/provider-aws/nomad-cluster-disk-image/variables.pkr.hcl",
+      "type": "file",
+      "name": "variables.pkr.hcl",
+      "filePath": "iac/provider-aws/nomad-cluster-disk-image/variables.pkr.hcl",
+      "summary": "Packer 模板的输入变量定义,包含区域、VPC、子网、基础镜像、源 AMI 等。",
+      "tags": [
+        "packer",
+        "configuration",
+        "variables"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/nomad-cluster/main.tf",
+      "type": "resource",
+      "name": "nomad-cluster/main.tf",
+      "filePath": "iac/provider-aws/nomad-cluster/main.tf",
+      "summary": "AWS Nomad 集群顶层 Terraform 配置,组合 control_server/api/clickhouse/build/client 子模块,创建 IAM 策略、S3 配置对象与 ECR 仓库,完成集群基础设施搭建。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws",
+        "nomad",
+        "module-composition"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:print_usage",
+      "type": "function",
+      "name": "print_usage",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        41,
+        87
+      ],
+      "summary": "打印 run-consul 脚本的命令行帮助,列出所有可配置选项及默认值。",
+      "tags": [
+        "cli",
+        "help",
+        "shell"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_instance_metadata_value",
+      "type": "function",
+      "name": "get_instance_metadata_value",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        90,
+        100
+      ],
+      "summary": "通过 IMDSv1 从 EC2 实例元数据服务读取指定 path 的值。",
+      "tags": [
+        "aws",
+        "ec2",
+        "imds",
+        "metadata",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_instance_metadata_token",
+      "type": "function",
+      "name": "get_instance_metadata_token",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        103,
+        123
+      ],
+      "summary": "通过 IMDSv2 token 流程安全地从 EC2 元数据服务请求 PUT 操作的 token。",
+      "tags": [
+        "aws",
+        "ec2",
+        "imdsv2",
+        "security",
+        "shell"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_instance_dynamic_metadata",
+      "type": "function",
+      "name": "get_instance_dynamic_metadata",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        126,
+        135
+      ],
+      "summary": "从 EC2 动态实例元数据服务中获取指定字段值。",
+      "tags": [
+        "aws",
+        "ec2",
+        "imds",
+        "metadata",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_instance_tag_value",
+      "type": "function",
+      "name": "get_instance_tag_value",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        138,
+        145
+      ],
+      "summary": "读取当前 EC2 实例上指定名称的 tag 值,用于集群自发现。",
+      "tags": [
+        "aws",
+        "ec2",
+        "tags",
+        "cluster-discovery",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_instance_region",
+      "type": "function",
+      "name": "get_instance_region",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        148,
+        151
+      ],
+      "summary": "返回当前 EC2 实例所在的 AWS 区域。",
+      "tags": [
+        "aws",
+        "ec2",
+        "region",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_instance_zone",
+      "type": "function",
+      "name": "get_instance_zone",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        154,
+        157
+      ],
+      "summary": "返回当前 EC2 实例所在的可用区(AZ)。",
+      "tags": [
+        "aws",
+        "ec2",
+        "availability-zone",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_instance_name",
+      "type": "function",
+      "name": "get_instance_name",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        160,
+        163
+      ],
+      "summary": "返回当前 EC2 实例的 Name tag,用于节点命名。",
+      "tags": [
+        "aws",
+        "ec2",
+        "tags",
+        "naming",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_instance_ip_address",
+      "type": "function",
+      "name": "get_instance_ip_address",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        166,
+        169
+      ],
+      "summary": "返回当前 EC2 实例的私有 IP 地址。",
+      "tags": [
+        "aws",
+        "ec2",
+        "networking",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:split_by_lines",
+      "type": "function",
+      "name": "split_by_lines",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        171,
+        178
+      ],
+      "summary": "按换行符拆分字符串为 bash 数组。",
+      "tags": [
+        "utility",
+        "string",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:generate_consul_config",
+      "type": "function",
+      "name": "generate_consul_config",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        180,
+        329
+      ],
+      "summary": "根据运行时参数生成 Consul HCL/JSON 配置文件,涵盖 datacenter、retry_join、ACL、加密、UI 与 telemetry 设置。",
+      "tags": [
+        "consul",
+        "config-generation",
+        "hcl",
+        "shell"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:generate_systemd_config",
+      "type": "function",
+      "name": "generate_systemd_config",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        331,
+        392
+      ],
+      "summary": "生成 Consul 的 systemd unit 配置文件,设置启动用户、LimitNOFILE、KillMode 与重启策略。",
+      "tags": [
+        "systemd",
+        "service-config",
+        "consul",
+        "shell"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:start_consul",
+      "type": "function",
+      "name": "start_consul",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        394,
+        400
+      ],
+      "summary": "调用 systemctl 启动 Consul 服务。",
+      "tags": [
+        "systemd",
+        "service-control",
+        "consul",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:bootstrap",
+      "type": "function",
+      "name": "bootstrap",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        402,
+        430
+      ],
+      "summary": "在 server 模式下执行 Consul ACL bootstrap 并持久化 bootstrap token 到本地文件。",
+      "tags": [
+        "consul",
+        "acl",
+        "bootstrap",
+        "security",
+        "shell"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:setup_dns_resolving",
+      "type": "function",
+      "name": "setup_dns_resolving",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        432,
+        474
+      ],
+      "summary": "配置 systemd-resolved,使 Consul DNS(127.0.0.1:8600)成为系统 DNS 解析器,保留原 DHCP 域名路由。",
+      "tags": [
+        "dns",
+        "systemd-resolved",
+        "consul",
+        "networking",
+        "shell"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_owner_of_path",
+      "type": "function",
+      "name": "get_owner_of_path",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        477,
+        480
+      ],
+      "summary": "通过 stat 获取指定路径所属用户(用户名)。",
+      "tags": [
+        "utility",
+        "filesystem",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_owner_home_dir",
+      "type": "function",
+      "name": "get_owner_home_dir",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        482,
+        494
+      ],
+      "summary": "通过 getent passwd 查找系统用户的家目录路径。",
+      "tags": [
+        "utility",
+        "filesystem",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "lineRange": [
+        496,
+        758
+      ],
+      "summary": "run-consul 入口主流程:解析参数,探测 EC2 元数据,根据 client/server 模式生成配置,启动服务并完成 bootstrap 与 DNS 设置。",
+      "tags": [
+        "entry-point",
+        "consul",
+        "bootstrap",
+        "orchestration",
+        "shell"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "type": "file",
+      "name": "run-consul.sh",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "summary": "Consul 启动主脚本,在 EC2 启动时通过 user-data 引导 client 或 server 模式 Consul 进程,处理 IMDS 元数据、ACL bootstrap 与 DNS 解析设置。",
+      "tags": [
+        "script",
+        "consul",
+        "bootstrap",
+        "systemd",
+        "ec2"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:print_usage",
+      "type": "function",
+      "name": "print_usage",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        21,
+        47
+      ],
+      "summary": "打印 run-nomad 脚本的命令行帮助,展示 server/client 模式选项与默认值。",
+      "tags": [
+        "cli",
+        "help",
+        "shell"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:log",
+      "type": "function",
+      "name": "log",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        49,
+        54
+      ],
+      "summary": "通用日志输出函数,支持不同等级与目标流。",
+      "tags": [
+        "logging",
+        "utility",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:log_info",
+      "type": "function",
+      "name": "log_info",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        56,
+        59
+      ],
+      "summary": "输出 info 级别日志消息。",
+      "tags": [
+        "logging",
+        "utility",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:log_warn",
+      "type": "function",
+      "name": "log_warn",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        61,
+        64
+      ],
+      "summary": "输出 warning 级别日志消息。",
+      "tags": [
+        "logging",
+        "utility",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:log_error",
+      "type": "function",
+      "name": "log_error",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        66,
+        69
+      ],
+      "summary": "输出 error 级别日志消息。",
+      "tags": [
+        "logging",
+        "utility",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:strip_prefix",
+      "type": "function",
+      "name": "strip_prefix",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        72,
+        76
+      ],
+      "summary": "去除字符串开头的前缀。",
+      "tags": [
+        "utility",
+        "string",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:assert_not_empty",
+      "type": "function",
+      "name": "assert_not_empty",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        78,
+        87
+      ],
+      "summary": "断言变量非空,否则输出错误并退出。",
+      "tags": [
+        "validation",
+        "assertion",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_instance_metadata_value",
+      "type": "function",
+      "name": "get_instance_metadata_value",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        90,
+        111
+      ],
+      "summary": "通过 IMDSv1 从 EC2 元数据服务获取指定路径的字段值。",
+      "tags": [
+        "aws",
+        "ec2",
+        "imds",
+        "metadata",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_instance_metadata_token",
+      "type": "function",
+      "name": "get_instance_metadata_token",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        114,
+        134
+      ],
+      "summary": "通过 IMDSv2 token 端点申请访问 token,用于访问受限元数据。",
+      "tags": [
+        "aws",
+        "ec2",
+        "imdsv2",
+        "security",
+        "shell"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_instance_dynamic_metadata",
+      "type": "function",
+      "name": "get_instance_dynamic_metadata",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        137,
+        146
+      ],
+      "summary": "从 EC2 动态实例元数据服务获取指定字段值。",
+      "tags": [
+        "aws",
+        "ec2",
+        "imds",
+        "metadata",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_instance_tag_value",
+      "type": "function",
+      "name": "get_instance_tag_value",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        149,
+        156
+      ],
+      "summary": "读取当前 EC2 实例的指定 tag 值,用于集群自发现。",
+      "tags": [
+        "aws",
+        "ec2",
+        "tags",
+        "cluster-discovery",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_instance_region",
+      "type": "function",
+      "name": "get_instance_region",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        159,
+        162
+      ],
+      "summary": "返回当前 EC2 实例所在 AWS 区域。",
+      "tags": [
+        "aws",
+        "ec2",
+        "region",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_instance_zone",
+      "type": "function",
+      "name": "get_instance_zone",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        165,
+        168
+      ],
+      "summary": "返回当前 EC2 实例所在可用区(AZ)。",
+      "tags": [
+        "aws",
+        "ec2",
+        "availability-zone",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_instance_name",
+      "type": "function",
+      "name": "get_instance_name",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        171,
+        174
+      ],
+      "summary": "返回当前 EC2 实例 Name tag,用于节点命名。",
+      "tags": [
+        "aws",
+        "ec2",
+        "tags",
+        "naming",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_instance_ip_address",
+      "type": "function",
+      "name": "get_instance_ip_address",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        177,
+        180
+      ],
+      "summary": "返回当前 EC2 实例的私有 IP 地址。",
+      "tags": [
+        "aws",
+        "ec2",
+        "networking",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:assert_is_installed",
+      "type": "function",
+      "name": "assert_is_installed",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        182,
+        189
+      ],
+      "summary": "断言指定命令在 PATH 中可执行,否则报错退出。",
+      "tags": [
+        "validation",
+        "assertion",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:generate_nomad_config",
+      "type": "function",
+      "name": "generate_nomad_config",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        191,
+        317
+      ],
+      "summary": "生成 Nomad HCL 配置文件,包含 datacenter、server/client 角色、ACL、consul 集成、telemetry、plugin 与 raw_exec/exec 驱动设置。",
+      "tags": [
+        "nomad",
+        "config-generation",
+        "hcl",
+        "shell"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:generate_supervisor_config",
+      "type": "function",
+      "name": "generate_supervisor_config",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        319,
+        346
+      ],
+      "summary": "生成 Nomad 的 supervisor(consul-template)配置,通过 Consul 监听将动态配置分发到 Nomad agent。",
+      "tags": [
+        "consul-template",
+        "supervisor",
+        "nomad",
+        "shell"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:start_nomad",
+      "type": "function",
+      "name": "start_nomad",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        348,
+        352
+      ],
+      "summary": "调用 systemctl 启动 Nomad 服务。",
+      "tags": [
+        "systemd",
+        "service-control",
+        "nomad",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:bootstrap",
+      "type": "function",
+      "name": "bootstrap",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        354,
+        367
+      ],
+      "summary": "在 server 模式下调用 nomad operator raft bootstrap 并将 bootstrap 期望值持久化,完成集群初始化。",
+      "tags": [
+        "nomad",
+        "raft",
+        "bootstrap",
+        "shell"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:create_node_pools",
+      "type": "function",
+      "name": "create_node_pools",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        369,
+        384
+      ],
+      "summary": "通过 nomad CLI 将节点池配置应用到 Nomad 服务器,完成节点池注册。",
+      "tags": [
+        "nomad",
+        "node-pool",
+        "shell"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_owner_of_path",
+      "type": "function",
+      "name": "get_owner_of_path",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        387,
+        390
+      ],
+      "summary": "通过 stat 查询指定路径所属的用户名。",
+      "tags": [
+        "utility",
+        "filesystem",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "lineRange": [
+        392,
+        486
+      ],
+      "summary": "run-nomad 主入口:解析参数,探测 EC2 元数据,根据 server/client 模式生成 Nomad 配置,启动服务并完成 bootstrap 与 node_pool 应用。",
+      "tags": [
+        "entry-point",
+        "nomad",
+        "bootstrap",
+        "orchestration",
+        "shell"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "type": "file",
+      "name": "run-nomad.sh",
+      "filePath": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "summary": "Nomad 启动主脚本,在 EC2 启动时通过 user-data 引导 server 或 client 模式 Nomad agent,处理 IMDS 元数据、ACL 与节点池创建。",
+      "tags": [
+        "script",
+        "nomad",
+        "bootstrap",
+        "systemd",
+        "ec2"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/provider-aws/nomad-cluster/variables.tf",
+      "type": "resource",
+      "name": "nomad-cluster/variables.tf",
+      "filePath": "iac/provider-aws/nomad-cluster/variables.tf",
+      "summary": "AWS Nomad 集群顶层模块的输入变量定义,涵盖 API、client、build、clickhouse、control_server 各节点池以及 S3 桶、ACL token 等配置。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "configuration",
+        "variables"
+      ],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh",
+      "target": "function:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh:max",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh",
+      "target": "function:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh:min",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh",
+      "target": "function:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh:ensure_even",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh",
+      "target": "function:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh:remove_decimal",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:print_usage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_instance_metadata_value",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_instance_metadata_token",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_instance_dynamic_metadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_instance_tag_value",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_instance_region",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_instance_zone",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_instance_name",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_instance_ip_address",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:split_by_lines",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:generate_consul_config",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:generate_systemd_config",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:start_consul",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:bootstrap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:setup_dns_resolving",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_owner_of_path",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:get_owner_home_dir",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:print_usage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:log",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:log_info",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:log_warn",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:log_error",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:strip_prefix",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:assert_not_empty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_instance_metadata_value",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_instance_metadata_token",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_instance_dynamic_metadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_instance_tag_value",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_instance_region",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_instance_zone",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_instance_name",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_instance_ip_address",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:assert_is_installed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:generate_nomad_config",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:generate_supervisor_config",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:start_nomad",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:bootstrap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:create_node_pools",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:get_owner_of_path",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster-disk-image/variables.pkr.hcl",
+      "target": "file:iac/provider-aws/nomad-cluster-disk-image/main.pkr.hcl",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-aws/nomad-cluster-disk-image/main.pkr.hcl",
+      "target": "resource:iac/provider-aws/nomad-cluster/main.tf",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-client/main.tf",
+      "target": "function:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh:max",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-client/main.tf",
+      "target": "function:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh:min",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-client/main.tf",
+      "target": "function:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh:ensure_even",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-client/main.tf",
+      "target": "function:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh:remove_decimal",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:run",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:generate_consul_config",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:run",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:generate_systemd_config",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:run",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:start_consul",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:run",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:bootstrap",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:run",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:setup_dns_resolving",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:run",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:generate_nomad_config",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:run",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:generate_supervisor_config",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:run",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:start_nomad",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:run",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:bootstrap",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:run",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:create_node_pools",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "resource:iac/provider-aws/nomad-cluster/main.tf",
+      "target": "file:iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/nomad-cluster/main.tf",
+      "target": "file:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-client/main.tf",
+      "target": "file:iac/provider-aws/modules/nodepool-client/scripts/start-client.sh",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-control-server/main.tf",
+      "target": "file:iac/provider-aws/modules/nodepool-control-server/scripts/start-server.sh",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "resource:iac/provider-aws/nomad-cluster/main.tf",
+      "target": "resource:iac/provider-aws/modules/nodepool-control-server/main.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/nomad-cluster/main.tf",
+      "target": "resource:iac/provider-aws/modules/nodepool-client/main.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:iac/provider-aws/nomad-cluster-disk-image/Makefile",
+      "target": "file:iac/provider-aws/nomad-cluster-disk-image/main.pkr.hcl",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

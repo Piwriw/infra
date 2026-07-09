@@ -1,0 +1,838 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 8,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "iac/provider-gcp/nomad-cluster/main.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 265,
+      "nonEmptyLines": 212,
+      "definitions": [
+        {
+          "name": "setup_files",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 84,
+          "endLine": 90
+        }
+      ],
+      "resources": [
+        {
+          "name": "google_secret_manager_secret.consul_gossip_encryption_key",
+          "kind": "google_secret_manager_secret",
+          "startLine": 34,
+          "endLine": 40
+        },
+        {
+          "name": "random_id.consul_gossip_encryption_key",
+          "kind": "random_id",
+          "startLine": 42,
+          "endLine": 44
+        },
+        {
+          "name": "google_secret_manager_secret_version.consul_gossip_encryption_key",
+          "kind": "google_secret_manager_secret_version",
+          "startLine": 46,
+          "endLine": 49
+        },
+        {
+          "name": "google_secret_manager_secret.consul_dns_request_token",
+          "kind": "google_secret_manager_secret",
+          "startLine": 51,
+          "endLine": 57
+        },
+        {
+          "name": "random_uuid.consul_dns_request_token",
+          "kind": "random_uuid",
+          "startLine": 59,
+          "endLine": 60
+        },
+        {
+          "name": "google_secret_manager_secret_version.consul_dns_request_token",
+          "kind": "google_secret_manager_secret_version",
+          "startLine": 62,
+          "endLine": 65
+        },
+        {
+          "name": "google_project_iam_member.network_viewer",
+          "kind": "google_project_iam_member",
+          "startLine": 67,
+          "endLine": 71
+        },
+        {
+          "name": "google_project_iam_member.monitoring_editor",
+          "kind": "google_project_iam_member",
+          "startLine": 73,
+          "endLine": 77
+        },
+        {
+          "name": "google_project_iam_member.logging_writer",
+          "kind": "google_project_iam_member",
+          "startLine": 78,
+          "endLine": 82
+        },
+        {
+          "name": "google_storage_bucket_object.setup_config_objects",
+          "kind": "google_storage_bucket_object",
+          "startLine": 92,
+          "endLine": 97
+        },
+        {
+          "name": "module.network",
+          "kind": "module",
+          "startLine": 99,
+          "endLine": 134
+        },
+        {
+          "name": "module.filestore",
+          "kind": "module",
+          "startLine": 136,
+          "endLine": 147
+        },
+        {
+          "name": "module.build_cluster",
+          "kind": "module",
+          "startLine": 150,
+          "endLine": 206
+        },
+        {
+          "name": "module.client_cluster",
+          "kind": "module",
+          "startLine": 208,
+          "endLine": 265
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 1,
+        "resourceCount": 14
+      }
+    },
+    {
+      "path": "iac/provider-gcp/nomad-cluster/moved.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 19,
+      "nonEmptyLines": 16,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 0
+      }
+    },
+    {
+      "path": "iac/provider-gcp/nomad-cluster/nodepool-api.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 173,
+      "nonEmptyLines": 146,
+      "resources": [
+        {
+          "name": "google_compute_health_check.api_nomad_check",
+          "kind": "google_compute_health_check",
+          "startLine": 23,
+          "endLine": 38
+        },
+        {
+          "name": "google_compute_instance_group_manager.api_pool",
+          "kind": "google_compute_instance_group_manager",
+          "startLine": 40,
+          "endLine": 97
+        },
+        {
+          "name": "google_compute_instance_template.api",
+          "kind": "google_compute_instance_template",
+          "startLine": 103,
+          "endLine": 173
+        },
+        {
+          "name": "data.google_compute_image.api_source_image",
+          "kind": "data.google_compute_image",
+          "startLine": 99,
+          "endLine": 101
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 4
+      }
+    },
+    {
+      "path": "iac/provider-gcp/nomad-cluster/nodepool-clickhouse.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 170,
+      "nonEmptyLines": 140,
+      "resources": [
+        {
+          "name": "google_compute_health_check.clickhouse_nomad_check",
+          "kind": "google_compute_health_check",
+          "startLine": 22,
+          "endLine": 37
+        },
+        {
+          "name": "google_compute_instance_group_manager.clickhouse_pool",
+          "kind": "google_compute_instance_group_manager",
+          "startLine": 39,
+          "endLine": 72
+        },
+        {
+          "name": "google_compute_disk.clickhouse_stateful_disk",
+          "kind": "google_compute_disk",
+          "startLine": 74,
+          "endLine": 86
+        },
+        {
+          "name": "google_compute_per_instance_config.clickhouse_instances",
+          "kind": "google_compute_per_instance_config",
+          "startLine": 88,
+          "endLine": 107
+        },
+        {
+          "name": "google_compute_instance_template.clickhouse",
+          "kind": "google_compute_instance_template",
+          "startLine": 113,
+          "endLine": 170
+        },
+        {
+          "name": "data.google_compute_image.clickhouse_source_image",
+          "kind": "data.google_compute_image",
+          "startLine": 109,
+          "endLine": 111
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 6
+      }
+    },
+    {
+      "path": "iac/provider-gcp/nomad-cluster/nodepool-control-server.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 157,
+      "nonEmptyLines": 131,
+      "resources": [
+        {
+          "name": "google_compute_health_check.server_nomad_check",
+          "kind": "google_compute_health_check",
+          "startLine": 15,
+          "endLine": 26
+        },
+        {
+          "name": "google_compute_region_instance_group_manager.server_pool",
+          "kind": "google_compute_region_instance_group_manager",
+          "startLine": 32,
+          "endLine": 86
+        },
+        {
+          "name": "google_compute_instance_template.server",
+          "kind": "google_compute_instance_template",
+          "startLine": 92,
+          "endLine": 157
+        },
+        {
+          "name": "data.google_compute_zones.region_zones",
+          "kind": "data.google_compute_zones",
+          "startLine": 28,
+          "endLine": 30
+        },
+        {
+          "name": "data.google_compute_image.server_source_image",
+          "kind": "data.google_compute_image",
+          "startLine": 88,
+          "endLine": 90
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 5
+      }
+    },
+    {
+      "path": "iac/provider-gcp/nomad-cluster/nodepool-loki.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 144,
+      "nonEmptyLines": 122,
+      "resources": [
+        {
+          "name": "google_compute_health_check.loki_nomad_check",
+          "kind": "google_compute_health_check",
+          "startLine": 23,
+          "endLine": 38
+        },
+        {
+          "name": "google_compute_instance_group_manager.loki_pool",
+          "kind": "google_compute_instance_group_manager",
+          "startLine": 40,
+          "endLine": 73
+        },
+        {
+          "name": "google_compute_instance_template.loki",
+          "kind": "google_compute_instance_template",
+          "startLine": 79,
+          "endLine": 144
+        },
+        {
+          "name": "data.google_compute_image.loki_source_image",
+          "kind": "data.google_compute_image",
+          "startLine": 75,
+          "endLine": 77
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 4
+      }
+    },
+    {
+      "path": "iac/provider-gcp/nomad-cluster/outputs.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 3,
+      "nonEmptyLines": 3,
+      "definitions": [
+        {
+          "name": "shared_chunk_cache_path",
+          "kind": "output",
+          "fields": [],
+          "startLine": 1,
+          "endLine": 3
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 1,
+        "resourceCount": 0
+      }
+    },
+    {
+      "path": "iac/provider-gcp/nomad-cluster/variables.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 397,
+      "nonEmptyLines": 328,
+      "definitions": [
+        {
+          "name": "prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 1,
+          "endLine": 3
+        },
+        {
+          "name": "environment",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 5,
+          "endLine": 8
+        },
+        {
+          "name": "cluster_tag_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 10,
+          "endLine": 14
+        },
+        {
+          "name": "server_image_family",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 16,
+          "endLine": 19
+        },
+        {
+          "name": "server_cluster_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 21,
+          "endLine": 24
+        },
+        {
+          "name": "server_cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 26,
+          "endLine": 28
+        },
+        {
+          "name": "server_machine_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 30,
+          "endLine": 32
+        },
+        {
+          "name": "api_image_family",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 34,
+          "endLine": 37
+        },
+        {
+          "name": "api_cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 39,
+          "endLine": 41
+        },
+        {
+          "name": "api_machine_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 43,
+          "endLine": 45
+        },
+        {
+          "name": "loki_cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 47,
+          "endLine": 49
+        },
+        {
+          "name": "loki_machine_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 51,
+          "endLine": 53
+        },
+        {
+          "name": "build_image_family",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 55,
+          "endLine": 58
+        },
+        {
+          "name": "client_proxy_health_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 60,
+          "endLine": 66
+        },
+        {
+          "name": "client_proxy_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 68,
+          "endLine": 73
+        },
+        {
+          "name": "api_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 75,
+          "endLine": 81
+        },
+        {
+          "name": "extra_api_instance_groups",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 83,
+          "endLine": 88
+        },
+        {
+          "name": "ingress_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 90,
+          "endLine": 96
+        },
+        {
+          "name": "docker_reverse_proxy_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 98,
+          "endLine": 104
+        },
+        {
+          "name": "client_image_family",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 106,
+          "endLine": 109
+        },
+        {
+          "name": "client_cluster_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 111,
+          "endLine": 114
+        },
+        {
+          "name": "client_clusters_config",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 116,
+          "endLine": 142
+        },
+        {
+          "name": "build_cluster_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 144,
+          "endLine": 147
+        },
+        {
+          "name": "build_clusters_config",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 149,
+          "endLine": 175
+        },
+        {
+          "name": "gcp_project_id",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 177,
+          "endLine": 179
+        },
+        {
+          "name": "gcp_region",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 181,
+          "endLine": 183
+        },
+        {
+          "name": "gcp_zone",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 185,
+          "endLine": 187
+        },
+        {
+          "name": "network_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 189,
+          "endLine": 191
+        },
+        {
+          "name": "google_service_account_email",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 193,
+          "endLine": 195
+        },
+        {
+          "name": "google_service_account_key",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 197,
+          "endLine": 199
+        },
+        {
+          "name": "docker_contexts_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 201,
+          "endLine": 203
+        },
+        {
+          "name": "domain_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 205,
+          "endLine": 208
+        },
+        {
+          "name": "additional_domains",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 210,
+          "endLine": 213
+        },
+        {
+          "name": "cluster_setup_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 215,
+          "endLine": 218
+        },
+        {
+          "name": "fc_env_pipeline_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 220,
+          "endLine": 223
+        },
+        {
+          "name": "fc_kernels_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 225,
+          "endLine": 228
+        },
+        {
+          "name": "fc_versions_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 230,
+          "endLine": 232
+        },
+        {
+          "name": "fc_busybox_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 234,
+          "endLine": 237
+        },
+        {
+          "name": "consul_acl_token_secret",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 239,
+          "endLine": 241
+        },
+        {
+          "name": "nomad_acl_token_secret",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 243,
+          "endLine": 245
+        },
+        {
+          "name": "nomad_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 247,
+          "endLine": 249
+        },
+        {
+          "name": "labels",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 251,
+          "endLine": 254
+        },
+        {
+          "name": "clickhouse_cluster_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 256,
+          "endLine": 259
+        },
+        {
+          "name": "clickhouse_cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 261,
+          "endLine": 264
+        },
+        {
+          "name": "clickhouse_machine_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 266,
+          "endLine": 269
+        },
+        {
+          "name": "clickhouse_job_constraint_prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 272,
+          "endLine": 275
+        },
+        {
+          "name": "clickhouse_health_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 277,
+          "endLine": 283
+        },
+        {
+          "name": "filestore_cache_enabled",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 285,
+          "endLine": 288
+        },
+        {
+          "name": "cloudflare_api_token_secret_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 290,
+          "endLine": 292
+        },
+        {
+          "name": "filestore_cache_tier",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 294,
+          "endLine": 297
+        },
+        {
+          "name": "filestore_cache_capacity_gb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 299,
+          "endLine": 302
+        },
+        {
+          "name": "filestore_nfs_version",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 304,
+          "endLine": 306
+        },
+        {
+          "name": "api_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 308,
+          "endLine": 311
+        },
+        {
+          "name": "build_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 313,
+          "endLine": 316
+        },
+        {
+          "name": "clickhouse_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 318,
+          "endLine": 321
+        },
+        {
+          "name": "loki_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 323,
+          "endLine": 326
+        },
+        {
+          "name": "orchestrator_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 328,
+          "endLine": 331
+        },
+        {
+          "name": "api_use_nat",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 333,
+          "endLine": 336
+        },
+        {
+          "name": "api_nat_ips",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 338,
+          "endLine": 341
+        },
+        {
+          "name": "api_nat_min_ports_per_vm",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 343,
+          "endLine": 345
+        },
+        {
+          "name": "api_boot_disk_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 348,
+          "endLine": 351
+        },
+        {
+          "name": "server_boot_disk_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 353,
+          "endLine": 356
+        },
+        {
+          "name": "server_boot_disk_size_gb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 358,
+          "endLine": 361
+        },
+        {
+          "name": "clickhouse_boot_disk_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 363,
+          "endLine": 366
+        },
+        {
+          "name": "clickhouse_stateful_disk_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 368,
+          "endLine": 371
+        },
+        {
+          "name": "clickhouse_stateful_disk_size_gb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 373,
+          "endLine": 376
+        },
+        {
+          "name": "loki_boot_disk_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 378,
+          "endLine": 381
+        },
+        {
+          "name": "persistent_volume_types",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 383,
+          "endLine": 390
+        },
+        {
+          "name": "additional_api_paths_handled_by_ingress",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 392,
+          "endLine": 397
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 69,
+        "resourceCount": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,1096 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 4,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "iac/provider-gcp/nomad/images.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 36,
+      "nonEmptyLines": 31,
+      "resources": [
+        {
+          "name": "data.google_artifact_registry_docker_image.api_image",
+          "kind": "data.google_artifact_registry_docker_image",
+          "startLine": 1,
+          "endLine": 5
+        },
+        {
+          "name": "data.google_artifact_registry_docker_image.db_migrator_image",
+          "kind": "data.google_artifact_registry_docker_image",
+          "startLine": 7,
+          "endLine": 11
+        },
+        {
+          "name": "data.google_artifact_registry_docker_image.docker_reverse_proxy_image",
+          "kind": "data.google_artifact_registry_docker_image",
+          "startLine": 13,
+          "endLine": 17
+        },
+        {
+          "name": "data.google_artifact_registry_docker_image.client_proxy_image",
+          "kind": "data.google_artifact_registry_docker_image",
+          "startLine": 19,
+          "endLine": 23
+        },
+        {
+          "name": "data.google_artifact_registry_docker_image.clickhouse_migrator_image",
+          "kind": "data.google_artifact_registry_docker_image",
+          "startLine": 25,
+          "endLine": 29
+        },
+        {
+          "name": "data.google_artifact_registry_docker_image.dashboard_api_image",
+          "kind": "data.google_artifact_registry_docker_image",
+          "startLine": 31,
+          "endLine": 36
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 6
+      }
+    },
+    {
+      "path": "iac/provider-gcp/nomad/main.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 526,
+      "nonEmptyLines": 391,
+      "resources": [
+        {
+          "name": "nomad_scheduler_config.config",
+          "kind": "nomad_scheduler_config",
+          "startLine": 37,
+          "endLine": 39
+        },
+        {
+          "name": "nomad_job.docker_reverse_proxy",
+          "kind": "nomad_job",
+          "startLine": 103,
+          "endLine": 114
+        },
+        {
+          "name": "google_secret_manager_secret.grafana_otlp_url",
+          "kind": "google_secret_manager_secret",
+          "startLine": 135,
+          "endLine": 141
+        },
+        {
+          "name": "google_secret_manager_secret_version.grafana_otlp_url",
+          "kind": "google_secret_manager_secret_version",
+          "startLine": 143,
+          "endLine": 150
+        },
+        {
+          "name": "google_secret_manager_secret.grafana_otel_collector_token",
+          "kind": "google_secret_manager_secret",
+          "startLine": 160,
+          "endLine": 166
+        },
+        {
+          "name": "google_secret_manager_secret_version.grafana_otel_collector_token",
+          "kind": "google_secret_manager_secret_version",
+          "startLine": 168,
+          "endLine": 175
+        },
+        {
+          "name": "google_secret_manager_secret.grafana_username",
+          "kind": "google_secret_manager_secret",
+          "startLine": 185,
+          "endLine": 191
+        },
+        {
+          "name": "google_secret_manager_secret_version.grafana_username",
+          "kind": "google_secret_manager_secret_version",
+          "startLine": 194,
+          "endLine": 201
+        },
+        {
+          "name": "google_secret_manager_secret.grafana_logs_user",
+          "kind": "google_secret_manager_secret",
+          "startLine": 252,
+          "endLine": 258
+        },
+        {
+          "name": "google_secret_manager_secret_version.grafana_logs_user",
+          "kind": "google_secret_manager_secret_version",
+          "startLine": 260,
+          "endLine": 267
+        },
+        {
+          "name": "google_secret_manager_secret.grafana_logs_url",
+          "kind": "google_secret_manager_secret",
+          "startLine": 275,
+          "endLine": 282
+        },
+        {
+          "name": "google_secret_manager_secret_version.grafana_logs_url",
+          "kind": "google_secret_manager_secret_version",
+          "startLine": 284,
+          "endLine": 291
+        },
+        {
+          "name": "google_secret_manager_secret.grafana_logs_collector_api_token",
+          "kind": "google_secret_manager_secret",
+          "startLine": 300,
+          "endLine": 306
+        },
+        {
+          "name": "google_secret_manager_secret_version.grafana_logs_collector_api_token",
+          "kind": "google_secret_manager_secret_version",
+          "startLine": 308,
+          "endLine": 315
+        },
+        {
+          "name": "google_secret_manager_secret.clickhouse_password",
+          "kind": "google_secret_manager_secret",
+          "startLine": 425,
+          "endLine": 431
+        },
+        {
+          "name": "google_secret_manager_secret_version.clickhouse_password_value",
+          "kind": "google_secret_manager_secret_version",
+          "startLine": 433,
+          "endLine": 437
+        },
+        {
+          "name": "google_secret_manager_secret.clickhouse_server_secret",
+          "kind": "google_secret_manager_secret",
+          "startLine": 439,
+          "endLine": 445
+        },
+        {
+          "name": "google_secret_manager_secret_version.clickhouse_server_secret_value",
+          "kind": "google_secret_manager_secret_version",
+          "startLine": 447,
+          "endLine": 451
+        },
+        {
+          "name": "google_service_account.clickhouse_service_account",
+          "kind": "google_service_account",
+          "startLine": 453,
+          "endLine": 456
+        },
+        {
+          "name": "google_storage_bucket_iam_member.clickhouse_service_account_iam",
+          "kind": "google_storage_bucket_iam_member",
+          "startLine": 458,
+          "endLine": 462
+        },
+        {
+          "name": "google_storage_hmac_key.clickhouse_hmac_key",
+          "kind": "google_storage_hmac_key",
+          "startLine": 464,
+          "endLine": 466
+        },
+        {
+          "name": "google_service_account_key.clickhouse_service_account_key",
+          "kind": "google_service_account_key",
+          "startLine": 468,
+          "endLine": 470
+        },
+        {
+          "name": "nomad_job.clean_nfs_cache",
+          "kind": "nomad_job",
+          "startLine": 511,
+          "endLine": 526
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.postgres_connection_string",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 16,
+          "endLine": 18
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.postgres_read_replica_connection_string",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 20,
+          "endLine": 22
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.launch_darkly_api_key",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 25,
+          "endLine": 27
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.grafana_otlp_url",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 152,
+          "endLine": 156
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.grafana_otel_collector_token",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 177,
+          "endLine": 181
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.grafana_username",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 203,
+          "endLine": 207
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.grafana_logs_user",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 269,
+          "endLine": 273
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.grafana_logs_url",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 293,
+          "endLine": 297
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.grafana_logs_collector_api_token",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 317,
+          "endLine": 321
+        },
+        {
+          "name": "data.google_storage_bucket_object.orchestrator",
+          "kind": "data.google_storage_bucket_object",
+          "startLine": 339,
+          "endLine": 343
+        },
+        {
+          "name": "data.google_storage_bucket_object.template_manager",
+          "kind": "data.google_storage_bucket_object",
+          "startLine": 365,
+          "endLine": 368
+        },
+        {
+          "name": "data.google_storage_bucket_object.nomad_nodepool_apm",
+          "kind": "data.google_storage_bucket_object",
+          "startLine": 389,
+          "endLine": 394
+        },
+        {
+          "name": "data.google_storage_bucket_object.filestore_cleanup",
+          "kind": "data.google_storage_bucket_object",
+          "startLine": 502,
+          "endLine": 505
+        },
+        {
+          "name": "module.ingress",
+          "kind": "module",
+          "startLine": 41,
+          "endLine": 57
+        },
+        {
+          "name": "module.api",
+          "kind": "module",
+          "startLine": 59,
+          "endLine": 79
+        },
+        {
+          "name": "module.dashboard_api",
+          "kind": "module",
+          "startLine": 81,
+          "endLine": 92
+        },
+        {
+          "name": "module.redis",
+          "kind": "module",
+          "startLine": 94,
+          "endLine": 101
+        },
+        {
+          "name": "module.client_proxy",
+          "kind": "module",
+          "startLine": 116,
+          "endLine": 132
+        },
+        {
+          "name": "module.otel_collector",
+          "kind": "module",
+          "startLine": 209,
+          "endLine": 235
+        },
+        {
+          "name": "module.otel_collector_nomad_server",
+          "kind": "module",
+          "startLine": 237,
+          "endLine": 249
+        },
+        {
+          "name": "module.logs_collector",
+          "kind": "module",
+          "startLine": 323,
+          "endLine": 337
+        },
+        {
+          "name": "module.orchestrator",
+          "kind": "module",
+          "startLine": 350,
+          "endLine": 363
+        },
+        {
+          "name": "module.template_manager",
+          "kind": "module",
+          "startLine": 374,
+          "endLine": 387
+        },
+        {
+          "name": "module.template_manager_autoscaler",
+          "kind": "module",
+          "startLine": 396,
+          "endLine": 404
+        },
+        {
+          "name": "module.loki",
+          "kind": "module",
+          "startLine": 406,
+          "endLine": 423
+        },
+        {
+          "name": "module.clickhouse",
+          "kind": "module",
+          "startLine": 472,
+          "endLine": 500
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 49
+      }
+    },
+    {
+      "path": "iac/provider-gcp/nomad/moved.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 84,
+      "nonEmptyLines": 68,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 0
+      }
+    },
+    {
+      "path": "iac/provider-gcp/nomad/variables.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 493,
+      "nonEmptyLines": 394,
+      "definitions": [
+        {
+          "name": "prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 1,
+          "endLine": 3
+        },
+        {
+          "name": "gcp_zone",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 5,
+          "endLine": 7
+        },
+        {
+          "name": "orchestrator_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 9,
+          "endLine": 11
+        },
+        {
+          "name": "core_repository_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 13,
+          "endLine": 15
+        },
+        {
+          "name": "consul_acl_token_secret",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 17,
+          "endLine": 19
+        },
+        {
+          "name": "template_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 21,
+          "endLine": 23
+        },
+        {
+          "name": "build_cache_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 25,
+          "endLine": 27
+        },
+        {
+          "name": "builder_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 29,
+          "endLine": 31
+        },
+        {
+          "name": "nomad_acl_token_secret",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 34,
+          "endLine": 36
+        },
+        {
+          "name": "nomad_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 38,
+          "endLine": 40
+        },
+        {
+          "name": "otel_collector_resources_memory_mb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 42,
+          "endLine": 44
+        },
+        {
+          "name": "otel_collector_resources_cpu_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 46,
+          "endLine": 48
+        },
+        {
+          "name": "api_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 51,
+          "endLine": 57
+        },
+        {
+          "name": "api_internal_grpc_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 59,
+          "endLine": 62
+        },
+        {
+          "name": "api_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 64,
+          "endLine": 68
+        },
+        {
+          "name": "api_db_migrator_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 70,
+          "endLine": 74
+        },
+        {
+          "name": "ingress_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 76,
+          "endLine": 79
+        },
+        {
+          "name": "ingress_internal_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 81,
+          "endLine": 84
+        },
+        {
+          "name": "ingress_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 86,
+          "endLine": 88
+        },
+        {
+          "name": "traefik_config_files",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 90,
+          "endLine": 93
+        },
+        {
+          "name": "api_resources_cpu_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 95,
+          "endLine": 97
+        },
+        {
+          "name": "api_resources_memory_mb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 99,
+          "endLine": 101
+        },
+        {
+          "name": "environment",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 103,
+          "endLine": 105
+        },
+        {
+          "name": "api_server_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 107,
+          "endLine": 109
+        },
+        {
+          "name": "api_machine_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 111,
+          "endLine": 113
+        },
+        {
+          "name": "api_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 115,
+          "endLine": 117
+        },
+        {
+          "name": "loki_use_v13_schema_from",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 119,
+          "endLine": 122
+        },
+        {
+          "name": "loki_machine_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 124,
+          "endLine": 126
+        },
+        {
+          "name": "loki_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 128,
+          "endLine": 130
+        },
+        {
+          "name": "custom_envs_repository_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 132,
+          "endLine": 134
+        },
+        {
+          "name": "gcp_project_id",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 136,
+          "endLine": 138
+        },
+        {
+          "name": "gcp_region",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 140,
+          "endLine": 142
+        },
+        {
+          "name": "google_service_account_key",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 144,
+          "endLine": 146
+        },
+        {
+          "name": "postgres_connection_string_secret_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 148,
+          "endLine": 150
+        },
+        {
+          "name": "postgres_read_replica_connection_string_secret_version",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 152,
+          "endLine": 154
+        },
+        {
+          "name": "client_proxy_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 156,
+          "endLine": 158
+        },
+        {
+          "name": "client_proxy_resources_memory_mb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 160,
+          "endLine": 162
+        },
+        {
+          "name": "client_proxy_resources_cpu_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 164,
+          "endLine": 166
+        },
+        {
+          "name": "client_proxy_update_max_parallel",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 168,
+          "endLine": 170
+        },
+        {
+          "name": "client_proxy_session_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 172,
+          "endLine": 174
+        },
+        {
+          "name": "client_proxy_health_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 176,
+          "endLine": 178
+        },
+        {
+          "name": "client_proxy_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 180,
+          "endLine": 184
+        },
+        {
+          "name": "domain_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 186,
+          "endLine": 188
+        },
+        {
+          "name": "logs_proxy_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 191,
+          "endLine": 200
+        },
+        {
+          "name": "logs_health_proxy_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 202,
+          "endLine": 213
+        },
+        {
+          "name": "launch_darkly_api_key_secret_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 215,
+          "endLine": 217
+        },
+        {
+          "name": "clickhouse_backups_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 219,
+          "endLine": 221
+        },
+        {
+          "name": "loki_resources_memory_mb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 223,
+          "endLine": 225
+        },
+        {
+          "name": "loki_resources_cpu_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 227,
+          "endLine": 229
+        },
+        {
+          "name": "loki_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 231,
+          "endLine": 233
+        },
+        {
+          "name": "loki_service_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 235,
+          "endLine": 240
+        },
+        {
+          "name": "docker_reverse_proxy_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 243,
+          "endLine": 249
+        },
+        {
+          "name": "docker_reverse_proxy_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 251,
+          "endLine": 255
+        },
+        {
+          "name": "orchestrator_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 258,
+          "endLine": 260
+        },
+        {
+          "name": "orchestrator_proxy_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 262,
+          "endLine": 264
+        },
+        {
+          "name": "fc_env_pipeline_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 266,
+          "endLine": 268
+        },
+        {
+          "name": "template_manager_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 271,
+          "endLine": 273
+        },
+        {
+          "name": "template_manager_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 275,
+          "endLine": 279
+        },
+        {
+          "name": "template_manages_clusters_size_gt_1",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 281,
+          "endLine": 283
+        },
+        {
+          "name": "nomad_autoscaler_version",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 285,
+          "endLine": 289
+        },
+        {
+          "name": "redis_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 292,
+          "endLine": 297
+        },
+        {
+          "name": "redis_managed",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 299,
+          "endLine": 301
+        },
+        {
+          "name": "clickhouse_resources_memory_mb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 304,
+          "endLine": 306
+        },
+        {
+          "name": "clickhouse_resources_cpu_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 308,
+          "endLine": 310
+        },
+        {
+          "name": "clickhouse_username",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 312,
+          "endLine": 315
+        },
+        {
+          "name": "clickhouse_password",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 317,
+          "endLine": 320
+        },
+        {
+          "name": "clickhouse_server_secret",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 322,
+          "endLine": 325
+        },
+        {
+          "name": "clickhouse_database",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 327,
+          "endLine": 329
+        },
+        {
+          "name": "clickhouse_server_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 331,
+          "endLine": 333
+        },
+        {
+          "name": "clickhouse_metrics_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 335,
+          "endLine": 338
+        },
+        {
+          "name": "otel_collector_grpc_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 340,
+          "endLine": 343
+        },
+        {
+          "name": "enable_otel_router_logs",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 345,
+          "endLine": 349
+        },
+        {
+          "name": "otel_router_http_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 351,
+          "endLine": 355
+        },
+        {
+          "name": "enable_otel_router_metrics",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 357,
+          "endLine": 361
+        },
+        {
+          "name": "otel_router_grpc_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 363,
+          "endLine": 367
+        },
+        {
+          "name": "enable_gcp_telemetry_metrics",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 369,
+          "endLine": 373
+        },
+        {
+          "name": "enable_gcp_telemetry_external_metrics",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 375,
+          "endLine": 379
+        },
+        {
+          "name": "clickhouse_server_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 381,
+          "endLine": 386
+        },
+        {
+          "name": "clickhouse_job_constraint_prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 388,
+          "endLine": 391
+        },
+        {
+          "name": "clickhouse_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 393,
+          "endLine": 396
+        },
+        {
+          "name": "shared_chunk_cache_path",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 398,
+          "endLine": 401
+        },
+        {
+          "name": "filestore_cache_cleanup_disk_usage_target",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 403,
+          "endLine": 410
+        },
+        {
+          "name": "filestore_cache_cleanup_dry_run",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 412,
+          "endLine": 414
+        },
+        {
+          "name": "filestore_cache_cleanup_max_concurrent_stat",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 416,
+          "endLine": 419
+        },
+        {
+          "name": "filestore_cache_cleanup_max_concurrent_scan",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 421,
+          "endLine": 424
+        },
+        {
+          "name": "filestore_cache_cleanup_max_concurrent_delete",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 426,
+          "endLine": 429
+        },
+        {
+          "name": "filestore_cleanup_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 431,
+          "endLine": 435
+        },
+        {
+          "name": "dockerhub_remote_repository_url",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 437,
+          "endLine": 439
+        },
+        {
+          "name": "default_persistent_volume_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 441,
+          "endLine": 444
+        },
+        {
+          "name": "dashboard_api_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 447,
+          "endLine": 450
+        },
+        {
+          "name": "dashboard_api_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 452,
+          "endLine": 456
+        },
+        {
+          "name": "volume_token_issuer",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 458,
+          "endLine": 460
+        },
+        {
+          "name": "volume_token_signing_key",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 462,
+          "endLine": 464
+        },
+        {
+          "name": "volume_token_signing_key_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 466,
+          "endLine": 468
+        },
+        {
+          "name": "volume_token_signing_method",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 470,
+          "endLine": 472
+        },
+        {
+          "name": "volume_token_duration",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 474,
+          "endLine": 476
+        },
+        {
+          "name": "gcs_grpc_connection_pool_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 478,
+          "endLine": 481
+        },
+        {
+          "name": "orchestrator_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 483,
+          "endLine": 487
+        },
+        {
+          "name": "orchestrator_enabled",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 489,
+          "endLine": 493
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 99,
+        "resourceCount": 0
+      }
+    }
+  ]
+}

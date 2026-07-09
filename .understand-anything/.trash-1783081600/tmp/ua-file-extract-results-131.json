@@ -1,0 +1,2364 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 15,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/shared/pkg/storage/header/serialization_v3.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 65,
+      "nonEmptyLines": 55,
+      "functions": [
+        {
+          "name": "serializeV3",
+          "startLine": 19,
+          "endLine": 39,
+          "params": [
+            "metadata",
+            "mappings"
+          ]
+        },
+        {
+          "name": "deserializeV3",
+          "startLine": 42,
+          "endLine": 65,
+          "params": [
+            "metadata",
+            "blockData"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "v3SerializableBuildMap",
+          "startLine": 11,
+          "endLine": 16,
+          "methods": [],
+          "properties": [
+            "Offset",
+            "Length",
+            "BuildId",
+            "BuildStorageOffset"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "serializeV3",
+          "callee": "binary.Write",
+          "lineNumber": 22
+        },
+        {
+          "caller": "serializeV3",
+          "callee": "fmt.Errorf",
+          "lineNumber": 23
+        },
+        {
+          "caller": "serializeV3",
+          "callee": "mappings.All",
+          "lineNumber": 26
+        },
+        {
+          "caller": "serializeV3",
+          "callee": "binary.Write",
+          "lineNumber": 33
+        },
+        {
+          "caller": "serializeV3",
+          "callee": "fmt.Errorf",
+          "lineNumber": 34
+        },
+        {
+          "caller": "serializeV3",
+          "callee": "buf.Bytes",
+          "lineNumber": 38
+        },
+        {
+          "caller": "deserializeV3",
+          "callee": "bytes.NewReader",
+          "lineNumber": 43
+        },
+        {
+          "caller": "deserializeV3",
+          "callee": "binary.Read",
+          "lineNumber": 48
+        },
+        {
+          "caller": "deserializeV3",
+          "callee": "errors.Is",
+          "lineNumber": 49
+        },
+        {
+          "caller": "deserializeV3",
+          "callee": "fmt.Errorf",
+          "lineNumber": 53
+        },
+        {
+          "caller": "deserializeV3",
+          "callee": "append",
+          "lineNumber": 56
+        },
+        {
+          "caller": "deserializeV3",
+          "callee": "NewHeader",
+          "lineNumber": 64
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/shared/pkg/storage/header/serialization_v5.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 343,
+      "nonEmptyLines": 308,
+      "functions": [
+        {
+          "name": "serializeV5",
+          "startLine": 34,
+          "endLine": 68,
+          "params": [
+            "metadata",
+            "builds",
+            "mapping",
+            "incomplete"
+          ]
+        },
+        {
+          "name": "writeV5MappingSection",
+          "startLine": 79,
+          "endLine": 133,
+          "params": [
+            "block",
+            "m"
+          ]
+        },
+        {
+          "name": "deserializeV5",
+          "startLine": 136,
+          "endLine": 180,
+          "params": [
+            "metadata",
+            "blockData"
+          ]
+        },
+        {
+          "name": "readV5MappingSection",
+          "startLine": 184,
+          "endLine": 343,
+          "params": [
+            "reader",
+            "blockSize",
+            "size"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "serializeV5",
+          "callee": "binary.Write",
+          "lineNumber": 36
+        },
+        {
+          "caller": "serializeV5",
+          "callee": "fmt.Errorf",
+          "lineNumber": 37
+        },
+        {
+          "caller": "serializeV5",
+          "callee": "writeV4BuildsSection",
+          "lineNumber": 42
+        },
+        {
+          "caller": "serializeV5",
+          "callee": "writeV5MappingSection",
+          "lineNumber": 46
+        },
+        {
+          "caller": "serializeV5",
+          "callee": "block.Bytes",
+          "lineNumber": 50
+        },
+        {
+          "caller": "serializeV5",
+          "callee": "compressLZ4",
+          "lineNumber": 51
+        },
+        {
+          "caller": "serializeV5",
+          "callee": "fmt.Errorf",
+          "lineNumber": 53
+        },
+        {
+          "caller": "serializeV5",
+          "callee": "make",
+          "lineNumber": 61
+        },
+        {
+          "caller": "serializeV5",
+          "callee": "len",
+          "lineNumber": 61
+        },
+        {
+          "caller": "serializeV5",
+          "callee": "copy",
+          "lineNumber": 62
+        },
+        {
+          "caller": "serializeV5",
+          "callee": "metaBuf.Bytes",
+          "lineNumber": 62
+        },
+        {
+          "caller": "serializeV5",
+          "callee": "binary.LittleEndian.PutUint32",
+          "lineNumber": 64
+        },
+        {
+          "caller": "serializeV5",
+          "callee": "uint32",
+          "lineNumber": 64
+        },
+        {
+          "caller": "serializeV5",
+          "callee": "len",
+          "lineNumber": 64
+        },
+        {
+          "caller": "serializeV5",
+          "callee": "copy",
+          "lineNumber": 65
+        },
+        {
+          "caller": "serializeV5",
+          "callee": "int64",
+          "lineNumber": 67
+        },
+        {
+          "caller": "serializeV5",
+          "callee": "len",
+          "lineNumber": 67
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "binary.Write",
+          "lineNumber": 86
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "uint32",
+          "lineNumber": 86
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "len",
+          "lineNumber": 86
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 87
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "block.Write",
+          "lineNumber": 90
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 91
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "binary.Write",
+          "lineNumber": 94
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "uint32",
+          "lineNumber": 94
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 95
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "uint64",
+          "lineNumber": 105
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "block.Write",
+          "lineNumber": 106
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "binary.PutUvarint",
+          "lineNumber": 106
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "block.Write",
+          "lineNumber": 113
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "binary.PutUvarint",
+          "lineNumber": 113
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "uint64",
+          "lineNumber": 113
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "int64",
+          "lineNumber": 120
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "block.Write",
+          "lineNumber": 121
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "binary.PutVarint",
+          "lineNumber": 121
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "uint64",
+          "lineNumber": 125
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "block.Write",
+          "lineNumber": 129
+        },
+        {
+          "caller": "writeV5MappingSection",
+          "callee": "binary.PutUvarint",
+          "lineNumber": 129
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "errors.New",
+          "lineNumber": 138
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "len",
+          "lineNumber": 140
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "fmt.Errorf",
+          "lineNumber": 141
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "len",
+          "lineNumber": 141
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "binary.LittleEndian.Uint32",
+          "lineNumber": 145
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "uint64",
+          "lineNumber": 146
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "uint64",
+          "lineNumber": 146
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "fmt.Errorf",
+          "lineNumber": 147
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "decompressLZ4",
+          "lineNumber": 150
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "int",
+          "lineNumber": 150
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "fmt.Errorf",
+          "lineNumber": 152
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "len",
+          "lineNumber": 154
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "int",
+          "lineNumber": 154
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "fmt.Errorf",
+          "lineNumber": 155
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "len",
+          "lineNumber": 155
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "bytes.NewReader",
+          "lineNumber": 158
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "readV4BuildsSection",
+          "lineNumber": 160
+        },
+        {
+          "caller": "deserializeV5",
+          "callee": "readV5MappingSection",
+          "lineNumber": 167
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 190
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "binary.Read",
+          "lineNumber": 194
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 195
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 198
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint64",
+          "lineNumber": 200
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint64",
+          "lineNumber": 200
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "reader.Len",
+          "lineNumber": 200
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 201
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "reader.Len",
+          "lineNumber": 201
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "make",
+          "lineNumber": 204
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "io.ReadFull",
+          "lineNumber": 206
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 207
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "binary.Read",
+          "lineNumber": 210
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 211
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 214
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "newMappingFromColumns",
+          "lineNumber": 219
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "newMappingFromColumns",
+          "lineNumber": 222
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint32",
+          "lineNumber": 223
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint64",
+          "lineNumber": 228
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "reader.Len",
+          "lineNumber": 228
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint64",
+          "lineNumber": 230
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint64",
+          "lineNumber": 234
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 235
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "reader.Len",
+          "lineNumber": 235
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "make",
+          "lineNumber": 238
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "make",
+          "lineNumber": 239
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "make",
+          "lineNumber": 240
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "make",
+          "lineNumber": 241
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "int",
+          "lineNumber": 244
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "binary.ReadUvarint",
+          "lineNumber": 245
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 247
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 252
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 256
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint32",
+          "lineNumber": 258
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "int",
+          "lineNumber": 260
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "binary.ReadUvarint",
+          "lineNumber": 261
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 263
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 266
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint32",
+          "lineNumber": 268
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "int",
+          "lineNumber": 271
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "binary.ReadVarint",
+          "lineNumber": 272
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 274
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 278
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint32",
+          "lineNumber": 280
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "int",
+          "lineNumber": 282
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "binary.ReadUvarint",
+          "lineNumber": 283
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 285
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint64",
+          "lineNumber": 287
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 288
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint16",
+          "lineNumber": 290
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "int",
+          "lineNumber": 296
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "int",
+          "lineNumber": 298
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint64",
+          "lineNumber": 299
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint64",
+          "lineNumber": 302
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint64",
+          "lineNumber": 302
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "make",
+          "lineNumber": 308
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "make",
+          "lineNumber": 309
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "make",
+          "lineNumber": 310
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "make",
+          "lineNumber": 311
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "append",
+          "lineNumber": 313
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "append",
+          "lineNumber": 314
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "append",
+          "lineNumber": 316
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "int",
+          "lineNumber": 320
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 323
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 326
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "appendEntry",
+          "lineNumber": 329
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint64",
+          "lineNumber": 331
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint64",
+          "lineNumber": 331
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "fmt.Errorf",
+          "lineNumber": 333
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "appendEntry",
+          "lineNumber": 335
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint32",
+          "lineNumber": 336
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint64",
+          "lineNumber": 338
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "appendEntry",
+          "lineNumber": 339
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "uint32",
+          "lineNumber": 339
+        },
+        {
+          "caller": "readV5MappingSection",
+          "callee": "newMappingFromColumns",
+          "lineNumber": 342
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/pkg/syncroaring/bitset_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 168,
+      "nonEmptyLines": 141,
+      "functions": [
+        {
+          "name": "TestHasRange",
+          "startLine": 11,
+          "endLine": 21,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestSetRange_Overlapping",
+          "startLine": 23,
+          "endLine": 32,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestSetRange_Concurrent",
+          "startLine": 34,
+          "endLine": 50,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestHasRange_PastSetBits",
+          "startLine": 52,
+          "endLine": 60,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestCachePattern",
+          "startLine": 62,
+          "endLine": 90,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestHasRange_GapBetweenRanges",
+          "startLine": 92,
+          "endLine": 103,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestCardinalityInRange_GapFix",
+          "startLine": 107,
+          "endLine": 114,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "BenchmarkSetRange",
+          "startLine": 121,
+          "endLine": 128,
+          "params": [
+            "b"
+          ]
+        },
+        {
+          "name": "BenchmarkHasRange_Hit",
+          "startLine": 130,
+          "endLine": 140,
+          "params": [
+            "b"
+          ]
+        },
+        {
+          "name": "BenchmarkHasRange_Miss",
+          "startLine": 142,
+          "endLine": 151,
+          "params": [
+            "b"
+          ]
+        },
+        {
+          "name": "BenchmarkHasRange_HitConcurrent",
+          "startLine": 153,
+          "endLine": 168,
+          "params": [
+            "b"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestHasRange",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "TestSetRange_Overlapping",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "TestSetRange_Concurrent",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "TestHasRange_PastSetBits",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "TestCachePattern",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "TestHasRange_GapBetweenRanges",
+          "line": 92,
+          "isDefault": false
+        },
+        {
+          "name": "TestCardinalityInRange_GapFix",
+          "line": 107,
+          "isDefault": false
+        },
+        {
+          "name": "BenchmarkSetRange",
+          "line": 121,
+          "isDefault": false
+        },
+        {
+          "name": "BenchmarkHasRange_Hit",
+          "line": 130,
+          "isDefault": false
+        },
+        {
+          "name": "BenchmarkHasRange_Miss",
+          "line": 142,
+          "isDefault": false
+        },
+        {
+          "name": "BenchmarkHasRange_HitConcurrent",
+          "line": 153,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestHasRange",
+          "callee": "t.Parallel",
+          "lineNumber": 12
+        },
+        {
+          "caller": "TestHasRange",
+          "callee": "New",
+          "lineNumber": 13
+        },
+        {
+          "caller": "TestHasRange",
+          "callee": "b.SetRange",
+          "lineNumber": 14
+        },
+        {
+          "caller": "TestHasRange",
+          "callee": "require.True",
+          "lineNumber": 16
+        },
+        {
+          "caller": "TestHasRange",
+          "callee": "b.HasRange",
+          "lineNumber": 16
+        },
+        {
+          "caller": "TestHasRange",
+          "callee": "require.True",
+          "lineNumber": 17
+        },
+        {
+          "caller": "TestHasRange",
+          "callee": "b.HasRange",
+          "lineNumber": 17
+        },
+        {
+          "caller": "TestHasRange",
+          "callee": "require.False",
+          "lineNumber": 18
+        },
+        {
+          "caller": "TestHasRange",
+          "callee": "b.HasRange",
+          "lineNumber": 18
+        },
+        {
+          "caller": "TestHasRange",
+          "callee": "require.False",
+          "lineNumber": 19
+        },
+        {
+          "caller": "TestHasRange",
+          "callee": "b.HasRange",
+          "lineNumber": 19
+        },
+        {
+          "caller": "TestHasRange",
+          "callee": "require.True",
+          "lineNumber": 20
+        },
+        {
+          "caller": "TestHasRange",
+          "callee": "b.HasRange",
+          "lineNumber": 20
+        },
+        {
+          "caller": "TestSetRange_Overlapping",
+          "callee": "t.Parallel",
+          "lineNumber": 24
+        },
+        {
+          "caller": "TestSetRange_Overlapping",
+          "callee": "New",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TestSetRange_Overlapping",
+          "callee": "b.SetRange",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestSetRange_Overlapping",
+          "callee": "b.SetRange",
+          "lineNumber": 27
+        },
+        {
+          "caller": "TestSetRange_Overlapping",
+          "callee": "require.True",
+          "lineNumber": 29
+        },
+        {
+          "caller": "TestSetRange_Overlapping",
+          "callee": "b.HasRange",
+          "lineNumber": 29
+        },
+        {
+          "caller": "TestSetRange_Overlapping",
+          "callee": "require.False",
+          "lineNumber": 30
+        },
+        {
+          "caller": "TestSetRange_Overlapping",
+          "callee": "b.HasRange",
+          "lineNumber": 30
+        },
+        {
+          "caller": "TestSetRange_Overlapping",
+          "callee": "require.False",
+          "lineNumber": 31
+        },
+        {
+          "caller": "TestSetRange_Overlapping",
+          "callee": "b.HasRange",
+          "lineNumber": 31
+        },
+        {
+          "caller": "TestSetRange_Concurrent",
+          "callee": "t.Parallel",
+          "lineNumber": 35
+        },
+        {
+          "caller": "TestSetRange_Concurrent",
+          "callee": "New",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TestSetRange_Concurrent",
+          "callee": "wg.Go",
+          "lineNumber": 40
+        },
+        {
+          "caller": "TestSetRange_Concurrent",
+          "callee": "uint64",
+          "lineNumber": 41
+        },
+        {
+          "caller": "TestSetRange_Concurrent",
+          "callee": "b.SetRange",
+          "lineNumber": 42
+        },
+        {
+          "caller": "TestSetRange_Concurrent",
+          "callee": "wg.Wait",
+          "lineNumber": 45
+        },
+        {
+          "caller": "TestSetRange_Concurrent",
+          "callee": "uint64",
+          "lineNumber": 47
+        },
+        {
+          "caller": "TestSetRange_Concurrent",
+          "callee": "require.True",
+          "lineNumber": 48
+        },
+        {
+          "caller": "TestSetRange_Concurrent",
+          "callee": "b.HasRange",
+          "lineNumber": 48
+        },
+        {
+          "caller": "TestSetRange_Concurrent",
+          "callee": "require.False",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestSetRange_Concurrent",
+          "callee": "b.HasRange",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestHasRange_PastSetBits",
+          "callee": "t.Parallel",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TestHasRange_PastSetBits",
+          "callee": "New",
+          "lineNumber": 54
+        },
+        {
+          "caller": "TestHasRange_PastSetBits",
+          "callee": "b.SetRange",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestHasRange_PastSetBits",
+          "callee": "require.False",
+          "lineNumber": 57
+        },
+        {
+          "caller": "TestHasRange_PastSetBits",
+          "callee": "b.HasRange",
+          "lineNumber": 57
+        },
+        {
+          "caller": "TestHasRange_PastSetBits",
+          "callee": "require.True",
+          "lineNumber": 58
+        },
+        {
+          "caller": "TestHasRange_PastSetBits",
+          "callee": "b.HasRange",
+          "lineNumber": 58
+        },
+        {
+          "caller": "TestHasRange_PastSetBits",
+          "callee": "require.False",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestHasRange_PastSetBits",
+          "callee": "b.HasRange",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "t.Parallel",
+          "lineNumber": 63
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "uint64",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "uint64",
+          "lineNumber": 72
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "uint64",
+          "lineNumber": 73
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "New",
+          "lineNumber": 75
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "int64",
+          "lineNumber": 77
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "min",
+          "lineNumber": 78
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "b.SetRange",
+          "lineNumber": 79
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "blockIdx",
+          "lineNumber": 79
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "blockEndIdx",
+          "lineNumber": 79
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "require.True",
+          "lineNumber": 82
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "b.HasRange",
+          "lineNumber": 82
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "int64",
+          "lineNumber": 84
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "blockIdx",
+          "lineNumber": 85
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "blockEndIdx",
+          "lineNumber": 86
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "min",
+          "lineNumber": 86
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "require.True",
+          "lineNumber": 87
+        },
+        {
+          "caller": "TestCachePattern",
+          "callee": "b.HasRange",
+          "lineNumber": 87
+        },
+        {
+          "caller": "TestHasRange_GapBetweenRanges",
+          "callee": "t.Parallel",
+          "lineNumber": 93
+        },
+        {
+          "caller": "TestHasRange_GapBetweenRanges",
+          "callee": "New",
+          "lineNumber": 94
+        },
+        {
+          "caller": "TestHasRange_GapBetweenRanges",
+          "callee": "b.SetRange",
+          "lineNumber": 95
+        },
+        {
+          "caller": "TestHasRange_GapBetweenRanges",
+          "callee": "b.SetRange",
+          "lineNumber": 96
+        },
+        {
+          "caller": "TestHasRange_GapBetweenRanges",
+          "callee": "require.True",
+          "lineNumber": 98
+        },
+        {
+          "caller": "TestHasRange_GapBetweenRanges",
+          "callee": "b.HasRange",
+          "lineNumber": 98
+        },
+        {
+          "caller": "TestHasRange_GapBetweenRanges",
+          "callee": "require.True",
+          "lineNumber": 99
+        },
+        {
+          "caller": "TestHasRange_GapBetweenRanges",
+          "callee": "b.HasRange",
+          "lineNumber": 99
+        },
+        {
+          "caller": "TestHasRange_GapBetweenRanges",
+          "callee": "require.False",
+          "lineNumber": 100
+        },
+        {
+          "caller": "TestHasRange_GapBetweenRanges",
+          "callee": "b.HasRange",
+          "lineNumber": 100
+        },
+        {
+          "caller": "TestHasRange_GapBetweenRanges",
+          "callee": "require.False",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestHasRange_GapBetweenRanges",
+          "callee": "b.HasRange",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestHasRange_GapBetweenRanges",
+          "callee": "require.False",
+          "lineNumber": 102
+        },
+        {
+          "caller": "TestHasRange_GapBetweenRanges",
+          "callee": "b.HasRange",
+          "lineNumber": 102
+        },
+        {
+          "caller": "TestCardinalityInRange_GapFix",
+          "callee": "t.Parallel",
+          "lineNumber": 108
+        },
+        {
+          "caller": "TestCardinalityInRange_GapFix",
+          "callee": "roaring.New",
+          "lineNumber": 109
+        },
+        {
+          "caller": "TestCardinalityInRange_GapFix",
+          "callee": "bm.AddRange",
+          "lineNumber": 110
+        },
+        {
+          "caller": "TestCardinalityInRange_GapFix",
+          "callee": "bm.AddRange",
+          "lineNumber": 111
+        },
+        {
+          "caller": "TestCardinalityInRange_GapFix",
+          "callee": "require.Equal",
+          "lineNumber": 113
+        },
+        {
+          "caller": "TestCardinalityInRange_GapFix",
+          "callee": "uint64",
+          "lineNumber": 113
+        },
+        {
+          "caller": "TestCardinalityInRange_GapFix",
+          "callee": "bm.CardinalityInRange",
+          "lineNumber": 113
+        },
+        {
+          "caller": "BenchmarkSetRange",
+          "callee": "New",
+          "lineNumber": 122
+        },
+        {
+          "caller": "BenchmarkSetRange",
+          "callee": "b.ResetTimer",
+          "lineNumber": 123
+        },
+        {
+          "caller": "BenchmarkSetRange",
+          "callee": "uint64",
+          "lineNumber": 125
+        },
+        {
+          "caller": "BenchmarkSetRange",
+          "callee": "bs.SetRange",
+          "lineNumber": 126
+        },
+        {
+          "caller": "BenchmarkHasRange_Hit",
+          "callee": "New",
+          "lineNumber": 131
+        },
+        {
+          "caller": "BenchmarkHasRange_Hit",
+          "callee": "bs.SetRange",
+          "lineNumber": 132
+        },
+        {
+          "caller": "BenchmarkHasRange_Hit",
+          "callee": "b.ResetTimer",
+          "lineNumber": 133
+        },
+        {
+          "caller": "BenchmarkHasRange_Hit",
+          "callee": "uint64",
+          "lineNumber": 135
+        },
+        {
+          "caller": "BenchmarkHasRange_Hit",
+          "callee": "bs.HasRange",
+          "lineNumber": 136
+        },
+        {
+          "caller": "BenchmarkHasRange_Hit",
+          "callee": "b.Fatal",
+          "lineNumber": 137
+        },
+        {
+          "caller": "BenchmarkHasRange_Miss",
+          "callee": "New",
+          "lineNumber": 143
+        },
+        {
+          "caller": "BenchmarkHasRange_Miss",
+          "callee": "b.ResetTimer",
+          "lineNumber": 144
+        },
+        {
+          "caller": "BenchmarkHasRange_Miss",
+          "callee": "uint64",
+          "lineNumber": 146
+        },
+        {
+          "caller": "BenchmarkHasRange_Miss",
+          "callee": "bs.HasRange",
+          "lineNumber": 147
+        },
+        {
+          "caller": "BenchmarkHasRange_Miss",
+          "callee": "b.Fatal",
+          "lineNumber": 148
+        },
+        {
+          "caller": "BenchmarkHasRange_HitConcurrent",
+          "callee": "New",
+          "lineNumber": 154
+        },
+        {
+          "caller": "BenchmarkHasRange_HitConcurrent",
+          "callee": "bs.SetRange",
+          "lineNumber": 155
+        },
+        {
+          "caller": "BenchmarkHasRange_HitConcurrent",
+          "callee": "b.SetParallelism",
+          "lineNumber": 156
+        },
+        {
+          "caller": "BenchmarkHasRange_HitConcurrent",
+          "callee": "b.ResetTimer",
+          "lineNumber": 157
+        },
+        {
+          "caller": "BenchmarkHasRange_HitConcurrent",
+          "callee": "b.RunParallel",
+          "lineNumber": 158
+        },
+        {
+          "caller": "BenchmarkHasRange_HitConcurrent",
+          "callee": "uint64",
+          "lineNumber": 159
+        },
+        {
+          "caller": "BenchmarkHasRange_HitConcurrent",
+          "callee": "pb.Next",
+          "lineNumber": 160
+        },
+        {
+          "caller": "BenchmarkHasRange_HitConcurrent",
+          "callee": "bs.HasRange",
+          "lineNumber": 162
+        },
+        {
+          "caller": "BenchmarkHasRange_HitConcurrent",
+          "callee": "b.Fatal",
+          "lineNumber": 163
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 11,
+        "functionCount": 11,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/pkg/syncroaring/bitset.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 37,
+      "nonEmptyLines": 27,
+      "functions": [
+        {
+          "name": "New",
+          "startLine": 14,
+          "endLine": 16,
+          "params": []
+        },
+        {
+          "name": "HasRange",
+          "startLine": 18,
+          "endLine": 23,
+          "params": [
+            "start",
+            "end"
+          ]
+        },
+        {
+          "name": "SetRange",
+          "startLine": 25,
+          "endLine": 30,
+          "params": [
+            "start",
+            "end"
+          ]
+        },
+        {
+          "name": "Clone",
+          "startLine": 32,
+          "endLine": 37,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "Bitset",
+          "startLine": 9,
+          "endLine": 12,
+          "methods": [
+            "HasRange",
+            "SetRange",
+            "Clone"
+          ],
+          "properties": [
+            "mu",
+            "bm"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Bitset",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "New",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "HasRange",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "SetRange",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "Clone",
+          "line": 32,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "New",
+          "callee": "roaring.New",
+          "lineNumber": 15
+        },
+        {
+          "caller": "HasRange",
+          "callee": "b.mu.RLock",
+          "lineNumber": 19
+        },
+        {
+          "caller": "HasRange",
+          "callee": "b.mu.RUnlock",
+          "lineNumber": 20
+        },
+        {
+          "caller": "HasRange",
+          "callee": "b.bm.CardinalityInRange",
+          "lineNumber": 22
+        },
+        {
+          "caller": "SetRange",
+          "callee": "b.mu.Lock",
+          "lineNumber": 26
+        },
+        {
+          "caller": "SetRange",
+          "callee": "b.mu.Unlock",
+          "lineNumber": 27
+        },
+        {
+          "caller": "SetRange",
+          "callee": "b.bm.AddRange",
+          "lineNumber": 29
+        },
+        {
+          "caller": "Clone",
+          "callee": "b.mu.RLock",
+          "lineNumber": 33
+        },
+        {
+          "caller": "Clone",
+          "callee": "b.mu.RUnlock",
+          "lineNumber": 34
+        },
+        {
+          "caller": "Clone",
+          "callee": "b.bm.Clone",
+          "lineNumber": 36
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/shared/pkg/teamprovision/request.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 23,
+      "classes": [
+        {
+          "name": "CreatorContextV1",
+          "startLine": 15,
+          "endLine": 19,
+          "methods": [],
+          "properties": [
+            "IPAddress",
+            "UserAgent",
+            "AuthMethod"
+          ]
+        },
+        {
+          "name": "TeamBillingProvisionRequestedV1",
+          "startLine": 21,
+          "endLine": 28,
+          "methods": [],
+          "properties": [
+            "TeamID",
+            "TeamName",
+            "TeamEmail",
+            "CreatorUserID",
+            "CreatorContext",
+            "Reason"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreatorContextV1",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "TeamBillingProvisionRequestedV1",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 0,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/shared/pkg/templates/versions.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 14,
+      "nonEmptyLines": 10,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/scripts/build.prod.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 18,
+      "nonEmptyLines": 14,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 4,
+          "endLine": 16,
+          "params": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 8
+        },
+        {
+          "caller": "main",
+          "callee": "Template.build",
+          "lineNumber": 10
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 14
+        },
+        {
+          "caller": "main",
+          "callee": "it.toString",
+          "lineNumber": 14
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/scripts/template.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 3,
+      "nonEmptyLines": 2,
+      "exports": [
+        {
+          "name": "template",
+          "line": 3,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/e2b.Dockerfile",
+      "language": "dockerfile",
+      "fileCategory": "code",
+      "totalLines": 4,
+      "nonEmptyLines": 3,
+      "metrics": {}
+    },
+    {
+      "path": "tests/integration/internal/api/cfg.yaml",
+      "language": "yaml",
+      "fileCategory": "config",
+      "totalLines": 7,
+      "nonEmptyLines": 6,
+      "sections": [
+        {
+          "heading": "package",
+          "level": 1,
+          "line": 3
+        },
+        {
+          "heading": "output",
+          "level": 1,
+          "line": 4
+        },
+        {
+          "heading": "generate",
+          "level": 1,
+          "line": 5
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 3
+      }
+    },
+    {
+      "path": "tests/integration/internal/envd/cfg.yaml",
+      "language": "yaml",
+      "fileCategory": "config",
+      "totalLines": 7,
+      "nonEmptyLines": 6,
+      "sections": [
+        {
+          "heading": "package",
+          "level": 1,
+          "line": 3
+        },
+        {
+          "heading": "output",
+          "level": 1,
+          "line": 4
+        },
+        {
+          "heading": "generate",
+          "level": 1,
+          "line": 5
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 3
+      }
+    },
+    {
+      "path": "tests/integration/seed.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 274,
+      "nonEmptyLines": 238,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 32,
+          "endLine": 42,
+          "params": []
+        },
+        {
+          "name": "run",
+          "startLine": 44,
+          "endLine": 86,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "seed",
+          "startLine": 88,
+          "endLine": 274,
+          "params": [
+            "ctx",
+            "db",
+            "authdb",
+            "data"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SeedData",
+          "startLine": 23,
+          "endLine": 30,
+          "methods": [],
+          "properties": [
+            "AccessToken",
+            "APIKey",
+            "EnvID",
+            "BuildID",
+            "TeamID",
+            "UserID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "SeedData",
+          "line": 23,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "context.Background",
+          "lineNumber": 33
+        },
+        {
+          "caller": "main",
+          "callee": "run",
+          "lineNumber": 35
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 37
+        },
+        {
+          "caller": "main",
+          "callee": "os.Exit",
+          "lineNumber": 38
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Println",
+          "lineNumber": 41
+        },
+        {
+          "caller": "run",
+          "callee": "os.Getenv",
+          "lineNumber": 45
+        },
+        {
+          "caller": "run",
+          "callee": "log.Printf",
+          "lineNumber": 47
+        },
+        {
+          "caller": "run",
+          "callee": "client.NewClient",
+          "lineNumber": 52
+        },
+        {
+          "caller": "run",
+          "callee": "log.Printf",
+          "lineNumber": 54
+        },
+        {
+          "caller": "run",
+          "callee": "db.Close",
+          "lineNumber": 58
+        },
+        {
+          "caller": "run",
+          "callee": "authdb.NewClient",
+          "lineNumber": 59
+        },
+        {
+          "caller": "run",
+          "callee": "log.Printf",
+          "lineNumber": 61
+        },
+        {
+          "caller": "run",
+          "callee": "authDb.Close",
+          "lineNumber": 65
+        },
+        {
+          "caller": "run",
+          "callee": "os.Getenv",
+          "lineNumber": 68
+        },
+        {
+          "caller": "run",
+          "callee": "os.Getenv",
+          "lineNumber": 69
+        },
+        {
+          "caller": "run",
+          "callee": "os.Getenv",
+          "lineNumber": 70
+        },
+        {
+          "caller": "run",
+          "callee": "uuid.MustParse",
+          "lineNumber": 71
+        },
+        {
+          "caller": "run",
+          "callee": "os.Getenv",
+          "lineNumber": 71
+        },
+        {
+          "caller": "run",
+          "callee": "uuid.MustParse",
+          "lineNumber": 72
+        },
+        {
+          "caller": "run",
+          "callee": "os.Getenv",
+          "lineNumber": 72
+        },
+        {
+          "caller": "run",
+          "callee": "uuid.MustParse",
+          "lineNumber": 73
+        },
+        {
+          "caller": "run",
+          "callee": "os.Getenv",
+          "lineNumber": 73
+        },
+        {
+          "caller": "run",
+          "callee": "seed",
+          "lineNumber": 76
+        },
+        {
+          "caller": "run",
+          "callee": "log.Printf",
+          "lineNumber": 78
+        },
+        {
+          "caller": "run",
+          "callee": "fmt.Println",
+          "lineNumber": 83
+        },
+        {
+          "caller": "seed",
+          "callee": "keys.NewSHA256Hashing",
+          "lineNumber": 89
+        },
+        {
+          "caller": "seed",
+          "callee": "authdb.TestsRawSQL",
+          "lineNumber": 92
+        },
+        {
+          "caller": "seed",
+          "callee": "fmt.Errorf",
+          "lineNumber": 97
+        },
+        {
+          "caller": "seed",
+          "callee": "authdb.Write.UpsertPublicUser",
+          "lineNumber": 100
+        },
+        {
+          "caller": "seed",
+          "callee": "fmt.Errorf",
+          "lineNumber": 102
+        },
+        {
+          "caller": "seed",
+          "callee": "strings.TrimPrefix",
+          "lineNumber": 106
+        },
+        {
+          "caller": "seed",
+          "callee": "hex.DecodeString",
+          "lineNumber": 107
+        },
+        {
+          "caller": "seed",
+          "callee": "fmt.Errorf",
+          "lineNumber": 109
+        },
+        {
+          "caller": "seed",
+          "callee": "hasher.Hash",
+          "lineNumber": 112
+        },
+        {
+          "caller": "seed",
+          "callee": "keys.MaskKey",
+          "lineNumber": 114
+        },
+        {
+          "caller": "seed",
+          "callee": "fmt.Errorf",
+          "lineNumber": 116
+        },
+        {
+          "caller": "seed",
+          "callee": "authdb.Write.CreateAccessToken",
+          "lineNumber": 119
+        },
+        {
+          "caller": "seed",
+          "callee": "uuid.New",
+          "lineNumber": 120
+        },
+        {
+          "caller": "seed",
+          "callee": "int32",
+          "lineNumber": 124
+        },
+        {
+          "caller": "seed",
+          "callee": "fmt.Errorf",
+          "lineNumber": 130
+        },
+        {
+          "caller": "seed",
+          "callee": "authdb.TestsRawSQL",
+          "lineNumber": 134
+        },
+        {
+          "caller": "seed",
+          "callee": "fmt.Errorf",
+          "lineNumber": 139
+        },
+        {
+          "caller": "seed",
+          "callee": "db.TestsRawSQL",
+          "lineNumber": 144
+        },
+        {
+          "caller": "seed",
+          "callee": "fmt.Errorf",
+          "lineNumber": 149
+        },
+        {
+          "caller": "seed",
+          "callee": "authdb.TestsRawSQL",
+          "lineNumber": 153
+        },
+        {
+          "caller": "seed",
+          "callee": "fmt.Errorf",
+          "lineNumber": 158
+        },
+        {
+          "caller": "seed",
+          "callee": "strings.TrimPrefix",
+          "lineNumber": 162
+        },
+        {
+          "caller": "seed",
+          "callee": "hex.DecodeString",
+          "lineNumber": 163
+        },
+        {
+          "caller": "seed",
+          "callee": "fmt.Errorf",
+          "lineNumber": 165
+        },
+        {
+          "caller": "seed",
+          "callee": "hasher.Hash",
+          "lineNumber": 167
+        },
+        {
+          "caller": "seed",
+          "callee": "keys.MaskKey",
+          "lineNumber": 168
+        },
+        {
+          "caller": "seed",
+          "callee": "fmt.Errorf",
+          "lineNumber": 170
+        },
+        {
+          "caller": "seed",
+          "callee": "authdb.Write.CreateTeamAPIKey",
+          "lineNumber": 172
+        },
+        {
+          "caller": "seed",
+          "callee": "int32",
+          "lineNumber": 177
+        },
+        {
+          "caller": "seed",
+          "callee": "fmt.Errorf",
+          "lineNumber": 183
+        },
+        {
+          "caller": "seed",
+          "callee": "db.TestsRawSQL",
+          "lineNumber": 187
+        },
+        {
+          "caller": "seed",
+          "callee": "fmt.Errorf",
+          "lineNumber": 192
+        },
+        {
+          "caller": "seed",
+          "callee": "time.Now().Add",
+          "lineNumber": 200
+        },
+        {
+          "caller": "seed",
+          "callee": "time.Now",
+          "lineNumber": 200
+        },
+        {
+          "caller": "seed",
+          "callee": "uuid.New",
+          "lineNumber": 207
+        },
+        {
+          "caller": "seed",
+          "callee": "db.TestsRawSQL",
+          "lineNumber": 219
+        },
+        {
+          "caller": "seed",
+          "callee": "db.TestsRawSQL",
+          "lineNumber": 229
+        },
+        {
+          "caller": "seed",
+          "callee": "fmt.Errorf",
+          "lineNumber": 240
+        },
+        {
+          "caller": "seed",
+          "callee": "db.TestsRawSQL",
+          "lineNumber": 250
+        },
+        {
+          "caller": "seed",
+          "callee": "db.TestsRawSQL",
+          "lineNumber": 255
+        },
+        {
+          "caller": "seed",
+          "callee": "fmt.Errorf",
+          "lineNumber": 261
+        },
+        {
+          "caller": "seed",
+          "callee": "db.TestsRawSQL",
+          "lineNumber": 265
+        },
+        {
+          "caller": "seed",
+          "callee": "fmt.Errorf",
+          "lineNumber": 270
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "tests/periodic-test/package.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 14,
+      "nonEmptyLines": 14,
+      "sections": [
+        {
+          "heading": "name",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "version",
+          "level": 1,
+          "line": 3
+        },
+        {
+          "heading": "description",
+          "level": 1,
+          "line": 4
+        },
+        {
+          "heading": "type",
+          "level": 1,
+          "line": 5
+        },
+        {
+          "heading": "dependencies",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "devDependencies",
+          "level": 1,
+          "line": 11
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": "tests/periodic-test/time-is-synchronized/e2b.Dockerfile",
+      "language": "dockerfile",
+      "fileCategory": "code",
+      "totalLines": 1,
+      "nonEmptyLines": 1,
+      "metrics": {}
+    },
+    {
+      "path": "tests/test.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 13,
+      "nonEmptyLines": 10,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 4,
+          "endLine": 11,
+          "params": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "Sandbox.create",
+          "lineNumber": 7
+        },
+        {
+          "caller": "main",
+          "callee": "sandbox.filesystem.write",
+          "lineNumber": 8
+        },
+        {
+          "caller": "main",
+          "callee": "sandbox.filesystem.read",
+          "lineNumber": 9
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 10
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    }
+  ]
+}

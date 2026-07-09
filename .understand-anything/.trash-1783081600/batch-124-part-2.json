@@ -1,0 +1,235 @@
+{
+  "nodes": [
+    {
+      "id": "resource:iac/provider-aws/nomad/main.tf",
+      "type": "resource",
+      "name": "nomad/main.tf",
+      "filePath": "iac/provider-aws/nomad/main.tf",
+      "summary": "Nomad 业务作业配置,声明 ECR 镜像数据源、nomad_scheduler_config 以及 otel_collector/redis/ingress/client_proxy/api/orchestrator/template_manager/loki/logs_collector/clickhouse 等子模块作业。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "nomad",
+        "aws",
+        "module-composition"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/provider-aws/nomad/variables.tf",
+      "type": "resource",
+      "name": "nomad/variables.tf",
+      "filePath": "iac/provider-aws/nomad/variables.tf",
+      "summary": "AWS Nomad 业务作业模块的输入变量定义,涵盖 API/Orchestrator/TemplateManager/ClickHouse/Redis/OTel/Loki 等作业所需的镜像名、端口、环境变量与集群规模等。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "configuration",
+        "variables"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:iac/provider-gcp/.terraform.lock.hcl",
+      "type": "file",
+      "name": ".terraform.lock.hcl",
+      "filePath": "iac/provider-gcp/.terraform.lock.hcl",
+      "summary": "Terraform 依赖锁文件,固定 GCP provider 与相关模块的版本,确保 IaC 部署可重现。",
+      "tags": [
+        "terraform",
+        "dependency-lock",
+        "gcp"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/provider-gcp/modules/nodepool-api/scripts/start-api.sh",
+      "type": "file",
+      "name": "start-api.sh",
+      "filePath": "iac/provider-gcp/modules/nodepool-api/scripts/start-api.sh",
+      "summary": "GCP API 节点池的 user-data 启动脚本,引导 Nomad/Consul client 并启动 API 服务。",
+      "tags": [
+        "script",
+        "bootstrap",
+        "gcp",
+        "api",
+        "nomad"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/provider-gcp/nomad-cluster-disk-image/.terraform.lock.hcl",
+      "type": "file",
+      "name": ".terraform.lock.hcl",
+      "filePath": "iac/provider-gcp/nomad-cluster-disk-image/.terraform.lock.hcl",
+      "summary": "Packer 镜像构建目录下用于固定 Google compute plugin 版本的 Terraform 依赖锁文件。",
+      "tags": [
+        "terraform",
+        "dependency-lock",
+        "packer",
+        "gcp"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/provider-gcp/nomad-cluster-disk-image/main.pkr.hcl",
+      "type": "file",
+      "name": "main.pkr.hcl",
+      "filePath": "iac/provider-gcp/nomad-cluster-disk-image/main.pkr.hcl",
+      "summary": "Packer 模板,用于在 GCP 上构建 Nomad 集群节点基础镜像,预装 Docker、Nomad、Consul、Firecracker 与 envd。",
+      "tags": [
+        "packer",
+        "gcp",
+        "image-build",
+        "infrastructure"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:iac/provider-gcp/nomad-cluster-disk-image/setup/gc-ops.config.yaml",
+      "type": "config",
+      "name": "gc-ops.config.yaml",
+      "filePath": "iac/provider-gcp/nomad-cluster-disk-image/setup/gc-ops.config.yaml",
+      "summary": "Google Cloud Operations(gc-ops)代理配置,定义 Nomad/作业/Consul 日志接收器、processor 与 exporter,将日志转发到 GCP Cloud Logging。",
+      "tags": [
+        "configuration",
+        "logging",
+        "ops",
+        "gcp",
+        "fluentbit"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/provider-gcp/nomad-cluster-disk-image/variables.pkr.hcl",
+      "type": "file",
+      "name": "variables.pkr.hcl",
+      "filePath": "iac/provider-gcp/nomad-cluster-disk-image/variables.pkr.hcl",
+      "summary": "GCP Packer 模板的输入变量定义,涵盖 project、zone、镜像名 family、源镜像等。",
+      "tags": [
+        "packer",
+        "configuration",
+        "variables",
+        "gcp"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/worker-cluster/nodepool.tf",
+      "type": "resource",
+      "name": "worker-cluster/nodepool.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster/worker-cluster/nodepool.tf",
+      "summary": "GCP Nomad worker 集群节点池 Terraform 配置,声明 health check、autoscaler、instance group manager 与 instance template,实现 Nomad client 节点弹性伸缩。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "gcp",
+        "nodepool",
+        "autoscaling"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/worker-cluster/variables.tf",
+      "type": "resource",
+      "name": "worker-cluster/variables.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster/worker-cluster/variables.tf",
+      "summary": "GCP worker 集群模块的输入变量定义,涵盖 cluster size、机器类型、磁盘、NFS、ACL token、节点池等。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "configuration",
+        "variables"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:iac/provider-gcp/nomad/jobs/clean-nfs-cache.hcl",
+      "type": "file",
+      "name": "clean-nfs-cache.hcl",
+      "filePath": "iac/provider-gcp/nomad/jobs/clean-nfs-cache.hcl",
+      "summary": "Nomad periodic 批处理作业定义:每小时运行一次,清理 Filestore/NFS 上的 orchestrator 模板缓存,防止磁盘膨胀。",
+      "tags": [
+        "nomad-job",
+        "batch",
+        "nfs",
+        "cleanup",
+        "scheduled"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/provider-gcp/nomad/jobs/docker-reverse-proxy.hcl",
+      "type": "file",
+      "name": "docker-reverse-proxy.hcl",
+      "filePath": "iac/provider-gcp/nomad/jobs/docker-reverse-proxy.hcl",
+      "summary": "Nomad service 作业定义:在指定节点池中运行 docker-reverse-proxy 容器,提供 docker daemon 的 HTTP 反向代理入口并注册为 Consul 服务。",
+      "tags": [
+        "nomad-job",
+        "service",
+        "docker",
+        "reverse-proxy",
+        "consul"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/provider-aws/nomad/main.tf",
+      "target": "resource:iac/provider-aws/modules/nodepool-client/main.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/nomad-cluster-disk-image/variables.pkr.hcl",
+      "target": "file:iac/provider-gcp/nomad-cluster-disk-image/main.pkr.hcl",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:iac/provider-gcp/nomad-cluster-disk-image/setup/gc-ops.config.yaml",
+      "target": "file:iac/provider-gcp/nomad-cluster-disk-image/main.pkr.hcl",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/nomad-cluster-disk-image/main.pkr.hcl",
+      "target": "resource:iac/provider-gcp/nomad-cluster/worker-cluster/nodepool.tf",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:iac/provider-gcp/modules/nodepool-api/scripts/start-api.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-nomad.sh:run",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/modules/nodepool-api/scripts/start-api.sh",
+      "target": "function:iac/provider-aws/nomad-cluster/scripts/run-consul.sh:run",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/nomad/jobs/clean-nfs-cache.hcl",
+      "target": "resource:iac/provider-gcp/nomad-cluster/worker-cluster/nodepool.tf",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/nomad/jobs/docker-reverse-proxy.hcl",
+      "target": "resource:iac/provider-gcp/nomad-cluster/worker-cluster/nodepool.tf",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

@@ -1,0 +1,572 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/shared/pkg/storage/header/serialization_v3.go",
+      "type": "file",
+      "name": "serialization_v3.go",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v3.go",
+      "summary": "实现存储头 v3 格式的序列化与反序列化，使用二进制小端序直接写入 buffer，并按 EOF 终止读取映射条目。",
+      "tags": ["serialization", "storage", "binary-format", "header"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/serialization_v3.go:serializeV3",
+      "type": "function",
+      "name": "serializeV3",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v3.go",
+      "lineRange": [19, 39],
+      "summary": "将 metadata 与所有 mapping 连续写入字节 buffer（v3 格式无长度前缀），返回序列化结果或错误。",
+      "tags": ["serialization", "binary", "header"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/serialization_v3.go:deserializeV3",
+      "type": "function",
+      "name": "deserializeV3",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v3.go",
+      "lineRange": [42, 65],
+      "summary": "从字节块读取所有 v3 mappings 直到 EOF，并组装为 Header 返回，支持 io.EOF 终止。",
+      "tags": ["serialization", "binary", "header", "deserialization"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/header/serialization_v3.go:v3SerializableBuildMap",
+      "type": "class",
+      "name": "v3SerializableBuildMap",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v3.go",
+      "lineRange": [11, 16],
+      "summary": "内部二进制映射条目结构，存储 Offset、Length、BuildId 与 BuildStorageOffset 字段。",
+      "tags": ["data-model", "serialization", "binary"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/header/serialization_v5.go",
+      "type": "file",
+      "name": "serialization_v5.go",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v5.go",
+      "summary": "实现存储头 v5 格式的序列化与反序列化，包含 LZ4 压缩、按列组织映射、uvarint/varint 变长整数以及 block 大小校验。",
+      "tags": ["serialization", "storage", "binary-format", "compression", "header"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/serialization_v5.go:serializeV5",
+      "type": "function",
+      "name": "serializeV5",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v5.go",
+      "lineRange": [34, 68],
+      "summary": "使用 V4 builds + V5 mappings 块拼接 header 元数据，对 mapping block 调用 LZ4 压缩并写入尾部 magic/版本号。",
+      "tags": ["serialization", "compression", "header"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/serialization_v5.go:writeV5MappingSection",
+      "type": "function",
+      "name": "writeV5MappingSection",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v5.go",
+      "lineRange": [79, 133],
+      "summary": "将 mapping 数据按 start、end、block、length、type 等列写入 block，使用 uvarint 与 varint 变长编码。",
+      "tags": ["serialization", "binary", "varint", "header"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/serialization_v5.go:deserializeV5",
+      "type": "function",
+      "name": "deserializeV5",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v5.go",
+      "lineRange": [136, 180],
+      "summary": "校验 magic 与版本号、LZ4 解压后按 V4 与 V5 sections 反序列化 header 并返回完整 Header。",
+      "tags": ["serialization", "compression", "deserialization", "header"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/serialization_v5.go:readV5MappingSection",
+      "type": "function",
+      "name": "readV5MappingSection",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v5.go",
+      "lineRange": [184, 343],
+      "summary": "从已校验 magic 的 reader 按列读取 mapping entries，分批 append 到 start/end/block/length/type 数组并最终重建 Mapping。",
+      "tags": ["serialization", "binary", "deserialization", "header"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/syncroaring/bitset_test.go",
+      "type": "file",
+      "name": "bitset_test.go",
+      "filePath": "packages/shared/pkg/syncroaring/bitset_test.go",
+      "summary": "syncroaring Bitset 的单元测试与基准测试，覆盖 SetRange/HasRange 的并发、重叠、间隙、缓存命中模式以及 roaring cardinality 等行为。",
+      "tags": ["test", "unit-test", "benchmark", "concurrent"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/syncroaring/bitset.go",
+      "type": "file",
+      "name": "bitset.go",
+      "filePath": "packages/shared/pkg/syncroaring/bitset.go",
+      "summary": "提供线程安全的包装 Bitset，内部使用 roaring bitmap 并通过 RWMutex 保护 SetRange/HasRange/Clone 操作。",
+      "tags": ["data-structure", "bitmap", "concurrent", "wrapper", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/syncroaring/bitset.go:New",
+      "type": "function",
+      "name": "New",
+      "filePath": "packages/shared/pkg/syncroaring/bitset.go",
+      "lineRange": [14, 16],
+      "summary": "构造一个内部 roaring bitmap 已初始化的 Bitset 实例并返回指针。",
+      "tags": ["factory", "constructor"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/syncroaring/bitset.go:HasRange",
+      "type": "function",
+      "name": "HasRange",
+      "filePath": "packages/shared/pkg/syncroaring/bitset.go",
+      "lineRange": [18, 23],
+      "summary": "在读锁下检查 [start, end) 区间是否全部被设置，通过 roaring cardinality 比较判断。",
+      "tags": ["query", "bitmap", "read"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/syncroaring/bitset.go:SetRange",
+      "type": "function",
+      "name": "SetRange",
+      "filePath": "packages/shared/pkg/syncroaring/bitset.go",
+      "lineRange": [25, 30],
+      "summary": "在写锁下将 [start, end) 区间内的位全部加入 roaring bitmap。",
+      "tags": ["mutation", "bitmap", "write"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/syncroaring/bitset.go:Clone",
+      "type": "function",
+      "name": "Clone",
+      "filePath": "packages/shared/pkg/syncroaring/bitset.go",
+      "lineRange": [32, 37],
+      "summary": "在读锁下克隆内部 roaring bitmap 并返回新实例，便于调用方无锁使用。",
+      "tags": ["clone", "bitmap", "read"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/syncroaring/bitset.go:Bitset",
+      "type": "class",
+      "name": "Bitset",
+      "filePath": "packages/shared/pkg/syncroaring/bitset.go",
+      "lineRange": [9, 12],
+      "summary": "线程安全的位图容器，通过 RWMutex 保护内部 roaring.Bitmap 的并发访问。",
+      "tags": ["data-structure", "concurrent", "wrapper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/teamprovision/request.go",
+      "type": "file",
+      "name": "request.go",
+      "filePath": "packages/shared/pkg/teamprovision/request.go",
+      "summary": "定义团队计费开通请求 V1 的事件结构与原因/认证方式常量，用于跨服务事件载荷序列化。",
+      "tags": ["event", "data-model", "type-definition", "billing"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/teamprovision/request.go:CreatorContextV1",
+      "type": "class",
+      "name": "CreatorContextV1",
+      "filePath": "packages/shared/pkg/teamprovision/request.go",
+      "lineRange": [15, 19],
+      "summary": "记录团队开通请求的创建者上下文，包括 IP、UserAgent 和认证方式。",
+      "tags": ["data-model", "audit-context"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/teamprovision/request.go:TeamBillingProvisionRequestedV1",
+      "type": "class",
+      "name": "TeamBillingProvisionRequestedV1",
+      "filePath": "packages/shared/pkg/teamprovision/request.go",
+      "lineRange": [21, 28],
+      "summary": "团队计费开通请求载荷，描述团队、创建者与原因等字段，用于事件分发或消息总线。",
+      "tags": ["data-model", "event", "billing", "pubsub"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/templates/versions.go",
+      "type": "file",
+      "name": "versions.go",
+      "filePath": "packages/shared/pkg/templates/versions.go",
+      "summary": "集中声明 SDK 与模板各通道版本号，供服务与构建脚本统一引用。",
+      "tags": ["configuration", "version", "constants"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/scripts/build.prod.ts",
+      "type": "file",
+      "name": "build.prod.ts",
+      "filePath": "packages/shared/scripts/build.prod.ts",
+      "summary": "调用 E2B SDK 的 Template.build 构建 base 模板镜像，支持 USE_CACHE 环境变量开关与日志回调。",
+      "tags": ["script", "build", "template", "sdk"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/scripts/build.prod.ts:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "packages/shared/scripts/build.prod.ts",
+      "lineRange": [4, 16],
+      "summary": "读取 USE_CACHE 环境变量并通过 Template.build 启动 base 镜像构建，错误统一捕获打印。",
+      "tags": ["entry-point", "build", "async"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/scripts/template.ts",
+      "type": "file",
+      "name": "template.ts",
+      "filePath": "packages/shared/scripts/template.ts",
+      "summary": "基于 E2B SDK Template DSL 导出一个从 ubuntu 基础镜像构建的模板定义供 build.prod.ts 使用。",
+      "tags": ["template", "definition", "module"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/e2b.Dockerfile",
+      "type": "file",
+      "name": "e2b.Dockerfile",
+      "filePath": "tests/e2b.Dockerfile",
+      "summary": "基于 ubuntu:latest 的测试容器镜像，安装 fio、zstd、gzip 用于 e2b 测试套件的存储与性能基准。",
+      "tags": ["containerization", "test", "infrastructure"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/integration/internal/api/cfg.yaml",
+      "type": "file",
+      "name": "cfg.yaml",
+      "filePath": "tests/integration/internal/api/cfg.yaml",
+      "summary": "oapi-codegen 配置文件，指定 generated 输出 client 与 models，目标包名 api。",
+      "tags": ["configuration", "codegen", "openapi"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/integration/internal/envd/cfg.yaml",
+      "type": "file",
+      "name": "cfg.yaml",
+      "filePath": "tests/integration/internal/envd/cfg.yaml",
+      "summary": "oapi-codegen 配置文件，指定 generated 输出 client 与 models，目标包名 envd。",
+      "tags": ["configuration", "codegen", "openapi"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/integration/seed.go",
+      "type": "file",
+      "name": "seed.go",
+      "filePath": "tests/integration/seed.go",
+      "summary": "集成测试用 seed 程序：构造用户、团队、API key、access token 和环境等基础数据，通过 raw SQL 与 authdb 写入测试数据库。",
+      "tags": ["test", "seed", "integration", "database"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/integration/seed.go:SeedData",
+      "type": "class",
+      "name": "SeedData",
+      "filePath": "tests/integration/seed.go",
+      "lineRange": [23, 30],
+      "summary": "暴露给测试用例的 seed 数据集合，包含 access token、API key、env/build/team/user ID。",
+      "tags": ["data-model", "test-fixture"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/seed.go:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "tests/integration/seed.go",
+      "lineRange": [32, 42],
+      "summary": "集成测试 seed 程序入口，调用 run，根据退出码结束进程并打印结果。",
+      "tags": ["entry-point", "test"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/seed.go:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "tests/integration/seed.go",
+      "lineRange": [44, 86],
+      "summary": "建立主与 auth 数据库连接并准备 SeedData，从环境变量读取标识信息后调用 seed 完成填充。",
+      "tags": ["test", "setup", "database"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/seed.go:seed",
+      "type": "function",
+      "name": "seed",
+      "filePath": "tests/integration/seed.go",
+      "lineRange": [88, 274],
+      "summary": "创建用户、API key、access token、团队、环境与 build 等基础数据，结合 raw SQL 与 sqlc queries 完成 seed。",
+      "tags": ["test", "fixture", "database", "seeding"],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:tests/periodic-test/package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "tests/periodic-test/package.json",
+      "summary": "周期测试项目的 npm 配置，声明 e2b、@e2b/cli 与 code-interpreter 等依赖以及 bun 类型支持。",
+      "tags": ["configuration", "npm", "test", "package-json"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/periodic-test/time-is-synchronized/e2b.Dockerfile",
+      "type": "file",
+      "name": "e2b.Dockerfile",
+      "filePath": "tests/periodic-test/time-is-synchronized/e2b.Dockerfile",
+      "summary": "基于 ubuntu:24.04 的轻量测试容器镜像，用于校验沙箱虚拟机内的时间同步行为。",
+      "tags": ["containerization", "test", "time-sync"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test.js",
+      "type": "file",
+      "name": "test.js",
+      "filePath": "tests/test.js",
+      "summary": "E2B JavaScript SDK 烟雾测试：从 CLI 参数读取模板 ID 创建沙箱，写入 hello.txt 并读回日志输出。",
+      "tags": ["test", "smoke-test", "sdk", "filesystem"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test.js:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "tests/test.js",
+      "lineRange": [4, 11],
+      "summary": "异步创建 sandbox、写入并读取 hello.txt，将内容打印到控制台；运行成功则进程退出 0。",
+      "tags": ["test", "smoke-test", "async"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v3.go",
+      "target": "function:packages/shared/pkg/storage/header/serialization_v3.go:serializeV3",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v3.go",
+      "target": "function:packages/shared/pkg/storage/header/serialization_v3.go:deserializeV3",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v3.go",
+      "target": "class:packages/shared/pkg/storage/header/serialization_v3.go:v3SerializableBuildMap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5.go",
+      "target": "function:packages/shared/pkg/storage/header/serialization_v5.go:serializeV5",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5.go",
+      "target": "function:packages/shared/pkg/storage/header/serialization_v5.go:writeV5MappingSection",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5.go",
+      "target": "function:packages/shared/pkg/storage/header/serialization_v5.go:deserializeV5",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5.go",
+      "target": "function:packages/shared/pkg/storage/header/serialization_v5.go:readV5MappingSection",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/syncroaring/bitset.go",
+      "target": "function:packages/shared/pkg/syncroaring/bitset.go:New",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/syncroaring/bitset.go",
+      "target": "function:packages/shared/pkg/syncroaring/bitset.go:HasRange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/syncroaring/bitset.go",
+      "target": "function:packages/shared/pkg/syncroaring/bitset.go:SetRange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/syncroaring/bitset.go",
+      "target": "function:packages/shared/pkg/syncroaring/bitset.go:Clone",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/syncroaring/bitset.go",
+      "target": "class:packages/shared/pkg/syncroaring/bitset.go:Bitset",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/teamprovision/request.go",
+      "target": "class:packages/shared/pkg/teamprovision/request.go:CreatorContextV1",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/teamprovision/request.go",
+      "target": "class:packages/shared/pkg/teamprovision/request.go:TeamBillingProvisionRequestedV1",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/scripts/build.prod.ts",
+      "target": "function:packages/shared/scripts/build.prod.ts:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/scripts/build.prod.ts",
+      "target": "file:packages/shared/scripts/template.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/seed.go",
+      "target": "function:tests/integration/seed.go:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/seed.go",
+      "target": "function:tests/integration/seed.go:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/seed.go",
+      "target": "function:tests/integration/seed.go:seed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/test.js",
+      "target": "function:tests/test.js:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/seed.go",
+      "target": "class:packages/integration/seed.go:SeedData",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/seed.go",
+      "target": "file:tests/integration/internal/api/cfg.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/integration/seed.go",
+      "target": "file:tests/integration/internal/envd/cfg.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/integration/internal/api/cfg.yaml",
+      "target": "file:tests/integration/seed.go",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/integration/internal/envd/cfg.yaml",
+      "target": "file:tests/integration/seed.go",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/e2b.Dockerfile",
+      "target": "file:tests/integration/seed.go",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/periodic-test/time-is-synchronized/e2b.Dockerfile",
+      "target": "config:tests/periodic-test/package.json",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "config:tests/periodic-test/package.json",
+      "target": "file:tests/test.js",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/syncroaring/bitset_test.go",
+      "target": "file:packages/shared/pkg/syncroaring/bitset.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/seed.go",
+      "target": "config:tests/periodic-test/package.json",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/scripts/template.ts",
+      "target": "file:packages/shared/pkg/templates/versions.go",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/scripts/build.prod.ts",
+      "target": "file:packages/shared/pkg/templates/versions.go",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/periodic-test/time-is-synchronized/e2b.Dockerfile",
+      "target": "file:tests/e2b.Dockerfile",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

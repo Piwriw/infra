@@ -1,0 +1,666 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "type": "file",
+      "name": "proxy.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "summary": "nfsproxy 顶层 Proxy — 按 Config 选择性叠加 tracing/metrics/logging/recovery 中间件，最后用 helpers.CachingHandler 包裹并启动 nfs.Server。",
+      "tags": [
+        "nfs-proxy",
+        "middleware-chain",
+        "service-server"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/proxy.go:Proxy",
+      "type": "class",
+      "name": "Proxy",
+      "summary": "nfs.Server + 中间件链",
+      "tags": [
+        "nfs-proxy",
+        "service"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        29,
+        32
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/proxy.go:NewProxy",
+      "type": "function",
+      "name": "NewProxy",
+      "summary": "按 config 叠加 middleware 链并返回 Proxy",
+      "tags": [
+        "factory",
+        "middleware-chain"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        34,
+        77
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/proxy.go:Serve",
+      "type": "function",
+      "name": "Serve",
+      "summary": "在 net.Listener 上运行 nfs.Server",
+      "tags": [
+        "network",
+        "nfs-proxy"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        79,
+        89
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/proxy.go:Proxy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/proxy.go:NewProxy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/proxy.go:Serve",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/builder.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/change.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/chroot_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/chroot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/mountns.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/chroot/file_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/chroot/file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs_failed.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/logged/change.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/logged/file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/logged/fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/logged/handler.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/logged/util.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/metrics/change.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/metrics/file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/metrics/fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/metrics/handler.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/metrics/util.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/recovery/change.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/recovery/file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/recovery/fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/recovery/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/recovery/recovery_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/tracing/change.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/tracing/file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/tracing/fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/tracing/handler.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/tracing/util_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/tracing/util.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/chroot/change.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/chroot/file.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/chroot/fs_failed.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/logged/change.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/logged/file.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/logged/fs.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/logged/handler.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/logged/util.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/metrics/change.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/metrics/file.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/metrics/fs.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/metrics/handler.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/metrics/util.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/proxy.go:Proxy",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/proxy.go:NewProxy",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/proxy.go:Serve",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

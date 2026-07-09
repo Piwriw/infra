@@ -1,0 +1,175 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/client-proxy/Dockerfile",
+      "language": "dockerfile",
+      "fileCategory": "infra",
+      "totalLines": 44,
+      "nonEmptyLines": 30,
+      "services": [
+        {
+          "name": "builder",
+          "image": "golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION}",
+          "ports": [],
+          "startLine": 4,
+          "endLine": 39
+        },
+        {
+          "name": "alpine",
+          "image": "alpine:${ALPINE_VERSION}",
+          "ports": [],
+          "startLine": 40,
+          "endLine": 45
+        }
+      ],
+      "steps": [
+        {
+          "name": "ARG GOLANG_VERSION=1.26.3",
+          "startLine": 1,
+          "endLine": 1
+        },
+        {
+          "name": "ARG ALPINE_VERSION=3.22",
+          "startLine": 2,
+          "endLine": 2
+        },
+        {
+          "name": "FROM golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION} AS builder",
+          "startLine": 4,
+          "endLine": 4
+        },
+        {
+          "name": "ARG TARGETARCH",
+          "startLine": 5,
+          "endLine": 5
+        },
+        {
+          "name": "RUN apk add --no-cache make",
+          "startLine": 7,
+          "endLine": 7
+        },
+        {
+          "name": "WORKDIR /build/shared",
+          "startLine": 10,
+          "endLine": 10
+        },
+        {
+          "name": "COPY ./shared/go.mod ./shared/go.sum ./",
+          "startLine": 11,
+          "endLine": 11
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 12,
+          "endLine": 12
+        },
+        {
+          "name": "WORKDIR /build/clickhouse",
+          "startLine": 14,
+          "endLine": 14
+        },
+        {
+          "name": "COPY ./clickhouse/go.mod ./clickhouse/go.sum ./",
+          "startLine": 15,
+          "endLine": 15
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 16,
+          "endLine": 16
+        },
+        {
+          "name": "WORKDIR /build/client-proxy",
+          "startLine": 18,
+          "endLine": 18
+        },
+        {
+          "name": "COPY ./client-proxy/go.mod ./client-proxy/go.sum ./",
+          "startLine": 19,
+          "endLine": 19
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 20,
+          "endLine": 20
+        },
+        {
+          "name": "WORKDIR /build",
+          "startLine": 23,
+          "endLine": 23
+        },
+        {
+          "name": "COPY ./shared/pkg ./shared/pkg",
+          "startLine": 25,
+          "endLine": 25
+        },
+        {
+          "name": "COPY ./clickhouse/pkg ./clickhouse/pkg",
+          "startLine": 27,
+          "endLine": 27
+        },
+        {
+          "name": "COPY ./client-proxy/internal ./client-proxy/internal",
+          "startLine": 29,
+          "endLine": 29
+        },
+        {
+          "name": "COPY ./client-proxy/main.go ./client-proxy/main.go",
+          "startLine": 30,
+          "endLine": 30
+        },
+        {
+          "name": "COPY ./client-proxy/Makefile ./client-proxy/Makefile",
+          "startLine": 31,
+          "endLine": 31
+        },
+        {
+          "name": "WORKDIR /build/client-proxy",
+          "startLine": 33,
+          "endLine": 33
+        },
+        {
+          "name": "ARG COMMIT_SHA",
+          "startLine": 35,
+          "endLine": 35
+        },
+        {
+          "name": "RUN --mount=type=cache,target=/root/.cache/go-build make build C",
+          "startLine": 37,
+          "endLine": 37
+        },
+        {
+          "name": "RUN chmod +x /build/client-proxy/bin/client-proxy",
+          "startLine": 38,
+          "endLine": 38
+        },
+        {
+          "name": "FROM alpine:${ALPINE_VERSION}",
+          "startLine": 40,
+          "endLine": 40
+        },
+        {
+          "name": "COPY --from=builder /build/client-proxy/bin/client-proxy .",
+          "startLine": 42,
+          "endLine": 42
+        },
+        {
+          "name": "ENTRYPOINT [\"./client-proxy\"]",
+          "startLine": 44,
+          "endLine": 44
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "serviceCount": 2,
+        "stepCount": 27
+      }
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "nodes": [
+    {
+      "id": "file:iac/provider-gcp/nomad-cluster/main.tf",
+      "type": "resource",
+      "name": "main.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster/main.tf",
+      "summary": "Nomad 集群的 Terraform 入口文件，定义 Consul 加密密钥、IAM 权限、设置配置存储桶对象，并组装 network、filestore、build_cluster 和 client_cluster 子模块。",
+      "tags": ["terraform", "infrastructure", "nomad", "consul", "gcp"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:iac/provider-gcp/nomad-cluster/moved.tf",
+      "type": "resource",
+      "name": "moved.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster/moved.tf",
+      "summary": "Terraform 资源迁移声明文件，将 client_pool、client 实例模板、自动伸缩器和健康检查重定向至 client_cluster 模块内部。",
+      "tags": ["terraform", "refactoring", "state-migration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/provider-gcp/nomad-cluster/nodepool-api.tf",
+      "type": "resource",
+      "name": "nodepool-api.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster/nodepool-api.tf",
+      "summary": "API 节点池的 Terraform 配置，包含 Nomad 健康检查、实例组管理器以及启动 API 服务的实例模板。",
+      "tags": ["terraform", "infrastructure", "nodepool", "api", "gce"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:iac/provider-gcp/nomad-cluster/nodepool-clickhouse.tf",
+      "type": "resource",
+      "name": "nodepool-clickhouse.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster/nodepool-clickhouse.tf",
+      "summary": "ClickHouse 节点池的 Terraform 配置，提供带状态盘的实例组管理器及持久化卷配置以支持分析型数据库。",
+      "tags": ["terraform", "infrastructure", "nodepool", "clickhouse", "gce"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:iac/provider-gcp/nomad-cluster/nodepool-control-server.tf",
+      "type": "resource",
+      "name": "nodepool-control-server.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster/nodepool-control-server.tf",
+      "summary": "Nomad/Consul 控制平面节点池的 Terraform 配置，部署区域级实例组管理器和运行 server 角色的实例模板。",
+      "tags": ["terraform", "infrastructure", "nodepool", "nomad-server", "consul-server"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:iac/provider-gcp/nomad-cluster/nodepool-loki.tf",
+      "type": "resource",
+      "name": "nodepool-loki.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster/nodepool-loki.tf",
+      "summary": "Loki 日志节点池的 Terraform 配置，提供实例组管理器和运行 Loki 日志聚合服务的实例模板。",
+      "tags": ["terraform", "infrastructure", "nodepool", "loki", "logging"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/provider-gcp/nomad-cluster/outputs.tf",
+      "type": "resource",
+      "name": "outputs.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster/outputs.tf",
+      "summary": "对外暴露 shared_chunk_cache_path 输出，仅在启用 filestore 缓存时返回 NFS 挂载路径下的 chunks-cache 子目录。",
+      "tags": ["terraform", "output", "filestore"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/provider-gcp/nomad-cluster/variables.tf",
+      "type": "resource",
+      "name": "variables.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster/variables.tf",
+      "summary": "Nomad 集群模块的全部输入变量定义，涵盖环境前缀、集群规模、机器类型、GCP 项目/区域、存储桶名称、Filestore 缓存参数以及节点池配置。",
+      "tags": ["terraform", "variables", "configuration", "inputs"],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:iac/provider-gcp/nomad-cluster/main.tf",
+      "target": "file:iac/provider-gcp/nomad-cluster/variables.tf",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/nomad-cluster/nodepool-api.tf",
+      "target": "file:iac/provider-gcp/nomad-cluster/variables.tf",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/nomad-cluster/nodepool-clickhouse.tf",
+      "target": "file:iac/provider-gcp/nomad-cluster/variables.tf",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/nomad-cluster/nodepool-control-server.tf",
+      "target": "file:iac/provider-gcp/nomad-cluster/variables.tf",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/nomad-cluster/nodepool-loki.tf",
+      "target": "file:iac/provider-gcp/nomad-cluster/variables.tf",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/nomad-cluster/main.tf",
+      "target": "file:iac/provider-gcp/nomad-cluster/nodepool-api.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/nomad-cluster/main.tf",
+      "target": "file:iac/provider-gcp/nomad-cluster/nodepool-clickhouse.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/nomad-cluster/main.tf",
+      "target": "file:iac/provider-gcp/nomad-cluster/nodepool-control-server.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/nomad-cluster/main.tf",
+      "target": "file:iac/provider-gcp/nomad-cluster/nodepool-loki.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-gcp/nomad-cluster/moved.tf",
+      "target": "file:iac/provider-gcp/nomad-cluster/main.tf",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

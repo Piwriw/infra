@@ -1,0 +1,2448 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 25,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "iac/provider-aws/modules/nodepool-client/main.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 187,
+      "nonEmptyLines": 154,
+      "resources": [
+        {
+          "name": "aws_iam_policy.client_node_policy",
+          "kind": "aws_iam_policy",
+          "startLine": 27,
+          "endLine": 30
+        },
+        {
+          "name": "aws_iam_role.client",
+          "kind": "aws_iam_role",
+          "startLine": 95,
+          "endLine": 98
+        },
+        {
+          "name": "aws_iam_role_policy_attachment.client",
+          "kind": "aws_iam_role_policy_attachment",
+          "startLine": 100,
+          "endLine": 108
+        },
+        {
+          "name": "aws_iam_instance_profile.client",
+          "kind": "aws_iam_instance_profile",
+          "startLine": 110,
+          "endLine": 113
+        },
+        {
+          "name": "aws_launch_template.client",
+          "kind": "aws_launch_template",
+          "startLine": 125,
+          "endLine": 165
+        },
+        {
+          "name": "aws_autoscaling_group.client",
+          "kind": "aws_autoscaling_group",
+          "startLine": 167,
+          "endLine": 187
+        },
+        {
+          "name": "data.aws_iam_policy_document.client_node_policy",
+          "kind": "data.aws_iam_policy_document",
+          "startLine": 32,
+          "endLine": 93
+        },
+        {
+          "name": "data.aws_ami.client",
+          "kind": "data.aws_ami",
+          "startLine": 115,
+          "endLine": 123
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 8
+      }
+    },
+    {
+      "path": "iac/provider-aws/modules/nodepool-client/scripts/start-client.sh",
+      "language": "shell",
+      "fileCategory": "script",
+      "totalLines": 254,
+      "nonEmptyLines": 208,
+      "functions": [
+        {
+          "name": "max",
+          "startLine": 141,
+          "endLine": 147,
+          "params": []
+        },
+        {
+          "name": "min",
+          "startLine": 149,
+          "endLine": 155,
+          "params": []
+        },
+        {
+          "name": "ensure_even",
+          "startLine": 157,
+          "endLine": 163,
+          "params": []
+        },
+        {
+          "name": "remove_decimal",
+          "startLine": 165,
+          "endLine": 167,
+          "params": []
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "iac/provider-aws/modules/nodepool-client/variables.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 153,
+      "nonEmptyLines": 119,
+      "definitions": [
+        {
+          "name": "prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 1,
+          "endLine": 3
+        },
+        {
+          "name": "name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 5,
+          "endLine": 7
+        },
+        {
+          "name": "aws_account_id",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 9,
+          "endLine": 11
+        },
+        {
+          "name": "cluster_tag_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 13,
+          "endLine": 15
+        },
+        {
+          "name": "cluster_tag_value",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 17,
+          "endLine": 19
+        },
+        {
+          "name": "cluster_node_policy_arn",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 21,
+          "endLine": 24
+        },
+        {
+          "name": "cluster_node_ec2_policy_json",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 26,
+          "endLine": 29
+        },
+        {
+          "name": "setup_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 31,
+          "endLine": 33
+        },
+        {
+          "name": "setup_files_hash",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 35,
+          "endLine": 37
+        },
+        {
+          "name": "security_group_ids",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 39,
+          "endLine": 41
+        },
+        {
+          "name": "vpc_private_subnets",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 43,
+          "endLine": 45
+        },
+        {
+          "name": "image_family_prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 47,
+          "endLine": 50
+        },
+        {
+          "name": "cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 52,
+          "endLine": 55
+        },
+        {
+          "name": "machine_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 57,
+          "endLine": 60
+        },
+        {
+          "name": "node_pool_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 62,
+          "endLine": 65
+        },
+        {
+          "name": "node_labels",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 67,
+          "endLine": 70
+        },
+        {
+          "name": "base_hugepages_percentage",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 72,
+          "endLine": 76
+        },
+        {
+          "name": "nested_virtualization",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 78,
+          "endLine": 81
+        },
+        {
+          "name": "boot_disk_size_gb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 83,
+          "endLine": 87
+        },
+        {
+          "name": "consul_acl_token",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 89,
+          "endLine": 91
+        },
+        {
+          "name": "consul_gossip_encryption_key",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 93,
+          "endLine": 95
+        },
+        {
+          "name": "consul_dns_request_token",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 97,
+          "endLine": 99
+        },
+        {
+          "name": "aws_ecr_account_repository_domain",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 101,
+          "endLine": 103
+        },
+        {
+          "name": "fc_kernels_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 105,
+          "endLine": 107
+        },
+        {
+          "name": "fc_versions_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 109,
+          "endLine": 111
+        },
+        {
+          "name": "fc_env_pipeline_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 113,
+          "endLine": 115
+        },
+        {
+          "name": "fc_busybox_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 117,
+          "endLine": 119
+        },
+        {
+          "name": "fc_env_pipeline_bucket_arn",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 121,
+          "endLine": 123
+        },
+        {
+          "name": "fc_kernels_bucket_arn",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 125,
+          "endLine": 127
+        },
+        {
+          "name": "fc_versions_bucket_arn",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 129,
+          "endLine": 131
+        },
+        {
+          "name": "fc_busybox_bucket_arn",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 133,
+          "endLine": 135
+        },
+        {
+          "name": "templates_bucket_arn",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 137,
+          "endLine": 139
+        },
+        {
+          "name": "templates_build_cache_bucket_arn",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 141,
+          "endLine": 143
+        },
+        {
+          "name": "custom_environments_repo_arn",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 145,
+          "endLine": 147
+        },
+        {
+          "name": "scripts_path",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 149,
+          "endLine": 153
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 35,
+        "resourceCount": 0
+      }
+    },
+    {
+      "path": "iac/provider-aws/modules/nodepool-control-server/main.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 109,
+      "nonEmptyLines": 85,
+      "resources": [
+        {
+          "name": "aws_iam_role.control_server",
+          "kind": "aws_iam_role",
+          "startLine": 18,
+          "endLine": 21
+        },
+        {
+          "name": "aws_iam_role_policy_attachment.control_server",
+          "kind": "aws_iam_role_policy_attachment",
+          "startLine": 23,
+          "endLine": 30
+        },
+        {
+          "name": "aws_iam_instance_profile.control_server",
+          "kind": "aws_iam_instance_profile",
+          "startLine": 42,
+          "endLine": 45
+        },
+        {
+          "name": "aws_launch_template.control_server",
+          "kind": "aws_launch_template",
+          "startLine": 47,
+          "endLine": 86
+        },
+        {
+          "name": "aws_autoscaling_group.control_server",
+          "kind": "aws_autoscaling_group",
+          "startLine": 88,
+          "endLine": 109
+        },
+        {
+          "name": "data.aws_ami.control_server",
+          "kind": "data.aws_ami",
+          "startLine": 32,
+          "endLine": 40
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 6
+      }
+    },
+    {
+      "path": "iac/provider-aws/modules/nodepool-control-server/scripts/start-server.sh",
+      "language": "shell",
+      "fileCategory": "script",
+      "totalLines": 21,
+      "nonEmptyLines": 15,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "iac/provider-aws/modules/nodepool-control-server/variables.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 79,
+      "nonEmptyLines": 62,
+      "definitions": [
+        {
+          "name": "prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 1,
+          "endLine": 3
+        },
+        {
+          "name": "aws_account_id",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 5,
+          "endLine": 7
+        },
+        {
+          "name": "cluster_tag_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 9,
+          "endLine": 11
+        },
+        {
+          "name": "cluster_tag_value",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 13,
+          "endLine": 15
+        },
+        {
+          "name": "cluster_node_policy_arn",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 17,
+          "endLine": 20
+        },
+        {
+          "name": "cluster_node_ec2_policy_json",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 22,
+          "endLine": 25
+        },
+        {
+          "name": "setup_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 27,
+          "endLine": 29
+        },
+        {
+          "name": "setup_files_hash",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 31,
+          "endLine": 33
+        },
+        {
+          "name": "security_group_ids",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 35,
+          "endLine": 37
+        },
+        {
+          "name": "target_group_arns",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 39,
+          "endLine": 42
+        },
+        {
+          "name": "vpc_private_subnets",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 44,
+          "endLine": 46
+        },
+        {
+          "name": "image_family_prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 48,
+          "endLine": 51
+        },
+        {
+          "name": "cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 53,
+          "endLine": 56
+        },
+        {
+          "name": "machine_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 58,
+          "endLine": 61
+        },
+        {
+          "name": "nomad_acl_token",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 63,
+          "endLine": 65
+        },
+        {
+          "name": "consul_acl_token",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 67,
+          "endLine": 69
+        },
+        {
+          "name": "consul_gossip_encryption_key",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 71,
+          "endLine": 73
+        },
+        {
+          "name": "scripts_path",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 75,
+          "endLine": 79
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 18,
+        "resourceCount": 0
+      }
+    },
+    {
+      "path": "iac/provider-aws/nomad-cluster-disk-image/main.pkr.hcl",
+      "language": "hcl",
+      "fileCategory": "code",
+      "totalLines": 177,
+      "nonEmptyLines": 149,
+      "metrics": {}
+    },
+    {
+      "path": "iac/provider-aws/nomad-cluster-disk-image/Makefile",
+      "language": "makefile",
+      "fileCategory": "infra",
+      "totalLines": 20,
+      "nonEmptyLines": 17,
+      "steps": [
+        {
+          "name": "init",
+          "startLine": 4,
+          "endLine": 6
+        },
+        {
+          "name": "build",
+          "startLine": 7,
+          "endLine": 18
+        },
+        {
+          "name": "format",
+          "startLine": 19,
+          "endLine": 21
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "stepCount": 3
+      }
+    },
+    {
+      "path": "iac/provider-aws/nomad-cluster-disk-image/variables.pkr.hcl",
+      "language": "hcl",
+      "fileCategory": "code",
+      "totalLines": 52,
+      "nonEmptyLines": 42,
+      "metrics": {}
+    },
+    {
+      "path": "iac/provider-aws/nomad-cluster/main.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 383,
+      "nonEmptyLines": 304,
+      "resources": [
+        {
+          "name": "aws_s3_object.setup_config",
+          "kind": "aws_s3_object",
+          "startLine": 59,
+          "endLine": 64
+        },
+        {
+          "name": "aws_iam_policy.cluster_node_policy",
+          "kind": "aws_iam_policy",
+          "startLine": 66,
+          "endLine": 69
+        },
+        {
+          "name": "data.aws_region.current",
+          "kind": "data.aws_region",
+          "startLine": 19,
+          "endLine": 19
+        },
+        {
+          "name": "data.aws_caller_identity.current",
+          "kind": "data.aws_caller_identity",
+          "startLine": 21,
+          "endLine": 21
+        },
+        {
+          "name": "data.aws_s3_bucket.setup",
+          "kind": "data.aws_s3_bucket",
+          "startLine": 23,
+          "endLine": 25
+        },
+        {
+          "name": "data.aws_s3_bucket.fc_env_pipeline",
+          "kind": "data.aws_s3_bucket",
+          "startLine": 27,
+          "endLine": 29
+        },
+        {
+          "name": "data.aws_s3_bucket.fc_kernels",
+          "kind": "data.aws_s3_bucket",
+          "startLine": 31,
+          "endLine": 33
+        },
+        {
+          "name": "data.aws_s3_bucket.fc_versions",
+          "kind": "data.aws_s3_bucket",
+          "startLine": 35,
+          "endLine": 37
+        },
+        {
+          "name": "data.aws_s3_bucket.fc_busybox",
+          "kind": "data.aws_s3_bucket",
+          "startLine": 39,
+          "endLine": 41
+        },
+        {
+          "name": "data.aws_s3_bucket.templates_build_cache_bucket",
+          "kind": "data.aws_s3_bucket",
+          "startLine": 43,
+          "endLine": 45
+        },
+        {
+          "name": "data.aws_s3_bucket.templates_bucket",
+          "kind": "data.aws_s3_bucket",
+          "startLine": 47,
+          "endLine": 49
+        },
+        {
+          "name": "data.aws_s3_bucket.loki_bucket",
+          "kind": "data.aws_s3_bucket",
+          "startLine": 51,
+          "endLine": 53
+        },
+        {
+          "name": "data.aws_s3_bucket.clickhouse_bucket",
+          "kind": "data.aws_s3_bucket",
+          "startLine": 55,
+          "endLine": 57
+        },
+        {
+          "name": "data.aws_ecr_repository.custom_environments",
+          "kind": "data.aws_ecr_repository",
+          "startLine": 71,
+          "endLine": 73
+        },
+        {
+          "name": "data.aws_iam_policy_document.cluster_node_policy",
+          "kind": "data.aws_iam_policy_document",
+          "startLine": 75,
+          "endLine": 180
+        },
+        {
+          "name": "data.aws_iam_policy_document.cluster_node_ec2_policy",
+          "kind": "data.aws_iam_policy_document",
+          "startLine": 182,
+          "endLine": 192
+        },
+        {
+          "name": "module.control_server",
+          "kind": "module",
+          "startLine": 198,
+          "endLine": 225
+        },
+        {
+          "name": "module.api",
+          "kind": "module",
+          "startLine": 227,
+          "endLine": 258
+        },
+        {
+          "name": "module.clickhouse",
+          "kind": "module",
+          "startLine": 260,
+          "endLine": 291
+        },
+        {
+          "name": "module.build",
+          "kind": "module",
+          "startLine": 293,
+          "endLine": 336
+        },
+        {
+          "name": "module.client",
+          "kind": "module",
+          "startLine": 338,
+          "endLine": 383
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 21
+      }
+    },
+    {
+      "path": "iac/provider-aws/nomad-cluster/scripts/run-consul.sh",
+      "language": "shell",
+      "fileCategory": "script",
+      "totalLines": 760,
+      "nonEmptyLines": 674,
+      "functions": [
+        {
+          "name": "print_usage",
+          "startLine": 41,
+          "endLine": 87,
+          "params": []
+        },
+        {
+          "name": "get_instance_metadata_value",
+          "startLine": 90,
+          "endLine": 100,
+          "params": []
+        },
+        {
+          "name": "get_instance_metadata_token",
+          "startLine": 103,
+          "endLine": 123,
+          "params": []
+        },
+        {
+          "name": "get_instance_dynamic_metadata",
+          "startLine": 126,
+          "endLine": 135,
+          "params": []
+        },
+        {
+          "name": "get_instance_tag_value",
+          "startLine": 138,
+          "endLine": 145,
+          "params": []
+        },
+        {
+          "name": "get_instance_region",
+          "startLine": 148,
+          "endLine": 151,
+          "params": []
+        },
+        {
+          "name": "get_instance_zone",
+          "startLine": 154,
+          "endLine": 157,
+          "params": []
+        },
+        {
+          "name": "get_instance_name",
+          "startLine": 160,
+          "endLine": 163,
+          "params": []
+        },
+        {
+          "name": "get_instance_ip_address",
+          "startLine": 166,
+          "endLine": 169,
+          "params": []
+        },
+        {
+          "name": "split_by_lines",
+          "startLine": 171,
+          "endLine": 178,
+          "params": []
+        },
+        {
+          "name": "generate_consul_config",
+          "startLine": 180,
+          "endLine": 329,
+          "params": []
+        },
+        {
+          "name": "generate_systemd_config",
+          "startLine": 331,
+          "endLine": 392,
+          "params": []
+        },
+        {
+          "name": "start_consul",
+          "startLine": 394,
+          "endLine": 400,
+          "params": []
+        },
+        {
+          "name": "bootstrap",
+          "startLine": 402,
+          "endLine": 430,
+          "params": []
+        },
+        {
+          "name": "setup_dns_resolving",
+          "startLine": 432,
+          "endLine": 474,
+          "params": []
+        },
+        {
+          "name": "get_owner_of_path",
+          "startLine": 477,
+          "endLine": 480,
+          "params": []
+        },
+        {
+          "name": "get_owner_home_dir",
+          "startLine": 482,
+          "endLine": 494,
+          "params": []
+        },
+        {
+          "name": "run",
+          "startLine": 496,
+          "endLine": 758,
+          "params": []
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 18,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "iac/provider-aws/nomad-cluster/scripts/run-nomad.sh",
+      "language": "shell",
+      "fileCategory": "script",
+      "totalLines": 488,
+      "nonEmptyLines": 411,
+      "functions": [
+        {
+          "name": "print_usage",
+          "startLine": 21,
+          "endLine": 47,
+          "params": []
+        },
+        {
+          "name": "log",
+          "startLine": 49,
+          "endLine": 54,
+          "params": []
+        },
+        {
+          "name": "log_info",
+          "startLine": 56,
+          "endLine": 59,
+          "params": []
+        },
+        {
+          "name": "log_warn",
+          "startLine": 61,
+          "endLine": 64,
+          "params": []
+        },
+        {
+          "name": "log_error",
+          "startLine": 66,
+          "endLine": 69,
+          "params": []
+        },
+        {
+          "name": "strip_prefix",
+          "startLine": 72,
+          "endLine": 76,
+          "params": []
+        },
+        {
+          "name": "assert_not_empty",
+          "startLine": 78,
+          "endLine": 87,
+          "params": []
+        },
+        {
+          "name": "get_instance_metadata_value",
+          "startLine": 90,
+          "endLine": 111,
+          "params": []
+        },
+        {
+          "name": "get_instance_metadata_token",
+          "startLine": 114,
+          "endLine": 134,
+          "params": []
+        },
+        {
+          "name": "get_instance_dynamic_metadata",
+          "startLine": 137,
+          "endLine": 146,
+          "params": []
+        },
+        {
+          "name": "get_instance_tag_value",
+          "startLine": 149,
+          "endLine": 156,
+          "params": []
+        },
+        {
+          "name": "get_instance_region",
+          "startLine": 159,
+          "endLine": 162,
+          "params": []
+        },
+        {
+          "name": "get_instance_zone",
+          "startLine": 165,
+          "endLine": 168,
+          "params": []
+        },
+        {
+          "name": "get_instance_name",
+          "startLine": 171,
+          "endLine": 174,
+          "params": []
+        },
+        {
+          "name": "get_instance_ip_address",
+          "startLine": 177,
+          "endLine": 180,
+          "params": []
+        },
+        {
+          "name": "assert_is_installed",
+          "startLine": 182,
+          "endLine": 189,
+          "params": []
+        },
+        {
+          "name": "generate_nomad_config",
+          "startLine": 191,
+          "endLine": 317,
+          "params": []
+        },
+        {
+          "name": "generate_supervisor_config",
+          "startLine": 319,
+          "endLine": 346,
+          "params": []
+        },
+        {
+          "name": "start_nomad",
+          "startLine": 348,
+          "endLine": 352,
+          "params": []
+        },
+        {
+          "name": "bootstrap",
+          "startLine": 354,
+          "endLine": 367,
+          "params": []
+        },
+        {
+          "name": "create_node_pools",
+          "startLine": 369,
+          "endLine": 384,
+          "params": []
+        },
+        {
+          "name": "get_owner_of_path",
+          "startLine": 387,
+          "endLine": 390,
+          "params": []
+        },
+        {
+          "name": "run",
+          "startLine": 392,
+          "endLine": 486,
+          "params": []
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 23,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "iac/provider-aws/nomad-cluster/variables.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 240,
+      "nonEmptyLines": 184,
+      "definitions": [
+        {
+          "name": "prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 1,
+          "endLine": 3
+        },
+        {
+          "name": "aws_account_id",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 5,
+          "endLine": 7
+        },
+        {
+          "name": "aws_region",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 9,
+          "endLine": 11
+        },
+        {
+          "name": "vpc_private_subnets",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 13,
+          "endLine": 15
+        },
+        {
+          "name": "vpc_public_subnets",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 17,
+          "endLine": 19
+        },
+        {
+          "name": "nomad_acl_token_secret",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 21,
+          "endLine": 23
+        },
+        {
+          "name": "consul_acl_token_secret",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 25,
+          "endLine": 27
+        },
+        {
+          "name": "consul_gossip_encryption_key",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 29,
+          "endLine": 31
+        },
+        {
+          "name": "consul_dns_request_token_secret",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 33,
+          "endLine": 35
+        },
+        {
+          "name": "control_server_security_group_ids",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 41,
+          "endLine": 43
+        },
+        {
+          "name": "control_server_target_group_arns",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 45,
+          "endLine": 47
+        },
+        {
+          "name": "control_server_image_family_prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 49,
+          "endLine": 51
+        },
+        {
+          "name": "control_server_cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 53,
+          "endLine": 55
+        },
+        {
+          "name": "control_server_machine_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 57,
+          "endLine": 59
+        },
+        {
+          "name": "api_node_pool_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 65,
+          "endLine": 67
+        },
+        {
+          "name": "api_image_family_prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 69,
+          "endLine": 71
+        },
+        {
+          "name": "api_cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 73,
+          "endLine": 75
+        },
+        {
+          "name": "api_machine_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 77,
+          "endLine": 79
+        },
+        {
+          "name": "api_target_group_arns",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 81,
+          "endLine": 83
+        },
+        {
+          "name": "api_security_group_ids",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 85,
+          "endLine": 87
+        },
+        {
+          "name": "clickhouse_node_pool_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 93,
+          "endLine": 95
+        },
+        {
+          "name": "clickhouse_image_family_prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 97,
+          "endLine": 99
+        },
+        {
+          "name": "clickhouse_cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 101,
+          "endLine": 103
+        },
+        {
+          "name": "clickhouse_az",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 105,
+          "endLine": 107
+        },
+        {
+          "name": "clickhouse_job_constraint_prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 109,
+          "endLine": 111
+        },
+        {
+          "name": "clickhouse_subnet_id",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 113,
+          "endLine": 115
+        },
+        {
+          "name": "clickhouse_machine_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 117,
+          "endLine": 119
+        },
+        {
+          "name": "clickhouse_security_group_ids",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 121,
+          "endLine": 123
+        },
+        {
+          "name": "client_node_pool_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 128,
+          "endLine": 130
+        },
+        {
+          "name": "client_base_hugepages_percentage",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 132,
+          "endLine": 136
+        },
+        {
+          "name": "client_image_family_prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 138,
+          "endLine": 140
+        },
+        {
+          "name": "client_cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 142,
+          "endLine": 144
+        },
+        {
+          "name": "client_machine_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 146,
+          "endLine": 148
+        },
+        {
+          "name": "client_server_nested_virtualization",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 150,
+          "endLine": 152
+        },
+        {
+          "name": "client_security_group_ids",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 154,
+          "endLine": 156
+        },
+        {
+          "name": "client_node_labels",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 158,
+          "endLine": 161
+        },
+        {
+          "name": "build_node_pool_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 166,
+          "endLine": 168
+        },
+        {
+          "name": "build_image_family_prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 170,
+          "endLine": 173
+        },
+        {
+          "name": "build_cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 175,
+          "endLine": 178
+        },
+        {
+          "name": "build_machine_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 180,
+          "endLine": 183
+        },
+        {
+          "name": "build_server_nested_virtualization",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 185,
+          "endLine": 187
+        },
+        {
+          "name": "build_security_group_ids",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 189,
+          "endLine": 191
+        },
+        {
+          "name": "build_node_labels",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 193,
+          "endLine": 196
+        },
+        {
+          "name": "setup_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 202,
+          "endLine": 204
+        },
+        {
+          "name": "fc_env_pipeline_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 206,
+          "endLine": 208
+        },
+        {
+          "name": "fc_kernels_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 210,
+          "endLine": 212
+        },
+        {
+          "name": "fc_versions_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 214,
+          "endLine": 216
+        },
+        {
+          "name": "fc_busybox_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 218,
+          "endLine": 220
+        },
+        {
+          "name": "templates_build_cache_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 222,
+          "endLine": 224
+        },
+        {
+          "name": "templates_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 226,
+          "endLine": 228
+        },
+        {
+          "name": "loki_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 230,
+          "endLine": 232
+        },
+        {
+          "name": "clickhouse_backups_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 234,
+          "endLine": 236
+        },
+        {
+          "name": "custom_environments_repository_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 238,
+          "endLine": 240
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 53,
+        "resourceCount": 0
+      }
+    },
+    {
+      "path": "iac/provider-aws/nomad/main.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 241,
+      "nonEmptyLines": 180,
+      "resources": [
+        {
+          "name": "nomad_scheduler_config.config",
+          "kind": "nomad_scheduler_config",
+          "startLine": 26,
+          "endLine": 28
+        },
+        {
+          "name": "data.aws_ecr_image.api",
+          "kind": "data.aws_ecr_image",
+          "startLine": 5,
+          "endLine": 8
+        },
+        {
+          "name": "data.aws_ecr_image.db_migrator",
+          "kind": "data.aws_ecr_image",
+          "startLine": 10,
+          "endLine": 13
+        },
+        {
+          "name": "data.aws_ecr_image.client_proxy",
+          "kind": "data.aws_ecr_image",
+          "startLine": 15,
+          "endLine": 18
+        },
+        {
+          "name": "data.aws_ecr_image.clickhouse_migrator",
+          "kind": "data.aws_ecr_image",
+          "startLine": 20,
+          "endLine": 23
+        },
+        {
+          "name": "data.aws_s3_object.orchestrator",
+          "kind": "data.aws_s3_object",
+          "startLine": 121,
+          "endLine": 124
+        },
+        {
+          "name": "data.aws_s3_object.template_manager",
+          "kind": "data.aws_s3_object",
+          "startLine": 143,
+          "endLine": 146
+        },
+        {
+          "name": "data.aws_s3_object.nomad_nodepool_apm",
+          "kind": "data.aws_s3_object",
+          "startLine": 167,
+          "endLine": 171
+        },
+        {
+          "name": "module.otel_collector",
+          "kind": "module",
+          "startLine": 30,
+          "endLine": 49
+        },
+        {
+          "name": "module.otel_collector_nomad_server",
+          "kind": "module",
+          "startLine": 51,
+          "endLine": 60
+        },
+        {
+          "name": "module.redis",
+          "kind": "module",
+          "startLine": 62,
+          "endLine": 69
+        },
+        {
+          "name": "module.ingress",
+          "kind": "module",
+          "startLine": 71,
+          "endLine": 87
+        },
+        {
+          "name": "module.client_proxy",
+          "kind": "module",
+          "startLine": 89,
+          "endLine": 99
+        },
+        {
+          "name": "module.api",
+          "kind": "module",
+          "startLine": 101,
+          "endLine": 119
+        },
+        {
+          "name": "module.orchestrator",
+          "kind": "module",
+          "startLine": 130,
+          "endLine": 141
+        },
+        {
+          "name": "module.template_manager",
+          "kind": "module",
+          "startLine": 152,
+          "endLine": 165
+        },
+        {
+          "name": "module.template_manager_autoscaler",
+          "kind": "module",
+          "startLine": 173,
+          "endLine": 180
+        },
+        {
+          "name": "module.loki",
+          "kind": "module",
+          "startLine": 185,
+          "endLine": 195
+        },
+        {
+          "name": "module.logs_collector",
+          "kind": "module",
+          "startLine": 200,
+          "endLine": 210
+        },
+        {
+          "name": "module.clickhouse",
+          "kind": "module",
+          "startLine": 215,
+          "endLine": 241
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 20
+      }
+    },
+    {
+      "path": "iac/provider-aws/nomad/variables.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 311,
+      "nonEmptyLines": 250,
+      "definitions": [
+        {
+          "name": "domain_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 2,
+          "endLine": 4
+        },
+        {
+          "name": "environment",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 6,
+          "endLine": 8
+        },
+        {
+          "name": "aws_region",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 10,
+          "endLine": 12
+        },
+        {
+          "name": "nomad_acl_token",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 15,
+          "endLine": 18
+        },
+        {
+          "name": "consul_acl_token",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 20,
+          "endLine": 23
+        },
+        {
+          "name": "api_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 26,
+          "endLine": 28
+        },
+        {
+          "name": "clickhouse_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 30,
+          "endLine": 32
+        },
+        {
+          "name": "clickhouse_jobs_prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 34,
+          "endLine": 36
+        },
+        {
+          "name": "api_cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 39,
+          "endLine": 41
+        },
+        {
+          "name": "ingress_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 44,
+          "endLine": 47
+        },
+        {
+          "name": "ingress_internal_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 49,
+          "endLine": 52
+        },
+        {
+          "name": "ingress_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 54,
+          "endLine": 56
+        },
+        {
+          "name": "client_proxy_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 59,
+          "endLine": 62
+        },
+        {
+          "name": "client_proxy_repository_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 64,
+          "endLine": 66
+        },
+        {
+          "name": "client_proxy_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 68,
+          "endLine": 72
+        },
+        {
+          "name": "redis_managed",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 75,
+          "endLine": 77
+        },
+        {
+          "name": "redis_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 79,
+          "endLine": 81
+        },
+        {
+          "name": "clickhouse_cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 84,
+          "endLine": 86
+        },
+        {
+          "name": "clickhouse_username",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 88,
+          "endLine": 91
+        },
+        {
+          "name": "clickhouse_password",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 93,
+          "endLine": 96
+        },
+        {
+          "name": "clickhouse_server_secret",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 98,
+          "endLine": 101
+        },
+        {
+          "name": "clickhouse_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 103,
+          "endLine": 106
+        },
+        {
+          "name": "clickhouse_cpu_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 108,
+          "endLine": 111
+        },
+        {
+          "name": "clickhouse_memory_mb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 113,
+          "endLine": 116
+        },
+        {
+          "name": "clickhouse_database",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 118,
+          "endLine": 121
+        },
+        {
+          "name": "clickhouse_metrics_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 123,
+          "endLine": 126
+        },
+        {
+          "name": "clickhouse_backups_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 128,
+          "endLine": 130
+        },
+        {
+          "name": "clickhouse_migrator_repository_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 132,
+          "endLine": 134
+        },
+        {
+          "name": "grafana_otel_collector_token",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 137,
+          "endLine": 140
+        },
+        {
+          "name": "grafana_otlp_url",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 142,
+          "endLine": 145
+        },
+        {
+          "name": "grafana_username",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 147,
+          "endLine": 150
+        },
+        {
+          "name": "api_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 153,
+          "endLine": 156
+        },
+        {
+          "name": "api_internal_grpc_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 158,
+          "endLine": 161
+        },
+        {
+          "name": "api_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 163,
+          "endLine": 167
+        },
+        {
+          "name": "api_db_migrator_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 169,
+          "endLine": 173
+        },
+        {
+          "name": "api_memory_mb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 175,
+          "endLine": 178
+        },
+        {
+          "name": "api_cpu_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 180,
+          "endLine": 183
+        },
+        {
+          "name": "api_repository_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 185,
+          "endLine": 187
+        },
+        {
+          "name": "db_migrator_repository_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 189,
+          "endLine": 191
+        },
+        {
+          "name": "orchestrator_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 194,
+          "endLine": 196
+        },
+        {
+          "name": "orchestrator_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 198,
+          "endLine": 201
+        },
+        {
+          "name": "orchestrator_proxy_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 203,
+          "endLine": 206
+        },
+        {
+          "name": "orchestrator_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 208,
+          "endLine": 212
+        },
+        {
+          "name": "fc_env_pipeline_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 214,
+          "endLine": 216
+        },
+        {
+          "name": "template_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 218,
+          "endLine": 220
+        },
+        {
+          "name": "build_cache_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 222,
+          "endLine": 225
+        },
+        {
+          "name": "custom_environments_repository_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 227,
+          "endLine": 229
+        },
+        {
+          "name": "build_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 232,
+          "endLine": 234
+        },
+        {
+          "name": "template_manager_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 236,
+          "endLine": 239
+        },
+        {
+          "name": "template_manager_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 241,
+          "endLine": 245
+        },
+        {
+          "name": "build_cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 247,
+          "endLine": 250
+        },
+        {
+          "name": "loki_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 253,
+          "endLine": 255
+        },
+        {
+          "name": "loki_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 257,
+          "endLine": 260
+        },
+        {
+          "name": "logs_health_proxy_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 262,
+          "endLine": 265
+        },
+        {
+          "name": "otel_collector_grpc_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 268,
+          "endLine": 271
+        },
+        {
+          "name": "logs_proxy_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 273,
+          "endLine": 276
+        },
+        {
+          "name": "enable_otel_router_logs",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 278,
+          "endLine": 282
+        },
+        {
+          "name": "otel_router_http_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 284,
+          "endLine": 288
+        },
+        {
+          "name": "enable_otel_router_metrics",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 290,
+          "endLine": 294
+        },
+        {
+          "name": "otel_router_grpc_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 296,
+          "endLine": 300
+        },
+        {
+          "name": "launch_darkly_api_key",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 303,
+          "endLine": 307
+        },
+        {
+          "name": "traefik_config_files",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 309,
+          "endLine": 311
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 62,
+        "resourceCount": 0
+      }
+    },
+    {
+      "path": "iac/provider-gcp/.terraform.lock.hcl",
+      "language": "hcl",
+      "fileCategory": "code",
+      "totalLines": 173,
+      "nonEmptyLines": 165,
+      "metrics": {}
+    },
+    {
+      "path": "iac/provider-gcp/modules/nodepool-api/scripts/start-api.sh",
+      "language": "shell",
+      "fileCategory": "script",
+      "totalLines": 72,
+      "nonEmptyLines": 57,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "iac/provider-gcp/nomad-cluster-disk-image/.terraform.lock.hcl",
+      "language": "hcl",
+      "fileCategory": "code",
+      "totalLines": 23,
+      "nonEmptyLines": 22,
+      "metrics": {}
+    },
+    {
+      "path": "iac/provider-gcp/nomad-cluster-disk-image/main.pkr.hcl",
+      "language": "hcl",
+      "fileCategory": "code",
+      "totalLines": 174,
+      "nonEmptyLines": 148,
+      "metrics": {}
+    },
+    {
+      "path": "iac/provider-gcp/nomad-cluster-disk-image/setup/gc-ops.config.yaml",
+      "language": "yaml",
+      "fileCategory": "config",
+      "totalLines": 52,
+      "nonEmptyLines": 52,
+      "sections": [
+        {
+          "heading": "logging",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "metrics",
+          "level": 1,
+          "line": 38
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "iac/provider-gcp/nomad-cluster-disk-image/variables.pkr.hcl",
+      "language": "hcl",
+      "fileCategory": "code",
+      "totalLines": 46,
+      "nonEmptyLines": 37,
+      "metrics": {}
+    },
+    {
+      "path": "iac/provider-gcp/nomad-cluster/worker-cluster/nodepool.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 249,
+      "nonEmptyLines": 213,
+      "resources": [
+        {
+          "name": "google_compute_health_check.nomad_check",
+          "kind": "google_compute_health_check",
+          "startLine": 35,
+          "endLine": 50
+        },
+        {
+          "name": "google_compute_region_autoscaler.autoscaler",
+          "kind": "google_compute_region_autoscaler",
+          "startLine": 52,
+          "endLine": 105
+        },
+        {
+          "name": "google_compute_region_instance_group_manager.pool",
+          "kind": "google_compute_region_instance_group_manager",
+          "startLine": 107,
+          "endLine": 144
+        },
+        {
+          "name": "google_compute_instance_template.template",
+          "kind": "google_compute_instance_template",
+          "startLine": 150,
+          "endLine": 249
+        },
+        {
+          "name": "data.google_compute_image.source_image",
+          "kind": "data.google_compute_image",
+          "startLine": 146,
+          "endLine": 148
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 5
+      }
+    },
+    {
+      "path": "iac/provider-gcp/nomad-cluster/worker-cluster/variables.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 249,
+      "nonEmptyLines": 199,
+      "definitions": [
+        {
+          "name": "cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 1,
+          "endLine": 8
+        },
+        {
+          "name": "autoscaler",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 10,
+          "endLine": 16
+        },
+        {
+          "name": "machine_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 18,
+          "endLine": 20
+        },
+        {
+          "name": "min_cpu_platform",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 22,
+          "endLine": 24
+        },
+        {
+          "name": "boot_disk",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 26,
+          "endLine": 31
+        },
+        {
+          "name": "network_interface_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 33,
+          "endLine": 36
+        },
+        {
+          "name": "cache_disks",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 38,
+          "endLine": 60
+        },
+        {
+          "name": "cluster_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 62,
+          "endLine": 65
+        },
+        {
+          "name": "image_family",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 67,
+          "endLine": 70
+        },
+        {
+          "name": "gcp_region",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 74,
+          "endLine": 77
+        },
+        {
+          "name": "gcp_zone",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 79,
+          "endLine": 82
+        },
+        {
+          "name": "network_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 84,
+          "endLine": 87
+        },
+        {
+          "name": "cluster_tag_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 89,
+          "endLine": 92
+        },
+        {
+          "name": "google_service_account_email",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 96,
+          "endLine": 99
+        },
+        {
+          "name": "google_service_account_key",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 101,
+          "endLine": 105
+        },
+        {
+          "name": "nomad_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 111,
+          "endLine": 114
+        },
+        {
+          "name": "nomad_acl_token_secret",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 116,
+          "endLine": 120
+        },
+        {
+          "name": "consul_acl_token_secret",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 122,
+          "endLine": 126
+        },
+        {
+          "name": "consul_gossip_encryption_key_secret_data",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 128,
+          "endLine": 132
+        },
+        {
+          "name": "consul_dns_request_token_secret_data",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 134,
+          "endLine": 138
+        },
+        {
+          "name": "node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 140,
+          "endLine": 143
+        },
+        {
+          "name": "docker_contexts_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 147,
+          "endLine": 150
+        },
+        {
+          "name": "cluster_setup_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 152,
+          "endLine": 155
+        },
+        {
+          "name": "fc_env_pipeline_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 157,
+          "endLine": 160
+        },
+        {
+          "name": "fc_kernels_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 162,
+          "endLine": 165
+        },
+        {
+          "name": "fc_versions_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 167,
+          "endLine": 170
+        },
+        {
+          "name": "fc_busybox_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 172,
+          "endLine": 175
+        },
+        {
+          "name": "filestore_cache_enabled",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 179,
+          "endLine": 182
+        },
+        {
+          "name": "nfs_ip_addresses",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 184,
+          "endLine": 187
+        },
+        {
+          "name": "nfs_mount_path",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 189,
+          "endLine": 192
+        },
+        {
+          "name": "nfs_mount_subdir",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 194,
+          "endLine": 197
+        },
+        {
+          "name": "nfs_mount_opts",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 199,
+          "endLine": 202
+        },
+        {
+          "name": "base_hugepages_percentage",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 206,
+          "endLine": 209
+        },
+        {
+          "name": "environment",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 213,
+          "endLine": 220
+        },
+        {
+          "name": "labels",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 222,
+          "endLine": 225
+        },
+        {
+          "name": "file_hash",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 227,
+          "endLine": 230
+        },
+        {
+          "name": "set_orchestrator_version_metadata",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 232,
+          "endLine": 235
+        },
+        {
+          "name": "node_labels",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 237,
+          "endLine": 241
+        },
+        {
+          "name": "persistent_volume_types",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 243,
+          "endLine": 249
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 39,
+        "resourceCount": 0
+      }
+    },
+    {
+      "path": "iac/provider-gcp/nomad/jobs/clean-nfs-cache.hcl",
+      "language": "hcl",
+      "fileCategory": "code",
+      "totalLines": 54,
+      "nonEmptyLines": 46,
+      "metrics": {}
+    },
+    {
+      "path": "iac/provider-gcp/nomad/jobs/docker-reverse-proxy.hcl",
+      "language": "hcl",
+      "fileCategory": "code",
+      "totalLines": 61,
+      "nonEmptyLines": 53,
+      "metrics": {}
+    }
+  ]
+}

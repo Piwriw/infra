@@ -1,0 +1,112 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/docker-reverse-proxy/Makefile",
+      "type": "file",
+      "name": "Makefile",
+      "filePath": "packages/docker-reverse-proxy/Makefile",
+      "summary": "docker-reverse-proxy 包的构建脚本，定义 build、build-debug、build-and-upload 和 test 目标，支持从源码构建以及从 E2B 发布制品仓库拉取预构建镜像两种发布流程。",
+      "tags": ["build-system", "containerization", "makefile", "ci-cd", "deployment"],
+      "complexity": "moderate",
+      "languageNotes": "通过条件分支实现\"源码构建\"与\"已发布镜像复用\"两条流程，使用 ldflags 将 commitSHA 与 version 注入二进制。"
+    },
+    {
+      "id": "config:packages/docker-reverse-proxy/go.mod",
+      "type": "config",
+      "name": "go.mod",
+      "filePath": "packages/docker-reverse-proxy/go.mod",
+      "summary": "docker-reverse-proxy 服务的 Go 模块定义，声明 Go 1.26.3 并通过本地 replace 指令指向 packages/db 与 packages/shared 两个工作区模块。",
+      "tags": ["configuration", "go-module", "build-system", "dependency-management"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:packages/docker-reverse-proxy/go.sum",
+      "type": "config",
+      "name": "go.sum",
+      "filePath": "packages/docker-reverse-proxy/go.sum",
+      "summary": "go.sum 校验和文件，锁定 docker-reverse-proxy 服务所有直接与间接依赖（含 moby/docker、pgx、opentelemetry、zap 等）的精确版本哈希。",
+      "tags": ["configuration", "go-module", "dependency-management", "checksum"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:packages/docker-reverse-proxy/Makefile:build",
+      "type": "file",
+      "name": "build",
+      "filePath": "packages/docker-reverse-proxy/Makefile",
+      "summary": "编译 docker-reverse-proxy 可执行文件到 bin/ 目录，关闭 CGO 并通过 ldflags 注入 commitSHA 与 version 标识。",
+      "tags": ["build", "go", "ldflags"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/docker-reverse-proxy/Makefile:build-debug",
+      "type": "file",
+      "name": "build-debug",
+      "filePath": "packages/docker-reverse-proxy/Makefile",
+      "summary": "启用 CGO、race 检测与禁用编译器优化的调试构建目标，便于本地问题排查。",
+      "tags": ["build", "debug", "race-detector"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/docker-reverse-proxy/Makefile:build-and-upload",
+      "type": "file",
+      "name": "build-and-upload",
+      "filePath": "packages/docker-reverse-proxy/Makefile",
+      "summary": "通过 buildx 构建并推送 docker-reverse-proxy 镜像到 GCP/AWS 制品仓库；设置 DOCKER_REVERSE_PROXY_VERSION 时改为从 E2B 制品仓库拉取已发布镜像并重新打标推送。",
+      "tags": ["build", "upload", "docker", "release"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:packages/docker-reverse-proxy/Makefile:test",
+      "type": "file",
+      "name": "test",
+      "filePath": "packages/docker-reverse-proxy/Makefile",
+      "summary": "运行 docker-reverse-proxy 包的单元测试，开启 race 检测并打印每个测试用例。",
+      "tags": ["test", "race-detector"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/docker-reverse-proxy/Makefile",
+      "target": "step:packages/docker-reverse-proxy/Makefile:build",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/docker-reverse-proxy/Makefile",
+      "target": "step:packages/docker-reverse-proxy/Makefile:build-debug",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/docker-reverse-proxy/Makefile",
+      "target": "step:packages/docker-reverse-proxy/Makefile:build-and-upload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/docker-reverse-proxy/Makefile",
+      "target": "step:packages/docker-reverse-proxy/Makefile:test",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:packages/docker-reverse-proxy/go.mod",
+      "target": "file:packages/docker-reverse-proxy/Makefile",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/docker-reverse-proxy/go.sum",
+      "target": "config:packages/docker-reverse-proxy/go.mod",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

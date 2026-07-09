@@ -1,0 +1,503 @@
+{
+  "nodes": [
+    {
+      "id": "file:iac/modules/job-clickhouse/jobs/clickhouse-backup-restore.hcl",
+      "type": "file",
+      "name": "clickhouse-backup-restore.hcl",
+      "filePath": "iac/modules/job-clickhouse/jobs/clickhouse-backup-restore.hcl",
+      "summary": "Nomad batch job definition that restores ClickHouse backups from GCS or S3 to each server instance using the altinity/clickhouse-backup tool, parameterized by backup_name.",
+      "tags": ["nomad-job", "clickhouse", "backup-restore", "batch-job", "terraform-template"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/modules/job-clickhouse/jobs/clickhouse-backup.hcl",
+      "type": "file",
+      "name": "clickhouse-backup.hcl",
+      "filePath": "iac/modules/job-clickhouse/jobs/clickhouse-backup.hcl",
+      "summary": "Periodic Nomad batch job that creates ClickHouse backups every 6 hours, uploading to GCS or S3 with per-server folders.",
+      "tags": ["nomad-job", "clickhouse", "backup", "batch-job", "periodic-job"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/modules/job-clickhouse/jobs/clickhouse-migrator.hcl",
+      "type": "file",
+      "name": "clickhouse-migrator.hcl",
+      "filePath": "iac/modules/job-clickhouse/jobs/clickhouse-migrator.hcl",
+      "summary": "Nomad batch job that runs goose-based ClickHouse schema migrations against each server instance.",
+      "tags": ["nomad-job", "clickhouse", "migration", "batch-job", "goose"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/modules/job-clickhouse/jobs/clickhouse.hcl",
+      "type": "file",
+      "name": "clickhouse.hcl",
+      "filePath": "iac/modules/job-clickhouse/jobs/clickhouse.hcl",
+      "summary": "Nomad service job deploying a multi-server ClickHouse cluster with bridged networking, Consul service registration, and an OpenTelemetry sidecar collector.",
+      "tags": ["nomad-job", "clickhouse", "service-job", "cluster", "otel-sidecar"],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/modules/job-clickhouse/main.tf:nomad_job.clickhouse",
+      "type": "resource",
+      "name": "nomad_job.clickhouse",
+      "filePath": "iac/modules/job-clickhouse/main.tf",
+      "summary": "Provisions the main ClickHouse cluster Nomad job from the clickhouse.hcl template.",
+      "tags": ["terraform", "nomad-job", "clickhouse"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/modules/job-clickhouse/main.tf:nomad_job.clickhouse_backup",
+      "type": "resource",
+      "name": "nomad_job.clickhouse_backup",
+      "filePath": "iac/modules/job-clickhouse/main.tf",
+      "summary": "Provisions the periodic ClickHouse backup Nomad job from the clickhouse-backup.hcl template.",
+      "tags": ["terraform", "nomad-job", "clickhouse", "backup"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/modules/job-clickhouse/main.tf:nomad_job.clickhouse_backup_restore",
+      "type": "resource",
+      "name": "nomad_job.clickhouse_backup_restore",
+      "filePath": "iac/modules/job-clickhouse/main.tf",
+      "summary": "Provisions the parameterized ClickHouse backup restore Nomad job from the clickhouse-backup-restore.hcl template.",
+      "tags": ["terraform", "nomad-job", "clickhouse", "backup-restore"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/modules/job-clickhouse/main.tf:nomad_job.clickhouse_migrator",
+      "type": "resource",
+      "name": "nomad_job.clickhouse_migrator",
+      "filePath": "iac/modules/job-clickhouse/main.tf",
+      "summary": "Provisions the ClickHouse schema migrator Nomad job from the clickhouse-migrator.hcl template.",
+      "tags": ["terraform", "nomad-job", "clickhouse", "migration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:iac/modules/job-clickhouse/variables.tf",
+      "type": "config",
+      "name": "variables.tf",
+      "filePath": "iac/modules/job-clickhouse/variables.tf",
+      "summary": "Terraform input variables for the ClickHouse module: provider, sizing, server count, credentials, backup configuration, and GCS/S3 credentials.",
+      "tags": ["terraform", "configuration", "variables", "clickhouse"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/modules/job-client-proxy/jobs/client-proxy.hcl",
+      "type": "file",
+      "name": "client-proxy.hcl",
+      "filePath": "iac/modules/job-client-proxy/jobs/client-proxy.hcl",
+      "summary": "Nomad service job deploying the edge client-proxy that routes requests from clients to orchestrators using Consul service discovery and Redis-backed state.",
+      "tags": ["nomad-job", "client-proxy", "edge-routing", "consul", "service-job"],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/modules/job-client-proxy/main.tf:nomad_job.client_proxy",
+      "type": "resource",
+      "name": "nomad_job.client_proxy",
+      "filePath": "iac/modules/job-client-proxy/main.tf",
+      "summary": "Provisions the client-proxy Nomad job from the client-proxy.hcl template.",
+      "tags": ["terraform", "nomad-job", "client-proxy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:iac/modules/job-client-proxy/variables.tf",
+      "type": "config",
+      "name": "variables.tf",
+      "filePath": "iac/modules/job-client-proxy/variables.tf",
+      "summary": "Terraform input variables for the client-proxy module: count, CPU, memory, ports, exposure type, and job environment variables.",
+      "tags": ["terraform", "configuration", "variables", "client-proxy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/modules/job-dashboard-api/jobs/dashboard-api.hcl",
+      "type": "file",
+      "name": "dashboard-api.hcl",
+      "filePath": "iac/modules/job-dashboard-api/jobs/dashboard-api.hcl",
+      "summary": "Nomad service job deploying the internal dashboard API used to expose operational views of the platform.",
+      "tags": ["nomad-job", "dashboard-api", "service-job", "internal-api"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/modules/job-dashboard-api/main.tf:nomad_job.dashboard_api",
+      "type": "resource",
+      "name": "nomad_job.dashboard_api",
+      "filePath": "iac/modules/job-dashboard-api/main.tf",
+      "summary": "Provisions the dashboard-api Nomad job from the dashboard-api.hcl template.",
+      "tags": ["terraform", "nomad-job", "dashboard-api"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:iac/modules/job-dashboard-api/variables.tf",
+      "type": "config",
+      "name": "variables.tf",
+      "filePath": "iac/modules/job-dashboard-api/variables.tf",
+      "summary": "Terraform input variables for the dashboard-api module: node pool, image, instance count, and job environment variables.",
+      "tags": ["terraform", "configuration", "variables", "dashboard-api"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/modules/job-ingress/jobs/ingress.hcl",
+      "type": "file",
+      "name": "ingress.hcl",
+      "filePath": "iac/modules/job-ingress/jobs/ingress.hcl",
+      "summary": "Nomad job deploying Traefik v3.5 as the cluster ingress controller, exposing the Nomad dashboard/API and routing traffic via Consul catalog.",
+      "tags": ["nomad-job", "ingress", "traefik", "reverse-proxy", "service-job"],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:iac/modules/job-ingress/jobs/traefik.toml",
+      "type": "config",
+      "name": "traefik.toml",
+      "filePath": "iac/modules/job-ingress/jobs/traefik.toml",
+      "summary": "Traefik static configuration defining entrypoints (traefik/web/internal), OTLP metrics, ping endpoint, and providers (Consul catalog, file, Nomad).",
+      "tags": ["traefik", "configuration", "reverse-proxy", "ingress", "consul"],
+      "complexity": "moderate",
+      "languageNotes": "Traefik static config supports Consul catalog and Nomad providers for dynamic service discovery."
+    },
+    {
+      "id": "config:iac/modules/job-logs-collector/configs/vector.toml",
+      "type": "config",
+      "name": "vector.toml",
+      "filePath": "iac/modules/job-logs-collector/configs/vector.toml",
+      "summary": "Vector observability pipeline configuration that ingests HTTP logs, routes internal vs non-internal logs, and ships them to Loki and Grafana/OTel.",
+      "tags": ["vector", "logs", "otel", "loki", "grafana"],
+      "complexity": "complex",
+      "languageNotes": "Vector transforms separate internal audit logs from non-internal telemetry before fanning out to multiple sinks."
+    },
+    {
+      "id": "file:iac/modules/job-logs-collector/jobs/logs-collector.hcl",
+      "type": "file",
+      "name": "logs-collector.hcl",
+      "filePath": "iac/modules/job-logs-collector/jobs/logs-collector.hcl",
+      "summary": "Nomad service job running Vector for centralized log collection and routing to Loki and external Grafana.",
+      "tags": ["nomad-job", "vector", "logs-collector", "service-job"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/modules/job-logs-collector/main.tf:nomad_job.logs_collector",
+      "type": "resource",
+      "name": "nomad_job.logs_collector",
+      "filePath": "iac/modules/job-logs-collector/main.tf",
+      "summary": "Provisions the logs-collector Nomad job from the logs-collector.hcl template.",
+      "tags": ["terraform", "nomad-job", "vector", "logs"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:iac/modules/job-logs-collector/variables.tf",
+      "type": "config",
+      "name": "variables.tf",
+      "filePath": "iac/modules/job-logs-collector/variables.tf",
+      "summary": "Terraform input variables for the logs-collector module: Vector ports, Loki endpoint, Grafana credentials, and OTel router toggle.",
+      "tags": ["terraform", "configuration", "variables", "vector", "logs"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:iac/modules/job-loki/configs/loki.yml",
+      "type": "config",
+      "name": "loki.yml",
+      "filePath": "iac/modules/job-loki/configs/loki.yml",
+      "summary": "Loki log-aggregation configuration covering server, storage, chunk store, query range, ingester, schema, compactor and limits settings, with conditional GCP/AWS storage backends.",
+      "tags": ["loki", "configuration", "logs", "object-storage", "gcs", "s3"],
+      "complexity": "complex",
+      "languageNotes": "Uses Terragrunt/Terraform %{ if provider_name == \"gcp\" } templating to switch storage backends between GCS and S3."
+    },
+    {
+      "id": "file:iac/modules/job-loki/jobs/loki.hcl",
+      "type": "file",
+      "name": "loki.hcl",
+      "filePath": "iac/modules/job-loki/jobs/loki.hcl",
+      "summary": "Nomad service job deploying a single-instance Loki with configurable resource limits and image version.",
+      "tags": ["nomad-job", "loki", "logs", "service-job"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/modules/job-loki/main.tf:nomad_job.loki",
+      "type": "resource",
+      "name": "nomad_job.loki",
+      "filePath": "iac/modules/job-loki/main.tf",
+      "summary": "Provisions the Loki Nomad job from the loki.hcl template.",
+      "tags": ["terraform", "nomad-job", "loki"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:iac/modules/job-loki/variables.tf",
+      "type": "config",
+      "name": "variables.tf",
+      "filePath": "iac/modules/job-loki/variables.tf",
+      "summary": "Terraform input variables for the Loki module: provider, node pool, ports, bucket, sizing, image, AWS region, schema version, and config override.",
+      "tags": ["terraform", "configuration", "variables", "loki"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/modules/job-orchestrator/jobs/orchestrator.hcl",
+      "type": "file",
+      "name": "orchestrator.hcl",
+      "filePath": "iac/modules/job-orchestrator/jobs/orchestrator.hcl",
+      "summary": "Nomad system job running the orchestrator binary that manages Firecracker microVMs; exposes gRPC and proxy ports via Consul service registration.",
+      "tags": ["nomad-job", "orchestrator", "firecracker", "system-job", "grpc"],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/modules/job-orchestrator/main.tf:random_id.orchestrator_job",
+      "type": "resource",
+      "name": "random_id.orchestrator_job",
+      "filePath": "iac/modules/job-orchestrator/main.tf",
+      "summary": "Generates a deterministic job identifier suffix for the orchestrator Nomad job to allow concurrent versions during rolling updates.",
+      "tags": ["terraform", "random-id", "orchestrator", "rolling-update"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/modules/job-orchestrator/main.tf:nomad_variable.orchestrator_hash",
+      "type": "resource",
+      "name": "nomad_variable.orchestrator_hash",
+      "filePath": "iac/modules/job-orchestrator/main.tf",
+      "summary": "Stores the orchestrator artifact checksum as a Nomad variable so deployed jobs can detect binary updates.",
+      "tags": ["terraform", "nomad-variable", "orchestrator", "checksum"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/modules/job-orchestrator/main.tf:nomad_job.orchestrator",
+      "type": "resource",
+      "name": "nomad_job.orchestrator",
+      "filePath": "iac/modules/job-orchestrator/main.tf",
+      "summary": "Provisions the orchestrator Nomad job from the orchestrator.hcl template with checksum-based versioning.",
+      "tags": ["terraform", "nomad-job", "orchestrator"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:iac/modules/job-orchestrator/variables.tf",
+      "type": "config",
+      "name": "variables.tf",
+      "filePath": "iac/modules/job-orchestrator/variables.tf",
+      "summary": "Terraform input variables for the orchestrator module: node pool, ports, environment, artifact source, checksum, and job environment variables.",
+      "tags": ["terraform", "configuration", "variables", "orchestrator"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/modules/job-clickhouse/main.tf:nomad_job.clickhouse",
+      "target": "file:iac/modules/job-clickhouse/jobs/clickhouse.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-clickhouse/main.tf:nomad_job.clickhouse_backup",
+      "target": "file:iac/modules/job-clickhouse/jobs/clickhouse-backup.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-clickhouse/main.tf:nomad_job.clickhouse_backup_restore",
+      "target": "file:iac/modules/job-clickhouse/jobs/clickhouse-backup-restore.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-clickhouse/main.tf:nomad_job.clickhouse_migrator",
+      "target": "file:iac/modules/job-clickhouse/jobs/clickhouse-migrator.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-clickhouse/main.tf:nomad_job.clickhouse",
+      "target": "config:iac/modules/job-clickhouse/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-clickhouse/main.tf:nomad_job.clickhouse_backup",
+      "target": "config:iac/modules/job-clickhouse/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-clickhouse/main.tf:nomad_job.clickhouse_backup_restore",
+      "target": "config:iac/modules/job-clickhouse/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-clickhouse/main.tf:nomad_job.clickhouse_migrator",
+      "target": "config:iac/modules/job-clickhouse/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-client-proxy/main.tf:nomad_job.client_proxy",
+      "target": "file:iac/modules/job-client-proxy/jobs/client-proxy.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-client-proxy/main.tf:nomad_job.client_proxy",
+      "target": "config:iac/modules/job-client-proxy/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-dashboard-api/main.tf:nomad_job.dashboard_api",
+      "target": "file:iac/modules/job-dashboard-api/jobs/dashboard-api.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-dashboard-api/main.tf:nomad_job.dashboard_api",
+      "target": "config:iac/modules/job-dashboard-api/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-logs-collector/main.tf:nomad_job.logs_collector",
+      "target": "file:iac/modules/job-logs-collector/jobs/logs-collector.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-logs-collector/main.tf:nomad_job.logs_collector",
+      "target": "config:iac/modules/job-logs-collector/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-logs-collector/main.tf:nomad_job.logs_collector",
+      "target": "config:iac/modules/job-logs-collector/configs/vector.toml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-loki/main.tf:nomad_job.loki",
+      "target": "file:iac/modules/job-loki/jobs/loki.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-loki/main.tf:nomad_job.loki",
+      "target": "config:iac/modules/job-loki/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-loki/main.tf:nomad_job.loki",
+      "target": "config:iac/modules/job-loki/configs/loki.yml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-orchestrator/main.tf:nomad_job.orchestrator",
+      "target": "file:iac/modules/job-orchestrator/jobs/orchestrator.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-orchestrator/main.tf:nomad_job.orchestrator",
+      "target": "config:iac/modules/job-orchestrator/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-orchestrator/main.tf:random_id.orchestrator_job",
+      "target": "resource:iac/modules/job-orchestrator/main.tf:nomad_job.orchestrator",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-orchestrator/main.tf:nomad_variable.orchestrator_hash",
+      "target": "resource:iac/modules/job-orchestrator/main.tf:nomad_job.orchestrator",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/modules/job-clickhouse/jobs/clickhouse-backup.hcl",
+      "target": "file:iac/modules/job-clickhouse/jobs/clickhouse.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/modules/job-clickhouse/jobs/clickhouse-backup-restore.hcl",
+      "target": "file:iac/modules/job-clickhouse/jobs/clickhouse.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/modules/job-clickhouse/jobs/clickhouse-migrator.hcl",
+      "target": "file:iac/modules/job-clickhouse/jobs/clickhouse.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/modules/job-clickhouse/jobs/clickhouse-backup.hcl",
+      "target": "file:iac/modules/job-clickhouse/jobs/clickhouse-backup-restore.hcl",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:iac/modules/job-logs-collector/jobs/logs-collector.hcl",
+      "target": "file:iac/modules/job-loki/jobs/loki.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/modules/job-logs-collector/configs/vector.toml",
+      "target": "file:iac/modules/job-loki/configs/loki.yml",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:iac/modules/job-ingress/jobs/ingress.hcl",
+      "target": "config:iac/modules/job-ingress/jobs/traefik.toml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/modules/job-client-proxy/jobs/client-proxy.hcl",
+      "target": "file:iac/modules/job-orchestrator/jobs/orchestrator.hcl",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:iac/modules/job-ingress/jobs/ingress.hcl",
+      "target": "file:iac/modules/job-client-proxy/jobs/client-proxy.hcl",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:iac/modules/job-clickhouse/jobs/clickhouse.hcl",
+      "target": "file:iac/modules/job-orchestrator/jobs/orchestrator.hcl",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

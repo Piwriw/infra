@@ -1,0 +1,784 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "type": "file",
+      "name": "fs.go",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "summary": "chroot 感知的文件系统操作包装层，覆盖创建/读写/链接/重命名等常见 os 接口。",
+      "tags": [
+        "filesystem",
+        "chroot",
+        "abstraction"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/chrooted/mountns.go",
+      "type": "file",
+      "name": "mountns.go",
+      "filePath": "packages/orchestrator/pkg/chrooted/mountns.go",
+      "summary": "挂载命名空间管理，支持创建/切换/回滚临时 mount namespace 并提供同步执行原语的串行化。",
+      "tags": [
+        "mount-namespace",
+        "linux",
+        "concurrency"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "type": "file",
+      "name": "mountns_test.go",
+      "filePath": "packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "summary": "mountNS 单元测试，覆盖基本操作、关闭行为、错误传播与 NS 类型识别。",
+      "tags": [
+        "test",
+        "mount-namespace",
+        "unit-test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/events/events.go",
+      "type": "file",
+      "name": "events.go",
+      "filePath": "packages/orchestrator/pkg/events/events.go",
+      "summary": "事件发布服务，对外暴露 Publish/Close 接口，将事件分发到配置的多个投递目标并校验必填字段。",
+      "tags": [
+        "events",
+        "publish",
+        "service"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:Create",
+      "type": "function",
+      "name": "Create",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        14,
+        22
+      ],
+      "summary": "Create 函数（行 14-22）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:Open",
+      "type": "function",
+      "name": "Open",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        24,
+        32
+      ],
+      "summary": "Open 函数（行 24-32）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:OpenFile",
+      "type": "function",
+      "name": "OpenFile",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        34,
+        42
+      ],
+      "summary": "OpenFile 函数（行 34-42）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:EvalSymlinks",
+      "type": "function",
+      "name": "EvalSymlinks",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        44,
+        52
+      ],
+      "summary": "EvalSymlinks 函数（行 44-52）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:Stat",
+      "type": "function",
+      "name": "Stat",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        54,
+        62
+      ],
+      "summary": "Stat 函数（行 54-62）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:GetEntry",
+      "type": "function",
+      "name": "GetEntry",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        64,
+        74
+      ],
+      "summary": "GetEntry 函数（行 64-74）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:Rename",
+      "type": "function",
+      "name": "Rename",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        76,
+        82
+      ],
+      "summary": "Rename 函数（行 76-82）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:Remove",
+      "type": "function",
+      "name": "Remove",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        84,
+        90
+      ],
+      "summary": "Remove 函数（行 84-90）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:RemoveAll",
+      "type": "function",
+      "name": "RemoveAll",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        92,
+        98
+      ],
+      "summary": "RemoveAll 函数（行 92-98）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:Join",
+      "type": "function",
+      "name": "Join",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        100,
+        107
+      ],
+      "summary": "Join 函数（行 100-107）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:TempFile",
+      "type": "function",
+      "name": "TempFile",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        109,
+        117
+      ],
+      "summary": "TempFile 函数（行 109-117）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:ReadDir",
+      "type": "function",
+      "name": "ReadDir",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        119,
+        140
+      ],
+      "summary": "ReadDir 函数（行 119-140）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:Mkdir",
+      "type": "function",
+      "name": "Mkdir",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        142,
+        148
+      ],
+      "summary": "Mkdir 函数（行 142-148）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:MkdirAll",
+      "type": "function",
+      "name": "MkdirAll",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        150,
+        156
+      ],
+      "summary": "MkdirAll 函数（行 150-156）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:Lstat",
+      "type": "function",
+      "name": "Lstat",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        158,
+        166
+      ],
+      "summary": "Lstat 函数（行 158-166）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:Symlink",
+      "type": "function",
+      "name": "Symlink",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        168,
+        174
+      ],
+      "summary": "Symlink 函数（行 168-174）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:Readlink",
+      "type": "function",
+      "name": "Readlink",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        176,
+        184
+      ],
+      "summary": "Readlink 函数（行 176-184）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/fs.go:Root",
+      "type": "function",
+      "name": "Root",
+      "filePath": "packages/orchestrator/pkg/chrooted/fs.go",
+      "lineRange": [
+        190,
+        192
+      ],
+      "summary": "Root 函数（行 190-192）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/mountns.go:IsNSorErr",
+      "type": "function",
+      "name": "IsNSorErr",
+      "filePath": "packages/orchestrator/pkg/chrooted/mountns.go",
+      "lineRange": [
+        139,
+        157
+      ],
+      "summary": "IsNSorErr 函数（行 139-157）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/mountns.go:getNS",
+      "type": "function",
+      "name": "getNS",
+      "filePath": "packages/orchestrator/pkg/chrooted/mountns.go",
+      "lineRange": [
+        159,
+        171
+      ],
+      "summary": "getNS 函数（行 159-171）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/mountns.go:tempMountNS",
+      "type": "function",
+      "name": "tempMountNS",
+      "filePath": "packages/orchestrator/pkg/chrooted/mountns.go",
+      "lineRange": [
+        181,
+        280
+      ],
+      "summary": "tempMountNS 函数（行 181-280）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/chrooted/mountns.go:NSPathNotExistError",
+      "type": "class",
+      "name": "NSPathNotExistError",
+      "filePath": "packages/orchestrator/pkg/chrooted/mountns.go",
+      "lineRange": [
+        33,
+        33
+      ],
+      "summary": "NSPathNotExistError 类型（行 33-33）",
+      "tags": [
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/chrooted/mountns.go:mountNS",
+      "type": "class",
+      "name": "mountNS",
+      "filePath": "packages/orchestrator/pkg/chrooted/mountns.go",
+      "lineRange": [
+        43,
+        51
+      ],
+      "summary": "mountNS 类型（行 43-51）",
+      "tags": [
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/chrooted/mountns.go:NSPathNotNSError",
+      "type": "class",
+      "name": "NSPathNotNSError",
+      "filePath": "packages/orchestrator/pkg/chrooted/mountns.go",
+      "lineRange": [
+        135,
+        135
+      ],
+      "summary": "NSPathNotNSError 类型（行 135-135）",
+      "tags": [
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/mountns_test.go:TestMountNS_Basic",
+      "type": "function",
+      "name": "TestMountNS_Basic",
+      "filePath": "packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "lineRange": [
+        15,
+        56
+      ],
+      "summary": "TestMountNS_Basic 函数（行 15-56）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/mountns_test.go:TestMountNS_Close",
+      "type": "function",
+      "name": "TestMountNS_Close",
+      "filePath": "packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "lineRange": [
+        58,
+        82
+      ],
+      "summary": "TestMountNS_Close 函数（行 58-82）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/mountns_test.go:TestMountNS_ErrorPropagation",
+      "type": "function",
+      "name": "TestMountNS_ErrorPropagation",
+      "filePath": "packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "lineRange": [
+        84,
+        100
+      ],
+      "summary": "TestMountNS_ErrorPropagation 函数（行 84-100）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/mountns_test.go:TestIsNSorErr",
+      "type": "function",
+      "name": "TestIsNSorErr",
+      "filePath": "packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "lineRange": [
+        102,
+        121
+      ],
+      "summary": "TestIsNSorErr 函数（行 102-121）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/chrooted/mountns_test.go:getMountNSID",
+      "type": "function",
+      "name": "getMountNSID",
+      "filePath": "packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "lineRange": [
+        123,
+        133
+      ],
+      "summary": "getMountNSID 函数（行 123-133）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/events/events.go:NewEventsService",
+      "type": "function",
+      "name": "NewEventsService",
+      "filePath": "packages/orchestrator/pkg/events/events.go",
+      "lineRange": [
+        28,
+        32
+      ],
+      "summary": "NewEventsService 函数（行 28-32）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/events/events.go:validateEvent",
+      "type": "function",
+      "name": "validateEvent",
+      "filePath": "packages/orchestrator/pkg/events/events.go",
+      "lineRange": [
+        72,
+        94
+      ],
+      "summary": "validateEvent 函数（行 72-94）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/events/events.go:EventsService",
+      "type": "class",
+      "name": "EventsService",
+      "filePath": "packages/orchestrator/pkg/events/events.go",
+      "lineRange": [
+        16,
+        18
+      ],
+      "summary": "EventsService 类型（行 16-18）",
+      "tags": [
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/events/events.go:EventFieldMissingError",
+      "type": "class",
+      "name": "EventFieldMissingError",
+      "filePath": "packages/orchestrator/pkg/events/events.go",
+      "lineRange": [
+        20,
+        22
+      ],
+      "summary": "EventFieldMissingError 类型（行 20-22）",
+      "tags": [
+        "class"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:Create",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:Open",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:OpenFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:EvalSymlinks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:Stat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:GetEntry",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:Rename",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:Remove",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:RemoveAll",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:Join",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:TempFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:ReadDir",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:Mkdir",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:MkdirAll",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:Lstat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:Symlink",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:Readlink",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/fs.go:Root",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/mountns.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/mountns.go:IsNSorErr",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/mountns.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/mountns.go:getNS",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/mountns.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/mountns.go:tempMountNS",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/mountns.go",
+      "target": "class:packages/orchestrator/pkg/chrooted/mountns.go:NSPathNotExistError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/mountns.go",
+      "target": "class:packages/orchestrator/pkg/chrooted/mountns.go:mountNS",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/mountns.go",
+      "target": "class:packages/orchestrator/pkg/chrooted/mountns.go:NSPathNotNSError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/mountns_test.go:TestMountNS_Basic",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/mountns_test.go:TestMountNS_Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/mountns_test.go:TestMountNS_ErrorPropagation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/mountns_test.go:TestIsNSorErr",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "target": "function:packages/orchestrator/pkg/chrooted/mountns_test.go:getMountNSID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/events/events.go",
+      "target": "function:packages/orchestrator/pkg/events/events.go:NewEventsService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/events/events.go",
+      "target": "function:packages/orchestrator/pkg/events/events.go:validateEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/events/events.go",
+      "target": "class:packages/orchestrator/pkg/events/events.go:EventsService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/events/events.go",
+      "target": "class:packages/orchestrator/pkg/events/events.go:EventFieldMissingError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ]
+}

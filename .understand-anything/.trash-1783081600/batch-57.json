@@ -1,0 +1,50 @@
+{
+  "nodes": [
+    {
+      "id": "service:packages/db/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "packages/db/Dockerfile",
+      "summary": "多阶段 Dockerfile，使用 golang:1.26.3-alpine 构建阶段编译 DB 迁移器（migrator）二进制文件，最终基于 alpine 3.22 产出精简的运行时镜像，入口为 ./migrator，用于执行 packages/db/migrations 下的 SQL 迁移脚本。",
+      "tags": ["containerization", "infrastructure", "database-migration", "multi-stage-build", "deployment"],
+      "complexity": "simple",
+      "languageNotes": "利用 Docker 多阶段构建分离 Go 编译工具链与最终运行环境，显著减小镜像体积；通过先 COPY go.mod/go.sum 再 go mod download 实现依赖层缓存优化。"
+    },
+    {
+      "id": "service:packages/db/Dockerfile:builder",
+      "type": "service",
+      "name": "builder",
+      "filePath": "packages/db/Dockerfile",
+      "lineRange": [5, 28],
+      "summary": "基于 golang:1.26.3-alpine 的构建阶段，分别下载 shared 与 db 模块的 Go 依赖，复制 shared/pkg、migrator.go 及 migrations 目录，并执行 go build 产出可执行的 migrator 二进制文件。",
+      "tags": ["containerization", "build-stage", "golang", "infrastructure"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "service:packages/db/Dockerfile:runtime",
+      "type": "service",
+      "name": "runtime",
+      "filePath": "packages/db/Dockerfile",
+      "lineRange": [29, 35],
+      "summary": "基于 alpine:3.22 的最终运行时阶段，仅从 builder 阶段拷贝 migrator 二进制和 migrations 目录，ENTRYPOINT 设为 ./migrator，形成最小化的迁移任务镜像。",
+      "tags": ["containerization", "runtime-stage", "alpine", "infrastructure"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:packages/db/Dockerfile",
+      "target": "service:packages/db/Dockerfile:builder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/db/Dockerfile",
+      "target": "service:packages/db/Dockerfile:runtime",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ]
+}

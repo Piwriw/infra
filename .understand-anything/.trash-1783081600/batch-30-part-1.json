@@ -1,0 +1,1162 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "type": "file",
+      "name": "uffd.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "summary": "UFFD 后端的高层封装：管理 Unix socket 监听、userfaultfd 处理协程的启动/停止，并向调用方暴露 Prefault/Start/DiffMetadata 等方法。",
+      "tags": [
+        "uffd",
+        "memory-backend",
+        "sandbox",
+        "orchestrator",
+        "linux"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/uffd/uffd.go:Uffd",
+      "type": "class",
+      "name": "Uffd",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "lineRange": [
+        38,
+        48
+      ],
+      "summary": "UFFD 后端的运行时结构体：持有错误一次性对象、socket 路径、底层 memfile、userfaultfd/fdexit 的 SetOnce 句柄。",
+      "tags": [
+        "uffd",
+        "memory-backend",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/uffd/uffd.go:New",
+      "type": "function",
+      "name": "New",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "lineRange": [
+        52,
+        61
+      ],
+      "summary": "构造 Uffd 实例，初始化 errorOnce、readyCh、handler/fdExit 的 SetOnce。",
+      "tags": [
+        "constructor",
+        "factory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/uffd/uffd.go:Start",
+      "type": "function",
+      "name": "Start",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "lineRange": [
+        72,
+        119
+      ],
+      "summary": "创建 Unix socket 监听、调整权限、accept FdExit 与 UFFD handler 连接并将其注册到 SetOnce。",
+      "tags": [
+        "lifecycle",
+        "socket",
+        "listener"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/uffd/uffd.go:handle",
+      "type": "function",
+      "name": "handle",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "lineRange": [
+        121,
+        228
+      ],
+      "summary": "为新连接构造 userfaultfd 与 fdexit 实例，启动 serving goroutine 并关闭 readyCh。",
+      "tags": [
+        "handler",
+        "goroutine",
+        "lifecycle"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/uffd/uffd.go:DiffMetadata",
+      "type": "function",
+      "name": "DiffMetadata",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "lineRange": [
+        250,
+        275
+      ],
+      "summary": "基于 memfile 与 rootfs 头计算调度元数据并通过 UnixConn 写入到 envd。",
+      "tags": [
+        "metadata",
+        "scheduling",
+        "ipc"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/uffd/uffd.go:ServeStats",
+      "type": "function",
+      "name": "ServeStats",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "lineRange": [
+        296,
+        303
+      ],
+      "summary": "把 userfaultfd 内部的 ServeSnapshot 通过 UnixConn 转发到 envd。",
+      "tags": [
+        "metrics",
+        "ipc"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd.go",
+      "type": "file",
+      "name": "fd.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd.go",
+      "summary": "封装 userfaultfd ioctl 结构与 unix syscall 调用（UFFDIO_COPY/ZERO/WAKE/WRITE_PROTECT/REMOVE 等）。",
+      "tags": [
+        "userfaultfd",
+        "syscall",
+        "ioctl"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd.go:copy",
+      "type": "function",
+      "name": "copy",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd.go",
+      "lineRange": [
+        154,
+        171
+      ],
+      "summary": "调用 UFFDIO_COPY ioctl 将源缓冲区写入 userfaultfd 范围的 guest 页。",
+      "tags": [
+        "syscall",
+        "uffdio-copy"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd.go:writeProtect",
+      "type": "function",
+      "name": "writeProtect",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd.go",
+      "lineRange": [
+        205,
+        213
+      ],
+      "summary": "通过 UFFDIO_WRITEPROTECT 将一段范围标记为只读，触发后续写缺页事件。",
+      "tags": [
+        "syscall",
+        "uffdio-write-protect"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred.go",
+      "type": "file",
+      "name": "deferred.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred.go",
+      "summary": "延迟处理缺页事件的数据结构：按地址去重并能在读缺页升级为写缺页。",
+      "tags": [
+        "data-structure",
+        "page-fault"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred.go:deferredFaults",
+      "type": "class",
+      "name": "deferredFaults",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred.go",
+      "lineRange": [
+        9,
+        13
+      ],
+      "summary": "记录被推迟的缺页事件，内部使用 map 按页面对齐地址去重。",
+      "tags": [
+        "data-structure",
+        "dedupe"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/counter_reporter.go",
+      "type": "file",
+      "name": "counter_reporter.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/counter_reporter.go",
+      "summary": "周期性与按需打印 userfaultfd 处理计数器，便于排查 prefetch/缺页流量。",
+      "tags": [
+        "metrics",
+        "diagnostics",
+        "userfaultfd"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/counter_reporter.go:counterReporter",
+      "type": "class",
+      "name": "counterReporter",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/counter_reporter.go",
+      "lineRange": [
+        15,
+        21
+      ],
+      "summary": "持有原子计数器与阈值，提供 Increase/totalCount/Log 三个对外方法。",
+      "tags": [
+        "counter",
+        "metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/async_wp_test.go",
+      "type": "file",
+      "name": "async_wp_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/async_wp_test.go",
+      "summary": "测试 userfaultfd 在异步 write-protect 场景下的行为：触发写保护缺页并验证顺序与 race 容忍度。",
+      "tags": [
+        "test",
+        "userfaultfd",
+        "write-protect"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/close_race_test.go",
+      "type": "file",
+      "name": "close_race_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/close_race_test.go",
+      "summary": "测试 Prefault 与 Close 并发时的竞态行为，确保关闭后调用立即返回 ErrClosed。",
+      "tags": [
+        "test",
+        "race",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/counter_reporter.go",
+      "type": "file",
+      "name": "counter_reporter.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/counter_reporter.go",
+      "summary": "周期性与按需打印 userfaultfd 处理计数器，便于排查 prefetch/缺页流量。",
+      "tags": [
+        "metrics",
+        "diagnostics",
+        "userfaultfd"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred_test.go",
+      "type": "file",
+      "name": "deferred_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred_test.go",
+      "summary": "验证 deferredFaults 的去重与读升级写行为。",
+      "tags": [
+        "test",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd_helpers_test.go",
+      "type": "file",
+      "name": "fd_helpers_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd_helpers_test.go",
+      "summary": "封装 userfaultfd 测试用的 fd 注册/解注册与 configureApi 辅助函数。",
+      "tags": [
+        "test",
+        "userfaultfd",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_child_test.go",
+      "type": "file",
+      "name": "harness_child_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_child_test.go",
+      "summary": "跨进程测试的子进程端：TestHelperServingProcess 启动并 serve userfaultfd。",
+      "tags": [
+        "test",
+        "cross-process",
+        "harness"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_child_test.go:crossProcessServe",
+      "type": "function",
+      "name": "crossProcessServe",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_child_test.go",
+      "lineRange": [
+        30,
+        84
+      ],
+      "summary": "在子进程中监听 unix socket，注册 fd 并启动 userfaultfd Serve。",
+      "tags": [
+        "test",
+        "userfaultfd",
+        "ipc"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "type": "file",
+      "name": "harness_parent_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "summary": "跨进程 userfaultfd 测试的父进程端：构建 MemorySlicer、fork 子进程并管理 fd 传递。",
+      "tags": [
+        "test",
+        "harness",
+        "cross-process"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go:MemorySlicer",
+      "type": "class",
+      "name": "MemorySlicer",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "lineRange": [
+        26,
+        29
+      ],
+      "summary": "测试中使用的内存切片器：可按需返回随机/连续页面数据，模拟 PageReader。",
+      "tags": [
+        "test",
+        "mock",
+        "page-reader"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go:configureCrossProcessTest",
+      "type": "function",
+      "name": "configureCrossProcessTest",
+      "filePath": "packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "lineRange": [
+        76,
+        178
+      ],
+      "summary": "通过 helper 子进程配置跨进程 userfaultfd 测试：装载 memfile、向 child 发送 fd 并等待握手完成。",
+      "tags": [
+        "test",
+        "harness",
+        "fd-passing"
+      ],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/iov.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/config_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/config.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/drain_balloon_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/fph_gates.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/kernel_args.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/mmds.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/process_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/script_builder_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/fdexit/fdexit.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/memory/mapping_host_virt_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/memory/mapping_offset_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/memory/mapping.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/memory/region.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/async_wp_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/close_race_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/counter_reporter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd_helpers_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_child_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/helpers_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/hooks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/invoke.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/metrics_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/missing_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/missing_write_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/prefault.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/race_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/remove_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/rpc_services_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/userfaultfd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/async_wp_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/testutils/diff_byte.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/async_wp_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/testutils/page_mmap.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/async_wp_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/testutils/pagemap.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/close_race_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/memory/mapping_host_virt_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/close_race_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/memory/mapping_offset_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/close_race_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/memory/mapping.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/close_race_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/memory/region.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/iov.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/testutils/diff_byte.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/testutils/page_mmap.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/testutils/pagemap.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/testutils/testharness/barriers.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/testutils/testharness/client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uffd/testutils/testharness/wire.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/uffd/uffd.go:Uffd",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/uffd/uffd.go:New",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/uffd/uffd.go:Start",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/uffd/uffd.go:handle",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/uffd/uffd.go:DiffMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/uffd/uffd.go:ServeStats",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/uffd/uffd.go:Uffd",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/uffd/uffd.go:New",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/uffd/uffd.go:Start",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/uffd/uffd.go:DiffMetadata",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/uffd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/uffd/uffd.go:ServeStats",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd.go:copy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/fd.go:writeProtect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/deferred.go:deferredFaults",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/counter_reporter.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/counter_reporter.go:counterReporter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_child_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_child_test.go:crossProcessServe",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go:MemorySlicer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go:configureCrossProcessTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go:MemorySlicer",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/uffd/userfaultfd/harness_parent_test.go:configureCrossProcessTest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

@@ -1,0 +1,3654 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/db/client/client.go",
+      "type": "file",
+      "name": "client.go",
+      "filePath": "packages/db/client/client.go",
+      "summary": "数据库客户端主入口,聚合 dashboard queries、模板/snapshot queries 和连接池,为上层服务提供统一的 Client 封装和事务管理。",
+      "tags": [
+        "entry-point",
+        "data-access",
+        "postgresql",
+        "事务管理"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/client/migration.go",
+      "type": "file",
+      "name": "migration.go",
+      "filePath": "packages/db/client/migration.go",
+      "summary": "提供迁移版本校验工具,启动时通过 CheckMigrationVersion 确认数据库已应用至指定迁移,防止版本不一致。",
+      "tags": [
+        "migration",
+        "utility",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/client/tests.go",
+      "type": "file",
+      "name": "tests.go",
+      "filePath": "packages/db/client/tests.go",
+      "summary": "提供测试环境下的原始 SQL 执行辅助函数,便于直接验证 SQL 查询而无需启动完整客户端。",
+      "tags": [
+        "test",
+        "utility",
+        "raw-sql"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/client.go",
+      "type": "file",
+      "name": "client.go",
+      "filePath": "packages/db/pkg/auth/client.go",
+      "summary": "鉴权模块的数据库客户端入口,聚合团队、API key、access token、用户身份相关查询,并支持主从复制连接。",
+      "tags": [
+        "entry-point",
+        "auth",
+        "data-access",
+        "replication"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/create_access_token.sql.go",
+      "type": "file",
+      "name": "create_access_token.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/create_access_token.sql.go",
+      "summary": "sqlc 生成的 access token 创建查询,封装 CreateAccessToken 写入逻辑与对应参数/返回行结构。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "access-token"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/create_team_api_key.sql.go",
+      "type": "file",
+      "name": "create_team_api_key.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/create_team_api_key.sql.go",
+      "summary": "sqlc 生成的团队 API key 创建查询,负责持久化团队级 API 凭证。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "api-key"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/db.go",
+      "type": "file",
+      "name": "db.go",
+      "filePath": "packages/db/pkg/auth/queries/db.go",
+      "summary": "sqlc 生成的 Queries 入口与 DBTX 接口,定义带事务的查询构造器(WithTx)。",
+      "tags": [
+        "sqlc-generated",
+        "utility",
+        "事务管理"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/delete_access_token.sql.go",
+      "type": "file",
+      "name": "delete_access_token.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/delete_access_token.sql.go",
+      "summary": "sqlc 生成的 access token 删除查询,用于撤销用户访问令牌。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "access-token"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/delete_public_user.sql.go",
+      "type": "file",
+      "name": "delete_public_user.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/delete_public_user.sql.go",
+      "summary": "sqlc 生成的公开用户删除查询,按 ID 删除 public schema 中的用户记录。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "user"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/delete_team_api_key.sql.go",
+      "type": "file",
+      "name": "delete_team_api_key.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/delete_team_api_key.sql.go",
+      "summary": "sqlc 生成的团队 API key 删除查询,用于撤销团队级别凭证。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "api-key"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/get_api_keys.sql.go",
+      "type": "file",
+      "name": "get_api_keys.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/get_api_keys.sql.go",
+      "summary": "sqlc 生成的查询,获取某团队的全部 API key 及其创建者信息。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "api-key",
+        "查询"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "type": "file",
+      "name": "get_team.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/get_team.sql.go",
+      "summary": "sqlc 生成的团队查询合集,支持按 API key、用户+团队、团队 ID 以及用户全局多维度查询团队及其 tier 信息。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "team",
+        "tier",
+        "查询"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/get_team_api_key_hashes.sql.go",
+      "type": "file",
+      "name": "get_team_api_key_hashes.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/get_team_api_key_hashes.sql.go",
+      "summary": "sqlc 生成的查询,获取某团队下全部 API key 的哈希值(用于密钥校验)。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "api-key",
+        "查询"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/get_user_id_from_access_token.sql.go",
+      "type": "file",
+      "name": "get_user_id_from_access_token.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/get_user_id_from_access_token.sql.go",
+      "summary": "sqlc 生成的查询,根据 access token 哈希反查对应用户 ID。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "access-token",
+        "查询"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go",
+      "type": "file",
+      "name": "get_user_identities_by_subjects.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go",
+      "summary": "sqlc 生成的查询,按外部身份主体(subject)批量查找用户身份记录。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "identity",
+        "oidc",
+        "查询"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go",
+      "type": "file",
+      "name": "get_user_identities_by_user_ids.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go",
+      "summary": "sqlc 生成的查询,按用户 ID 批量拉取对应的身份记录(用于登录态合并)。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "identity",
+        "查询"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/get_user_identity.sql.go",
+      "type": "file",
+      "name": "get_user_identity.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/get_user_identity.sql.go",
+      "summary": "sqlc 生成的查询,根据 provider+subject 拉取单一用户身份记录。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "identity",
+        "oidc",
+        "查询"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/lock_public_user_for_update.sql.go",
+      "type": "file",
+      "name": "lock_public_user_for_update.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/lock_public_user_for_update.sql.go",
+      "summary": "sqlc 生成的查询,对 public schema 用户记录加行级锁,用于事务中的并发安全更新。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "locking",
+        "事务管理"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/models.go",
+      "type": "file",
+      "name": "models.go",
+      "filePath": "packages/db/pkg/auth/queries/models.go",
+      "summary": "sqlc 生成的模型定义,包含 Team、TeamApiKey、TeamLimit 三个核心数据结构。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/team_creation_guard.sql.go",
+      "type": "file",
+      "name": "team_creation_guard.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/team_creation_guard.sql.go",
+      "summary": "sqlc 生成的查询,用于团队创建前的并发守卫,带 SELECT FOR UPDATE 锁保证幂等性。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "team",
+        "locking",
+        "并发安全"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "type": "file",
+      "name": "team_lifecycle.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "summary": "sqlc 生成的团队生命周期查询,包含创建团队、成员加入、删除、按用户查默认团队等操作。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "team",
+        "lifecycle",
+        "查询"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/teams_usersteams_join.sql.go",
+      "type": "file",
+      "name": "teams_usersteams_join.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/teams_usersteams_join.sql.go",
+      "summary": "sqlc 生成的查询,联表获取用户所属团队列表。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "team",
+        "join",
+        "查询"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/update_last_time_used.sql.go",
+      "type": "file",
+      "name": "update_last_time_used.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/update_last_time_used.sql.go",
+      "summary": "sqlc 生成的查询,更新 API key 最近一次使用时间。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "api-key",
+        "metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/update_team_api_key.sql.go",
+      "type": "file",
+      "name": "update_team_api_key.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/update_team_api_key.sql.go",
+      "summary": "sqlc 生成的查询,更新团队 API key 的元数据(如名称、哈希)。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "api-key",
+        "查询"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/upsert_public_identity.sql.go",
+      "type": "file",
+      "name": "upsert_public_identity.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/upsert_public_identity.sql.go",
+      "summary": "sqlc 生成的查询,upsert 用户身份记录(OIDC 登录链路)。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "identity",
+        "upsert",
+        "oidc"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/queries/upsert_public_user.sql.go",
+      "type": "file",
+      "name": "upsert_public_user.sql.go",
+      "filePath": "packages/db/pkg/auth/queries/upsert_public_user.sql.go",
+      "summary": "sqlc 生成的查询,upsert public schema 用户记录。",
+      "tags": [
+        "sqlc-generated",
+        "auth",
+        "user",
+        "upsert"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/builds/machine_info.go",
+      "type": "file",
+      "name": "machine_info.go",
+      "filePath": "packages/db/pkg/builds/machine_info.go",
+      "summary": "构建模块的工具函数,将数据库 EnvBuild 记录转换为机器信息结构(用于 API 层返回)。",
+      "tags": [
+        "utility",
+        "data-mapping",
+        "build"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/queries/check_ready_template_tag_exists.sql.go",
+      "type": "file",
+      "name": "check_ready_template_tag_exists.sql.go",
+      "filePath": "packages/db/pkg/dashboard/queries/check_ready_template_tag_exists.sql.go",
+      "summary": "sqlc 生成的查询,检查指定模板 tag 是否已存在 ready 状态记录。",
+      "tags": [
+        "sqlc-generated",
+        "dashboard",
+        "template",
+        "tag"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/queries/count_template_tags.sql.go",
+      "type": "file",
+      "name": "count_template_tags.sql.go",
+      "filePath": "packages/db/pkg/dashboard/queries/count_template_tags.sql.go",
+      "summary": "sqlc 生成的查询,统计某模板关联的 tag 数量。",
+      "tags": [
+        "sqlc-generated",
+        "dashboard",
+        "template",
+        "tag",
+        "metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/queries/db.go",
+      "type": "file",
+      "name": "db.go",
+      "filePath": "packages/db/pkg/dashboard/queries/db.go",
+      "summary": "sqlc 生成的 Queries 入口与 DBTX 接口,服务于 dashboard 模块。",
+      "tags": [
+        "sqlc-generated",
+        "utility",
+        "事务管理"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/client/client.go:NewClient",
+      "type": "function",
+      "name": "NewClient",
+      "filePath": "packages/db/client/client.go",
+      "lineRange": [
+        24,
+        35
+      ],
+      "summary": "根据 databaseURL 创建数据库 Client(含连接池和 dashboard/template 查询聚合)。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/client/client.go:Close",
+      "type": "function",
+      "name": "Close",
+      "filePath": "packages/db/client/client.go",
+      "lineRange": [
+        37,
+        41
+      ],
+      "summary": "关闭 Client 持有的连接池资源。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/client/client.go:WithTx",
+      "type": "function",
+      "name": "WithTx",
+      "filePath": "packages/db/client/client.go",
+      "lineRange": [
+        44,
+        57
+      ],
+      "summary": "在事务上下文中执行回调并管理生命周期。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/client/client.go:Client",
+      "type": "class",
+      "name": "Client",
+      "filePath": "packages/db/client/client.go",
+      "lineRange": [
+        17,
+        22
+      ],
+      "summary": "数据库客户端聚合结构,封装 dashboard/queries/queries/Pool 与事务能力。",
+      "tags": [
+        "data-access",
+        "事务管理"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/client/migration.go:CheckMigrationVersion",
+      "type": "function",
+      "name": "CheckMigrationVersion",
+      "filePath": "packages/db/client/migration.go",
+      "lineRange": [
+        21,
+        47
+      ],
+      "summary": "校验数据库迁移版本是否符合预期,不一致时打印警告并退出。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/client/tests.go:TestsRawSQL",
+      "type": "function",
+      "name": "TestsRawSQL",
+      "filePath": "packages/db/client/tests.go",
+      "lineRange": [
+        9,
+        13
+      ],
+      "summary": "测试辅助:执行原始 SQL 并校验无错误。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/client/tests.go:TestsRawSQLQuery",
+      "type": "function",
+      "name": "TestsRawSQLQuery",
+      "filePath": "packages/db/client/tests.go",
+      "lineRange": [
+        15,
+        23
+      ],
+      "summary": "测试辅助:执行原始 SQL 查询并对每行调用 processRows 回调。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/client.go:NewClient",
+      "type": "function",
+      "name": "NewClient",
+      "filePath": "packages/db/pkg/auth/client.go",
+      "lineRange": [
+        28,
+        51
+      ],
+      "summary": "创建鉴权模块数据库 Client,主从分离(databaseURL + replicaURL)。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/client.go:Close",
+      "type": "function",
+      "name": "Close",
+      "filePath": "packages/db/pkg/auth/client.go",
+      "lineRange": [
+        53,
+        61
+      ],
+      "summary": "关闭鉴权 Client 的主从连接池。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/client.go:WithTx",
+      "type": "function",
+      "name": "WithTx",
+      "filePath": "packages/db/pkg/auth/client.go",
+      "lineRange": [
+        64,
+        71
+      ],
+      "summary": "在事务上下文中执行鉴权查询回调。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/client.go:TestsRawSQL",
+      "type": "function",
+      "name": "TestsRawSQL",
+      "filePath": "packages/db/pkg/auth/client.go",
+      "lineRange": [
+        74,
+        78
+      ],
+      "summary": "测试辅助:对鉴权模块执行原始 SQL。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/client.go:TestsRawSQLQuery",
+      "type": "function",
+      "name": "TestsRawSQLQuery",
+      "filePath": "packages/db/pkg/auth/client.go",
+      "lineRange": [
+        81,
+        89
+      ],
+      "summary": "测试辅助:对鉴权模块执行原始 SQL 并处理结果。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/client.go:Client",
+      "type": "class",
+      "name": "Client",
+      "filePath": "packages/db/pkg/auth/client.go",
+      "lineRange": [
+        21,
+        26
+      ],
+      "summary": "数据库客户端聚合结构,封装 dashboard/queries/queries/Pool 与事务能力。",
+      "tags": [
+        "data-access",
+        "事务管理"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/create_access_token.sql.go:CreateAccessToken",
+      "type": "function",
+      "name": "CreateAccessToken",
+      "filePath": "packages/db/pkg/auth/queries/create_access_token.sql.go",
+      "lineRange": [
+        62,
+        86
+      ],
+      "summary": "创建 access token 记录并返回写入结果(CreateAccessToken)。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/create_access_token.sql.go:CreateAccessTokenParams",
+      "type": "class",
+      "name": "CreateAccessTokenParams",
+      "filePath": "packages/db/pkg/auth/queries/create_access_token.sql.go",
+      "lineRange": [
+        39,
+        48
+      ],
+      "summary": "sqlc 生成的查询参数结构:CreateAccessTokenParams。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/create_access_token.sql.go:CreateAccessTokenRow",
+      "type": "class",
+      "name": "CreateAccessTokenRow",
+      "filePath": "packages/db/pkg/auth/queries/create_access_token.sql.go",
+      "lineRange": [
+        50,
+        60
+      ],
+      "summary": "sqlc 生成的查询返回行结构:CreateAccessTokenRow。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/create_team_api_key.sql.go:CreateTeamAPIKey",
+      "type": "function",
+      "name": "CreateTeamAPIKey",
+      "filePath": "packages/db/pkg/auth/queries/create_team_api_key.sql.go",
+      "lineRange": [
+        51,
+        78
+      ],
+      "summary": "创建团队 API key 凭证(CreateTeamAPIKey)。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/create_team_api_key.sql.go:CreateTeamAPIKeyParams",
+      "type": "class",
+      "name": "CreateTeamAPIKeyParams",
+      "filePath": "packages/db/pkg/auth/queries/create_team_api_key.sql.go",
+      "lineRange": [
+        40,
+        49
+      ],
+      "summary": "sqlc 生成的查询参数结构:CreateTeamAPIKeyParams。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/db.go:New",
+      "type": "function",
+      "name": "New",
+      "filePath": "packages/db/pkg/auth/queries/db.go",
+      "lineRange": [
+        20,
+        22
+      ],
+      "summary": "sqlc 生成的 Queries 构造器。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/db.go:WithTx",
+      "type": "function",
+      "name": "WithTx",
+      "filePath": "packages/db/pkg/auth/queries/db.go",
+      "lineRange": [
+        28,
+        32
+      ],
+      "summary": "返回绑定到事务的 Queries 实例。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/db.go:DBTX",
+      "type": "class",
+      "name": "DBTX",
+      "filePath": "packages/db/pkg/auth/queries/db.go",
+      "lineRange": [
+        14,
+        18
+      ],
+      "summary": "sqlc 生成的核心接口:DBTX。",
+      "tags": [
+        "sqlc-generated",
+        "interface"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/db.go:Queries",
+      "type": "class",
+      "name": "Queries",
+      "filePath": "packages/db/pkg/auth/queries/db.go",
+      "lineRange": [
+        24,
+        26
+      ],
+      "summary": "sqlc 生成的核心接口/结构体:Queries。",
+      "tags": [
+        "sqlc-generated",
+        "service"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/delete_access_token.sql.go:DeleteAccessToken",
+      "type": "function",
+      "name": "DeleteAccessToken",
+      "filePath": "packages/db/pkg/auth/queries/delete_access_token.sql.go",
+      "lineRange": [
+        25,
+        30
+      ],
+      "summary": "删除指定 access token 记录。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/delete_access_token.sql.go:DeleteAccessTokenParams",
+      "type": "class",
+      "name": "DeleteAccessTokenParams",
+      "filePath": "packages/db/pkg/auth/queries/delete_access_token.sql.go",
+      "lineRange": [
+        20,
+        23
+      ],
+      "summary": "sqlc 生成的查询参数结构:DeleteAccessTokenParams。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/delete_public_user.sql.go:DeletePublicUser",
+      "type": "function",
+      "name": "DeletePublicUser",
+      "filePath": "packages/db/pkg/auth/queries/delete_public_user.sql.go",
+      "lineRange": [
+        19,
+        22
+      ],
+      "summary": "按 ID 删除 public 用户记录。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/delete_team_api_key.sql.go:DeleteTeamAPIKey",
+      "type": "function",
+      "name": "DeleteTeamAPIKey",
+      "filePath": "packages/db/pkg/auth/queries/delete_team_api_key.sql.go",
+      "lineRange": [
+        25,
+        43
+      ],
+      "summary": "删除指定团队 API key。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/delete_team_api_key.sql.go:DeleteTeamAPIKeyParams",
+      "type": "class",
+      "name": "DeleteTeamAPIKeyParams",
+      "filePath": "packages/db/pkg/auth/queries/delete_team_api_key.sql.go",
+      "lineRange": [
+        20,
+        23
+      ],
+      "summary": "sqlc 生成的查询参数结构:DeleteTeamAPIKeyParams。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/get_api_keys.sql.go:GetTeamAPIKeysWithCreator",
+      "type": "function",
+      "name": "GetTeamAPIKeysWithCreator",
+      "filePath": "packages/db/pkg/auth/queries/get_api_keys.sql.go",
+      "lineRange": [
+        42,
+        70
+      ],
+      "summary": "查询某团队全部 API key 及其创建者信息。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/get_api_keys.sql.go:GetTeamAPIKeysWithCreatorRow",
+      "type": "class",
+      "name": "GetTeamAPIKeysWithCreatorRow",
+      "filePath": "packages/db/pkg/auth/queries/get_api_keys.sql.go",
+      "lineRange": [
+        30,
+        40
+      ],
+      "summary": "sqlc 生成的查询返回行结构:GetTeamAPIKeysWithCreatorRow。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByAPIKey",
+      "type": "function",
+      "name": "GetTeamWithTierByAPIKey",
+      "filePath": "packages/db/pkg/auth/queries/get_team.sql.go",
+      "lineRange": [
+        27,
+        51
+      ],
+      "summary": "按 API key 哈希查询团队及 tier 信息。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByTeamAndUser",
+      "type": "function",
+      "name": "GetTeamWithTierByTeamAndUser",
+      "filePath": "packages/db/pkg/auth/queries/get_team.sql.go",
+      "lineRange": [
+        71,
+        95
+      ],
+      "summary": "按用户+团队查询团队及 tier 信息。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByTeamID",
+      "type": "function",
+      "name": "GetTeamWithTierByTeamID",
+      "filePath": "packages/db/pkg/auth/queries/get_team.sql.go",
+      "lineRange": [
+        109,
+        133
+      ],
+      "summary": "按团队 ID 查询团队及 tier 信息。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamsWithUsersTeamsWithTier",
+      "type": "function",
+      "name": "GetTeamsWithUsersTeamsWithTier",
+      "filePath": "packages/db/pkg/auth/queries/get_team.sql.go",
+      "lineRange": [
+        149,
+        187
+      ],
+      "summary": "查询某用户所属全部团队及其 tier 信息。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByAPIKeyRow",
+      "type": "class",
+      "name": "GetTeamWithTierByAPIKeyRow",
+      "filePath": "packages/db/pkg/auth/queries/get_team.sql.go",
+      "lineRange": [
+        22,
+        25
+      ],
+      "summary": "sqlc 生成的查询返回行结构:GetTeamWithTierByAPIKeyRow。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByTeamAndUserParams",
+      "type": "class",
+      "name": "GetTeamWithTierByTeamAndUserParams",
+      "filePath": "packages/db/pkg/auth/queries/get_team.sql.go",
+      "lineRange": [
+        61,
+        64
+      ],
+      "summary": "sqlc 生成的查询参数结构:GetTeamWithTierByTeamAndUserParams。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByTeamAndUserRow",
+      "type": "class",
+      "name": "GetTeamWithTierByTeamAndUserRow",
+      "filePath": "packages/db/pkg/auth/queries/get_team.sql.go",
+      "lineRange": [
+        66,
+        69
+      ],
+      "summary": "sqlc 生成的查询返回行结构:GetTeamWithTierByTeamAndUserRow。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByTeamIDRow",
+      "type": "class",
+      "name": "GetTeamWithTierByTeamIDRow",
+      "filePath": "packages/db/pkg/auth/queries/get_team.sql.go",
+      "lineRange": [
+        104,
+        107
+      ],
+      "summary": "sqlc 生成的查询返回行结构:GetTeamWithTierByTeamIDRow。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamsWithUsersTeamsWithTierRow",
+      "type": "class",
+      "name": "GetTeamsWithUsersTeamsWithTierRow",
+      "filePath": "packages/db/pkg/auth/queries/get_team.sql.go",
+      "lineRange": [
+        143,
+        147
+      ],
+      "summary": "sqlc 生成的查询返回行结构:GetTeamsWithUsersTeamsWithTierRow。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/get_team_api_key_hashes.sql.go:GetTeamAPIKeyHashes",
+      "type": "function",
+      "name": "GetTeamAPIKeyHashes",
+      "filePath": "packages/db/pkg/auth/queries/get_team_api_key_hashes.sql.go",
+      "lineRange": [
+        20,
+        38
+      ],
+      "summary": "查询指定团队全部 API key 的哈希值。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/get_user_id_from_access_token.sql.go:GetUserIDFromAccessToken",
+      "type": "function",
+      "name": "GetUserIDFromAccessToken",
+      "filePath": "packages/db/pkg/auth/queries/get_user_id_from_access_token.sql.go",
+      "lineRange": [
+        19,
+        24
+      ],
+      "summary": "通过 access token 哈希反查用户 ID。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go:GetUserIdentitiesBySubjects",
+      "type": "function",
+      "name": "GetUserIdentitiesBySubjects",
+      "filePath": "packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go",
+      "lineRange": [
+        32,
+        50
+      ],
+      "summary": "按外部主体批量查询用户身份。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go:GetUserIdentitiesBySubjectsParams",
+      "type": "class",
+      "name": "GetUserIdentitiesBySubjectsParams",
+      "filePath": "packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go",
+      "lineRange": [
+        21,
+        24
+      ],
+      "summary": "sqlc 生成的查询参数结构:GetUserIdentitiesBySubjectsParams。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go:GetUserIdentitiesBySubjectsRow",
+      "type": "class",
+      "name": "GetUserIdentitiesBySubjectsRow",
+      "filePath": "packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go",
+      "lineRange": [
+        26,
+        30
+      ],
+      "summary": "sqlc 生成的查询返回行结构:GetUserIdentitiesBySubjectsRow。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go:GetUserIdentitiesByUserIDs",
+      "type": "function",
+      "name": "GetUserIdentitiesByUserIDs",
+      "filePath": "packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go",
+      "lineRange": [
+        32,
+        50
+      ],
+      "summary": "按用户 ID 批量查询用户身份。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go:GetUserIdentitiesByUserIDsParams",
+      "type": "class",
+      "name": "GetUserIdentitiesByUserIDsParams",
+      "filePath": "packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go",
+      "lineRange": [
+        21,
+        24
+      ],
+      "summary": "sqlc 生成的查询参数结构:GetUserIdentitiesByUserIDsParams。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go:GetUserIdentitiesByUserIDsRow",
+      "type": "class",
+      "name": "GetUserIdentitiesByUserIDsRow",
+      "filePath": "packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go",
+      "lineRange": [
+        26,
+        30
+      ],
+      "summary": "sqlc 生成的查询返回行结构:GetUserIdentitiesByUserIDsRow。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/get_user_identity.sql.go:GetUserIdentity",
+      "type": "function",
+      "name": "GetUserIdentity",
+      "filePath": "packages/db/pkg/auth/queries/get_user_identity.sql.go",
+      "lineRange": [
+        35,
+        46
+      ],
+      "summary": "按 provider+subject 查询单一身份记录。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/get_user_identity.sql.go:GetUserIdentityParams",
+      "type": "class",
+      "name": "GetUserIdentityParams",
+      "filePath": "packages/db/pkg/auth/queries/get_user_identity.sql.go",
+      "lineRange": [
+        22,
+        25
+      ],
+      "summary": "sqlc 生成的查询参数结构:GetUserIdentityParams。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/get_user_identity.sql.go:GetUserIdentityRow",
+      "type": "class",
+      "name": "GetUserIdentityRow",
+      "filePath": "packages/db/pkg/auth/queries/get_user_identity.sql.go",
+      "lineRange": [
+        27,
+        33
+      ],
+      "summary": "sqlc 生成的查询返回行结构:GetUserIdentityRow。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/lock_public_user_for_update.sql.go:LockPublicUserForUpdate",
+      "type": "function",
+      "name": "LockPublicUserForUpdate",
+      "filePath": "packages/db/pkg/auth/queries/lock_public_user_for_update.sql.go",
+      "lineRange": [
+        21,
+        25
+      ],
+      "summary": "对 public 用户记录加行级锁(SELECT FOR UPDATE)。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/models.go:Team",
+      "type": "class",
+      "name": "Team",
+      "filePath": "packages/db/pkg/auth/queries/models.go",
+      "lineRange": [
+        13,
+        25
+      ],
+      "summary": "鉴权领域核心模型:Team。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "auth"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/models.go:TeamApiKey",
+      "type": "class",
+      "name": "TeamApiKey",
+      "filePath": "packages/db/pkg/auth/queries/models.go",
+      "lineRange": [
+        27,
+        41
+      ],
+      "summary": "鉴权领域核心模型:TeamApiKey。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "auth"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/models.go:TeamLimit",
+      "type": "class",
+      "name": "TeamLimit",
+      "filePath": "packages/db/pkg/auth/queries/models.go",
+      "lineRange": [
+        43,
+        51
+      ],
+      "summary": "鉴权领域核心模型:TeamLimit。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "auth"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/team_creation_guard.sql.go:GetTeamsWithUsersTeamsWithTierForUpdate",
+      "type": "function",
+      "name": "GetTeamsWithUsersTeamsWithTierForUpdate",
+      "filePath": "packages/db/pkg/auth/queries/team_creation_guard.sql.go",
+      "lineRange": [
+        65,
+        103
+      ],
+      "summary": "查询并加锁用户当前团队列表,用于团队创建并发守卫。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/team_creation_guard.sql.go:GetTeamsWithUsersTeamsWithTierForUpdateRow",
+      "type": "class",
+      "name": "GetTeamsWithUsersTeamsWithTierForUpdateRow",
+      "filePath": "packages/db/pkg/auth/queries/team_creation_guard.sql.go",
+      "lineRange": [
+        43,
+        63
+      ],
+      "summary": "sqlc 生成的查询返回行结构:GetTeamsWithUsersTeamsWithTierForUpdateRow。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/team_lifecycle.sql.go:CreateTeam",
+      "type": "function",
+      "name": "CreateTeam",
+      "filePath": "packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "lineRange": [
+        45,
+        68
+      ],
+      "summary": "创建新团队并返回团队记录。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/team_lifecycle.sql.go:CreateTeamMembership",
+      "type": "function",
+      "name": "CreateTeamMembership",
+      "filePath": "packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "lineRange": [
+        87,
+        95
+      ],
+      "summary": "为用户建立团队成员关系。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/team_lifecycle.sql.go:DeleteTeamByID",
+      "type": "function",
+      "name": "DeleteTeamByID",
+      "filePath": "packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "lineRange": [
+        102,
+        105
+      ],
+      "summary": "按 ID 删除团队。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/team_lifecycle.sql.go:GetDefaultTeamByUserID",
+      "type": "function",
+      "name": "GetDefaultTeamByUserID",
+      "filePath": "packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "lineRange": [
+        126,
+        143
+      ],
+      "summary": "查询用户的默认团队记录。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/team_lifecycle.sql.go:CreateTeamParams",
+      "type": "class",
+      "name": "CreateTeamParams",
+      "filePath": "packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "lineRange": [
+        37,
+        43
+      ],
+      "summary": "sqlc 生成的查询参数结构:CreateTeamParams。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/team_lifecycle.sql.go:CreateTeamMembershipParams",
+      "type": "class",
+      "name": "CreateTeamMembershipParams",
+      "filePath": "packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "lineRange": [
+        80,
+        85
+      ],
+      "summary": "sqlc 生成的查询参数结构:CreateTeamMembershipParams。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/teams_usersteams_join.sql.go:GetTeamsWithUsersTeams",
+      "type": "function",
+      "name": "GetTeamsWithUsersTeams",
+      "filePath": "packages/db/pkg/auth/queries/teams_usersteams_join.sql.go",
+      "lineRange": [
+        26,
+        57
+      ],
+      "summary": "联表查询用户所属团队列表。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/teams_usersteams_join.sql.go:GetTeamsWithUsersTeamsRow",
+      "type": "class",
+      "name": "GetTeamsWithUsersTeamsRow",
+      "filePath": "packages/db/pkg/auth/queries/teams_usersteams_join.sql.go",
+      "lineRange": [
+        21,
+        24
+      ],
+      "summary": "sqlc 生成的查询返回行结构:GetTeamsWithUsersTeamsRow。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/update_last_time_used.sql.go:UpdateLastTimeUsed",
+      "type": "function",
+      "name": "UpdateLastTimeUsed",
+      "filePath": "packages/db/pkg/auth/queries/update_last_time_used.sql.go",
+      "lineRange": [
+        18,
+        21
+      ],
+      "summary": "更新 API key 最近使用时间戳。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/update_team_api_key.sql.go:UpdateTeamApiKey",
+      "type": "function",
+      "name": "UpdateTeamApiKey",
+      "filePath": "packages/db/pkg/auth/queries/update_team_api_key.sql.go",
+      "lineRange": [
+        27,
+        37
+      ],
+      "summary": "更新团队 API key 元数据。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/update_team_api_key.sql.go:UpdateTeamApiKeyParams",
+      "type": "class",
+      "name": "UpdateTeamApiKeyParams",
+      "filePath": "packages/db/pkg/auth/queries/update_team_api_key.sql.go",
+      "lineRange": [
+        20,
+        25
+      ],
+      "summary": "sqlc 生成的查询参数结构:UpdateTeamApiKeyParams。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/upsert_public_identity.sql.go:UpsertPublicIdentity",
+      "type": "function",
+      "name": "UpsertPublicIdentity",
+      "filePath": "packages/db/pkg/auth/queries/upsert_public_identity.sql.go",
+      "lineRange": [
+        29,
+        34
+      ],
+      "summary": "Upsert 公开身份记录(OIDC 登录)。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/auth/queries/upsert_public_identity.sql.go:UpsertPublicIdentityParams",
+      "type": "class",
+      "name": "UpsertPublicIdentityParams",
+      "filePath": "packages/db/pkg/auth/queries/upsert_public_identity.sql.go",
+      "lineRange": [
+        23,
+        27
+      ],
+      "summary": "sqlc 生成的查询参数结构:UpsertPublicIdentityParams。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/auth/queries/upsert_public_user.sql.go:UpsertPublicUser",
+      "type": "function",
+      "name": "UpsertPublicUser",
+      "filePath": "packages/db/pkg/auth/queries/upsert_public_user.sql.go",
+      "lineRange": [
+        21,
+        24
+      ],
+      "summary": "Upsert 公开用户记录。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/builds/machine_info.go:ToMachineInfo",
+      "type": "function",
+      "name": "ToMachineInfo",
+      "filePath": "packages/db/pkg/builds/machine_info.go",
+      "lineRange": [
+        9,
+        17
+      ],
+      "summary": "将数据库 EnvBuild 记录映射为机器信息结构。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/dashboard/queries/check_ready_template_tag_exists.sql.go:CheckReadyTemplateTagExists",
+      "type": "function",
+      "name": "CheckReadyTemplateTagExists",
+      "filePath": "packages/db/pkg/dashboard/queries/check_ready_template_tag_exists.sql.go",
+      "lineRange": [
+        28,
+        33
+      ],
+      "summary": "检查模板 tag 是否存在 ready 记录。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/dashboard/queries/check_ready_template_tag_exists.sql.go:CheckReadyTemplateTagExistsParams",
+      "type": "class",
+      "name": "CheckReadyTemplateTagExistsParams",
+      "filePath": "packages/db/pkg/dashboard/queries/check_ready_template_tag_exists.sql.go",
+      "lineRange": [
+        23,
+        26
+      ],
+      "summary": "sqlc 生成的查询参数结构:CheckReadyTemplateTagExistsParams。",
+      "tags": [
+        "sqlc-generated",
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/dashboard/queries/count_template_tags.sql.go:CountTemplateTags",
+      "type": "function",
+      "name": "CountTemplateTags",
+      "filePath": "packages/db/pkg/dashboard/queries/count_template_tags.sql.go",
+      "lineRange": [
+        20,
+        25
+      ],
+      "summary": "统计模板关联的 tag 数量。",
+      "tags": [
+        "sqlc-generated"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/dashboard/queries/db.go:New",
+      "type": "function",
+      "name": "New",
+      "filePath": "packages/db/pkg/dashboard/queries/db.go",
+      "lineRange": [
+        20,
+        22
+      ],
+      "summary": "sqlc 生成的 Queries 构造器(dashboard 模块)。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/dashboard/queries/db.go:WithTx",
+      "type": "function",
+      "name": "WithTx",
+      "filePath": "packages/db/pkg/dashboard/queries/db.go",
+      "lineRange": [
+        28,
+        32
+      ],
+      "summary": "返回绑定到事务的 Queries 实例(dashboard 模块)。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/dashboard/queries/db.go:DBTX",
+      "type": "class",
+      "name": "DBTX",
+      "filePath": "packages/db/pkg/dashboard/queries/db.go",
+      "lineRange": [
+        14,
+        18
+      ],
+      "summary": "sqlc 生成的核心接口:DBTX。",
+      "tags": [
+        "sqlc-generated",
+        "interface"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/db/pkg/dashboard/queries/db.go:Queries",
+      "type": "class",
+      "name": "Queries",
+      "filePath": "packages/db/pkg/dashboard/queries/db.go",
+      "lineRange": [
+        24,
+        26
+      ],
+      "summary": "sqlc 生成的核心接口/结构体:Queries。",
+      "tags": [
+        "sqlc-generated",
+        "service"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "function:packages/db/client/client.go:NewClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "function:packages/db/client/client.go:NewClient",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "function:packages/db/client/client.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "function:packages/db/client/client.go:Close",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "function:packages/db/client/client.go:WithTx",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "function:packages/db/client/client.go:WithTx",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "class:packages/db/client/client.go:Client",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "class:packages/db/client/client.go:Client",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/client/migration.go",
+      "target": "function:packages/db/client/migration.go:CheckMigrationVersion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/client/migration.go",
+      "target": "function:packages/db/client/migration.go:CheckMigrationVersion",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/client/tests.go",
+      "target": "function:packages/db/client/tests.go:TestsRawSQL",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/client/tests.go",
+      "target": "function:packages/db/client/tests.go:TestsRawSQL",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/client/tests.go",
+      "target": "function:packages/db/client/tests.go:TestsRawSQLQuery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/client/tests.go",
+      "target": "function:packages/db/client/tests.go:TestsRawSQLQuery",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "function:packages/db/pkg/auth/client.go:NewClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "function:packages/db/pkg/auth/client.go:NewClient",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "function:packages/db/pkg/auth/client.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "function:packages/db/pkg/auth/client.go:Close",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "function:packages/db/pkg/auth/client.go:WithTx",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "function:packages/db/pkg/auth/client.go:WithTx",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "function:packages/db/pkg/auth/client.go:TestsRawSQL",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "function:packages/db/pkg/auth/client.go:TestsRawSQL",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "function:packages/db/pkg/auth/client.go:TestsRawSQLQuery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "function:packages/db/pkg/auth/client.go:TestsRawSQLQuery",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "class:packages/db/pkg/auth/client.go:Client",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "class:packages/db/pkg/auth/client.go:Client",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/create_access_token.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/create_access_token.sql.go:CreateAccessToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/create_access_token.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/create_access_token.sql.go:CreateAccessToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/create_access_token.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/create_access_token.sql.go:CreateAccessTokenParams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/create_access_token.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/create_access_token.sql.go:CreateAccessTokenParams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/create_access_token.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/create_access_token.sql.go:CreateAccessTokenRow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/create_access_token.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/create_access_token.sql.go:CreateAccessTokenRow",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/create_team_api_key.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/create_team_api_key.sql.go:CreateTeamAPIKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/create_team_api_key.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/create_team_api_key.sql.go:CreateTeamAPIKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/create_team_api_key.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/create_team_api_key.sql.go:CreateTeamAPIKeyParams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/create_team_api_key.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/create_team_api_key.sql.go:CreateTeamAPIKeyParams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/db.go",
+      "target": "function:packages/db/pkg/auth/queries/db.go:New",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/db.go",
+      "target": "function:packages/db/pkg/auth/queries/db.go:New",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/db.go",
+      "target": "function:packages/db/pkg/auth/queries/db.go:WithTx",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/db.go",
+      "target": "function:packages/db/pkg/auth/queries/db.go:WithTx",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/db.go",
+      "target": "class:packages/db/pkg/auth/queries/db.go:DBTX",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/db.go",
+      "target": "class:packages/db/pkg/auth/queries/db.go:DBTX",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/db.go",
+      "target": "class:packages/db/pkg/auth/queries/db.go:Queries",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/db.go",
+      "target": "class:packages/db/pkg/auth/queries/db.go:Queries",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/delete_access_token.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/delete_access_token.sql.go:DeleteAccessToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/delete_access_token.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/delete_access_token.sql.go:DeleteAccessToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/delete_access_token.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/delete_access_token.sql.go:DeleteAccessTokenParams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/delete_access_token.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/delete_access_token.sql.go:DeleteAccessTokenParams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/delete_public_user.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/delete_public_user.sql.go:DeletePublicUser",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/delete_public_user.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/delete_public_user.sql.go:DeletePublicUser",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/delete_team_api_key.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/delete_team_api_key.sql.go:DeleteTeamAPIKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/delete_team_api_key.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/delete_team_api_key.sql.go:DeleteTeamAPIKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/delete_team_api_key.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/delete_team_api_key.sql.go:DeleteTeamAPIKeyParams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/delete_team_api_key.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/delete_team_api_key.sql.go:DeleteTeamAPIKeyParams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_api_keys.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_api_keys.sql.go:GetTeamAPIKeysWithCreator",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_api_keys.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_api_keys.sql.go:GetTeamAPIKeysWithCreator",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_api_keys.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_api_keys.sql.go:GetTeamAPIKeysWithCreatorRow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_api_keys.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_api_keys.sql.go:GetTeamAPIKeysWithCreatorRow",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByAPIKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByAPIKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByTeamAndUser",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByTeamAndUser",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByTeamID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByTeamID",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamsWithUsersTeamsWithTier",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamsWithUsersTeamsWithTier",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByAPIKeyRow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByAPIKeyRow",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByTeamAndUserParams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByTeamAndUserParams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByTeamAndUserRow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByTeamAndUserRow",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByTeamIDRow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamWithTierByTeamIDRow",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamsWithUsersTeamsWithTierRow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_team.sql.go:GetTeamsWithUsersTeamsWithTierRow",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team_api_key_hashes.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_team_api_key_hashes.sql.go:GetTeamAPIKeyHashes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_team_api_key_hashes.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_team_api_key_hashes.sql.go:GetTeamAPIKeyHashes",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_id_from_access_token.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_user_id_from_access_token.sql.go:GetUserIDFromAccessToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_id_from_access_token.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_user_id_from_access_token.sql.go:GetUserIDFromAccessToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go:GetUserIdentitiesBySubjects",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go:GetUserIdentitiesBySubjects",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go:GetUserIdentitiesBySubjectsParams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go:GetUserIdentitiesBySubjectsParams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go:GetUserIdentitiesBySubjectsRow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go:GetUserIdentitiesBySubjectsRow",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go:GetUserIdentitiesByUserIDs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go:GetUserIdentitiesByUserIDs",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go:GetUserIdentitiesByUserIDsParams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go:GetUserIdentitiesByUserIDsParams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go:GetUserIdentitiesByUserIDsRow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go:GetUserIdentitiesByUserIDsRow",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identity.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_user_identity.sql.go:GetUserIdentity",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identity.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/get_user_identity.sql.go:GetUserIdentity",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identity.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_user_identity.sql.go:GetUserIdentityParams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identity.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_user_identity.sql.go:GetUserIdentityParams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identity.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_user_identity.sql.go:GetUserIdentityRow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/get_user_identity.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/get_user_identity.sql.go:GetUserIdentityRow",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/lock_public_user_for_update.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/lock_public_user_for_update.sql.go:LockPublicUserForUpdate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/lock_public_user_for_update.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/lock_public_user_for_update.sql.go:LockPublicUserForUpdate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/models.go",
+      "target": "class:packages/db/pkg/auth/queries/models.go:Team",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/models.go",
+      "target": "class:packages/db/pkg/auth/queries/models.go:Team",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/models.go",
+      "target": "class:packages/db/pkg/auth/queries/models.go:TeamApiKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/models.go",
+      "target": "class:packages/db/pkg/auth/queries/models.go:TeamApiKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/models.go",
+      "target": "class:packages/db/pkg/auth/queries/models.go:TeamLimit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/models.go",
+      "target": "class:packages/db/pkg/auth/queries/models.go:TeamLimit",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/team_creation_guard.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/team_creation_guard.sql.go:GetTeamsWithUsersTeamsWithTierForUpdate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/team_creation_guard.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/team_creation_guard.sql.go:GetTeamsWithUsersTeamsWithTierForUpdate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/team_creation_guard.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/team_creation_guard.sql.go:GetTeamsWithUsersTeamsWithTierForUpdateRow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/team_creation_guard.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/team_creation_guard.sql.go:GetTeamsWithUsersTeamsWithTierForUpdateRow",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/team_lifecycle.sql.go:CreateTeam",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/team_lifecycle.sql.go:CreateTeam",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/team_lifecycle.sql.go:CreateTeamMembership",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/team_lifecycle.sql.go:CreateTeamMembership",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/team_lifecycle.sql.go:DeleteTeamByID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/team_lifecycle.sql.go:DeleteTeamByID",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/team_lifecycle.sql.go:GetDefaultTeamByUserID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/team_lifecycle.sql.go:GetDefaultTeamByUserID",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/team_lifecycle.sql.go:CreateTeamParams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/team_lifecycle.sql.go:CreateTeamParams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/team_lifecycle.sql.go:CreateTeamMembershipParams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/team_lifecycle.sql.go:CreateTeamMembershipParams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/teams_usersteams_join.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/teams_usersteams_join.sql.go:GetTeamsWithUsersTeams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/teams_usersteams_join.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/teams_usersteams_join.sql.go:GetTeamsWithUsersTeams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/teams_usersteams_join.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/teams_usersteams_join.sql.go:GetTeamsWithUsersTeamsRow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/teams_usersteams_join.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/teams_usersteams_join.sql.go:GetTeamsWithUsersTeamsRow",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/update_last_time_used.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/update_last_time_used.sql.go:UpdateLastTimeUsed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/update_last_time_used.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/update_last_time_used.sql.go:UpdateLastTimeUsed",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/update_team_api_key.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/update_team_api_key.sql.go:UpdateTeamApiKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/update_team_api_key.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/update_team_api_key.sql.go:UpdateTeamApiKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/update_team_api_key.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/update_team_api_key.sql.go:UpdateTeamApiKeyParams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/update_team_api_key.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/update_team_api_key.sql.go:UpdateTeamApiKeyParams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/upsert_public_identity.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/upsert_public_identity.sql.go:UpsertPublicIdentity",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/upsert_public_identity.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/upsert_public_identity.sql.go:UpsertPublicIdentity",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/upsert_public_identity.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/upsert_public_identity.sql.go:UpsertPublicIdentityParams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/upsert_public_identity.sql.go",
+      "target": "class:packages/db/pkg/auth/queries/upsert_public_identity.sql.go:UpsertPublicIdentityParams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/upsert_public_user.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/upsert_public_user.sql.go:UpsertPublicUser",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/auth/queries/upsert_public_user.sql.go",
+      "target": "function:packages/db/pkg/auth/queries/upsert_public_user.sql.go:UpsertPublicUser",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "function:packages/db/pkg/builds/machine_info.go:ToMachineInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "function:packages/db/pkg/builds/machine_info.go:ToMachineInfo",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/check_ready_template_tag_exists.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/check_ready_template_tag_exists.sql.go:CheckReadyTemplateTagExists",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/check_ready_template_tag_exists.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/check_ready_template_tag_exists.sql.go:CheckReadyTemplateTagExists",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/check_ready_template_tag_exists.sql.go",
+      "target": "class:packages/db/pkg/dashboard/queries/check_ready_template_tag_exists.sql.go:CheckReadyTemplateTagExistsParams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/check_ready_template_tag_exists.sql.go",
+      "target": "class:packages/db/pkg/dashboard/queries/check_ready_template_tag_exists.sql.go:CheckReadyTemplateTagExistsParams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/count_template_tags.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/count_template_tags.sql.go:CountTemplateTags",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/count_template_tags.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/count_template_tags.sql.go:CountTemplateTags",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/db.go",
+      "target": "function:packages/db/pkg/dashboard/queries/db.go:New",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/db.go",
+      "target": "function:packages/db/pkg/dashboard/queries/db.go:New",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/db.go",
+      "target": "function:packages/db/pkg/dashboard/queries/db.go:WithTx",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/db.go",
+      "target": "function:packages/db/pkg/dashboard/queries/db.go:WithTx",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/db.go",
+      "target": "class:packages/db/pkg/dashboard/queries/db.go:DBTX",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/db.go",
+      "target": "class:packages/db/pkg/dashboard/queries/db.go:DBTX",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/db.go",
+      "target": "class:packages/db/pkg/dashboard/queries/db.go:Queries",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/db.go",
+      "target": "class:packages/db/pkg/dashboard/queries/db.go:Queries",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/pkg/dashboard/queries/check_ready_template_tag_exists.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/pkg/dashboard/queries/count_template_tags.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/pkg/dashboard/queries/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/pkg/dashboard/queries/get_dashboard_teams_with_users_teams_with_tier.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/pkg/dashboard/queries/get_default_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/pkg/dashboard/queries/list_team_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/pkg/dashboard/queries/list_template_tag_assignments_by_tag.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_latest_asc.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_latest_desc.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_asc.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_desc.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/pkg/dashboard/queries/models.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/pkg/dashboard/queries/update_team.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/pkg/pool/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/pkg/pool/options.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/active_template_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/check_alias_exists.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/create_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/create_new_snapshot.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/create_snapshot_template_env.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/create_template_build_assignment.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/create_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/delete_old_aliases.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/delete_template_build_assignment.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/delete_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/exists_template_snapshots.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/finish_template_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_active_clusters.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_build_info.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_builds_paginated.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_builds_statuses.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_concurrent_template_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_exclusive_builds_for_template_deletion.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_inprogress_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_last_snapshot.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_sandbox_record.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_snapshot_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_snapshots_with_cursor.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_team_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_team_templates_with_cursor.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_team_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_template_aliases.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_template_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_template_by_id.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_template_with_build_by_tag.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_template_with_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/get_templatealias_by_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/list_team_snapshot_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/list_template_tags.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/models.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/resolve_team.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/team_members.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/update_snapshot_origin_node.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/update_template_build_status.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/update_template_spawns.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/update_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/upsert_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/validate_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/client/client.go",
+      "target": "file:packages/db/queries/volumes.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/create_access_token.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/create_team_api_key.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/delete_access_token.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/delete_public_user.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/delete_team_api_key.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/get_api_keys.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/get_team_api_key_hashes.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/get_team.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/get_user_id_from_access_token.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/get_user_identity.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/lock_public_user_for_update.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/models.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/team_creation_guard.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/teams_usersteams_join.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/update_last_time_used.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/update_team_api_key.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/upsert_public_identity.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/auth/queries/upsert_public_user.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/pool/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/pool/options.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/types/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/types/types_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/auth/client.go",
+      "target": "file:packages/db/pkg/types/types.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/active_template_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/check_alias_exists.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/create_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/create_new_snapshot.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/create_snapshot_template_env.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/create_template_build_assignment.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/create_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/delete_old_aliases.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/delete_template_build_assignment.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/delete_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/exists_template_snapshots.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/finish_template_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_active_clusters.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_build_info.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_builds_paginated.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_builds_statuses.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_concurrent_template_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_exclusive_builds_for_template_deletion.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_inprogress_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_last_snapshot.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_sandbox_record.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_snapshot_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_snapshots_with_cursor.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_team_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_team_templates_with_cursor.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_team_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_template_aliases.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_template_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_template_by_id.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_template_with_build_by_tag.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_template_with_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/get_templatealias_by_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/list_team_snapshot_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/list_template_tags.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/models.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/resolve_team.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/team_members.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/update_snapshot_origin_node.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/update_template_build_status.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/update_template_spawns.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/update_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/upsert_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/validate_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/builds/machine_info.go",
+      "target": "file:packages/db/queries/volumes.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

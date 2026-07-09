@@ -1,0 +1,1465 @@
+{
+  "nodes": [
+    {
+      "id": "file:iac/provider-aws/main.tf",
+      "type": "resource",
+      "name": "main.tf",
+      "filePath": "iac/provider-aws/main.tf",
+      "summary": "AWS provider 主 Terraform 入口文件,定义 provider、region/identity 数据源、init/redis/cluster/nomad 子模块以及 cluster_node 安全组。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws",
+        "module",
+        "provider"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:iac/provider-aws/moved.tf",
+      "type": "resource",
+      "name": "moved.tf",
+      "filePath": "iac/provider-aws/moved.tf",
+      "summary": "Terraform state 重命名声明文件,记录已迁移资源的旧地址到新地址映射。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "state-migration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/provider-aws/variables.tf",
+      "type": "resource",
+      "name": "variables.tf",
+      "filePath": "iac/provider-aws/variables.tf",
+      "summary": "AWS provider Terraform 输入变量定义,涵盖集群规模、镜像前缀、端口、数据库连接池以及 OTEL router 等 48 项配置。",
+      "tags": [
+        "infrastructure",
+        "configuration",
+        "terraform",
+        "variables"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/main.tf:random_password.volume_token_key",
+      "type": "resource",
+      "name": "volume_token_key",
+      "filePath": "iac/provider-aws/main.tf",
+      "lineRange": [
+        63,
+        70
+      ],
+      "summary": "随机密码 资源 `random_password.volume_token_key`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/main.tf:aws_security_group.cluster_node",
+      "type": "resource",
+      "name": "cluster_node",
+      "filePath": "iac/provider-aws/main.tf",
+      "lineRange": [
+        371,
+        426
+      ],
+      "summary": "AWS 安全组 资源 `aws_security_group.cluster_node`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/main.tf:data.aws_region.current",
+      "type": "resource",
+      "name": "aws_region.current",
+      "filePath": "iac/provider-aws/main.tf",
+      "lineRange": [
+        43,
+        43
+      ],
+      "summary": "数据源 `data.aws_region.current`(`data.aws_region`)。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/main.tf:data.aws_caller_identity.current",
+      "type": "resource",
+      "name": "aws_caller_identity.current",
+      "filePath": "iac/provider-aws/main.tf",
+      "lineRange": [
+        45,
+        45
+      ],
+      "summary": "数据源 `data.aws_caller_identity.current`(`data.aws_caller_identity`)。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/main.tf:data.aws_elb_service_account.current",
+      "type": "resource",
+      "name": "aws_elb_service_account.current",
+      "filePath": "iac/provider-aws/main.tf",
+      "lineRange": [
+        47,
+        47
+      ],
+      "summary": "数据源 `data.aws_elb_service_account.current`(`data.aws_elb_service_account`)。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/main.tf:module.init",
+      "type": "resource",
+      "name": "init",
+      "filePath": "iac/provider-aws/main.tf",
+      "lineRange": [
+        49,
+        61
+      ],
+      "summary": "Terraform 子模块 `init` 的调用入口。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/main.tf:module.redis",
+      "type": "resource",
+      "name": "redis",
+      "filePath": "iac/provider-aws/main.tf",
+      "lineRange": [
+        211,
+        225
+      ],
+      "summary": "Terraform 子模块 `redis` 的调用入口。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/main.tf:module.cluster",
+      "type": "resource",
+      "name": "cluster",
+      "filePath": "iac/provider-aws/main.tf",
+      "lineRange": [
+        227,
+        294
+      ],
+      "summary": "Terraform 子模块 `cluster` 的调用入口。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/main.tf:module.nomad",
+      "type": "resource",
+      "name": "nomad",
+      "filePath": "iac/provider-aws/main.tf",
+      "lineRange": [
+        296,
+        369
+      ],
+      "summary": "Terraform 子模块 `nomad` 的调用入口。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.domain_name",
+      "type": "resource",
+      "name": "domain_name",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        1,
+        3
+      ],
+      "summary": "Terraform 输入变量 `domain_name`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.allow_force_destroy",
+      "type": "resource",
+      "name": "allow_force_destroy",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        5,
+        7
+      ],
+      "summary": "Terraform 输入变量 `allow_force_destroy`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.prefix",
+      "type": "resource",
+      "name": "prefix",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        9,
+        12
+      ],
+      "summary": "Terraform 输入变量 `prefix`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.bucket_prefix",
+      "type": "resource",
+      "name": "bucket_prefix",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        14,
+        16
+      ],
+      "summary": "Terraform 输入变量 `bucket_prefix`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.environment",
+      "type": "resource",
+      "name": "environment",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        18,
+        20
+      ],
+      "summary": "Terraform 输入变量 `environment`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.redis_managed",
+      "type": "resource",
+      "name": "redis_managed",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        22,
+        25
+      ],
+      "summary": "Terraform 输入变量 `redis_managed`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.redis_instance_type",
+      "type": "resource",
+      "name": "redis_instance_type",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        27,
+        30
+      ],
+      "summary": "Terraform 输入变量 `redis_instance_type`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.redis_replica_size",
+      "type": "resource",
+      "name": "redis_replica_size",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        32,
+        35
+      ],
+      "summary": "Terraform 输入变量 `redis_replica_size`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.api_cluster_size",
+      "type": "resource",
+      "name": "api_cluster_size",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        37,
+        40
+      ],
+      "summary": "Terraform 输入变量 `api_cluster_size`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.api_internal_grpc_port",
+      "type": "resource",
+      "name": "api_internal_grpc_port",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        42,
+        45
+      ],
+      "summary": "Terraform 输入变量 `api_internal_grpc_port`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.api_env_vars",
+      "type": "resource",
+      "name": "api_env_vars",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        47,
+        51
+      ],
+      "summary": "Terraform 输入变量 `api_env_vars`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.api_db_migrator_env_vars",
+      "type": "resource",
+      "name": "api_db_migrator_env_vars",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        53,
+        57
+      ],
+      "summary": "Terraform 输入变量 `api_db_migrator_env_vars`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.client_proxy_env_vars",
+      "type": "resource",
+      "name": "client_proxy_env_vars",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        59,
+        63
+      ],
+      "summary": "Terraform 输入变量 `client_proxy_env_vars`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.orchestrator_env_vars",
+      "type": "resource",
+      "name": "orchestrator_env_vars",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        65,
+        69
+      ],
+      "summary": "Terraform 输入变量 `orchestrator_env_vars`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.template_manager_env_vars",
+      "type": "resource",
+      "name": "template_manager_env_vars",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        71,
+        75
+      ],
+      "summary": "Terraform 输入变量 `template_manager_env_vars`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.s3_use_path_style",
+      "type": "resource",
+      "name": "s3_use_path_style",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        77,
+        81
+      ],
+      "summary": "Terraform 输入变量 `s3_use_path_style`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.api_server_machine_type",
+      "type": "resource",
+      "name": "api_server_machine_type",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        83,
+        86
+      ],
+      "summary": "Terraform 输入变量 `api_server_machine_type`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.api_image_family_prefix",
+      "type": "resource",
+      "name": "api_image_family_prefix",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        88,
+        91
+      ],
+      "summary": "Terraform 输入变量 `api_image_family_prefix`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.ingress_count",
+      "type": "resource",
+      "name": "ingress_count",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        93,
+        96
+      ],
+      "summary": "Terraform 输入变量 `ingress_count`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.client_proxy_count",
+      "type": "resource",
+      "name": "client_proxy_count",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        98,
+        101
+      ],
+      "summary": "Terraform 输入变量 `client_proxy_count`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.clickhouse_cluster_size",
+      "type": "resource",
+      "name": "clickhouse_cluster_size",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        103,
+        106
+      ],
+      "summary": "Terraform 输入变量 `clickhouse_cluster_size`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.clickhouse_server_machine_type",
+      "type": "resource",
+      "name": "clickhouse_server_machine_type",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        108,
+        111
+      ],
+      "summary": "Terraform 输入变量 `clickhouse_server_machine_type`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.clickhouse_image_family_prefix",
+      "type": "resource",
+      "name": "clickhouse_image_family_prefix",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        113,
+        116
+      ],
+      "summary": "Terraform 输入变量 `clickhouse_image_family_prefix`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.client_cluster_size",
+      "type": "resource",
+      "name": "client_cluster_size",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        118,
+        121
+      ],
+      "summary": "Terraform 输入变量 `client_cluster_size`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.client_server_machine_type",
+      "type": "resource",
+      "name": "client_server_machine_type",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        123,
+        126
+      ],
+      "summary": "Terraform 输入变量 `client_server_machine_type`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.client_server_nested_virtualization",
+      "type": "resource",
+      "name": "client_server_nested_virtualization",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        128,
+        131
+      ],
+      "summary": "Terraform 输入变量 `client_server_nested_virtualization`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.client_node_labels",
+      "type": "resource",
+      "name": "client_node_labels",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        133,
+        137
+      ],
+      "summary": "Terraform 输入变量 `client_node_labels`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.client_image_family_prefix",
+      "type": "resource",
+      "name": "client_image_family_prefix",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        139,
+        142
+      ],
+      "summary": "Terraform 输入变量 `client_image_family_prefix`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.control_server_machine_type",
+      "type": "resource",
+      "name": "control_server_machine_type",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        144,
+        147
+      ],
+      "summary": "Terraform 输入变量 `control_server_machine_type`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.control_server_image_family_prefix",
+      "type": "resource",
+      "name": "control_server_image_family_prefix",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        149,
+        152
+      ],
+      "summary": "Terraform 输入变量 `control_server_image_family_prefix`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.orchestrator_port",
+      "type": "resource",
+      "name": "orchestrator_port",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        154,
+        157
+      ],
+      "summary": "Terraform 输入变量 `orchestrator_port`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.orchestrator_proxy_port",
+      "type": "resource",
+      "name": "orchestrator_proxy_port",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        159,
+        162
+      ],
+      "summary": "Terraform 输入变量 `orchestrator_proxy_port`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.allow_sandbox_internal_cidrs",
+      "type": "resource",
+      "name": "allow_sandbox_internal_cidrs",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        164,
+        168
+      ],
+      "summary": "Terraform 输入变量 `allow_sandbox_internal_cidrs`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.envd_timeout",
+      "type": "resource",
+      "name": "envd_timeout",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        170,
+        173
+      ],
+      "summary": "Terraform 输入变量 `envd_timeout`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.build_cluster_size",
+      "type": "resource",
+      "name": "build_cluster_size",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        175,
+        178
+      ],
+      "summary": "Terraform 输入变量 `build_cluster_size`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.build_server_machine_type",
+      "type": "resource",
+      "name": "build_server_machine_type",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        180,
+        183
+      ],
+      "summary": "Terraform 输入变量 `build_server_machine_type`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.build_server_nested_virtualization",
+      "type": "resource",
+      "name": "build_server_nested_virtualization",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        185,
+        188
+      ],
+      "summary": "Terraform 输入变量 `build_server_nested_virtualization`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.build_node_labels",
+      "type": "resource",
+      "name": "build_node_labels",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        190,
+        194
+      ],
+      "summary": "Terraform 输入变量 `build_node_labels`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.control_server_cluster_size",
+      "type": "resource",
+      "name": "control_server_cluster_size",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        196,
+        199
+      ],
+      "summary": "Terraform 输入变量 `control_server_cluster_size`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.traefik_config_files",
+      "type": "resource",
+      "name": "traefik_config_files",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        201,
+        205
+      ],
+      "summary": "Terraform 输入变量 `traefik_config_files`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.db_max_open_connections",
+      "type": "resource",
+      "name": "db_max_open_connections",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        207,
+        210
+      ],
+      "summary": "Terraform 输入变量 `db_max_open_connections`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.db_min_idle_connections",
+      "type": "resource",
+      "name": "db_min_idle_connections",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        212,
+        215
+      ],
+      "summary": "Terraform 输入变量 `db_min_idle_connections`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.auth_db_max_open_connections",
+      "type": "resource",
+      "name": "auth_db_max_open_connections",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        217,
+        220
+      ],
+      "summary": "Terraform 输入变量 `auth_db_max_open_connections`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.auth_db_min_idle_connections",
+      "type": "resource",
+      "name": "auth_db_min_idle_connections",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        222,
+        225
+      ],
+      "summary": "Terraform 输入变量 `auth_db_min_idle_connections`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.enable_otel_router_logs",
+      "type": "resource",
+      "name": "enable_otel_router_logs",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        227,
+        231
+      ],
+      "summary": "Terraform 输入变量 `enable_otel_router_logs`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.otel_router_http_port",
+      "type": "resource",
+      "name": "otel_router_http_port",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        233,
+        237
+      ],
+      "summary": "Terraform 输入变量 `otel_router_http_port`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.enable_otel_router_metrics",
+      "type": "resource",
+      "name": "enable_otel_router_metrics",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        239,
+        243
+      ],
+      "summary": "Terraform 输入变量 `enable_otel_router_metrics`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/variables.tf:variable.otel_router_grpc_port",
+      "type": "resource",
+      "name": "otel_router_grpc_port",
+      "filePath": "iac/provider-aws/variables.tf",
+      "lineRange": [
+        245,
+        249
+      ],
+      "summary": "Terraform 输入变量 `otel_router_grpc_port`,用于参数化 AWS provider 部署。",
+      "tags": [
+        "configuration",
+        "variable",
+        "terraform"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:iac/provider-aws/main.tf",
+      "target": "resource:iac/provider-aws/main.tf:random_password.volume_token_key",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/main.tf",
+      "target": "resource:iac/provider-aws/main.tf:aws_security_group.cluster_node",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/main.tf",
+      "target": "resource:iac/provider-aws/main.tf:data.aws_region.current",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/main.tf",
+      "target": "resource:iac/provider-aws/main.tf:data.aws_caller_identity.current",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/main.tf",
+      "target": "resource:iac/provider-aws/main.tf:data.aws_elb_service_account.current",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/main.tf",
+      "target": "resource:iac/provider-aws/main.tf:module.init",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/main.tf",
+      "target": "resource:iac/provider-aws/main.tf:module.redis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/main.tf",
+      "target": "resource:iac/provider-aws/main.tf:module.cluster",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/main.tf",
+      "target": "resource:iac/provider-aws/main.tf:module.nomad",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.domain_name",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.allow_force_destroy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.prefix",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.bucket_prefix",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.environment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.redis_managed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.redis_instance_type",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.redis_replica_size",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.api_cluster_size",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.api_internal_grpc_port",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.api_env_vars",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.api_db_migrator_env_vars",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.client_proxy_env_vars",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.orchestrator_env_vars",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.template_manager_env_vars",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.s3_use_path_style",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.api_server_machine_type",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.api_image_family_prefix",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.ingress_count",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.client_proxy_count",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.clickhouse_cluster_size",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.clickhouse_server_machine_type",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.clickhouse_image_family_prefix",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.client_cluster_size",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.client_server_machine_type",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.client_server_nested_virtualization",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.client_node_labels",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.client_image_family_prefix",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.control_server_machine_type",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.control_server_image_family_prefix",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.orchestrator_port",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.orchestrator_proxy_port",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.allow_sandbox_internal_cidrs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.envd_timeout",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.build_cluster_size",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.build_server_machine_type",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.build_server_nested_virtualization",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.build_node_labels",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.control_server_cluster_size",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.traefik_config_files",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.db_max_open_connections",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.db_min_idle_connections",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.auth_db_max_open_connections",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.auth_db_min_idle_connections",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.enable_otel_router_logs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.otel_router_http_port",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.enable_otel_router_metrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "resource:iac/provider-aws/variables.tf:variable.otel_router_grpc_port",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "file:iac/provider-aws/main.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "file:iac/provider-aws/alb.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "file:iac/provider-aws/alb_athena.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-aws/variables.tf",
+      "target": "file:iac/provider-aws/domain.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-aws/main.tf",
+      "target": "file:iac/provider-aws/alb.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-aws/main.tf",
+      "target": "file:iac/provider-aws/domain.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-aws/moved.tf",
+      "target": "file:iac/provider-aws/main.tf",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

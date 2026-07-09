@@ -1,0 +1,770 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/api/internal/handlers/template_layer_files_upload.go",
+      "type": "file",
+      "name": "template_layer_files_upload.go",
+      "filePath": "packages/api/internal/handlers/template_layer_files_upload.go",
+      "summary": "为模板构建阶段提供文件分块上传的 URL（基于 hash 寻址），供客户端 PUT 上传层内容。",
+      "tags": [
+        "api-handler",
+        "template",
+        "upload",
+        "hash"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "type": "file",
+      "name": "template_request_build_v3.go",
+      "filePath": "packages/api/internal/handlers/template_request_build_v3.go",
+      "summary": "创建新的 v3 模板构建请求，分配构建 ID 并启动后台构建流程（通过 POST /v3/templates）。",
+      "tags": [
+        "api-handler",
+        "template",
+        "build",
+        "request"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/api/internal/handlers/template_start_build_v2.go",
+      "type": "file",
+      "name": "template_start_build_v2.go",
+      "filePath": "packages/api/internal/handlers/template_start_build_v2.go",
+      "summary": "启动 v2 模板构建（基于 SDK User-Agent 推断客户端版本），将 dockerfile 步骤编排到底层 build 系统。",
+      "tags": [
+        "api-handler",
+        "template",
+        "build",
+        "start",
+        "dockerfile"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/api/internal/handlers/template_tags.go",
+      "type": "file",
+      "name": "template_tags.go",
+      "filePath": "packages/api/internal/handlers/template_tags.go",
+      "summary": "为模板添加/删除/查询公共 tag（用于模板分类、查询和模板间链接）。",
+      "tags": [
+        "api-handler",
+        "template",
+        "tags",
+        "metadata"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/api/internal/handlers/template_update.go",
+      "type": "file",
+      "name": "template_update.go",
+      "filePath": "packages/api/internal/handlers/template_update.go",
+      "summary": "更新现有模板的元数据/可见性/构建配置，支持 v1 与 v2 两个 endpoint。",
+      "tags": [
+        "api-handler",
+        "template",
+        "update",
+        "patch"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_layer_files_upload.go:GetTemplatesTemplateIDFilesHash",
+      "type": "function",
+      "name": "GetTemplatesTemplateIDFilesHash",
+      "filePath": "packages/api/internal/handlers/template_layer_files_upload.go",
+      "lineRange": [
+        19,
+        75
+      ],
+      "summary": "为模板构建提供基于 hash 的文件上传 PUT URL。",
+      "tags": [
+        "exported",
+        "getter",
+        "template"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_request_build_v3.go:PostV3Templates",
+      "type": "function",
+      "name": "PostV3Templates",
+      "filePath": "packages/api/internal/handlers/template_request_build_v3.go",
+      "lineRange": [
+        24,
+        39
+      ],
+      "summary": "创建模板构建请求（v3 入口）。",
+      "tags": [
+        "exported",
+        "mutation",
+        "template"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_request_build_v3.go:requestTemplateBuild",
+      "type": "function",
+      "name": "requestTemplateBuild",
+      "filePath": "packages/api/internal/handlers/template_request_build_v3.go",
+      "lineRange": [
+        41,
+        170
+      ],
+      "summary": "分配 build ID、写入 DB 并触发后台构建工作流。",
+      "tags": [
+        "template"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_start_build_v2.go:PostV2TemplatesTemplateIDBuildsBuildID",
+      "type": "function",
+      "name": "PostV2TemplatesTemplateIDBuildsBuildID",
+      "filePath": "packages/api/internal/handlers/template_start_build_v2.go",
+      "lineRange": [
+        40,
+        204
+      ],
+      "summary": "启动 v2 模板构建：根据 User-Agent 解析客户端版本、校验 dockerfile 步骤并将其下发到 orchestrator。",
+      "tags": [
+        "exported",
+        "mutation",
+        "template"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_start_build_v2.go:userAgentToTemplateVersion",
+      "type": "function",
+      "name": "userAgentToTemplateVersion",
+      "filePath": "packages/api/internal/handlers/template_start_build_v2.go",
+      "lineRange": [
+        208,
+        239
+      ],
+      "summary": "从客户端 User-Agent 解析对应的 SDK 版本并返回兼容的模板构建版本。",
+      "tags": [
+        "template"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_tags.go:PostTemplatesTags",
+      "type": "function",
+      "name": "PostTemplatesTags",
+      "filePath": "packages/api/internal/handlers/template_tags.go",
+      "lineRange": [
+        24,
+        181
+      ],
+      "summary": "为模板添加公共 tag。",
+      "tags": [
+        "exported",
+        "mutation",
+        "template"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_tags.go:DeleteTemplatesTags",
+      "type": "function",
+      "name": "DeleteTemplatesTags",
+      "filePath": "packages/api/internal/handlers/template_tags.go",
+      "lineRange": [
+        184,
+        297
+      ],
+      "summary": "删除模板的一个 tag。",
+      "tags": [
+        "exported",
+        "mutation",
+        "template"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_tags.go:GetTemplatesTemplateIDTags",
+      "type": "function",
+      "name": "GetTemplatesTemplateIDTags",
+      "filePath": "packages/api/internal/handlers/template_tags.go",
+      "lineRange": [
+        300,
+        357
+      ],
+      "summary": "获取模板当前所有 tag 列表。",
+      "tags": [
+        "exported",
+        "getter",
+        "template"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_update.go:PatchTemplatesTemplateID",
+      "type": "function",
+      "name": "PatchTemplatesTemplateID",
+      "filePath": "packages/api/internal/handlers/template_update.go",
+      "lineRange": [
+        24,
+        36
+      ],
+      "summary": "更新模板（v1 endpoint）。",
+      "tags": [
+        "exported",
+        "mutation",
+        "template"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_update.go:PatchV2TemplatesTemplateID",
+      "type": "function",
+      "name": "PatchV2TemplatesTemplateID",
+      "filePath": "packages/api/internal/handlers/template_update.go",
+      "lineRange": [
+        39,
+        65
+      ],
+      "summary": "更新模板（v2 endpoint）。",
+      "tags": [
+        "exported",
+        "mutation",
+        "template"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_update.go:updateTemplate",
+      "type": "function",
+      "name": "updateTemplate",
+      "filePath": "packages/api/internal/handlers/template_update.go",
+      "lineRange": [
+        69,
+        150
+      ],
+      "summary": "模板更新的核心实现，校验、应用修改并写入。",
+      "tags": [
+        "template"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/api/internal/handlers/template_update.go:createBackwardCompatibleAlias",
+      "type": "function",
+      "name": "createBackwardCompatibleAlias",
+      "filePath": "packages/api/internal/handlers/template_update.go",
+      "lineRange": [
+        155,
+        195
+      ],
+      "summary": "当模板 identifier 改变时自动创建一个旧 alias 兼容条目。",
+      "tags": [
+        "helper"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/api/internal/handlers/template_layer_files_upload.go",
+      "target": "function:packages/api/internal/handlers/template_layer_files_upload.go:GetTemplatesTemplateIDFilesHash",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_layer_files_upload.go",
+      "target": "function:packages/api/internal/handlers/template_layer_files_upload.go:GetTemplatesTemplateIDFilesHash",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "function:packages/api/internal/handlers/template_request_build_v3.go:PostV3Templates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "function:packages/api/internal/handlers/template_request_build_v3.go:PostV3Templates",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "function:packages/api/internal/handlers/template_request_build_v3.go:requestTemplateBuild",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_start_build_v2.go",
+      "target": "function:packages/api/internal/handlers/template_start_build_v2.go:PostV2TemplatesTemplateIDBuildsBuildID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_start_build_v2.go",
+      "target": "function:packages/api/internal/handlers/template_start_build_v2.go:PostV2TemplatesTemplateIDBuildsBuildID",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_start_build_v2.go",
+      "target": "function:packages/api/internal/handlers/template_start_build_v2.go:userAgentToTemplateVersion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "function:packages/api/internal/handlers/template_tags.go:PostTemplatesTags",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "function:packages/api/internal/handlers/template_tags.go:PostTemplatesTags",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "function:packages/api/internal/handlers/template_tags.go:DeleteTemplatesTags",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "function:packages/api/internal/handlers/template_tags.go:DeleteTemplatesTags",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "function:packages/api/internal/handlers/template_tags.go:GetTemplatesTemplateIDTags",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "function:packages/api/internal/handlers/template_tags.go:GetTemplatesTemplateIDTags",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "function:packages/api/internal/handlers/template_update.go:PatchTemplatesTemplateID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "function:packages/api/internal/handlers/template_update.go:PatchTemplatesTemplateID",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "function:packages/api/internal/handlers/template_update.go:PatchV2TemplatesTemplateID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "function:packages/api/internal/handlers/template_update.go:PatchV2TemplatesTemplateID",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "function:packages/api/internal/handlers/template_update.go:updateTemplate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "function:packages/api/internal/handlers/template_update.go:createBackwardCompatibleAlias",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_layer_files_upload.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_layer_files_upload.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_layer_files_upload.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_layer_files_upload.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "file:packages/api/internal/cache/templates/alias_cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "file:packages/api/internal/cache/templates/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "file:packages/api/internal/cache/templates/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "file:packages/api/internal/cache/templates/errors_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "file:packages/api/internal/cache/templates/errors.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "file:packages/api/internal/cache/templates/template_build_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "file:packages/api/internal/cache/templates/template_build.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "file:packages/api/internal/cache/templates/template_metadata_cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "file:packages/api/internal/cache/templates/template_metadata_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_request_build_v3.go",
+      "target": "file:packages/api/internal/template/register_build.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_start_build_v2.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_start_build_v2.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_start_build_v2.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_start_build_v2.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "file:packages/api/internal/cache/templates/alias_cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "file:packages/api/internal/cache/templates/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "file:packages/api/internal/cache/templates/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "file:packages/api/internal/cache/templates/errors_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "file:packages/api/internal/cache/templates/errors.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "file:packages/api/internal/cache/templates/template_build_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "file:packages/api/internal/cache/templates/template_build.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "file:packages/api/internal/cache/templates/template_metadata_cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_tags.go",
+      "target": "file:packages/api/internal/cache/templates/template_metadata_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "file:packages/api/internal/cache/templates/alias_cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "file:packages/api/internal/cache/templates/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "file:packages/api/internal/cache/templates/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "file:packages/api/internal/cache/templates/errors_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "file:packages/api/internal/cache/templates/errors.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "file:packages/api/internal/cache/templates/template_build_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "file:packages/api/internal/cache/templates/template_build.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "file:packages/api/internal/cache/templates/template_metadata_cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/handlers/template_update.go",
+      "target": "file:packages/api/internal/cache/templates/template_metadata_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

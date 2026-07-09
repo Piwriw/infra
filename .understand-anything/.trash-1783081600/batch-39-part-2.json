@@ -1,0 +1,1465 @@
+{
+  "nodes": [
+    {
+      "id": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "file",
+      "name": "envd_client.go",
+      "filePath": "tests/integration/internal/setup/envd_client.go",
+      "summary": "提供集成测试用的 envd 客户端构造器：包含 HTTP WithResponses 客户端、文件系统 Connect 客户端与进程 Connect 客户端，以及沙箱/access token 的请求头注入辅助函数。",
+      "tags": [
+        "test-fixture",
+        "envd",
+        "integration-test",
+        "grpc-client",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "file",
+      "name": "orchestrator_client.go",
+      "filePath": "tests/integration/internal/setup/orchestrator_client.go",
+      "summary": "提供集成测试用的 orchestrator gRPC 客户端构造器（SandboxServiceClient），使用 insecure 凭证并随 ctx 退出自动关闭连接。",
+      "tags": [
+        "test-fixture",
+        "grpc-client",
+        "orchestrator",
+        "integration-test",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "type": "file",
+      "name": "apikey_test.go",
+      "filePath": "tests/integration/internal/tests/api/apikey_test.go",
+      "summary": "集成测试：验证调用 API 时 API Key 的 LastUsed 字段会被正确更新（容忍 1 分钟写入节流）。",
+      "tags": [
+        "test",
+        "integration-test",
+        "api-key",
+        "authentication",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/health_test.go",
+      "type": "file",
+      "name": "health_test.go",
+      "filePath": "tests/integration/internal/tests/api/health_test.go",
+      "summary": "集成测试：调用 /health 端点验证 API 服务的健康检查接口返回正常。",
+      "tags": [
+        "test",
+        "integration-test",
+        "health-check",
+        "api-endpoint",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "type": "file",
+      "name": "sandbox_list_metrics_test.go",
+      "filePath": "tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "summary": "集成测试：验证 GET /sandboxes 列表接口返回的指标统计（运行/暂停计数等）与实际状态一致。",
+      "tags": [
+        "test",
+        "integration-test",
+        "metrics",
+        "sandbox",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "type": "file",
+      "name": "sandbox_metrics_test.go",
+      "filePath": "tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "summary": "集成测试：验证沙箱级别的指标查询接口能返回正确的指标数据。",
+      "tags": [
+        "test",
+        "integration-test",
+        "metrics",
+        "sandbox",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "type": "file",
+      "name": "team_metrics_max_test.go",
+      "filePath": "tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "summary": "集成测试：验证团队级最大并发沙箱数、最大沙箱启动速率指标的统计正确性，以及空数据场景的兜底行为。",
+      "tags": [
+        "test",
+        "integration-test",
+        "metrics",
+        "team",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "type": "file",
+      "name": "team_metrics_test.go",
+      "filePath": "tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "summary": "集成测试：验证团队级指标查询接口，覆盖默认范围、自定义时间范围、空数据与非法日期参数等场景。",
+      "tags": [
+        "test",
+        "integration-test",
+        "metrics",
+        "team",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "type": "file",
+      "name": "filesystem_only_test.go",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "summary": "集成测试：覆盖 filesystem-only 模板沙箱的创建约束、自动暂停/恢复行为与持久化语义。",
+      "tags": [
+        "test",
+        "integration-test",
+        "sandbox",
+        "filesystem-only",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/setup/envd_client.go:GetEnvdClient",
+      "type": "function",
+      "name": "GetEnvdClient",
+      "filePath": "tests/integration/internal/setup/envd_client.go",
+      "lineRange": [
+        22,
+        40
+      ],
+      "summary": "构造 envd 客户端容器，使用 EnvdProxy 作为基础地址并设置 envdTimeout 超时。",
+      "tags": [
+        "envd",
+        "factory",
+        "test-fixture"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/setup/envd_client.go:WithSandbox",
+      "type": "function",
+      "name": "WithSandbox",
+      "filePath": "tests/integration/internal/setup/envd_client.go",
+      "lineRange": [
+        42,
+        51
+      ],
+      "summary": "返回请求编辑器，在请求头中注入沙箱 ID 并将 Host 设置为对应沙箱。",
+      "tags": [
+        "envd",
+        "middleware",
+        "sandbox"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/setup/envd_client.go:WithEnvdAccessToken",
+      "type": "function",
+      "name": "WithEnvdAccessToken",
+      "filePath": "tests/integration/internal/setup/envd_client.go",
+      "lineRange": [
+        53,
+        61
+      ],
+      "summary": "返回请求编辑器，在请求头中注入 X-Access-Token。",
+      "tags": [
+        "envd",
+        "middleware",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/setup/envd_client.go:SetSandboxHeader",
+      "type": "function",
+      "name": "SetSandboxHeader",
+      "filePath": "tests/integration/internal/setup/envd_client.go",
+      "lineRange": [
+        63,
+        67
+      ],
+      "summary": "通过 grpc.SetSandboxHeader 设置沙箱路由头，复用 EnvdProxy 作为 host。",
+      "tags": [
+        "envd",
+        "http-headers",
+        "sandbox"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/setup/orchestrator_client.go:GetOrchestratorClient",
+      "type": "function",
+      "name": "GetOrchestratorClient",
+      "filePath": "tests/integration/internal/setup/orchestrator_client.go",
+      "lineRange": [
+        14,
+        30
+      ],
+      "summary": "建立到 OrchestratorHost 的 gRPC 客户端（insecure 凭证），返回 SandboxServiceClient，并随 ctx 退出自动关闭连接。",
+      "tags": [
+        "grpc-client",
+        "orchestrator",
+        "factory"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/apikey_test.go:TestAPIKeyLastUsedUpdated",
+      "type": "function",
+      "name": "TestAPIKeyLastUsedUpdated",
+      "filePath": "tests/integration/internal/tests/api/apikey_test.go",
+      "lineRange": [
+        14,
+        41
+      ],
+      "summary": "验证调用 API 时所用 API Key 的 LastUsed 字段被正确刷新，使用 Eventually 轮询以应对 1 分钟的写入节流。",
+      "tags": [
+        "test",
+        "api-key",
+        "authentication"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/health_test.go:TestHealth",
+      "type": "function",
+      "name": "TestHealth",
+      "filePath": "tests/integration/internal/tests/api/health_test.go",
+      "lineRange": [
+        13,
+        27
+      ],
+      "summary": "调用健康检查端点验证 API 服务可访问且返回成功状态。",
+      "tags": [
+        "test",
+        "health-check"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go:TestSandboxListMetrics",
+      "type": "function",
+      "name": "TestSandboxListMetrics",
+      "filePath": "tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "lineRange": [
+        16,
+        57
+      ],
+      "summary": "验证沙箱列表接口返回的统计指标与实际创建的沙箱状态一致。",
+      "tags": [
+        "test",
+        "metrics",
+        "sandbox",
+        "list"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go:TestSandboxMetrics",
+      "type": "function",
+      "name": "TestSandboxMetrics",
+      "filePath": "tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "lineRange": [
+        15,
+        52
+      ],
+      "summary": "验证沙箱级指标查询接口能返回预期的指标数据。",
+      "tags": [
+        "test",
+        "metrics",
+        "sandbox"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go:TestTeamMetricsMaxConcurrentSandboxes",
+      "type": "function",
+      "name": "TestTeamMetricsMaxConcurrentSandboxes",
+      "filePath": "tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "lineRange": [
+        15,
+        54
+      ],
+      "summary": "验证团队最大并发沙箱数指标正确反映了并发创建的沙箱峰值。",
+      "tags": [
+        "test",
+        "metrics",
+        "team",
+        "concurrency"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go:TestTeamMetricsMaxSandboxStartRate",
+      "type": "function",
+      "name": "TestTeamMetricsMaxSandboxStartRate",
+      "filePath": "tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "lineRange": [
+        56,
+        95
+      ],
+      "summary": "验证团队最大沙箱启动速率指标在多个沙箱并发创建后被正确统计。",
+      "tags": [
+        "test",
+        "metrics",
+        "team",
+        "rate"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go:TestTeamMetricsMaxEmpty",
+      "type": "function",
+      "name": "TestTeamMetricsMaxEmpty",
+      "filePath": "tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "lineRange": [
+        97,
+        138
+      ],
+      "summary": "验证无任何沙箱活动时团队最大指标接口的空数据兜底行为。",
+      "tags": [
+        "test",
+        "metrics",
+        "team",
+        "edge-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/metrics/team_metrics_test.go:TestTeamMetrics",
+      "type": "function",
+      "name": "TestTeamMetrics",
+      "filePath": "tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "lineRange": [
+        16,
+        57
+      ],
+      "summary": "验证默认时间范围内团队指标查询接口的返回结构。",
+      "tags": [
+        "test",
+        "metrics",
+        "team"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/metrics/team_metrics_test.go:TestTeamMetricsWithTimeRange",
+      "type": "function",
+      "name": "TestTeamMetricsWithTimeRange",
+      "filePath": "tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "lineRange": [
+        59,
+        100
+      ],
+      "summary": "验证自定义 start/end 时间范围参数下团队指标查询的正确性。",
+      "tags": [
+        "test",
+        "metrics",
+        "team",
+        "time-range"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/metrics/team_metrics_test.go:TestTeamMetricsEmpty",
+      "type": "function",
+      "name": "TestTeamMetricsEmpty",
+      "filePath": "tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "lineRange": [
+        102,
+        121
+      ],
+      "summary": "验证无活动时团队指标接口的空数据返回结构。",
+      "tags": [
+        "test",
+        "metrics",
+        "team",
+        "edge-case"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/metrics/team_metrics_test.go:TestTeamMetricsInvalidDate",
+      "type": "function",
+      "name": "TestTeamMetricsInvalidDate",
+      "filePath": "tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "lineRange": [
+        123,
+        138
+      ],
+      "summary": "验证非法日期参数被接口拒绝并返回 4xx 错误。",
+      "tags": [
+        "test",
+        "metrics",
+        "team",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go:TestSandboxCreate_FilesystemOnlyAutoPauseRejectsAutoResume",
+      "type": "function",
+      "name": "TestSandboxCreate_FilesystemOnlyAutoPauseRejectsAutoResume",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "lineRange": [
+        21,
+        38
+      ],
+      "summary": "验证 filesystem-only 沙箱在启用 auto-pause 时拒绝同时启用 auto-resume。",
+      "tags": [
+        "test",
+        "sandbox",
+        "filesystem-only",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go:TestSandboxCreate_FilesystemOnlyAutoPauseRequiresAutoPause",
+      "type": "function",
+      "name": "TestSandboxCreate_FilesystemOnlyAutoPauseRequiresAutoPause",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "lineRange": [
+        43,
+        59
+      ],
+      "summary": "验证 filesystem-only 沙箱必须显式启用 auto-pause 才能创建。",
+      "tags": [
+        "test",
+        "sandbox",
+        "filesystem-only",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go:TestSandboxConnect_FilesystemOnlyResumes",
+      "type": "function",
+      "name": "TestSandboxConnect_FilesystemOnlyResumes",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "lineRange": [
+        79,
+        102
+      ],
+      "summary": "验证 filesystem-only 沙箱在被连接时会自动从暂停状态恢复。",
+      "tags": [
+        "test",
+        "sandbox",
+        "filesystem-only",
+        "resume"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go:TestSandboxResume_FilesystemOnlyReboots",
+      "type": "function",
+      "name": "TestSandboxResume_FilesystemOnlyReboots",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "lineRange": [
+        109,
+        169
+      ],
+      "summary": "验证 filesystem-only 沙箱在 resume 时通过 reboot 路径重启，并保持持久化语义。",
+      "tags": [
+        "test",
+        "sandbox",
+        "filesystem-only",
+        "resume",
+        "reboot"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go:TestSandboxAutoPause_FilesystemOnly",
+      "type": "function",
+      "name": "TestSandboxAutoPause_FilesystemOnly",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "lineRange": [
+        177,
+        262
+      ],
+      "summary": "验证 filesystem-only 沙箱的完整 auto-pause 生命周期，包括超时自动暂停、持久化与恢复。",
+      "tags": [
+        "test",
+        "sandbox",
+        "filesystem-only",
+        "auto-pause"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:tests/integration/internal/setup/envd_client.go:EnvdClient",
+      "type": "class",
+      "name": "EnvdClient",
+      "filePath": "tests/integration/internal/setup/envd_client.go",
+      "lineRange": [
+        16,
+        20
+      ],
+      "summary": "封装 envd 的 HTTP WithResponses 客户端、文件系统 Connect 客户端与进程 Connect 客户端的测试用容器结构。",
+      "tags": [
+        "data-model",
+        "envd",
+        "test-fixture"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:tests/integration/internal/setup/envd_client.go",
+      "target": "file:tests/integration/internal/envd/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/setup/envd_client.go",
+      "target": "file:tests/integration/internal/envd/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/setup/envd_client.go",
+      "target": "file:tests/integration/internal/envd/types.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/health_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/health_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/health_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/health_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/health_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/setup/envd_client.go",
+      "target": "function:tests/integration/internal/setup/envd_client.go:GetEnvdClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/setup/envd_client.go",
+      "target": "function:tests/integration/internal/setup/envd_client.go:GetEnvdClient",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/setup/envd_client.go",
+      "target": "function:tests/integration/internal/setup/envd_client.go:WithSandbox",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/setup/envd_client.go",
+      "target": "function:tests/integration/internal/setup/envd_client.go:WithSandbox",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/setup/envd_client.go",
+      "target": "function:tests/integration/internal/setup/envd_client.go:WithEnvdAccessToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/setup/envd_client.go",
+      "target": "function:tests/integration/internal/setup/envd_client.go:WithEnvdAccessToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/setup/envd_client.go",
+      "target": "function:tests/integration/internal/setup/envd_client.go:SetSandboxHeader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/setup/envd_client.go",
+      "target": "function:tests/integration/internal/setup/envd_client.go:SetSandboxHeader",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/setup/envd_client.go",
+      "target": "class:tests/integration/internal/setup/envd_client.go:EnvdClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/setup/envd_client.go",
+      "target": "class:tests/integration/internal/setup/envd_client.go:EnvdClient",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "target": "function:tests/integration/internal/setup/orchestrator_client.go:GetOrchestratorClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "target": "function:tests/integration/internal/setup/orchestrator_client.go:GetOrchestratorClient",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "target": "function:tests/integration/internal/tests/api/apikey_test.go:TestAPIKeyLastUsedUpdated",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "target": "function:tests/integration/internal/tests/api/apikey_test.go:TestAPIKeyLastUsedUpdated",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/health_test.go",
+      "target": "function:tests/integration/internal/tests/api/health_test.go:TestHealth",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/health_test.go",
+      "target": "function:tests/integration/internal/tests/api/health_test.go:TestHealth",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go:TestSandboxListMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go:TestSandboxListMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go:TestSandboxMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go:TestSandboxMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go:TestTeamMetricsMaxConcurrentSandboxes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go:TestTeamMetricsMaxConcurrentSandboxes",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go:TestTeamMetricsMaxSandboxStartRate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go:TestTeamMetricsMaxSandboxStartRate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go:TestTeamMetricsMaxEmpty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go:TestTeamMetricsMaxEmpty",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/team_metrics_test.go:TestTeamMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/team_metrics_test.go:TestTeamMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/team_metrics_test.go:TestTeamMetricsWithTimeRange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/team_metrics_test.go:TestTeamMetricsWithTimeRange",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/team_metrics_test.go:TestTeamMetricsEmpty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/team_metrics_test.go:TestTeamMetricsEmpty",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/team_metrics_test.go:TestTeamMetricsInvalidDate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "target": "function:tests/integration/internal/tests/api/metrics/team_metrics_test.go:TestTeamMetricsInvalidDate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go:TestSandboxCreate_FilesystemOnlyAutoPauseRejectsAutoResume",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go:TestSandboxCreate_FilesystemOnlyAutoPauseRejectsAutoResume",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go:TestSandboxCreate_FilesystemOnlyAutoPauseRequiresAutoPause",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go:TestSandboxCreate_FilesystemOnlyAutoPauseRequiresAutoPause",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go:TestSandboxConnect_FilesystemOnlyResumes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go:TestSandboxConnect_FilesystemOnlyResumes",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go:TestSandboxResume_FilesystemOnlyReboots",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go:TestSandboxResume_FilesystemOnlyReboots",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go:TestSandboxAutoPause_FilesystemOnly",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go:TestSandboxAutoPause_FilesystemOnly",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

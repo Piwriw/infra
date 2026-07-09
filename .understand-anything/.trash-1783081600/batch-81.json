@@ -1,0 +1,225 @@
+{
+  "nodes": [
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/filestore/main.tf",
+      "type": "resource",
+      "name": "filestore/main.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster/filestore/main.tf",
+      "summary": "Terraform module 入口文件,声明 GCP Filestore 实例,为 Nomad 集群提供 NFS 共享存储。配置 tier、协议版本、容量及网络模式,并启用删除保护。",
+      "tags": ["infrastructure", "filestore", "nfs", "gcp", "deployment"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/filestore/main.tf:google_filestore_instance.shared_disk_store",
+      "type": "resource",
+      "name": "google_filestore_instance.shared_disk_store",
+      "filePath": "iac/provider-gcp/nomad-cluster/filestore/main.tf",
+      "lineRange": [5, 24],
+      "summary": "GCP Filestore 实例资源,提供 NFS_V3/NFS_V4_1 协议的共享磁盘,供 orchestrator 等组件挂载共享卷;启用了删除保护以防止误删导致 orchestrator 报错。",
+      "tags": ["filestore", "nfs", "shared-storage", "gcp-resource", "deletion-protection"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf",
+      "type": "resource",
+      "name": "filestore/variables.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster/filestore/variables.tf",
+      "summary": "Terraform 模块输入变量定义,声明 name、network_name、tier、capacity_gb 和 nfs_version 等参数,其中 nfs_version 带校验规则仅允许空、3 或 4.1。",
+      "tags": ["configuration", "input-variables", "terraform-module", "validation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf:name",
+      "type": "resource",
+      "name": "name",
+      "filePath": "iac/provider-gcp/nomad-cluster/filestore/variables.tf",
+      "lineRange": [1, 4],
+      "summary": "模块输入变量:Nomad 集群名称,用于为该模块创建的所有资源做命名空间隔离。",
+      "tags": ["input-variable", "naming"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf:network_name",
+      "type": "resource",
+      "name": "network_name",
+      "filePath": "iac/provider-gcp/nomad-cluster/filestore/variables.tf",
+      "lineRange": [6, 9],
+      "summary": "模块输入变量:VPC 网络名称,Filestore 实例将创建在该网络中。",
+      "tags": ["input-variable", "networking"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf:tier",
+      "type": "resource",
+      "name": "tier",
+      "filePath": "iac/provider-gcp/nomad-cluster/filestore/variables.tf",
+      "lineRange": [11, 14],
+      "summary": "模块输入变量:Filestore 实例的层级(如 STANDARD、PREMIUM、ZONAL、REGIONAL、ENTERPRISE),会影响默认 NFS 协议版本。",
+      "tags": ["input-variable", "tier"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf:capacity_gb",
+      "type": "resource",
+      "name": "capacity_gb",
+      "filePath": "iac/provider-gcp/nomad-cluster/filestore/variables.tf",
+      "lineRange": [16, 19],
+      "summary": "模块输入变量:Filestore 共享卷的容量(单位 GB)。",
+      "tags": ["input-variable", "capacity"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf:nfs_version",
+      "type": "resource",
+      "name": "nfs_version",
+      "filePath": "iac/provider-gcp/nomad-cluster/filestore/variables.tf",
+      "lineRange": [21, 29],
+      "summary": "模块输入变量:NFS 协议版本,带 validation 校验仅允许空、3 或 4.1。空字符串时由 tier 自动推断(ZONAL/REGIONAL/ENTERPRISE 用 4.1,其他用 3)。",
+      "tags": ["input-variable", "nfs", "validation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/filestore/output.tf",
+      "type": "resource",
+      "name": "filestore/output.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster/filestore/output.tf",
+      "summary": "Terraform 模块输出定义,导出 Filestore 实例的 NFS IP 地址列表和最终采用的 NFS 协议版本,供上层模块和 Nomad 任务挂载使用。",
+      "tags": ["configuration", "output-values", "terraform-module"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/filestore/output.tf:nfs_ip_addresses",
+      "type": "resource",
+      "name": "nfs_ip_addresses",
+      "filePath": "iac/provider-gcp/nomad-cluster/filestore/output.tf",
+      "lineRange": [1, 3],
+      "summary": "模块输出:Filestore 实例的网络 IP 地址列表,客户端通过该 IP 挂载 NFS 卷。",
+      "tags": ["output-value", "nfs", "ip-address"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/filestore/output.tf:nfs_version",
+      "type": "resource",
+      "name": "nfs_version",
+      "filePath": "iac/provider-gcp/nomad-cluster/filestore/output.tf",
+      "lineRange": [5, 7],
+      "summary": "模块输出:实际使用的 NFS 协议版本(来自 local.nfs_version 的解析结果,空字符串被替换为根据 tier 推导的默认值)。",
+      "tags": ["output-value", "nfs"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/filestore/main.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster/filestore/main.tf:google_filestore_instance.shared_disk_store",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/filestore/main.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf:name",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/filestore/main.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf:network_name",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/filestore/main.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf:tier",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/filestore/main.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf:capacity_gb",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/filestore/main.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf:nfs_version",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/filestore/main.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster/filestore/output.tf:nfs_ip_addresses",
+      "type": "provisions",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/filestore/main.tf:google_filestore_instance.shared_disk_store",
+      "target": "resource:iac/provider-gcp/nomad-cluster/filestore/output.tf:nfs_ip_addresses",
+      "type": "provisions",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/filestore/main.tf:google_filestore_instance.shared_disk_store",
+      "target": "resource:iac/provider-gcp/nomad-cluster/filestore/output.tf:nfs_version",
+      "type": "provisions",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf:name",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf:network_name",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf:tier",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf:capacity_gb",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster/filestore/variables.tf:nfs_version",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/filestore/output.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster/filestore/output.tf:nfs_ip_addresses",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/filestore/output.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster/filestore/output.tf:nfs_version",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ]
+}

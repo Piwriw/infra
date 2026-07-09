@@ -1,0 +1,660 @@
+{
+  "nodes": [
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf",
+      "type": "resource",
+      "name": "ingress.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/ingress.tf",
+      "summary": "Terraform 配置,定义 GCP 入口负载均衡器(ingress)资源,包含健康检查、后端服务、HTTPS 代理、安全策略、SSL 策略以及 Cloudflare DNS 记录。",
+      "tags": ["infrastructure", "load-balancer", "gcp", "cloudflare", "https"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf",
+      "type": "resource",
+      "name": "main.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "Terraform 核心网络配置模块,定义 DNS 授权、证书管理、URL 映射、负载均衡器后端、防火墙规则、安全策略限流规则、Cloud NAT 等 37 个资源,用于支撑 E2B 集群的网络与流量路由。",
+      "tags": ["infrastructure", "networking", "gcp", "load-balancer", "firewall", "security"],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/variables.tf",
+      "type": "resource",
+      "name": "variables.tf",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/variables.tf",
+      "summary": "定义 nomad-cluster 网络模块的输入变量,涵盖域名、环境、前缀、端口号、实例组、安全策略相关参数等共 23 个变量。",
+      "tags": ["infrastructure", "configuration", "variables", "terraform-input"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_health_check.default",
+      "type": "resource",
+      "name": "google_compute_health_check.default",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP 健康检查资源,用于探测 API 后端实例组的健康状态。",
+      "tags": ["health-check", "gcp", "load-balancer"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_backend_service.default",
+      "type": "resource",
+      "name": "google_compute_backend_service.default",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP 后端服务资源,绑定 API 实例组,作为 HTTPS 入口流量的默认后端。",
+      "tags": ["backend-service", "gcp", "load-balancer", "api"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_backend_service.h2c",
+      "type": "resource",
+      "name": "google_compute_backend_service.h2c",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP 后端服务资源,处理 HTTP/2 cleartext (h2c) 流量,服务于 Docker 反向代理。",
+      "tags": ["backend-service", "gcp", "h2c", "load-balancer"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_url_map.orch_map",
+      "type": "resource",
+      "name": "google_compute_url_map.orch_map",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP URL 映射资源,根据 host 与 path 规则将入站流量路由到对应的后端服务(h2c 或 default)。",
+      "tags": ["url-map", "gcp", "routing", "load-balancer"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_target_https_proxy.default",
+      "type": "resource",
+      "name": "google_compute_target_https_proxy.default",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP HTTPS 代理资源,关联证书映射与 URL 映射,提供 TLS 终止的 HTTPS 入口。",
+      "tags": ["https-proxy", "gcp", "tls", "load-balancer"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_global_forwarding_rule.https",
+      "type": "resource",
+      "name": "google_compute_global_forwarding_rule.https",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP 全局转发规则资源,绑定 HTTPS 代理,接收 443 端口的入站流量。",
+      "tags": ["forwarding-rule", "gcp", "https", "load-balancer"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy.default",
+      "type": "resource",
+      "name": "google_compute_security_policy.default",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP 安全策略资源,集中管理 API 与 sandbox 入口的限流与威胁防护规则。",
+      "tags": ["security-policy", "gcp", "throttling", "waf"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy_rule.api-throttling-api-key",
+      "type": "resource",
+      "name": "google_compute_security_policy_rule.api-throttling-api-key",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "安全策略规则,基于 API key header 对 API 请求进行限流。",
+      "tags": ["security-policy-rule", "throttling", "api-key"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy_rule.api-throttling-ip",
+      "type": "resource",
+      "name": "google_compute_security_policy_rule.api-throttling-ip",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "安全策略规则,基于来源 IP 对 API 请求进行限流。",
+      "tags": ["security-policy-rule", "throttling", "ip-based"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy_rule.sandbox-throttling-host",
+      "type": "resource",
+      "name": "google_compute_security_policy_rule.sandbox-throttling-host",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "安全策略规则,基于 host header 对 sandbox 请求进行限流。",
+      "tags": ["security-policy-rule", "throttling", "host-based"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy_rule.sandbox-routing-headers-log",
+      "type": "resource",
+      "name": "google_compute_security_policy_rule.sandbox-routing-headers-log",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "安全策略规则,用于匹配 sandbox 路由 header 并进行日志记录。",
+      "tags": ["security-policy-rule", "logging", "routing-headers"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy_rule.sandbox-throttling-ip",
+      "type": "resource",
+      "name": "google_compute_security_policy_rule.sandbox-throttling-ip",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "安全策略规则,基于来源 IP 对 sandbox 请求进行限流。",
+      "tags": ["security-policy-rule", "throttling", "ip-based"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_firewall.default-hc",
+      "type": "resource",
+      "name": "google_compute_firewall.default-hc",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP 防火墙规则,允许 GCP 健康检查 IP 范围访问实例。",
+      "tags": ["firewall", "gcp", "health-check"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_firewall.client_proxy_firewall_ingress",
+      "type": "resource",
+      "name": "google_compute_firewall.client_proxy_firewall_ingress",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP 防火墙规则,允许入站流量访问 client-proxy 服务端口。",
+      "tags": ["firewall", "gcp", "client-proxy", "ingress"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_firewall.internal_remote_connection_firewall_ingress",
+      "type": "resource",
+      "name": "google_compute_firewall.internal_remote_connection_firewall_ingress",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP 防火墙规则,允许内部来源的远程连接(sandbox 内部访问)入站流量。",
+      "tags": ["firewall", "gcp", "internal", "remote-connection"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_firewall.remote_connection_firewall_ingress",
+      "type": "resource",
+      "name": "google_compute_firewall.remote_connection_firewall_ingress",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP 防火墙规则,允许外部来源的远程连接(如远程开发 SSH)入站流量。",
+      "tags": ["firewall", "gcp", "remote-connection", "ingress"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_firewall.orch_firewall_egress",
+      "type": "resource",
+      "name": "google_compute_firewall.orch_firewall_egress",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP 防火墙规则,允许 orchestrator 实例的出站流量。",
+      "tags": ["firewall", "gcp", "orchestrator", "egress"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_router.nat_router",
+      "type": "resource",
+      "name": "google_compute_router.nat_router",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP Cloud Router 资源,作为 Cloud NAT 的底层路由,用于 API 出口流量。",
+      "tags": ["cloud-router", "gcp", "nat"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_address.nat_ips",
+      "type": "resource",
+      "name": "google_compute_address.nat_ips",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP 静态 IP 地址资源,为 Cloud NAT 提供出口 IP 池。",
+      "tags": ["static-ip", "gcp", "nat"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_router_nat.api_nat",
+      "type": "resource",
+      "name": "google_compute_router_nat.api_nat",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP Cloud NAT 资源,提供 API 实例的出口 IP 转换能力。",
+      "tags": ["cloud-nat", "gcp", "egress"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_dns_authorization.dns_auth",
+      "type": "resource",
+      "name": "google_certificate_manager_dns_authorization.dns_auth",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP DNS 授权资源,用于颁发主域名证书的 DNS-01 验证。",
+      "tags": ["dns-authorization", "gcp", "certificate", "tls"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_dns_authorization.dns_auth_additional",
+      "type": "resource",
+      "name": "google_certificate_manager_dns_authorization.dns_auth_additional",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP DNS 授权资源,用于额外域名的证书 DNS-01 验证。",
+      "tags": ["dns-authorization", "gcp", "certificate", "tls"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate.root_cert",
+      "type": "resource",
+      "name": "google_certificate_manager_certificate.root_cert",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP 托管证书资源,颁发主域名的根证书。",
+      "tags": ["certificate", "gcp", "tls"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate.root_cert_additional",
+      "type": "resource",
+      "name": "google_certificate_manager_certificate.root_cert_additional",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP 托管证书资源,颁发额外域名的根证书。",
+      "tags": ["certificate", "gcp", "tls"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate_map.certificate_map",
+      "type": "resource",
+      "name": "google_certificate_manager_certificate_map.certificate_map",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP 证书映射资源,聚合多个证书以便 HTTPS 代理引用。",
+      "tags": ["certificate-map", "gcp", "tls"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate_map_entry.top_level_map_entry",
+      "type": "resource",
+      "name": "google_certificate_manager_certificate_map_entry.top_level_map_entry",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "证书映射条目,绑定主域名主证书到证书映射。",
+      "tags": ["certificate-map-entry", "gcp", "tls"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate_map_entry.top_level_map_entry_additional",
+      "type": "resource",
+      "name": "google_certificate_manager_certificate_map_entry.top_level_map_entry_additional",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "证书映射条目,绑定额外域名主证书到证书映射。",
+      "tags": ["certificate-map-entry", "gcp", "tls"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate_map_entry.subdomains_map_entry",
+      "type": "resource",
+      "name": "google_certificate_manager_certificate_map_entry.subdomains_map_entry",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "证书映射条目,绑定主域名子域通配符证书到证书映射。",
+      "tags": ["certificate-map-entry", "gcp", "wildcard", "tls"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate_map_entry.subdomains_map_entry_additional",
+      "type": "resource",
+      "name": "google_certificate_manager_certificate_map_entry.subdomains_map_entry_additional",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "证书映射条目,绑定额外域名子域通配符证书到证书映射。",
+      "tags": ["certificate-map-entry", "gcp", "wildcard", "tls"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_ssl_policy.default",
+      "type": "resource",
+      "name": "google_compute_ssl_policy.default",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "GCP SSL 策略资源,定义 HTTPS 代理使用的最低 TLS 版本与加密套件。",
+      "tags": ["ssl-policy", "gcp", "tls"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:cloudflare_record.dns_auth",
+      "type": "resource",
+      "name": "cloudflare_record.dns_auth",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "Cloudflare DNS 记录,用于 GCP DNS-01 证书验证的 CNAME 记录。",
+      "tags": ["cloudflare", "dns", "dns-01", "certificate"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:cloudflare_record.a_star",
+      "type": "resource",
+      "name": "cloudflare_record.a_star",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "Cloudflare 通配符 A 记录(*.domain)指向入口负载均衡器 IP。",
+      "tags": ["cloudflare", "dns", "wildcard"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:cloudflare_record.dns_auth_additional",
+      "type": "resource",
+      "name": "cloudflare_record.dns_auth_additional",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "Cloudflare DNS 记录,用于额外域名 DNS-01 证书验证的 CNAME 记录。",
+      "tags": ["cloudflare", "dns", "dns-01", "certificate"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:cloudflare_record.a_star_additional",
+      "type": "resource",
+      "name": "cloudflare_record.a_star_additional",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/main.tf",
+      "summary": "Cloudflare 通配符 A 记录(*.additional_domain)指向入口负载均衡器 IP。",
+      "tags": ["cloudflare", "dns", "wildcard"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_health_check.ingress",
+      "type": "resource",
+      "name": "google_compute_health_check.ingress",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/ingress.tf",
+      "summary": "ingress 模块的健康检查资源,探测 sandbox 入口流量后端健康状态。",
+      "tags": ["health-check", "gcp", "load-balancer"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_backend_service.ingress",
+      "type": "resource",
+      "name": "google_compute_backend_service.ingress",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/ingress.tf",
+      "summary": "ingress 模块的后端服务,绑定 sandbox 实例组,作为默认后端处理 HTTPS 流量。",
+      "tags": ["backend-service", "gcp", "sandbox", "load-balancer"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_backend_service.h2c_ingress",
+      "type": "resource",
+      "name": "google_compute_backend_service.h2c_ingress",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/ingress.tf",
+      "summary": "ingress 模块的 h2c 后端服务,处理 HTTP/2 cleartext 流量。",
+      "tags": ["backend-service", "gcp", "h2c"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_security_policy.ingress",
+      "type": "resource",
+      "name": "google_compute_security_policy.ingress",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/ingress.tf",
+      "summary": "ingress 模块的安全策略,用于 sandbox 入口的限流与防护。",
+      "tags": ["security-policy", "gcp", "sandbox"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_url_map.ingress",
+      "type": "resource",
+      "name": "google_compute_url_map.ingress",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/ingress.tf",
+      "summary": "ingress 模块的 URL 映射,根据 host/path 规则路由到不同后端服务。",
+      "tags": ["url-map", "gcp", "routing"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_global_forwarding_rule.ingress",
+      "type": "resource",
+      "name": "google_compute_global_forwarding_rule.ingress",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/ingress.tf",
+      "summary": "ingress 模块的全局转发规则,接收 sandbox 入口的 443 流量。",
+      "tags": ["forwarding-rule", "gcp", "https"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_global_address.ingress_ipv4",
+      "type": "resource",
+      "name": "google_compute_global_address.ingress_ipv4",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/ingress.tf",
+      "summary": "ingress 模块的全局 IPv4 地址,为负载均衡器提供静态 IP。",
+      "tags": ["static-ip", "gcp", "ipv4"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_ssl_policy.ingress",
+      "type": "resource",
+      "name": "google_compute_ssl_policy.ingress",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/ingress.tf",
+      "summary": "ingress 模块的 SSL 策略,定义入口代理的最低 TLS 版本与加密套件。",
+      "tags": ["ssl-policy", "gcp", "tls"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_target_https_proxy.ingress",
+      "type": "resource",
+      "name": "google_compute_target_https_proxy.ingress",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/ingress.tf",
+      "summary": "ingress 模块的 HTTPS 代理,关联证书与 URL 映射,提供 TLS 终止。",
+      "tags": ["https-proxy", "gcp", "tls"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:cloudflare_record.records",
+      "type": "resource",
+      "name": "cloudflare_record.records",
+      "filePath": "iac/provider-gcp/nomad-cluster/network/ingress.tf",
+      "summary": "ingress 模块的 Cloudflare DNS 记录,将域名指向入口负载均衡器 IP。",
+      "tags": ["cloudflare", "dns"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_health_check.default",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_backend_service.default",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_backend_service.default",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_url_map.orch_map",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_backend_service.h2c",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_url_map.orch_map",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_url_map.orch_map",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_target_https_proxy.default",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_target_https_proxy.default",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_global_forwarding_rule.https",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_ssl_policy.default",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_target_https_proxy.default",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_target_https_proxy.default",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate_map.certificate_map",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate.root_cert",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate_map_entry.top_level_map_entry",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate.root_cert_additional",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate_map_entry.top_level_map_entry_additional",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate_map_entry.top_level_map_entry",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate_map.certificate_map",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate_map_entry.top_level_map_entry_additional",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate_map.certificate_map",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate_map_entry.subdomains_map_entry",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate_map.certificate_map",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate_map_entry.subdomains_map_entry_additional",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_certificate_map.certificate_map",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_dns_authorization.dns_auth",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:cloudflare_record.dns_auth",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_certificate_manager_dns_authorization.dns_auth_additional",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:cloudflare_record.dns_auth_additional",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy.default",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_backend_service.default",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy_rule.api-throttling-api-key",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy.default",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy_rule.api-throttling-ip",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy.default",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy_rule.sandbox-throttling-host",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy.default",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy_rule.sandbox-routing-headers-log",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy.default",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy_rule.sandbox-throttling-ip",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_security_policy.default",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_router.nat_router",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_router_nat.api_nat",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_address.nat_ips",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/main.tf:google_compute_router_nat.api_nat",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_health_check.ingress",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_backend_service.ingress",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_backend_service.ingress",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_url_map.ingress",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_backend_service.h2c_ingress",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_url_map.ingress",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_url_map.ingress",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_target_https_proxy.ingress",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_target_https_proxy.ingress",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_global_forwarding_rule.ingress",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_ssl_policy.ingress",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_target_https_proxy.ingress",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_security_policy.ingress",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_backend_service.ingress",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_global_address.ingress_ipv4",
+      "target": "resource:iac/provider-gcp/nomad-cluster/network/ingress.tf:google_compute_global_forwarding_rule.ingress",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

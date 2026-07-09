@@ -1,0 +1,605 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 4,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/envd/internal/services/legacy/buf.gen.yaml",
+      "language": "yaml",
+      "fileCategory": "config",
+      "totalLines": 11,
+      "nonEmptyLines": 10,
+      "sections": [
+        {
+          "heading": "version",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "plugins",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "managed",
+          "level": 1,
+          "line": 7
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 3
+      }
+    },
+    {
+      "path": "packages/envd/internal/services/legacy/legacyfilesystem.proto",
+      "language": "protobuf",
+      "fileCategory": "data",
+      "totalLines": 124,
+      "nonEmptyLines": 96,
+      "definitions": [
+        {
+          "name": "MoveRequest",
+          "kind": "message",
+          "fields": [
+            "source",
+            "destination"
+          ],
+          "startLine": 20,
+          "endLine": 23
+        },
+        {
+          "name": "MoveResponse",
+          "kind": "message",
+          "fields": [
+            "entry"
+          ],
+          "startLine": 25,
+          "endLine": 27
+        },
+        {
+          "name": "MakeDirRequest",
+          "kind": "message",
+          "fields": [
+            "path"
+          ],
+          "startLine": 29,
+          "endLine": 31
+        },
+        {
+          "name": "MakeDirResponse",
+          "kind": "message",
+          "fields": [
+            "entry"
+          ],
+          "startLine": 33,
+          "endLine": 35
+        },
+        {
+          "name": "RemoveRequest",
+          "kind": "message",
+          "fields": [
+            "path"
+          ],
+          "startLine": 37,
+          "endLine": 39
+        },
+        {
+          "name": "RemoveResponse",
+          "kind": "message",
+          "fields": [],
+          "startLine": 41,
+          "endLine": 41
+        },
+        {
+          "name": "StatRequest",
+          "kind": "message",
+          "fields": [
+            "path"
+          ],
+          "startLine": 43,
+          "endLine": 45
+        },
+        {
+          "name": "StatResponse",
+          "kind": "message",
+          "fields": [
+            "entry"
+          ],
+          "startLine": 47,
+          "endLine": 49
+        },
+        {
+          "name": "EntryInfo",
+          "kind": "message",
+          "fields": [
+            "name",
+            "type",
+            "path"
+          ],
+          "startLine": 51,
+          "endLine": 55
+        },
+        {
+          "name": "ListDirRequest",
+          "kind": "message",
+          "fields": [
+            "path",
+            "depth"
+          ],
+          "startLine": 63,
+          "endLine": 66
+        },
+        {
+          "name": "ListDirResponse",
+          "kind": "message",
+          "fields": [
+            "entries"
+          ],
+          "startLine": 68,
+          "endLine": 70
+        },
+        {
+          "name": "WatchDirRequest",
+          "kind": "message",
+          "fields": [
+            "path",
+            "recursive"
+          ],
+          "startLine": 72,
+          "endLine": 75
+        },
+        {
+          "name": "FilesystemEvent",
+          "kind": "message",
+          "fields": [
+            "name",
+            "type"
+          ],
+          "startLine": 77,
+          "endLine": 80
+        },
+        {
+          "name": "WatchDirResponse",
+          "kind": "message",
+          "fields": [
+            "start",
+            "filesystem",
+            "keepalive"
+          ],
+          "startLine": 82,
+          "endLine": 92
+        },
+        {
+          "name": "CreateWatcherRequest",
+          "kind": "message",
+          "fields": [
+            "path",
+            "recursive"
+          ],
+          "startLine": 94,
+          "endLine": 97
+        },
+        {
+          "name": "CreateWatcherResponse",
+          "kind": "message",
+          "fields": [
+            "watcher_id"
+          ],
+          "startLine": 99,
+          "endLine": 101
+        },
+        {
+          "name": "GetWatcherEventsRequest",
+          "kind": "message",
+          "fields": [
+            "watcher_id"
+          ],
+          "startLine": 103,
+          "endLine": 105
+        },
+        {
+          "name": "GetWatcherEventsResponse",
+          "kind": "message",
+          "fields": [
+            "events"
+          ],
+          "startLine": 107,
+          "endLine": 109
+        },
+        {
+          "name": "RemoveWatcherRequest",
+          "kind": "message",
+          "fields": [
+            "watcher_id"
+          ],
+          "startLine": 111,
+          "endLine": 113
+        },
+        {
+          "name": "RemoveWatcherResponse",
+          "kind": "message",
+          "fields": [],
+          "startLine": 115,
+          "endLine": 115
+        },
+        {
+          "name": "FileType",
+          "kind": "enum",
+          "fields": [
+            "FILE_TYPE_UNSPECIFIED",
+            "FILE_TYPE_FILE",
+            "FILE_TYPE_DIRECTORY"
+          ],
+          "startLine": 57,
+          "endLine": 61
+        },
+        {
+          "name": "EventType",
+          "kind": "enum",
+          "fields": [
+            "EVENT_TYPE_UNSPECIFIED",
+            "EVENT_TYPE_CREATE",
+            "EVENT_TYPE_WRITE",
+            "EVENT_TYPE_REMOVE",
+            "EVENT_TYPE_RENAME",
+            "EVENT_TYPE_CHMOD"
+          ],
+          "startLine": 117,
+          "endLine": 124
+        }
+      ],
+      "endpoints": [
+        {
+          "method": "rpc",
+          "path": "Filesystem.Stat",
+          "startLine": 6,
+          "endLine": 6
+        },
+        {
+          "method": "rpc",
+          "path": "Filesystem.MakeDir",
+          "startLine": 7,
+          "endLine": 7
+        },
+        {
+          "method": "rpc",
+          "path": "Filesystem.Move",
+          "startLine": 8,
+          "endLine": 8
+        },
+        {
+          "method": "rpc",
+          "path": "Filesystem.ListDir",
+          "startLine": 9,
+          "endLine": 9
+        },
+        {
+          "method": "rpc",
+          "path": "Filesystem.Remove",
+          "startLine": 10,
+          "endLine": 10
+        },
+        {
+          "method": "rpc",
+          "path": "Filesystem.WatchDir",
+          "startLine": 12,
+          "endLine": 12
+        },
+        {
+          "method": "rpc",
+          "path": "Filesystem.CreateWatcher",
+          "startLine": 15,
+          "endLine": 15
+        },
+        {
+          "method": "rpc",
+          "path": "Filesystem.GetWatcherEvents",
+          "startLine": 16,
+          "endLine": 16
+        },
+        {
+          "method": "rpc",
+          "path": "Filesystem.RemoveWatcher",
+          "startLine": 17,
+          "endLine": 17
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 22,
+        "endpointCount": 9
+      }
+    },
+    {
+      "path": "packages/envd/internal/services/legacy/legacyprocess.proto",
+      "language": "protobuf",
+      "fileCategory": "data",
+      "totalLines": 158,
+      "nonEmptyLines": 120,
+      "definitions": [
+        {
+          "name": "PTY",
+          "kind": "message",
+          "fields": [
+            "size",
+            "cols",
+            "rows"
+          ],
+          "startLine": 19,
+          "endLine": 26
+        },
+        {
+          "name": "ProcessConfig",
+          "kind": "message",
+          "fields": [
+            "cmd",
+            "args",
+            "cwd"
+          ],
+          "startLine": 28,
+          "endLine": 34
+        },
+        {
+          "name": "ListRequest",
+          "kind": "message",
+          "fields": [],
+          "startLine": 36,
+          "endLine": 36
+        },
+        {
+          "name": "ProcessInfo",
+          "kind": "message",
+          "fields": [
+            "config",
+            "pid",
+            "tag"
+          ],
+          "startLine": 38,
+          "endLine": 42
+        },
+        {
+          "name": "ListResponse",
+          "kind": "message",
+          "fields": [
+            "processes"
+          ],
+          "startLine": 44,
+          "endLine": 46
+        },
+        {
+          "name": "StartRequest",
+          "kind": "message",
+          "fields": [
+            "process",
+            "pty",
+            "tag"
+          ],
+          "startLine": 48,
+          "endLine": 52
+        },
+        {
+          "name": "UpdateRequest",
+          "kind": "message",
+          "fields": [
+            "process",
+            "pty"
+          ],
+          "startLine": 54,
+          "endLine": 58
+        },
+        {
+          "name": "UpdateResponse",
+          "kind": "message",
+          "fields": [],
+          "startLine": 60,
+          "endLine": 60
+        },
+        {
+          "name": "ProcessEvent",
+          "kind": "message",
+          "fields": [
+            "start",
+            "data",
+            "end",
+            "keepalive",
+            "pid",
+            "stdout",
+            "stderr",
+            "pty",
+            "exit_code",
+            "exited",
+            "status",
+            "error"
+          ],
+          "startLine": 62,
+          "endLine": 90
+        },
+        {
+          "name": "StartResponse",
+          "kind": "message",
+          "fields": [
+            "event"
+          ],
+          "startLine": 92,
+          "endLine": 94
+        },
+        {
+          "name": "ConnectResponse",
+          "kind": "message",
+          "fields": [
+            "event"
+          ],
+          "startLine": 96,
+          "endLine": 98
+        },
+        {
+          "name": "SendInputRequest",
+          "kind": "message",
+          "fields": [
+            "process",
+            "input"
+          ],
+          "startLine": 100,
+          "endLine": 104
+        },
+        {
+          "name": "SendInputResponse",
+          "kind": "message",
+          "fields": [],
+          "startLine": 106,
+          "endLine": 106
+        },
+        {
+          "name": "ProcessInput",
+          "kind": "message",
+          "fields": [
+            "stdin",
+            "pty"
+          ],
+          "startLine": 108,
+          "endLine": 113
+        },
+        {
+          "name": "StreamInputRequest",
+          "kind": "message",
+          "fields": [
+            "start",
+            "data",
+            "keepalive",
+            "process",
+            "input"
+          ],
+          "startLine": 115,
+          "endLine": 131
+        },
+        {
+          "name": "StreamInputResponse",
+          "kind": "message",
+          "fields": [],
+          "startLine": 133,
+          "endLine": 133
+        },
+        {
+          "name": "SendSignalRequest",
+          "kind": "message",
+          "fields": [
+            "process",
+            "signal"
+          ],
+          "startLine": 141,
+          "endLine": 145
+        },
+        {
+          "name": "SendSignalResponse",
+          "kind": "message",
+          "fields": [],
+          "startLine": 147,
+          "endLine": 147
+        },
+        {
+          "name": "ConnectRequest",
+          "kind": "message",
+          "fields": [
+            "process"
+          ],
+          "startLine": 149,
+          "endLine": 151
+        },
+        {
+          "name": "ProcessSelector",
+          "kind": "message",
+          "fields": [
+            "pid",
+            "tag"
+          ],
+          "startLine": 153,
+          "endLine": 158
+        },
+        {
+          "name": "Signal",
+          "kind": "enum",
+          "fields": [
+            "SIGNAL_UNSPECIFIED",
+            "SIGNAL_SIGTERM",
+            "SIGNAL_SIGKILL"
+          ],
+          "startLine": 135,
+          "endLine": 139
+        }
+      ],
+      "endpoints": [
+        {
+          "method": "rpc",
+          "path": "Process.List",
+          "startLine": 6,
+          "endLine": 6
+        },
+        {
+          "method": "rpc",
+          "path": "Process.Connect",
+          "startLine": 8,
+          "endLine": 8
+        },
+        {
+          "method": "rpc",
+          "path": "Process.Start",
+          "startLine": 9,
+          "endLine": 9
+        },
+        {
+          "method": "rpc",
+          "path": "Process.Update",
+          "startLine": 11,
+          "endLine": 11
+        },
+        {
+          "method": "rpc",
+          "path": "Process.StreamInput",
+          "startLine": 14,
+          "endLine": 14
+        },
+        {
+          "method": "rpc",
+          "path": "Process.SendInput",
+          "startLine": 15,
+          "endLine": 15
+        },
+        {
+          "method": "rpc",
+          "path": "Process.SendSignal",
+          "startLine": 16,
+          "endLine": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 21,
+        "endpointCount": 7
+      }
+    },
+    {
+      "path": "packages/envd/internal/services/legacy/readme.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 6,
+      "nonEmptyLines": 3,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    }
+  ]
+}

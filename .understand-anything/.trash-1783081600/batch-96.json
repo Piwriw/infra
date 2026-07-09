@@ -1,0 +1,32 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/db/pkg/auth/sql_queries/teams/get_team.sql",
+      "type": "file",
+      "name": "get_team.sql",
+      "filePath": "packages/db/pkg/auth/sql_queries/teams/get_team.sql",
+      "summary": "sqlc 查询定义：按多种维度（API Key 哈希、用户+团队 ID、团队 ID、用户 ID）联表 teams / team_api_keys / users_teams / team_limits 取出团队及其配额，命名查询包括 GetTeamWithTierByAPIKey、GetTeamWithTierByTeamAndUser、GetTeamWithTierByTeamID、GetTeamsWithUsersTeamsWithTier。",
+      "tags": ["sql", "sqlc", "team", "select", "auth"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/sql_queries/teams/team_creation_guard.sql",
+      "type": "file",
+      "name": "team_creation_guard.sql",
+      "filePath": "packages/db/pkg/auth/sql_queries/teams/team_creation_guard.sql",
+      "summary": "sqlc 查询定义：在事务内按 user_id 加行锁（FOR UPDATE OF ut）取出该用户所属的 teams / users_teams / team_limits 完整字段，命名查询为 GetTeamsWithUsersTeamsWithTierForUpdate（:many），用于创建沙箱前并发安全地校验团队状态与配额。",
+      "tags": ["sql", "sqlc", "team", "select", "lock", "auth"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/sql_queries/teams/team_lifecycle.sql",
+      "type": "file",
+      "name": "team_lifecycle.sql",
+      "filePath": "packages/db/pkg/auth/sql_queries/teams/team_lifecycle.sql",
+      "summary": "sqlc 查询定义：覆盖团队生命周期操作——CreateTeam（:one，插入 teams 行）、CreateTeamMembership（:exec，写 users_teams 关联）、GetDefaultTeamByUserID（:one，取默认团队）、DeleteTeamByID（:exec，按 id 删除团队）。",
+      "tags": ["sql", "sqlc", "team", "lifecycle", "crud", "auth"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": []
+}

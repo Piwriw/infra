@@ -1,0 +1,358 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/shared/pkg/storage/metrics_test.go",
+      "type": "file",
+      "name": "metrics_test.go",
+      "filePath": "packages/shared/pkg/storage/metrics_test.go",
+      "summary": "校验 Source/SeekableObjectType/Outcome 字符串映射以及预计算属性表的正确性。",
+      "tags": [
+        "test",
+        "metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/mock_blob.go",
+      "type": "file",
+      "name": "mock_blob.go",
+      "filePath": "packages/shared/pkg/storage/mock_blob.go",
+      "summary": "由 mockery 生成的 Blob 接口 Mock，包含 Exists/Put/WriteTo 方法的桩实现。",
+      "tags": [
+        "storage",
+        "mock",
+        "test-helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/mock_featureflagsclient.go",
+      "type": "file",
+      "name": "mock_featureflagsclient.go",
+      "filePath": "packages/shared/pkg/storage/mock_featureflagsclient.go",
+      "summary": "由 mockery 生成的 FeatureFlagsClient 接口 Mock，覆盖 BoolFlag/IntFlag 等方法。",
+      "tags": [
+        "storage",
+        "mock",
+        "featureflags",
+        "test-helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/mock_ioreader.go",
+      "type": "file",
+      "name": "mock_ioreader.go",
+      "filePath": "packages/shared/pkg/storage/mock_ioreader.go",
+      "summary": "由 mockery 生成的 io.Reader 接口 Mock。",
+      "tags": [
+        "mock",
+        "io",
+        "test-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/mock_seekable.go",
+      "type": "file",
+      "name": "mock_seekable.go",
+      "filePath": "packages/shared/pkg/storage/mock_seekable.go",
+      "summary": "由 mockery 生成的 Seekable 接口 Mock，覆盖 OpenRangeReader/Size/StoreFile 方法。",
+      "tags": [
+        "storage",
+        "mock",
+        "test-helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/mock_storageprovider.go",
+      "type": "file",
+      "name": "mock_storageprovider.go",
+      "filePath": "packages/shared/pkg/storage/mock_storageprovider.go",
+      "summary": "由 mockery 生成的 StorageProvider 接口 Mock，覆盖 DeleteObjectsWithPrefix/GetDetails/OpenBlob/OpenSeekable/UploadSignedURL。",
+      "tags": [
+        "storage",
+        "mock",
+        "test-helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/paths.go",
+      "type": "file",
+      "name": "paths.go",
+      "filePath": "packages/shared/pkg/storage/paths.go",
+      "summary": "集中管理存储对象路径生成规则(模板、根文件系统、内存文件、压缩文件等)及压缩/块大小 sidecar 路径。",
+      "tags": [
+        "storage",
+        "paths",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/paths.go:Paths",
+      "type": "class",
+      "name": "Paths",
+      "filePath": "packages/shared/pkg/storage/paths.go",
+      "lineRange": [
+        20,
+        168
+      ],
+      "summary": "提供静态方法生成存储对象路径(memfile/rootfs/snapfile 等)。",
+      "tags": [
+        "paths",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/paths.go:CacheKey",
+      "type": "function",
+      "name": "CacheKey",
+      "filePath": "packages/shared/pkg/storage/paths.go",
+      "lineRange": [
+        25,
+        45
+      ],
+      "summary": "根据模板 ID/构建版本生成缓存 key。",
+      "tags": [
+        "paths",
+        "cache"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/paths.go:SplitPath",
+      "type": "function",
+      "name": "SplitPath",
+      "filePath": "packages/shared/pkg/storage/paths.go",
+      "lineRange": [
+        85,
+        105
+      ],
+      "summary": "将完整对象路径拆分为 prefix + basename。",
+      "tags": [
+        "paths",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/paths.go:StripCompression",
+      "type": "function",
+      "name": "StripCompression",
+      "filePath": "packages/shared/pkg/storage/paths.go",
+      "lineRange": [
+        105,
+        130
+      ],
+      "summary": "从路径中移除压缩后缀(.zstd/.lz4)。",
+      "tags": [
+        "paths",
+        "compression"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/mock_blob.go:MockBlob",
+      "type": "class",
+      "name": "MockBlob",
+      "filePath": "packages/shared/pkg/storage/mock_blob.go",
+      "lineRange": [
+        40,
+        238
+      ],
+      "summary": "Blob 接口的 mockery 生成 Mock，提供 EXPECT 风格的链式调用。",
+      "tags": [
+        "mock",
+        "test-helper",
+        "blob"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/mock_seekable.go:MockSeekable",
+      "type": "class",
+      "name": "MockSeekable",
+      "filePath": "packages/shared/pkg/storage/mock_seekable.go",
+      "lineRange": [
+        40,
+        275
+      ],
+      "summary": "Seekable 接口的 mockery 生成 Mock。",
+      "tags": [
+        "mock",
+        "test-helper",
+        "seekable"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/mock_storageprovider.go:MockStorageProvider",
+      "type": "class",
+      "name": "MockStorageProvider",
+      "filePath": "packages/shared/pkg/storage/mock_storageprovider.go",
+      "lineRange": [
+        40,
+        348
+      ],
+      "summary": "StorageProvider 接口的 mockery 生成 Mock。",
+      "tags": [
+        "mock",
+        "test-helper",
+        "storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/mock_featureflagsclient.go:MockFeatureFlagsClient",
+      "type": "class",
+      "name": "MockFeatureFlagsClient",
+      "filePath": "packages/shared/pkg/storage/mock_featureflagsclient.go",
+      "lineRange": [
+        40,
+        184
+      ],
+      "summary": "FeatureFlagsClient 接口的 mockery 生成 Mock。",
+      "tags": [
+        "mock",
+        "test-helper",
+        "featureflags"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/mock_ioreader.go:MockReader",
+      "type": "class",
+      "name": "MockReader",
+      "filePath": "packages/shared/pkg/storage/mock_ioreader.go",
+      "lineRange": [
+        30,
+        96
+      ],
+      "summary": "io.Reader 接口的 mockery 生成 Mock。",
+      "tags": [
+        "mock",
+        "test-helper",
+        "io"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/shared/pkg/storage/paths.go",
+      "target": "class:packages/shared/pkg/storage/paths.go:Paths",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/paths.go",
+      "target": "function:packages/shared/pkg/storage/paths.go:CacheKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/paths.go",
+      "target": "function:packages/shared/pkg/storage/paths.go:SplitPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/paths.go",
+      "target": "function:packages/shared/pkg/storage/paths.go:StripCompression",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/mock_blob.go",
+      "target": "class:packages/shared/pkg/storage/mock_blob.go:MockBlob",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/mock_seekable.go",
+      "target": "class:packages/shared/pkg/storage/mock_seekable.go:MockSeekable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/mock_storageprovider.go",
+      "target": "class:packages/shared/pkg/storage/mock_storageprovider.go:MockStorageProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/mock_featureflagsclient.go",
+      "target": "class:packages/shared/pkg/storage/mock_featureflagsclient.go:MockFeatureFlagsClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/mock_ioreader.go",
+      "target": "class:packages/shared/pkg/storage/mock_ioreader.go:MockReader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/mock_blob.go",
+      "target": "file:packages/shared/pkg/storage/storageopts/storageopts.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/mock_featureflagsclient.go",
+      "target": "file:packages/shared/pkg/featureflags/client_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/mock_featureflagsclient.go",
+      "target": "file:packages/shared/pkg/featureflags/client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/mock_featureflagsclient.go",
+      "target": "file:packages/shared/pkg/featureflags/context_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/mock_featureflagsclient.go",
+      "target": "file:packages/shared/pkg/featureflags/context.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/mock_featureflagsclient.go",
+      "target": "file:packages/shared/pkg/featureflags/flags.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics_test.go",
+      "target": "file:packages/shared/pkg/storage/metrics.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

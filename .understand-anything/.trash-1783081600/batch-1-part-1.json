@@ -1,0 +1,1533 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/api/internal/analytics_collector/analytics.go",
+      "type": "file",
+      "name": "analytics.go",
+      "filePath": "packages/api/internal/analytics_collector/analytics.go",
+      "summary": "分析收集器客户端，负责将分析事件上报到 Posthog 与 gRPC analytics collector 服务。",
+      "tags": [
+        "analytics",
+        "api",
+        "telemetry",
+        "file"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/api/internal/analytics_collector/analytics.go:PosthogClient",
+      "type": "class",
+      "name": "PosthogClient",
+      "filePath": "packages/api/internal/analytics_collector/analytics.go",
+      "lineRange": [
+        27,
+        29
+      ],
+      "summary": "封装 posthog-go 客户端，提供团队 / 用户事件上报的统一接口。",
+      "tags": [
+        "analytics",
+        "utility",
+        "type"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/analytics_collector/analytics.go:NewPosthogClient",
+      "type": "function",
+      "name": "NewPosthogClient",
+      "filePath": "packages/api/internal/analytics_collector/analytics.go",
+      "lineRange": [
+        31,
+        54
+      ],
+      "summary": "创建 Posthog 客户端，缺失 key 时切换到 NoOpWriter 静默模式。",
+      "tags": [
+        "constructor",
+        "analytics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/analytics_collector/analytics.go:IdentifyAnalyticsTeam",
+      "type": "function",
+      "name": "IdentifyAnalyticsTeam",
+      "filePath": "packages/api/internal/analytics_collector/analytics.go",
+      "lineRange": [
+        60,
+        72
+      ],
+      "summary": "向 Posthog 上报团队组身份（group identify）。",
+      "tags": [
+        "analytics",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/analytics_collector/analytics.go:CreateAnalyticsTeamEvent",
+      "type": "function",
+      "name": "CreateAnalyticsTeamEvent",
+      "filePath": "packages/api/internal/analytics_collector/analytics.go",
+      "lineRange": [
+        74,
+        85
+      ],
+      "summary": "向 Posthog 上报一条团队级事件。",
+      "tags": [
+        "analytics",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/analytics_collector/analytics.go:CreateAnalyticsUserEvent",
+      "type": "function",
+      "name": "CreateAnalyticsUserEvent",
+      "filePath": "packages/api/internal/analytics_collector/analytics.go",
+      "lineRange": [
+        87,
+        98
+      ],
+      "summary": "向 Posthog 上报一条用户级事件。",
+      "tags": [
+        "analytics",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/analytics_collector/analytics.go:GetPackageToPosthogProperties",
+      "type": "function",
+      "name": "GetPackageToPosthogProperties",
+      "filePath": "packages/api/internal/analytics_collector/analytics.go",
+      "lineRange": [
+        100,
+        115
+      ],
+      "summary": "从请求 header 提取 SDK 包信息并构造 Posthog 属性。",
+      "tags": [
+        "analytics",
+        "resolver"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/api/internal/analytics_collector/auth.go",
+      "type": "file",
+      "name": "auth.go",
+      "filePath": "packages/api/internal/analytics_collector/auth.go",
+      "summary": "分析收集器客户端，负责将分析事件上报到 Posthog 与 gRPC analytics collector 服务。",
+      "tags": [
+        "analytics",
+        "auth",
+        "api",
+        "telemetry",
+        "file"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/api/internal/analytics_collector/auth.go:gRPCApiKey",
+      "type": "class",
+      "name": "gRPCApiKey",
+      "filePath": "packages/api/internal/analytics_collector/auth.go",
+      "lineRange": [
+        9,
+        11
+      ],
+      "summary": "gRPC 凭据提供器，将 API key 注入到每个请求的 metadata。",
+      "tags": [
+        "utility",
+        "type"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/api/internal/analytics_collector/client.go",
+      "type": "file",
+      "name": "client.go",
+      "filePath": "packages/api/internal/analytics_collector/client.go",
+      "summary": "分析收集器客户端，负责将分析事件上报到 Posthog 与 gRPC analytics collector 服务。",
+      "tags": [
+        "analytics",
+        "api",
+        "telemetry",
+        "file"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/api/internal/analytics_collector/client.go:Analytics",
+      "type": "class",
+      "name": "Analytics",
+      "filePath": "packages/api/internal/analytics_collector/client.go",
+      "lineRange": [
+        18,
+        21
+      ],
+      "summary": "gRPC AnalyticsCollector 客户端封装，承载三类 sandbox 生命周期事件上报。",
+      "tags": [
+        "analytics",
+        "utility",
+        "type"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/analytics_collector/client.go:NewAnalytics",
+      "type": "function",
+      "name": "NewAnalytics",
+      "filePath": "packages/api/internal/analytics_collector/client.go",
+      "lineRange": [
+        23,
+        57
+      ],
+      "summary": "创建带 TLS 与 API key 注入的 Analytics gRPC 客户端。",
+      "tags": [
+        "constructor",
+        "analytics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/analytics_collector/client.go:Close",
+      "type": "function",
+      "name": "Close",
+      "filePath": "packages/api/internal/analytics_collector/client.go",
+      "lineRange": [
+        59,
+        70
+      ],
+      "summary": "关闭底层 gRPC / Redis 客户端并释放资源。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/api/internal/analytics_collector/collector.pb.go",
+      "type": "file",
+      "name": "collector.pb.go",
+      "filePath": "packages/api/internal/analytics_collector/collector.pb.go",
+      "summary": "由 protoc-gen-go 自动生成的 protobuf 消息定义（InstanceStartedEvent / RunningInstancesEvent / InstanceStoppedEvent）。",
+      "tags": [
+        "analytics",
+        "api",
+        "telemetry",
+        "protobuf",
+        "file"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/api/internal/analytics_collector/collector_grpc.pb.go",
+      "type": "file",
+      "name": "collector_grpc.pb.go",
+      "filePath": "packages/api/internal/analytics_collector/collector_grpc.pb.go",
+      "summary": "由 protoc-gen-go 自动生成的 gRPC 客户端与服务端桩代码，对应 AnalyticsCollector 服务。",
+      "tags": [
+        "analytics",
+        "api",
+        "telemetry",
+        "grpc",
+        "protobuf"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/api/internal/api/api.gen.go",
+      "type": "file",
+      "name": "api.gen.go",
+      "filePath": "packages/api/internal/api/api.gen.go",
+      "summary": "由 oapi-codegen 自动生成的 OpenAPI 客户端代码（ServerInterface / ClientInterface / 类型 / Spec）。",
+      "tags": [
+        "auto-generated",
+        "file",
+        "go"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/api/internal/api/error.go",
+      "type": "file",
+      "name": "error.go",
+      "filePath": "packages/api/internal/api/error.go",
+      "summary": "将共享 apierrors.APIError 别名重导出，便于 API 包内使用。",
+      "tags": [
+        "api",
+        "error-handling",
+        "file"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/api/internal/api/generate.go",
+      "type": "file",
+      "name": "generate.go",
+      "filePath": "packages/api/internal/api/generate.go",
+      "summary": "通过 go:generate 触发 oapi-codegen 从 spec/openapi.yml 生成 api.gen.go。",
+      "tags": [
+        "auto-generated",
+        "code-generation",
+        "file"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/api/internal/api/spec_test.go",
+      "type": "file",
+      "name": "spec_test.go",
+      "filePath": "packages/api/internal/api/spec_test.go",
+      "summary": "校验 OpenAPI spec 中的安全方案 header 名称与共享 auth 包常量保持一致。",
+      "tags": [
+        "api",
+        "test",
+        "openapi",
+        "file"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/api/spec_test.go:TestAuthProviderTeamAuthHeaderRoutes",
+      "type": "function",
+      "name": "TestAuthProviderTeamAuthHeaderRoutes",
+      "filePath": "packages/api/internal/api/spec_test.go",
+      "lineRange": [
+        54,
+        145
+      ],
+      "summary": "TestAuthProviderTeamAuthHeaderRoutes 单元测试。",
+      "tags": [
+        "test",
+        "auth"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/api/internal/api/spec_test.go:TestAdminTeamAuthSchemeOrder",
+      "type": "function",
+      "name": "TestAdminTeamAuthSchemeOrder",
+      "filePath": "packages/api/internal/api/spec_test.go",
+      "lineRange": [
+        150,
+        211
+      ],
+      "summary": "TestAdminTeamAuthSchemeOrder 单元测试。",
+      "tags": [
+        "test",
+        "auth"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/api/internal/cache/snapshots/snapshot_cache.go",
+      "type": "file",
+      "name": "snapshot_cache.go",
+      "filePath": "packages/api/internal/cache/snapshots/snapshot_cache.go",
+      "summary": "Redis 缓存最近一次 sandbox snapshot，TTL 5 分钟，配合 DB fallback 与 negative caching。",
+      "tags": [
+        "cache",
+        "api",
+        "snapshot",
+        "file"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/api/internal/cache/snapshots/snapshot_cache.go:SnapshotCache",
+      "type": "class",
+      "name": "SnapshotCache",
+      "filePath": "packages/api/internal/cache/snapshots/snapshot_cache.go",
+      "lineRange": [
+        40,
+        43
+      ],
+      "summary": "sandbox 最后一次 snapshot 的 Redis 缓存封装。",
+      "tags": [
+        "cache",
+        "snapshot",
+        "type"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/cache/snapshots/snapshot_cache.go:NewSnapshotCache",
+      "type": "function",
+      "name": "NewSnapshotCache",
+      "filePath": "packages/api/internal/cache/snapshots/snapshot_cache.go",
+      "lineRange": [
+        45,
+        57
+      ],
+      "summary": "构造 Redis 驱动的 SnapshotCache。",
+      "tags": [
+        "constructor",
+        "cache",
+        "snapshot"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/cache/snapshots/snapshot_cache.go:Get",
+      "type": "function",
+      "name": "Get",
+      "filePath": "packages/api/internal/cache/snapshots/snapshot_cache.go",
+      "lineRange": [
+        60,
+        74
+      ],
+      "summary": "从 Redis 缓存中获取模板 / 元数据 / 快照信息（DB fallback）。",
+      "tags": [
+        "resolver",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/cache/snapshots/snapshot_cache.go:fetchFromDB",
+      "type": "function",
+      "name": "fetchFromDB",
+      "filePath": "packages/api/internal/cache/snapshots/snapshot_cache.go",
+      "lineRange": [
+        76,
+        95
+      ],
+      "summary": "从 DB 加载缓存所需的原始数据。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "type": "file",
+      "name": "alias_cache.go",
+      "filePath": "packages/api/internal/cache/templates/alias_cache.go",
+      "summary": "按 namespace 解析 template alias 到 template id 的 Redis 缓存，支持负缓存与按 ID 反查。",
+      "tags": [
+        "cache",
+        "api",
+        "template",
+        "file"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/api/internal/cache/templates/alias_cache.go:AliasCache",
+      "type": "class",
+      "name": "AliasCache",
+      "filePath": "packages/api/internal/cache/templates/alias_cache.go",
+      "lineRange": [
+        41,
+        44
+      ],
+      "summary": "模板 alias 解析缓存。",
+      "tags": [
+        "cache",
+        "utility",
+        "type"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/alias_cache.go:NewAliasCache",
+      "type": "function",
+      "name": "NewAliasCache",
+      "filePath": "packages/api/internal/cache/templates/alias_cache.go",
+      "lineRange": [
+        46,
+        58
+      ],
+      "summary": "构造 alias 解析缓存。",
+      "tags": [
+        "constructor",
+        "cache"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/alias_cache.go:Resolve",
+      "type": "function",
+      "name": "Resolve",
+      "filePath": "packages/api/internal/cache/templates/alias_cache.go",
+      "lineRange": [
+        71,
+        97
+      ],
+      "summary": "按 alias / templateID 解析到具体 template 引用（命中优先 Redis，fallback DB）。",
+      "tags": [
+        "resolver",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/alias_cache.go:lookup",
+      "type": "function",
+      "name": "lookup",
+      "filePath": "packages/api/internal/cache/templates/alias_cache.go",
+      "lineRange": [
+        101,
+        120
+      ],
+      "summary": "lookup 函数。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/alias_cache.go:cacheByTemplateID",
+      "type": "function",
+      "name": "cacheByTemplateID",
+      "filePath": "packages/api/internal/cache/templates/alias_cache.go",
+      "lineRange": [
+        123,
+        132
+      ],
+      "summary": "按 templateID 反向回填 alias 缓存键。",
+      "tags": [
+        "template",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/alias_cache.go:fetchFromDB",
+      "type": "function",
+      "name": "fetchFromDB",
+      "filePath": "packages/api/internal/cache/templates/alias_cache.go",
+      "lineRange": [
+        134,
+        185
+      ],
+      "summary": "从 DB 加载缓存所需的原始数据。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/api/internal/cache/templates/alias_cache_test.go",
+      "type": "file",
+      "name": "alias_cache_test.go",
+      "filePath": "packages/api/internal/cache/templates/alias_cache_test.go",
+      "summary": "AliasCache 解析 / 失效 / 负缓存行为的完整单元测试集。",
+      "tags": [
+        "cache",
+        "api",
+        "template",
+        "test",
+        "file"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/alias_cache_test.go:TestAliasCacheLookupByID_UsesCache",
+      "type": "function",
+      "name": "TestAliasCacheLookupByID_UsesCache",
+      "filePath": "packages/api/internal/cache/templates/alias_cache_test.go",
+      "lineRange": [
+        259,
+        290
+      ],
+      "summary": "TestAliasCacheLookupByID_UsesCache 单元测试。",
+      "tags": [
+        "test",
+        "cache",
+        "resolver"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/alias_cache_test.go:TestAliasCache_InvalidateAliasesByTemplateID",
+      "type": "function",
+      "name": "TestAliasCache_InvalidateAliasesByTemplateID",
+      "filePath": "packages/api/internal/cache/templates/alias_cache_test.go",
+      "lineRange": [
+        294,
+        343
+      ],
+      "summary": "TestAliasCache_InvalidateAliasesByTemplateID 单元测试。",
+      "tags": [
+        "test",
+        "cache",
+        "template",
+        "cache-invalidation",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/alias_cache_test.go:TestAliasCache_InvalidateAliasesByTemplateID_EmptyKeys",
+      "type": "function",
+      "name": "TestAliasCache_InvalidateAliasesByTemplateID_EmptyKeys",
+      "filePath": "packages/api/internal/cache/templates/alias_cache_test.go",
+      "lineRange": [
+        348,
+        379
+      ],
+      "summary": "TestAliasCache_InvalidateAliasesByTemplateID_EmptyKeys 单元测试。",
+      "tags": [
+        "test",
+        "cache",
+        "template",
+        "cache-invalidation",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/alias_cache_test.go:TestAliasCacheResolve_NegativeCachingFallback",
+      "type": "function",
+      "name": "TestAliasCacheResolve_NegativeCachingFallback",
+      "filePath": "packages/api/internal/cache/templates/alias_cache_test.go",
+      "lineRange": [
+        411,
+        447
+      ],
+      "summary": "TestAliasCacheResolve_NegativeCachingFallback 单元测试。",
+      "tags": [
+        "test",
+        "cache",
+        "resolver"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/api/internal/cache/templates/cache.go",
+      "type": "file",
+      "name": "cache.go",
+      "filePath": "packages/api/internal/cache/templates/cache.go",
+      "summary": "模板缓存主入口：组合 alias / metadata / build 缓存并支持按 tag 与 team 维度查找。",
+      "tags": [
+        "cache",
+        "api",
+        "template",
+        "file"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/api/internal/cache/templates/cache.go:TemplateCache",
+      "type": "class",
+      "name": "TemplateCache",
+      "filePath": "packages/api/internal/cache/templates/cache.go",
+      "lineRange": [
+        53,
+        58
+      ],
+      "summary": "模板主缓存：组合 alias、metadata、build 多级缓存。",
+      "tags": [
+        "cache",
+        "template",
+        "type"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/cache.go:NewTemplateCache",
+      "type": "function",
+      "name": "NewTemplateCache",
+      "filePath": "packages/api/internal/cache/templates/cache.go",
+      "lineRange": [
+        60,
+        78
+      ],
+      "summary": "构造模板主缓存。",
+      "tags": [
+        "constructor",
+        "cache",
+        "template"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/cache.go:ResolveAliasWithMetadata",
+      "type": "function",
+      "name": "ResolveAliasWithMetadata",
+      "filePath": "packages/api/internal/cache/templates/cache.go",
+      "lineRange": [
+        93,
+        105
+      ],
+      "summary": "解析 alias 并返回完整元数据。",
+      "tags": [
+        "resolver",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/cache.go:Get",
+      "type": "function",
+      "name": "Get",
+      "filePath": "packages/api/internal/cache/templates/cache.go",
+      "lineRange": [
+        114,
+        140
+      ],
+      "summary": "从 Redis 缓存中获取模板 / 元数据 / 快照信息（DB fallback）。",
+      "tags": [
+        "resolver",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/cache.go:getByID",
+      "type": "function",
+      "name": "getByID",
+      "filePath": "packages/api/internal/cache/templates/cache.go",
+      "lineRange": [
+        143,
+        156
+      ],
+      "summary": "getByID 函数。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/cache.go:fetchTemplateWithBuild",
+      "type": "function",
+      "name": "fetchTemplateWithBuild",
+      "filePath": "packages/api/internal/cache/templates/cache.go",
+      "lineRange": [
+        158,
+        197
+      ],
+      "summary": "联合查询 template 及其当前 build 信息。",
+      "tags": [
+        "template",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/api/internal/cache/templates/cache_test.go",
+      "type": "file",
+      "name": "cache_test.go",
+      "filePath": "packages/api/internal/cache/templates/cache_test.go",
+      "summary": "TemplateCache 失效、按 tag 分类等场景的单元测试。",
+      "tags": [
+        "cache",
+        "api",
+        "template",
+        "test",
+        "file"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/cache_test.go:TestTemplateCache_InvalidateDoesNotInvalidateAliases",
+      "type": "function",
+      "name": "TestTemplateCache_InvalidateDoesNotInvalidateAliases",
+      "filePath": "packages/api/internal/cache/templates/cache_test.go",
+      "lineRange": [
+        17,
+        50
+      ],
+      "summary": "TestTemplateCache_InvalidateDoesNotInvalidateAliases 单元测试。",
+      "tags": [
+        "test",
+        "cache",
+        "template",
+        "cache-invalidation",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/cache_test.go:TestTemplateCache_InvalidateAllTagsDeletesRedisEntries",
+      "type": "function",
+      "name": "TestTemplateCache_InvalidateAllTagsDeletesRedisEntries",
+      "filePath": "packages/api/internal/cache/templates/cache_test.go",
+      "lineRange": [
+        54,
+        87
+      ],
+      "summary": "TestTemplateCache_InvalidateAllTagsDeletesRedisEntries 单元测试。",
+      "tags": [
+        "test",
+        "cache",
+        "template",
+        "cache-invalidation",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/cache_test.go:TestTemplateCache_InvalidateAllTagsAlsoInvalidatesMetadata",
+      "type": "function",
+      "name": "TestTemplateCache_InvalidateAllTagsAlsoInvalidatesMetadata",
+      "filePath": "packages/api/internal/cache/templates/cache_test.go",
+      "lineRange": [
+        137,
+        166
+      ],
+      "summary": "TestTemplateCache_InvalidateAllTagsAlsoInvalidatesMetadata 单元测试。",
+      "tags": [
+        "test",
+        "cache",
+        "template",
+        "cache-invalidation",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/api/internal/cache/templates/errors.go",
+      "type": "file",
+      "name": "errors.go",
+      "filePath": "packages/api/internal/cache/templates/errors.go",
+      "summary": "模板解析错误类型（NotFound / TagNotFound / Hidden）与统一的 API 错误转换函数。",
+      "tags": [
+        "cache",
+        "api",
+        "template",
+        "error-handling",
+        "file"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/api/internal/cache/templates/errors.go:templateNotFoundError",
+      "type": "class",
+      "name": "templateNotFoundError",
+      "filePath": "packages/api/internal/cache/templates/errors.go",
+      "lineRange": [
+        17,
+        19
+      ],
+      "summary": "模板解析错误的私有类型，携带标识符信息。",
+      "tags": [
+        "error-handling",
+        "utility",
+        "type"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/api/internal/cache/templates/errors.go:templateTagNotFoundError",
+      "type": "class",
+      "name": "templateTagNotFoundError",
+      "filePath": "packages/api/internal/cache/templates/errors.go",
+      "lineRange": [
+        29,
+        31
+      ],
+      "summary": "模板解析错误的私有类型，携带标识符信息。",
+      "tags": [
+        "error-handling",
+        "utility",
+        "type"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/errors.go:ToAPIError",
+      "type": "function",
+      "name": "ToAPIError",
+      "filePath": "packages/api/internal/cache/templates/errors.go",
+      "lineRange": [
+        50,
+        89
+      ],
+      "summary": "将内部模板错误转换为标准 API 错误。",
+      "tags": [
+        "error-handling",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/errors.go:APIError",
+      "type": "function",
+      "name": "APIError",
+      "filePath": "packages/api/internal/cache/templates/errors.go",
+      "lineRange": [
+        91,
+        112
+      ],
+      "summary": "将 TemplateRef 渲染为标准 API 错误响应。",
+      "tags": [
+        "error-handling",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/api/internal/cache/templates/errors_test.go",
+      "type": "file",
+      "name": "errors_test.go",
+      "filePath": "packages/api/internal/cache/templates/errors_test.go",
+      "summary": "模板错误类型 → API 错误转换的单元测试。",
+      "tags": [
+        "cache",
+        "api",
+        "template",
+        "test",
+        "error-handling"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/api/internal/cache/templates/template_build.go",
+      "type": "file",
+      "name": "template_build.go",
+      "filePath": "packages/api/internal/cache/templates/template_build.go",
+      "summary": "模板构建 (build) 元数据的 Redis 缓存，提供按 buildID 维度失效与查询。",
+      "tags": [
+        "cache",
+        "api",
+        "template",
+        "file"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/api/internal/cache/templates/template_build.go:TemplateBuildInfo",
+      "type": "class",
+      "name": "TemplateBuildInfo",
+      "filePath": "packages/api/internal/cache/templates/template_build.go",
+      "lineRange": [
+        27,
+        36
+      ],
+      "summary": "TemplateBuildInfo 类型定义。",
+      "tags": [
+        "template",
+        "utility",
+        "type"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/api/internal/cache/templates/template_build.go:TemplatesBuildCache",
+      "type": "class",
+      "name": "TemplatesBuildCache",
+      "filePath": "packages/api/internal/cache/templates/template_build.go",
+      "lineRange": [
+        40,
+        43
+      ],
+      "summary": "TemplatesBuildCache 类型定义。",
+      "tags": [
+        "cache",
+        "template",
+        "type"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/template_build.go:NewTemplateBuildCache",
+      "type": "function",
+      "name": "NewTemplateBuildCache",
+      "filePath": "packages/api/internal/cache/templates/template_build.go",
+      "lineRange": [
+        45,
+        57
+      ],
+      "summary": "构造模板构建缓存。",
+      "tags": [
+        "constructor",
+        "cache",
+        "template"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/api/internal/cache/templates/template_build.go:fetchFromDB",
+      "type": "function",
+      "name": "fetchFromDB",
+      "filePath": "packages/api/internal/cache/templates/template_build.go",
+      "lineRange": [
+        72,
+        96
+      ],
+      "summary": "从 DB 加载缓存所需的原始数据。",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "class:packages/api/internal/analytics_collector/analytics.go:PosthogClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "function:packages/api/internal/analytics_collector/analytics.go:NewPosthogClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "function:packages/api/internal/analytics_collector/analytics.go:NewPosthogClient",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "function:packages/api/internal/analytics_collector/analytics.go:IdentifyAnalyticsTeam",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "function:packages/api/internal/analytics_collector/analytics.go:IdentifyAnalyticsTeam",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "function:packages/api/internal/analytics_collector/analytics.go:CreateAnalyticsTeamEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "function:packages/api/internal/analytics_collector/analytics.go:CreateAnalyticsTeamEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "function:packages/api/internal/analytics_collector/analytics.go:CreateAnalyticsUserEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "function:packages/api/internal/analytics_collector/analytics.go:CreateAnalyticsUserEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "function:packages/api/internal/analytics_collector/analytics.go:GetPackageToPosthogProperties",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "function:packages/api/internal/analytics_collector/analytics.go:GetPackageToPosthogProperties",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "file:packages/api/internal/utils/counter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "file:packages/api/internal/utils/error_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "file:packages/api/internal/utils/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "file:packages/api/internal/utils/grpc.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "file:packages/api/internal/utils/messages.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "file:packages/api/internal/utils/pagination_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "file:packages/api/internal/utils/pagination.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "file:packages/api/internal/utils/result.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "file:packages/api/internal/utils/sandboxes_list_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "file:packages/api/internal/utils/sandboxes_list.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "file:packages/api/internal/utils/split_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "file:packages/api/internal/utils/split.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "file:packages/api/internal/utils/templates_list.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/analytics.go",
+      "target": "file:packages/api/internal/utils/writer.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/auth.go",
+      "target": "class:packages/api/internal/analytics_collector/auth.go:gRPCApiKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/client.go",
+      "target": "class:packages/api/internal/analytics_collector/client.go:Analytics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/client.go",
+      "target": "function:packages/api/internal/analytics_collector/client.go:NewAnalytics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/client.go",
+      "target": "function:packages/api/internal/analytics_collector/client.go:NewAnalytics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/client.go",
+      "target": "function:packages/api/internal/analytics_collector/client.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/analytics_collector/client.go",
+      "target": "function:packages/api/internal/analytics_collector/client.go:Close",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/api/spec_test.go",
+      "target": "function:packages/api/internal/api/spec_test.go:TestAuthProviderTeamAuthHeaderRoutes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/api/spec_test.go",
+      "target": "function:packages/api/internal/api/spec_test.go:TestAdminTeamAuthSchemeOrder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/snapshots/snapshot_cache.go",
+      "target": "class:packages/api/internal/cache/snapshots/snapshot_cache.go:SnapshotCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/snapshots/snapshot_cache.go",
+      "target": "function:packages/api/internal/cache/snapshots/snapshot_cache.go:NewSnapshotCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/snapshots/snapshot_cache.go",
+      "target": "function:packages/api/internal/cache/snapshots/snapshot_cache.go:NewSnapshotCache",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/cache/snapshots/snapshot_cache.go",
+      "target": "function:packages/api/internal/cache/snapshots/snapshot_cache.go:Get",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/snapshots/snapshot_cache.go",
+      "target": "function:packages/api/internal/cache/snapshots/snapshot_cache.go:Get",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/cache/snapshots/snapshot_cache.go",
+      "target": "function:packages/api/internal/cache/snapshots/snapshot_cache.go:fetchFromDB",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "target": "class:packages/api/internal/cache/templates/alias_cache.go:AliasCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "target": "function:packages/api/internal/cache/templates/alias_cache.go:NewAliasCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "target": "function:packages/api/internal/cache/templates/alias_cache.go:NewAliasCache",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "target": "function:packages/api/internal/cache/templates/alias_cache.go:Resolve",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "target": "function:packages/api/internal/cache/templates/alias_cache.go:Resolve",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "target": "function:packages/api/internal/cache/templates/alias_cache.go:lookup",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "target": "function:packages/api/internal/cache/templates/alias_cache.go:cacheByTemplateID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/alias_cache.go",
+      "target": "function:packages/api/internal/cache/templates/alias_cache.go:fetchFromDB",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/alias_cache_test.go",
+      "target": "function:packages/api/internal/cache/templates/alias_cache_test.go:TestAliasCacheLookupByID_UsesCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/alias_cache_test.go",
+      "target": "function:packages/api/internal/cache/templates/alias_cache_test.go:TestAliasCache_InvalidateAliasesByTemplateID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/alias_cache_test.go",
+      "target": "function:packages/api/internal/cache/templates/alias_cache_test.go:TestAliasCache_InvalidateAliasesByTemplateID_EmptyKeys",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/alias_cache_test.go",
+      "target": "function:packages/api/internal/cache/templates/alias_cache_test.go:TestAliasCacheResolve_NegativeCachingFallback",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/cache.go",
+      "target": "class:packages/api/internal/cache/templates/cache.go:TemplateCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/cache.go",
+      "target": "function:packages/api/internal/cache/templates/cache.go:NewTemplateCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/cache.go",
+      "target": "function:packages/api/internal/cache/templates/cache.go:NewTemplateCache",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/cache.go",
+      "target": "function:packages/api/internal/cache/templates/cache.go:ResolveAliasWithMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/cache.go",
+      "target": "function:packages/api/internal/cache/templates/cache.go:ResolveAliasWithMetadata",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/cache.go",
+      "target": "function:packages/api/internal/cache/templates/cache.go:Get",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/cache.go",
+      "target": "function:packages/api/internal/cache/templates/cache.go:Get",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/cache.go",
+      "target": "function:packages/api/internal/cache/templates/cache.go:getByID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/cache.go",
+      "target": "function:packages/api/internal/cache/templates/cache.go:fetchTemplateWithBuild",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/cache.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/cache.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/cache.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/cache.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/cache_test.go",
+      "target": "function:packages/api/internal/cache/templates/cache_test.go:TestTemplateCache_InvalidateDoesNotInvalidateAliases",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/cache_test.go",
+      "target": "function:packages/api/internal/cache/templates/cache_test.go:TestTemplateCache_InvalidateAllTagsDeletesRedisEntries",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/cache_test.go",
+      "target": "function:packages/api/internal/cache/templates/cache_test.go:TestTemplateCache_InvalidateAllTagsAlsoInvalidatesMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/errors.go",
+      "target": "class:packages/api/internal/cache/templates/errors.go:templateNotFoundError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/errors.go",
+      "target": "class:packages/api/internal/cache/templates/errors.go:templateTagNotFoundError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/errors.go",
+      "target": "function:packages/api/internal/cache/templates/errors.go:ToAPIError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/errors.go",
+      "target": "function:packages/api/internal/cache/templates/errors.go:ToAPIError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/errors.go",
+      "target": "function:packages/api/internal/cache/templates/errors.go:APIError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/errors.go",
+      "target": "function:packages/api/internal/cache/templates/errors.go:APIError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/errors.go",
+      "target": "file:packages/api/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/errors.go",
+      "target": "file:packages/api/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/errors.go",
+      "target": "file:packages/api/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/errors.go",
+      "target": "file:packages/api/internal/api/spec_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/template_build.go",
+      "target": "class:packages/api/internal/cache/templates/template_build.go:TemplateBuildInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/template_build.go",
+      "target": "class:packages/api/internal/cache/templates/template_build.go:TemplatesBuildCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/template_build.go",
+      "target": "function:packages/api/internal/cache/templates/template_build.go:NewTemplateBuildCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/template_build.go",
+      "target": "function:packages/api/internal/cache/templates/template_build.go:NewTemplateBuildCache",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/api/internal/cache/templates/template_build.go",
+      "target": "function:packages/api/internal/cache/templates/template_build.go:fetchFromDB",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ]
+}

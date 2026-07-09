@@ -1,0 +1,1398 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "type": "file",
+      "name": "serialization_v5_test.go",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "summary": "V5 序列化格式实验性测试，覆盖页粒度下的压缩收益与边界大小校验。",
+      "tags": [
+        "test",
+        "serialization",
+        "v5",
+        "experimental"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/io_wrappers.go",
+      "type": "file",
+      "name": "io_wrappers.go",
+      "filePath": "packages/shared/pkg/storage/io_wrappers.go",
+      "summary": "提供多种 IO 包装器(RangeReader/SectionReader/Metered/Capture/Span)，用于在读取过程中收集指标或转换数据流。",
+      "tags": [
+        "storage",
+        "io",
+        "wrapper",
+        "metering"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "type": "file",
+      "name": "atomic_file.go",
+      "filePath": "packages/shared/pkg/storage/lock/atomic_file.go",
+      "summary": "实现原子不可变文件的写入：临时文件 + rename 提交，保证内容要么完整可见要么完全不可见。",
+      "tags": [
+        "storage",
+        "atomic-file",
+        "file-io",
+        "immutability"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/lock/atomic_file_test.go",
+      "type": "file",
+      "name": "atomic_file_test.go",
+      "filePath": "packages/shared/pkg/storage/lock/atomic_file_test.go",
+      "summary": "针对 AtomicImmutableFile.OpenFile 行为的单元测试。",
+      "tags": [
+        "test",
+        "atomic-file"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/lock/file_lock.go",
+      "type": "file",
+      "name": "file_lock.go",
+      "filePath": "packages/shared/pkg/storage/lock/file_lock.go",
+      "summary": "提供基于文件锁的 TryAcquireLock / ReleaseLock 互斥机制，防止并发进程同时操作同一资源。",
+      "tags": [
+        "storage",
+        "file-lock",
+        "concurrency"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/lock/file_lock_test.go",
+      "type": "file",
+      "name": "file_lock_test.go",
+      "filePath": "packages/shared/pkg/storage/lock/file_lock_test.go",
+      "summary": "覆盖文件锁的获取、释放、过期锁检测等场景。",
+      "tags": [
+        "test",
+        "file-lock",
+        "concurrency"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/metrics.go",
+      "type": "file",
+      "name": "metrics.go",
+      "filePath": "packages/shared/pkg/storage/metrics.go",
+      "summary": "定义存储读取路径上的 OpenTelemetry 指标记录器，包括读取耗时、解压步骤、流水线效率、写回与 blob 大小直方图等。",
+      "tags": [
+        "storage",
+        "metrics",
+        "opentelemetry",
+        "telemetry"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/io_wrappers.go:rangeReader",
+      "type": "class",
+      "name": "rangeReader",
+      "filePath": "packages/shared/pkg/storage/io_wrappers.go",
+      "lineRange": [
+        20,
+        65
+      ],
+      "summary": "包装 RangeReader，记录读取字节数与读取延迟到 ReadStats。",
+      "tags": [
+        "io",
+        "metering"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/io_wrappers.go:sectionReader",
+      "type": "class",
+      "name": "sectionReader",
+      "filePath": "packages/shared/pkg/storage/io_wrappers.go",
+      "lineRange": [
+        65,
+        100
+      ],
+      "summary": "包装 io.SectionReader，对外暴露受限范围读取。",
+      "tags": [
+        "io",
+        "section"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/io_wrappers.go:meteredReader",
+      "type": "class",
+      "name": "meteredReader",
+      "filePath": "packages/shared/pkg/storage/io_wrappers.go",
+      "lineRange": [
+        100,
+        130
+      ],
+      "summary": "在 io.Reader 上挂载吞吐量/调用次数的统计。",
+      "tags": [
+        "io",
+        "metering"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/io_wrappers.go:captureReader",
+      "type": "class",
+      "name": "captureReader",
+      "filePath": "packages/shared/pkg/storage/io_wrappers.go",
+      "lineRange": [
+        130,
+        160
+      ],
+      "summary": "捕获从底层 reader 读取的全部内容，便于测试或快照。",
+      "tags": [
+        "io",
+        "capture"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/io_wrappers.go:spanReader",
+      "type": "class",
+      "name": "spanReader",
+      "filePath": "packages/shared/pkg/storage/io_wrappers.go",
+      "lineRange": [
+        160,
+        185
+      ],
+      "summary": "将每次 Read 纳入 OpenTelemetry span 跟踪。",
+      "tags": [
+        "io",
+        "tracing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/io_wrappers.go:NewRangeReader",
+      "type": "function",
+      "name": "NewRangeReader",
+      "filePath": "packages/shared/pkg/storage/io_wrappers.go",
+      "lineRange": [
+        1,
+        18
+      ],
+      "summary": "工厂方法：包装 RangeReader 并附加 ReadStats 指标。",
+      "tags": [
+        "factory",
+        "io"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/lock/atomic_file.go:AtomicImmutableFile",
+      "type": "class",
+      "name": "AtomicImmutableFile",
+      "filePath": "packages/shared/pkg/storage/lock/atomic_file.go",
+      "lineRange": [
+        20,
+        91
+      ],
+      "summary": "原子不可变文件对象，写入阶段累积到临时文件，Commit 时一次性 rename 替换。",
+      "tags": [
+        "atomic-file",
+        "immutable",
+        "file-io"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/lock/atomic_file.go:OpenFile",
+      "type": "function",
+      "name": "OpenFile",
+      "filePath": "packages/shared/pkg/storage/lock/atomic_file.go",
+      "lineRange": [
+        25,
+        50
+      ],
+      "summary": "创建或打开原子不可变文件，返回 *AtomicImmutableFile。",
+      "tags": [
+        "file-io",
+        "constructor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/lock/atomic_file.go:Write",
+      "type": "function",
+      "name": "Write",
+      "filePath": "packages/shared/pkg/storage/lock/atomic_file.go",
+      "lineRange": [
+        50,
+        70
+      ],
+      "summary": "将字节追加到临时文件中。",
+      "tags": [
+        "file-io",
+        "write"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/lock/atomic_file.go:Commit",
+      "type": "function",
+      "name": "Commit",
+      "filePath": "packages/shared/pkg/storage/lock/atomic_file.go",
+      "lineRange": [
+        70,
+        91
+      ],
+      "summary": "同步数据并原子 rename 为最终文件名。",
+      "tags": [
+        "file-io",
+        "atomic",
+        "rename"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/lock/file_lock.go:TryAcquireLock",
+      "type": "function",
+      "name": "TryAcquireLock",
+      "filePath": "packages/shared/pkg/storage/lock/file_lock.go",
+      "lineRange": [
+        25,
+        55
+      ],
+      "summary": "尝试非阻塞获取文件锁，必要时清理陈旧锁。",
+      "tags": [
+        "file-lock",
+        "concurrency"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/lock/file_lock.go:ReleaseLock",
+      "type": "function",
+      "name": "ReleaseLock",
+      "filePath": "packages/shared/pkg/storage/lock/file_lock.go",
+      "lineRange": [
+        60,
+        80
+      ],
+      "summary": "释放文件锁并关闭锁文件句柄。",
+      "tags": [
+        "file-lock",
+        "concurrency"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/metrics.go:RecordReadOpen",
+      "type": "function",
+      "name": "RecordReadOpen",
+      "filePath": "packages/shared/pkg/storage/metrics.go",
+      "lineRange": [
+        60,
+        110
+      ],
+      "summary": "记录读取打开阶段的耗时与结果。",
+      "tags": [
+        "metrics",
+        "opentelemetry"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/metrics.go:RecordReadRead",
+      "type": "function",
+      "name": "RecordReadRead",
+      "filePath": "packages/shared/pkg/storage/metrics.go",
+      "lineRange": [
+        110,
+        150
+      ],
+      "summary": "记录 RangeReader.Read 的字节数与延迟。",
+      "tags": [
+        "metrics",
+        "read"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/metrics.go:RecordReadFetch",
+      "type": "function",
+      "name": "RecordReadFetch",
+      "filePath": "packages/shared/pkg/storage/metrics.go",
+      "lineRange": [
+        150,
+        200
+      ],
+      "summary": "记录从远端拉取对象的端到端耗时。",
+      "tags": [
+        "metrics",
+        "fetch"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/metrics.go:RecordPipelineEfficiency",
+      "type": "function",
+      "name": "RecordPipelineEfficiency",
+      "filePath": "packages/shared/pkg/storage/metrics.go",
+      "lineRange": [
+        200,
+        250
+      ],
+      "summary": "记录读取流水线的并行效率(实际并发/理论并发)。",
+      "tags": [
+        "metrics",
+        "pipeline"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/metrics.go:RecordReadSize",
+      "type": "function",
+      "name": "RecordReadSize",
+      "filePath": "packages/shared/pkg/storage/metrics.go",
+      "lineRange": [
+        250,
+        280
+      ],
+      "summary": "记录读取 blob 大小直方图。",
+      "tags": [
+        "metrics",
+        "size"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/metrics.go:RecordReadBlob",
+      "type": "function",
+      "name": "RecordReadBlob",
+      "filePath": "packages/shared/pkg/storage/metrics.go",
+      "lineRange": [
+        280,
+        300
+      ],
+      "summary": "记录单次 blob 读取的总体指标。",
+      "tags": [
+        "metrics",
+        "blob"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/shared/pkg/storage/io_wrappers.go",
+      "target": "class:packages/shared/pkg/storage/io_wrappers.go:rangeReader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/io_wrappers.go",
+      "target": "class:packages/shared/pkg/storage/io_wrappers.go:sectionReader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/io_wrappers.go",
+      "target": "class:packages/shared/pkg/storage/io_wrappers.go:meteredReader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/io_wrappers.go",
+      "target": "class:packages/shared/pkg/storage/io_wrappers.go:captureReader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/io_wrappers.go",
+      "target": "class:packages/shared/pkg/storage/io_wrappers.go:spanReader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/io_wrappers.go",
+      "target": "function:packages/shared/pkg/storage/io_wrappers.go:NewRangeReader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "class:packages/shared/pkg/storage/lock/atomic_file.go:AtomicImmutableFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "function:packages/shared/pkg/storage/lock/atomic_file.go:OpenFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "function:packages/shared/pkg/storage/lock/atomic_file.go:Write",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "function:packages/shared/pkg/storage/lock/atomic_file.go:Commit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/file_lock.go",
+      "target": "function:packages/shared/pkg/storage/lock/file_lock.go:TryAcquireLock",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/file_lock.go",
+      "target": "function:packages/shared/pkg/storage/lock/file_lock.go:ReleaseLock",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "function:packages/shared/pkg/storage/metrics.go:RecordReadOpen",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "function:packages/shared/pkg/storage/metrics.go:RecordReadRead",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "function:packages/shared/pkg/storage/metrics.go:RecordReadFetch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "function:packages/shared/pkg/storage/metrics.go:RecordPipelineEfficiency",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "function:packages/shared/pkg/storage/metrics.go:RecordReadSize",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "function:packages/shared/pkg/storage/metrics.go:RecordReadBlob",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/buffer_pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/compress_config.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/compress_decode.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/compress_encode.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/compress_frame_table_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/compress_frame_table.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/compress_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/compress_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/gcp_multipart_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/io_wrappers.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/metrics_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/mock_blob.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/mock_featureflagsclient.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/mock_ioreader.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/mock_seekable.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/mock_storageprovider.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/paths_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/paths_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/paths.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/sandbox_reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_aws.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_blob_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_compressed_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_seekable_compressed.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_seekable_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_seekable.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_fs_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_google.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_localupload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/apply_all_or_none.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/copy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/env_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/env.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/error_once_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/error_once.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/errorcollector_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/errorcollector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/filter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/grpc_codes.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/iter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/lazy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/logging.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/map_values.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/mocks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/move_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/move.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/must.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/promise_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/promise.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/ptr.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/resizable_semaphore_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/resizable_semaphore.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/set_once_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/set_once.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/strings.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/symlink.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/version_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/version.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/waitgroup_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "target": "file:packages/shared/pkg/utils/waitgroup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/file_lock.go",
+      "target": "file:packages/shared/pkg/logger/exporter_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/file_lock.go",
+      "target": "file:packages/shared/pkg/logger/exporter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/file_lock.go",
+      "target": "file:packages/shared/pkg/logger/fields.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/file_lock.go",
+      "target": "file:packages/shared/pkg/logger/grpc.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/file_lock.go",
+      "target": "file:packages/shared/pkg/logger/logger.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/storage/lock/atomic_file_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/storage/lock/file_lock_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/storage/lock/file_lock.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/telemetry/cloud_trace_propagator_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/telemetry/cloud_trace_propagator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/telemetry/config.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/telemetry/fields.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/telemetry/logs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/telemetry/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/telemetry/meters.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/telemetry/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/telemetry/pprof_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/telemetry/pprof.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/telemetry/runtime.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/telemetry/traces.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/telemetry/tracing.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/telemetry/writer.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/apply_all_or_none.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/copy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/env_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/env.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/error_once_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/error_once.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/errorcollector_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/errorcollector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/filter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/grpc_codes.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/iter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/lazy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/logging.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/map_values.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/mocks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/move_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/move.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/must.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/promise_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/promise.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/ptr.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/resizable_semaphore_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/resizable_semaphore.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/set_once_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/set_once.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/strings.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/symlink.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/version_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/version.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/waitgroup_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/metrics.go",
+      "target": "file:packages/shared/pkg/utils/waitgroup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v5_test.go",
+      "target": "file:packages/shared/pkg/storage/header/serialization.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/atomic_file_test.go",
+      "target": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/lock/file_lock_test.go",
+      "target": "file:packages/shared/pkg/storage/lock/file_lock.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

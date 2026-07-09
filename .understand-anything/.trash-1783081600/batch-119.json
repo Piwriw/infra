@@ -1,0 +1,124 @@
+{
+  "nodes": [
+    {
+      "id": "service:tests/.dockerignore",
+      "type": "service",
+      "name": ".dockerignore",
+      "filePath": "tests/.dockerignore",
+      "summary": "Docker 构建上下文忽略文件，限制测试目录构建镜像时仅打包 `e2b.Dockerfile`",
+      "tags": ["infrastructure", "containerization", "test", "dockerignore"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:tests/.env.template",
+      "type": "config",
+      "name": ".env.template",
+      "filePath": "tests/.env.template",
+      "summary": "E2E 测试环境变量模板，提供 `E2B_API_KEY` 占位以便测试调用 E2B API",
+      "tags": ["configuration", "test", "environment", "secret-placeholder"],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:tests/Makefile",
+      "type": "service",
+      "name": "Makefile",
+      "filePath": "tests/Makefile",
+      "summary": "测试目录的 Makefile，提供 `test` 目标，自动加载环境变量并执行 `test_e2b.sh`",
+      "tags": ["infrastructure", "makefile", "test", "build-orchestration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:tests/Makefile:test",
+      "type": "function",
+      "name": "test",
+      "filePath": "tests/Makefile",
+      "lineRange": [6, 8],
+      "summary": "Make 目标：透传域名前缀及 API Key，调用 `test_e2b.sh` 执行端到端冒烟测试",
+      "tags": ["test", "make-target", "e2e"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:tests/package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "tests/package.json",
+      "summary": "测试流水线 npm 包描述，声明 ESM 模块并依赖 `e2b` SDK 与 `dotenv`",
+      "tags": ["configuration", "test", "nodejs", "es-module", "e2b-sdk"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_e2b.sh",
+      "type": "file",
+      "name": "test_e2b.sh",
+      "filePath": "tests/test_e2b.sh",
+      "summary": "端到端冒烟测试脚本，启动 `base` 模板沙箱并验证返回 `Hello World`，同时校验 `e2b sandbox list`",
+      "tags": ["shell", "test", "e2e", "smoke-test", "sandbox"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:tests/Makefile",
+      "type": "contains",
+      "target": "step:tests/Makefile:test",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "step:tests/Makefile:test",
+      "type": "calls",
+      "target": "file:tests/test_e2b.sh",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "service:tests/Makefile",
+      "type": "depends_on",
+      "target": "file:tests/test_e2b.sh",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:tests/Makefile",
+      "type": "configures",
+      "target": "file:tests/test_e2b.sh",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/test_e2b.sh",
+      "type": "depends_on",
+      "target": "config:tests/.env.template",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/test_e2b.sh",
+      "type": "depends_on",
+      "target": "config:tests/package.json",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:tests/package.json",
+      "type": "configures",
+      "target": "file:tests/test_e2b.sh",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:tests/.env.template",
+      "type": "configures",
+      "target": "service:tests/Makefile",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:tests/.dockerignore",
+      "type": "related",
+      "target": "file:tests/test_e2b.sh",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

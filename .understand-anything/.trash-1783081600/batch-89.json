@@ -1,0 +1,87 @@
+{
+  "nodes": [
+    {
+      "id": "config:packages/api/.air.toml",
+      "type": "config",
+      "name": ".air.toml",
+      "filePath": "packages/api/.air.toml",
+      "summary": "Air live-reload 配置，用于在本地开发时自动重新编译和重启 API 服务。配置构建命令、日志和屏幕输出设置。",
+      "tags": ["configuration", "live-reload", "development", "build-system"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:packages/api/.env.local",
+      "type": "config",
+      "name": ".env.local",
+      "filePath": "packages/api/.env.local",
+      "summary": "本地开发环境变量配置，包含 ClickHouse、PostgreSQL、Redis、OTEL、Loki 等连接信息以及 sandbox 认证相关密钥。",
+      "tags": ["configuration", "environment", "development", "secrets"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "service:packages/api/Makefile",
+      "type": "service",
+      "name": "Makefile",
+      "filePath": "packages/api/Makefile",
+      "summary": "API 服务构建脚本，定义生成代码、构建、运行本地服务、热重载开发、打包上传镜像、测试、代码检查和本地密钥生成等 11 个目标。",
+      "tags": ["build-system", "deployment", "development", "automation", "ci-cd"],
+      "complexity": "moderate",
+      "languageNotes": "Makefile 使用条件判断区分本地和生产环境，build-and-upload 目标会调用 nomad-pack 部署到 GCP。"
+    },
+    {
+      "id": "config:packages/api/go.mod",
+      "type": "config",
+      "name": "go.mod",
+      "filePath": "packages/api/go.mod",
+      "summary": "API 包的 Go 模块定义文件，声明 Go 1.26.3 工具链并列出所有直接依赖（包括项目内 packages/shared）。",
+      "tags": ["configuration", "go-modules", "dependencies", "build-system"],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:packages/api/go.sum",
+      "type": "config",
+      "name": "go.sum",
+      "filePath": "packages/api/go.sum",
+      "summary": "Go 模块依赖的校验和文件，包含所有传递依赖的哈希值以确保构建可重现性和完整性。",
+      "tags": ["configuration", "go-modules", "dependencies", "checksum"],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:packages/api/.air.toml",
+      "target": "service:packages/api/Makefile",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/api/.env.local",
+      "target": "service:packages/api/Makefile",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/api/go.mod",
+      "target": "service:packages/api/Makefile",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/api/go.sum",
+      "target": "config:packages/api/go.mod",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/api/Makefile",
+      "target": "config:packages/api/go.mod",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

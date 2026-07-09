@@ -1,0 +1,731 @@
+{
+  "nodes": [
+    {
+      "id": "file:tests/integration/internal/api/generate.go",
+      "type": "file",
+      "name": "generate.go",
+      "filePath": "tests/integration/internal/api/generate.go",
+      "summary": "oapi-codegen 代码生成指令文件，用于从 OpenAPI 规范生成 API 客户端代码。",
+      "tags": [
+        "code-generation",
+        "openapi",
+        "go-generate",
+        "barrel"
+      ],
+      "complexity": "simple",
+      "languageNotes": "使用 //go:generate 指令触发 oapi-codegen 工具"
+    },
+    {
+      "id": "file:tests/integration/internal/api/generated.go",
+      "type": "file",
+      "name": "generated.go",
+      "filePath": "tests/integration/internal/api/generated.go",
+      "summary": "由 oapi-codegen 从 spec/openapi.yml 自动生成的 OpenAPI 客户端代码，包含所有 API 请求/响应类型和客户端方法。集成测试通过此客户端调用 API 服务。",
+      "tags": [
+        "openapi",
+        "generated-code",
+        "api-client",
+        "code-generation",
+        "integration-test"
+      ],
+      "complexity": "complex",
+      "languageNotes": "oapi-codegen 自动生成；超过 11000 行，包含数百个类型与请求函数"
+    },
+    {
+      "id": "file:tests/integration/internal/envd/generate.go",
+      "type": "file",
+      "name": "generate.go",
+      "filePath": "tests/integration/internal/envd/generate.go",
+      "summary": "oapi-codegen 代码生成指令文件，用于从 envd OpenAPI 规范生成 envd 客户端代码。",
+      "tags": [
+        "code-generation",
+        "openapi",
+        "go-generate",
+        "barrel"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/integration/internal/envd/generated.go",
+      "type": "file",
+      "name": "generated.go",
+      "filePath": "tests/integration/internal/envd/generated.go",
+      "summary": "由 oapi-codegen 从 packages/envd/spec/envd.yaml 自动生成的 envd HTTP 客户端代码，用于在集成测试中调用沙箱内 envd 守护进程。",
+      "tags": [
+        "openapi",
+        "generated-code",
+        "envd",
+        "api-client",
+        "integration-test"
+      ],
+      "complexity": "complex",
+      "languageNotes": "oapi-codegen 自动生成；近 2000 行，覆盖 envd 进程与文件系统 API"
+    },
+    {
+      "id": "file:tests/integration/internal/envd/types.go",
+      "type": "file",
+      "name": "types.go",
+      "filePath": "tests/integration/internal/envd/types.go",
+      "summary": "定义 SecureToken 类型别名（string），用于集成测试中对 envd 访问令牌进行简化建模。",
+      "tags": [
+        "type-definition",
+        "envd",
+        "test-fixture"
+      ],
+      "complexity": "simple",
+      "languageNotes": "类型别名 = string，避免在测试代码中引入 envd 的安全内存实现"
+    },
+    {
+      "id": "file:tests/integration/internal/main_test.go",
+      "type": "file",
+      "name": "main_test.go",
+      "filePath": "tests/integration/internal/main_test.go",
+      "summary": "集成测试的 TestMain 入口；同时在测试启动前预热缓存以加载基础模板，确保后续测试的沙箱创建快速且稳定。",
+      "tags": [
+        "entry-point",
+        "test-fixture",
+        "integration-test",
+        "test-main"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/setup/api_client.go",
+      "type": "file",
+      "name": "api_client.go",
+      "filePath": "tests/integration/internal/setup/api_client.go",
+      "summary": "提供集成测试使用的 E2B REST API 客户端构造器，以及一组请求编辑器（API Key、Access Token、Team ID、User-Agent 等认证头注入）。",
+      "tags": [
+        "test-fixture",
+        "api-client",
+        "authentication",
+        "integration-test",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/setup/constants.go",
+      "type": "file",
+      "name": "constants.go",
+      "filePath": "tests/integration/internal/setup/constants.go",
+      "summary": "集中定义集成测试所需的全局常量与配置：API/envd 超时、API 服务器地址、模板 ID、API Key、Access Token、Team/User ID 等，全部来自环境变量。",
+      "tags": [
+        "config",
+        "test-fixture",
+        "environment-variables",
+        "integration-test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/integration/internal/setup/db_client.go",
+      "type": "file",
+      "name": "db_client.go",
+      "filePath": "tests/integration/internal/setup/db_client.go",
+      "summary": "提供集成测试用的 PostgreSQL 客户端构造器，同时封装主数据库与 auth 数据库的 client，便于测试直接查询数据库状态。",
+      "tags": [
+        "test-fixture",
+        "database",
+        "integration-test",
+        "postgresql",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/main_test.go:TestMain",
+      "type": "function",
+      "name": "TestMain",
+      "filePath": "tests/integration/internal/main_test.go",
+      "lineRange": [
+        17,
+        21
+      ],
+      "summary": "Go 测试入口函数：执行测试前的环境初始化日志和测试运行。",
+      "tags": [
+        "test-main",
+        "entry-point"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/main_test.go:TestCacheTemplate",
+      "type": "function",
+      "name": "TestCacheTemplate",
+      "filePath": "tests/integration/internal/main_test.go",
+      "lineRange": [
+        24,
+        51
+      ],
+      "summary": "在所有测试运行前创建一个基础模板沙箱以预热模板缓存，加速后续测试的沙箱创建。包含失败日志和自动清理。",
+      "tags": [
+        "test-fixture",
+        "cache-warming",
+        "integration-test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/setup/api_client.go:GetAPIClient",
+      "type": "function",
+      "name": "GetAPIClient",
+      "filePath": "tests/integration/internal/setup/api_client.go",
+      "lineRange": [
+        11,
+        22
+      ],
+      "summary": "构造带超时的 E2B REST API ClientWithResponses，使用 APIServerURL 作为基础地址。",
+      "tags": [
+        "api-client",
+        "factory",
+        "test-fixture"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/setup/api_client.go:WithAPIKey",
+      "type": "function",
+      "name": "WithAPIKey",
+      "filePath": "tests/integration/internal/setup/api_client.go",
+      "lineRange": [
+        24,
+        34
+      ],
+      "summary": "返回请求编辑器，将 X-API-Key 头设置为默认或传入的 API Key。",
+      "tags": [
+        "authentication",
+        "middleware",
+        "api-key"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/setup/api_client.go:WithUserAgent",
+      "type": "function",
+      "name": "WithUserAgent",
+      "filePath": "tests/integration/internal/setup/api_client.go",
+      "lineRange": [
+        40,
+        46
+      ],
+      "summary": "返回请求编辑器，将 User-Agent 头设置为指定值。",
+      "tags": [
+        "middleware",
+        "http-headers"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/setup/api_client.go:WithAccessToken",
+      "type": "function",
+      "name": "WithAccessToken",
+      "filePath": "tests/integration/internal/setup/api_client.go",
+      "lineRange": [
+        48,
+        54
+      ],
+      "summary": "返回请求编辑器，将 Authorization 头设置为 Bearer AccessToken。",
+      "tags": [
+        "authentication",
+        "middleware",
+        "access-token"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/setup/api_client.go:WithTeamID",
+      "type": "function",
+      "name": "WithTeamID",
+      "filePath": "tests/integration/internal/setup/api_client.go",
+      "lineRange": [
+        56,
+        67
+      ],
+      "summary": "返回请求编辑器，将 X-Team-ID 头设置为默认或传入的 teamID。",
+      "tags": [
+        "authentication",
+        "middleware",
+        "team"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/setup/db_client.go:GetTestDBClient",
+      "type": "function",
+      "name": "GetTestDBClient",
+      "filePath": "tests/integration/internal/setup/db_client.go",
+      "lineRange": [
+        18,
+        38
+      ],
+      "summary": "从 POSTGRES_CONNECTION_STRING 构造主库与 auth 库的 client，并在测试结束时自动关闭。",
+      "tags": [
+        "database",
+        "factory",
+        "test-fixture"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:tests/integration/internal/setup/db_client.go:Database",
+      "type": "class",
+      "name": "Database",
+      "filePath": "tests/integration/internal/setup/db_client.go",
+      "lineRange": [
+        13,
+        16
+      ],
+      "summary": "封装主数据库与 auth 数据库 client 的测试用容器结构。",
+      "tags": [
+        "data-model",
+        "database",
+        "test-fixture"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "function:tests/integration/internal/main_test.go:TestMain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "function:tests/integration/internal/main_test.go:TestMain",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "function:tests/integration/internal/main_test.go:TestCacheTemplate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/main_test.go",
+      "target": "function:tests/integration/internal/main_test.go:TestCacheTemplate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "function:tests/integration/internal/setup/api_client.go:GetAPIClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "function:tests/integration/internal/setup/api_client.go:GetAPIClient",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "function:tests/integration/internal/setup/api_client.go:WithAPIKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "function:tests/integration/internal/setup/api_client.go:WithAPIKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "function:tests/integration/internal/setup/api_client.go:WithUserAgent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "function:tests/integration/internal/setup/api_client.go:WithUserAgent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "function:tests/integration/internal/setup/api_client.go:WithAccessToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "function:tests/integration/internal/setup/api_client.go:WithAccessToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "function:tests/integration/internal/setup/api_client.go:WithTeamID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "function:tests/integration/internal/setup/api_client.go:WithTeamID",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/setup/db_client.go",
+      "target": "function:tests/integration/internal/setup/db_client.go:GetTestDBClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/setup/db_client.go",
+      "target": "function:tests/integration/internal/setup/db_client.go:GetTestDBClient",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/setup/db_client.go",
+      "target": "class:tests/integration/internal/setup/db_client.go:Database",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/integration/internal/setup/db_client.go",
+      "target": "class:tests/integration/internal/setup/db_client.go:Database",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/api/generated.go",
+      "target": "file:tests/integration/internal/tests/api/apikey_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/tests/api/health_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/api/generated.go",
+      "target": "file:tests/integration/internal/tests/api/health_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/api/generated.go",
+      "target": "file:tests/integration/internal/tests/api/metrics/sandbox_list_metrics_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/api/generated.go",
+      "target": "file:tests/integration/internal/tests/api/metrics/sandbox_metrics_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/api/generated.go",
+      "target": "file:tests/integration/internal/tests/api/metrics/team_metrics_max_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/api/generated.go",
+      "target": "file:tests/integration/internal/tests/api/metrics/team_metrics_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/api/generated.go",
+      "target": "file:tests/integration/internal/tests/api/sandboxes/filesystem_only_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/api/generated.go",
+      "target": "file:tests/integration/internal/tests/api/sandboxes/sandbox_auto_pause_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/api/generated.go",
+      "target": "file:tests/integration/internal/tests/api/sandboxes/sandbox_connect_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/api/generated.go",
+      "target": "file:tests/integration/internal/tests/api/sandboxes/sandbox_detail_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/api/generated.go",
+      "target": "file:tests/integration/internal/tests/api/sandboxes/sandbox_fuse_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/api/generated.go",
+      "target": "file:tests/integration/internal/tests/api/sandboxes/sandbox_internet_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/api/generated.go",
+      "target": "file:tests/integration/internal/tests/api/sandboxes/sandbox_kill_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/api/generated.go",
+      "target": "file:tests/integration/internal/tests/api/sandboxes/sandbox_list_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/internal/setup/api_client.go",
+      "target": "file:tests/integration/internal/main_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

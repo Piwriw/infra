@@ -1,0 +1,1931 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 9,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "docs/MODULE_GUIDE.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 1274,
+      "nonEmptyLines": 1006,
+      "sections": [
+        {
+          "heading": "Envd 模块详细指南",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "目录",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "1. 概述与架构定位",
+          "level": 2,
+          "line": 67
+        },
+        {
+          "heading": "2. 入口与启动 (main.go)",
+          "level": 2,
+          "line": 83
+        },
+        {
+          "heading": "3. REST API 层 (internal/api)",
+          "level": 2,
+          "line": 125
+        },
+        {
+          "heading": "3.1 API 核心结构 (store.go)",
+          "level": 3,
+          "line": 129
+        },
+        {
+          "heading": "3.2 Init/Freeze/Unfreeze (init.go)",
+          "level": 3,
+          "line": 164
+        },
+        {
+          "heading": "`POST /init`",
+          "level": 4,
+          "line": 166
+        },
+        {
+          "heading": "`POST /freeze`",
+          "level": 4,
+          "line": 190
+        },
+        {
+          "heading": "`POST /unfreeze`",
+          "level": 4,
+          "line": 194
+        },
+        {
+          "heading": "3.3 文件上传 (upload.go)",
+          "level": 3,
+          "line": 200
+        },
+        {
+          "heading": "3.4 文件下载 (download.go)",
+          "level": 3,
+          "line": 266
+        },
+        {
+          "heading": "3.5 文件合并 (compose.go)",
+          "level": 3,
+          "line": 287
+        },
+        {
+          "heading": "3.6 授权与签名 (auth.go)",
+          "level": 3,
+          "line": 310
+        },
+        {
+          "heading": "3.7 安全令牌 (secure_token.go)",
+          "level": 3,
+          "line": 352
+        },
+        {
+          "heading": "3.8 编码协商 (encoding.go)",
+          "level": 3,
+          "line": 364
+        },
+        {
+          "heading": "3.9 环境变量查询 (envs.go)",
+          "level": 3,
+          "line": 373
+        },
+        {
+          "heading": "4. Process gRPC 服务 (internal/services/process)",
+          "level": 2,
+          "line": 379
+        },
+        {
+          "heading": "4.1 服务容器 (service.go)",
+          "level": 3,
+          "line": 383
+        },
+        {
+          "heading": "4.2 进程 Handler (handler/handler.go)",
+          "level": 3,
+          "line": 396
+        },
+        {
+          "heading": "4.3 多路复用通道 (handler/multiplex.go)",
+          "level": 3,
+          "line": 497
+        },
+        {
+          "heading": "4.4 Start RPC (start.go)",
+          "level": 3,
+          "line": 540
+        },
+        {
+          "heading": "4.5 Connect RPC (connect.go)",
+          "level": 3,
+          "line": 558
+        },
+        {
+          "heading": "4.6 输入处理 (input.go)",
+          "level": 3,
+          "line": 567
+        },
+        {
+          "heading": "4.7 信号与更新 (signal.go / update.go)",
+          "level": 3,
+          "line": 575
+        },
+        {
+          "heading": "4.8 进程列表 (list.go)",
+          "level": 3,
+          "line": 582
+        },
+        {
+          "heading": "5. Filesystem gRPC 服务 (internal/services/filesystem)",
+          "level": 2,
+          "line": 588
+        },
+        {
+          "heading": "5.1 服务容器 (service.go)",
+          "level": 3,
+          "line": 592
+        },
+        {
+          "heading": "5.2 目录操作 (dir.go)",
+          "level": 3,
+          "line": 604
+        },
+        {
+          "heading": "5.3 文件移动 (move.go)",
+          "level": 3,
+          "line": 616
+        },
+        {
+          "heading": "5.4 文件删除 (remove.go)",
+          "level": 3,
+          "line": 620
+        },
+        {
+          "heading": "5.5 文件元信息 (stat.go)",
+          "level": 3,
+          "line": 624
+        },
+        {
+          "heading": "5.6 目录监听 (watch.go / watch_sync.go)",
+          "level": 3,
+          "line": 628
+        },
+        {
+          "heading": "5.7 工具函数 (utils.go)",
+          "level": 3,
+          "line": 686
+        },
+        {
+          "heading": "6. Cgroup 管理 (internal/services/cgroups)",
+          "level": 2,
+          "line": 696
+        },
+        {
+          "heading": "7. 主机交互层 (internal/host)",
+          "level": 2,
+          "line": 758
+        },
+        {
+          "heading": "7.1 MMDS 客户端 (mmds.go)",
+          "level": 3,
+          "line": 760
+        },
+        {
+          "heading": "7.2 MMDS 路由 (mmds_route)",
+          "level": 3,
+          "line": 775
+        },
+        {
+          "heading": "7.3 主机指标 (metrics.go)",
+          "level": 3,
+          "line": 780
+        },
+        {
+          "heading": "7.4 CA 证书安装 (cacerts.go)",
+          "level": 3,
+          "line": 791
+        },
+        {
+          "heading": "8. 日志系统 (internal/logs)",
+          "level": 2,
+          "line": 800
+        },
+        {
+          "heading": "8.1 Logger 工厂 (logger.go)",
+          "level": 3,
+          "line": 802
+        },
+        {
+          "heading": "8.2 HTTP 日志导出 (exporter/)",
+          "level": 3,
+          "line": 810
+        },
+        {
+          "heading": "8.3 速率限制 (ratelimit/)",
+          "level": 3,
+          "line": 818
+        },
+        {
+          "heading": "8.4 gRPC 拦截器 (interceptor.go)",
+          "level": 3,
+          "line": 825
+        },
+        {
+          "heading": "9. 权限与认证 (internal/permissions)",
+          "level": 2,
+          "line": 837
+        },
+        {
+          "heading": "10. 端口转发 (internal/port)",
+          "level": 2,
+          "line": 851
+        },
+        {
+          "heading": "Scanner (scan.go)",
+          "level": 3,
+          "line": 858
+        },
+        {
+          "heading": "ScannerSubscriber (scanSubscriber.go)",
+          "level": 3,
+          "line": 875
+        },
+        {
+          "heading": "ScannerFilter (scanfilter.go)",
+          "level": 3,
+          "line": 890
+        },
+        {
+          "heading": "Forwarder (forward.go)",
+          "level": 3,
+          "line": 903
+        },
+        {
+          "heading": "11. Legacy 兼容层 (internal/services/legacy)",
+          "level": 2,
+          "line": 951
+        },
+        {
+          "heading": "12. 工具模块 (internal/utils)",
+          "level": 2,
+          "line": 965
+        },
+        {
+          "heading": "13. Proto 接口定义 (spec/)",
+          "level": 2,
+          "line": 977
+        },
+        {
+          "heading": "Process Service (`spec/process/process.proto`)",
+          "level": 3,
+          "line": 979
+        },
+        {
+          "heading": "Filesystem Service (`spec/filesystem/filesystem.proto`)",
+          "level": 3,
+          "line": 1000
+        },
+        {
+          "heading": "14. 代码生成",
+          "level": 2,
+          "line": 1024
+        },
+        {
+          "heading": "15. 版本管理",
+          "level": 2,
+          "line": 1045
+        },
+        {
+          "heading": "16. 架构总览图",
+          "level": 2,
+          "line": 1057
+        },
+        {
+          "heading": "17. 端到端数据流",
+          "level": 2,
+          "line": 1115
+        },
+        {
+          "heading": "17.1 沙箱启动初始化",
+          "level": 3,
+          "line": 1117
+        },
+        {
+          "heading": "17.2 进程启动与交互",
+          "level": 3,
+          "line": 1144
+        },
+        {
+          "heading": "17.3 文件上传",
+          "level": 3,
+          "line": 1173
+        },
+        {
+          "heading": "17.4 文件系统监听",
+          "level": 3,
+          "line": 1193
+        },
+        {
+          "heading": "17.5 暂停前冻结 / 恢复后解冻",
+          "level": 3,
+          "line": 1211
+        },
+        {
+          "heading": "18. 环境变量与命令行参数参考",
+          "level": 2,
+          "line": 1239
+        },
+        {
+          "heading": "命令行参数",
+          "level": 3,
+          "line": 1241
+        },
+        {
+          "heading": "内部环境变量",
+          "level": 3,
+          "line": 1253
+        },
+        {
+          "heading": "请求头",
+          "level": 3,
+          "line": 1260
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 69
+      }
+    },
+    {
+      "path": "docs/README_zh.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 387,
+      "nonEmptyLines": 283,
+      "sections": [
+        {
+          "heading": "Client-Proxy 详解",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 定位与职责",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "2. 目录结构",
+          "level": 2,
+          "line": 30
+        },
+        {
+          "heading": "3. 配置（Configuration）",
+          "level": 2,
+          "line": 59
+        },
+        {
+          "heading": "4. 启动与运行时装配",
+          "level": 2,
+          "line": 81
+        },
+        {
+          "heading": "5. 请求处理流程",
+          "level": 2,
+          "line": 102
+        },
+        {
+          "heading": "5.1 入口与 Host 解析",
+          "level": 3,
+          "line": 104
+        },
+        {
+          "heading": "5.2 Catalog 解析（catalogResolution）",
+          "level": 3,
+          "line": 138
+        },
+        {
+          "heading": "5.3 Reverse Proxy 行为",
+          "level": 3,
+          "line": 161
+        },
+        {
+          "heading": "6. Paused Sandbox Auto-Resume",
+          "level": 2,
+          "line": 174
+        },
+        {
+          "heading": "6.1 接口契约",
+          "level": 3,
+          "line": 178
+        },
+        {
+          "heading": "6.2 gRPC 实现（`paused_sandbox_resumer_grpc.go`）",
+          "level": 3,
+          "line": 190
+        },
+        {
+          "heading": "6.3 鉴权（`grpc_resume_auth.go`）",
+          "level": 3,
+          "line": 216
+        },
+        {
+          "heading": "6.4 Resume 结果映射（`handlePausedSandbox`）",
+          "level": 3,
+          "line": 225
+        },
+        {
+          "heading": "6.5 启停控制",
+          "level": 3,
+          "line": 238
+        },
+        {
+          "heading": "7. Host 掩码 / 组合 Host",
+          "level": 2,
+          "line": 249
+        },
+        {
+          "heading": "8. 可观测性（OpenTelemetry）",
+          "level": 2,
+          "line": 269
+        },
+        {
+          "heading": "9. 健康状态与优雅关停",
+          "level": 2,
+          "line": 287
+        },
+        {
+          "heading": "10. 测试矩阵",
+          "level": 2,
+          "line": 315
+        },
+        {
+          "heading": "11. 关键设计权衡",
+          "level": 2,
+          "line": 331
+        },
+        {
+          "heading": "12. 与上下游的接口契约",
+          "level": 2,
+          "line": 351
+        },
+        {
+          "heading": "上游（入站）",
+          "level": 3,
+          "line": 353
+        },
+        {
+          "heading": "下游（出站）",
+          "level": 3,
+          "line": 358
+        },
+        {
+          "heading": "元数据头（`shared/pkg/grpc/proxy/metadata.go`）",
+          "level": 3,
+          "line": 364
+        },
+        {
+          "heading": "13. 总结",
+          "level": 2,
+          "line": 376
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 25
+      }
+    },
+    {
+      "path": "docs/SCHEMA.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 410,
+      "nonEmptyLines": 337,
+      "sections": [
+        {
+          "heading": "E2B 数据库 Schema 全景",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "0. 顶层鸟瞰（ER 总览）",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "1. 业务域分组",
+          "level": 2,
+          "line": 53
+        },
+        {
+          "heading": "2. 各表详细关系",
+          "level": 2,
+          "line": 69
+        },
+        {
+          "heading": "2.1 身份认证簇",
+          "level": 3,
+          "line": 71
+        },
+        {
+          "heading": "`auth.users`",
+          "level": 4,
+          "line": 73
+        },
+        {
+          "heading": "`public.users`",
+          "level": 4,
+          "line": 81
+        },
+        {
+          "heading": "`user_identities`",
+          "level": 4,
+          "line": 94
+        },
+        {
+          "heading": "2.2 租户与权限簇",
+          "level": 3,
+          "line": 102
+        },
+        {
+          "heading": "`tiers`",
+          "level": 4,
+          "line": 104
+        },
+        {
+          "heading": "`teams`",
+          "level": 4,
+          "line": 113
+        },
+        {
+          "heading": "`users_teams`",
+          "level": 4,
+          "line": 125
+        },
+        {
+          "heading": "2.3 凭据与令牌簇",
+          "level": 3,
+          "line": 139
+        },
+        {
+          "heading": "`team_api_keys`",
+          "level": 4,
+          "line": 143
+        },
+        {
+          "heading": "`access_tokens`",
+          "level": 4,
+          "line": 152
+        },
+        {
+          "heading": "2.4 模板与构建簇",
+          "level": 3,
+          "line": 159
+        },
+        {
+          "heading": "`envs`",
+          "level": 4,
+          "line": 161
+        },
+        {
+          "heading": "`env_aliases`",
+          "level": 4,
+          "line": 181
+        },
+        {
+          "heading": "`env_builds`",
+          "level": 4,
+          "line": 189
+        },
+        {
+          "heading": "`env_build_assignments`",
+          "level": 4,
+          "line": 205
+        },
+        {
+          "heading": "`active_template_builds`",
+          "level": 4,
+          "line": 221
+        },
+        {
+          "heading": "2.5 沙箱与快照簇",
+          "level": 3,
+          "line": 231
+        },
+        {
+          "heading": "`snapshots`",
+          "level": 4,
+          "line": 233
+        },
+        {
+          "heading": "`snapshot_templates`",
+          "level": 4,
+          "line": 252
+        },
+        {
+          "heading": "2.6 容量与基础设施簇",
+          "level": 3,
+          "line": 260
+        },
+        {
+          "heading": "`clusters`",
+          "level": 4,
+          "line": 262
+        },
+        {
+          "heading": "`volumes`",
+          "level": 4,
+          "line": 270
+        },
+        {
+          "heading": "`addons`",
+          "level": 4,
+          "line": 278
+        },
+        {
+          "heading": "视图：`team_limits`",
+          "level": 4,
+          "line": 290
+        },
+        {
+          "heading": "3. 关键关系详解",
+          "level": 2,
+          "line": 299
+        },
+        {
+          "heading": "3.1 env ↔ build 的多对多（去 FK 后的反范式）",
+          "level": 3,
+          "line": 301
+        },
+        {
+          "heading": "3.2 auth.users → public.users 的\"投影\"",
+          "level": 3,
+          "line": 321
+        },
+        {
+          "heading": "3.3 配额的两层叠加",
+          "level": 3,
+          "line": 340
+        },
+        {
+          "heading": "3.4 凭据的\"hash + 显示用前后缀\"模式",
+          "level": 3,
+          "line": 357
+        },
+        {
+          "heading": "4. 索引策略",
+          "level": 2,
+          "line": 373
+        },
+        {
+          "heading": "5. 触发器（最终状态）",
+          "level": 2,
+          "line": 388
+        },
+        {
+          "heading": "6. 演进式建模的几个观察",
+          "level": 2,
+          "line": 403
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 37
+      }
+    },
+    {
+      "path": "docs/clickhouse-package.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 619,
+      "nonEmptyLines": 485,
+      "sections": [
+        {
+          "heading": "`packages/clickhouse/` 原理详解",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 概述",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "2. 目录结构",
+          "level": 2,
+          "line": 23
+        },
+        {
+          "heading": "3. 客户端与连接管理",
+          "level": 2,
+          "line": 55
+        },
+        {
+          "heading": "3.1 接口契约",
+          "level": 3,
+          "line": 59
+        },
+        {
+          "heading": "3.2 连接池",
+          "level": 3,
+          "line": 80
+        },
+        {
+          "heading": "3.3 Noop 实现",
+          "level": 3,
+          "line": 96
+        },
+        {
+          "heading": "4. 通用泛型批量器 `batcher.Batcher[T]`",
+          "level": 2,
+          "line": 100
+        },
+        {
+          "heading": "4.1 数据结构",
+          "level": 3,
+          "line": 104
+        },
+        {
+          "heading": "4.2 触发模型",
+          "level": 3,
+          "line": 121
+        },
+        {
+          "heading": "4.3 默认参数与遥测",
+          "level": 3,
+          "line": 129
+        },
+        {
+          "heading": "4.4 关键设计",
+          "level": 3,
+          "line": 151
+        },
+        {
+          "heading": "5. 事件投递：`events.ClickhouseDelivery`",
+          "level": 2,
+          "line": 157
+        },
+        {
+          "heading": "5.1 数据模型",
+          "level": 3,
+          "line": 161
+        },
+        {
+          "heading": "5.2 构造与配置",
+          "level": 3,
+          "line": 179
+        },
+        {
+          "heading": "5.3 Publish 路径",
+          "level": 3,
+          "line": 193
+        },
+        {
+          "heading": "6. 主机统计投递：`hoststats.ClickhouseDelivery`",
+          "level": 2,
+          "line": 212
+        },
+        {
+          "heading": "6.1 数据模型",
+          "level": 3,
+          "line": 216
+        },
+        {
+          "heading": "6.2 Delivery 抽象",
+          "level": 3,
+          "line": 246
+        },
+        {
+          "heading": "6.3 写入流程",
+          "level": 3,
+          "line": 265
+        },
+        {
+          "heading": "7. 查询接口",
+          "level": 2,
+          "line": 278
+        },
+        {
+          "heading": "7.1 沙箱级查询（`pkg/sandbox.go`）",
+          "level": 3,
+          "line": 280
+        },
+        {
+          "heading": "7.1.1 `QueryLatestMetrics(sandboxIDs, teamID)`",
+          "level": 4,
+          "line": 294
+        },
+        {
+          "heading": "7.1.2 `QuerySandboxTimeRange(sandboxID, teamID)`",
+          "level": 4,
+          "line": 311
+        },
+        {
+          "heading": "7.1.3 `QuerySandboxMetrics(sandboxID, teamID, start, end, step)`",
+          "level": 4,
+          "line": 321
+        },
+        {
+          "heading": "7.2 团队级查询（`pkg/team.go`）",
+          "level": 3,
+          "line": 337
+        },
+        {
+          "heading": "7.2.1 `QueryTeamMetrics`（速率+并发时间序列）",
+          "level": 4,
+          "line": 351
+        },
+        {
+          "heading": "7.2.2 `QueryMaxStartRateTeamMetrics`（峰值创建速率）",
+          "level": 4,
+          "line": 386
+        },
+        {
+          "heading": "7.2.3 `QueryMaxConcurrentTeamMetrics`（峰值并发）",
+          "level": 4,
+          "line": 403
+        },
+        {
+          "heading": "8. 工具函数（`pkg/utils/`）",
+          "level": 2,
+          "line": 414
+        },
+        {
+          "heading": "8.1 `ValidateRange(start, end)`",
+          "level": 3,
+          "line": 416
+        },
+        {
+          "heading": "8.2 `CalculateStep(start, end)`",
+          "level": 3,
+          "line": 427
+        },
+        {
+          "heading": "8.3 `GetSandboxStartEndTime(ctx, store, teamID, sandboxID, qStart, qEnd)`",
+          "level": 3,
+          "line": 440
+        },
+        {
+          "heading": "9. 数据模型与表结构",
+          "level": 2,
+          "line": 454
+        },
+        {
+          "heading": "9.1 OTel 入口：metrics_gauge / metrics_sum",
+          "level": 3,
+          "line": 476
+        },
+        {
+          "heading": "9.2 Materialized View 路由",
+          "level": 3,
+          "line": 481
+        },
+        {
+          "heading": "9.3 索引与投影",
+          "level": 3,
+          "line": 500
+        },
+        {
+          "heading": "9.4 TTL 与 `ttl_only_drop_parts`",
+          "level": 3,
+          "line": 512
+        },
+        {
+          "heading": "9.5 v1 → v2 事件迁移",
+          "level": 3,
+          "line": 524
+        },
+        {
+          "heading": "10. 迁移与运维",
+          "level": 2,
+          "line": 528
+        },
+        {
+          "heading": "10.1 migrator 镜像",
+          "level": 3,
+          "line": 530
+        },
+        {
+          "heading": "10.2 Makefile 目标",
+          "level": 3,
+          "line": 534
+        },
+        {
+          "heading": "11. 部署（IaC）",
+          "level": 2,
+          "line": 543
+        },
+        {
+          "heading": "11.1 GCP",
+          "level": 3,
+          "line": 547
+        },
+        {
+          "heading": "11.2 AWS",
+          "level": 3,
+          "line": 556
+        },
+        {
+          "heading": "12. 写入路径全景图",
+          "level": 2,
+          "line": 562
+        },
+        {
+          "heading": "13. 设计要点与权衡",
+          "level": 2,
+          "line": 591
+        },
+        {
+          "heading": "14. 关键文件速查表",
+          "level": 2,
+          "line": 604
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 48
+      }
+    },
+    {
+      "path": "docs/docker-reverse-proxy.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 565,
+      "nonEmptyLines": 454,
+      "sections": [
+        {
+          "heading": "`packages/docker-reverse-proxy/` 原理详解",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 背景与定位",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "1.1 为什么需要它",
+          "level": 3,
+          "line": 7
+        },
+        {
+          "heading": "1.2 它做什么 / 不做什么",
+          "level": 3,
+          "line": 17
+        },
+        {
+          "heading": "1.3 在系统中的位置",
+          "level": 3,
+          "line": 27
+        },
+        {
+          "heading": "2. 目录结构",
+          "level": 2,
+          "line": 37
+        },
+        {
+          "heading": "3. 启动流程（`main.go`）",
+          "level": 2,
+          "line": 64
+        },
+        {
+          "heading": "3.1 路由表（一个 catch-all）",
+          "level": 3,
+          "line": 77
+        },
+        {
+          "heading": "4. 核心数据结构 `APIStore`（`handlers/store.go`）",
+          "level": 2,
+          "line": 113
+        },
+        {
+          "heading": "5. 认证与 token 流",
+          "level": 2,
+          "line": 147
+        },
+        {
+          "heading": "5.1 Token 形态校验（`auth.ExtractAccessToken`）",
+          "level": 3,
+          "line": 151
+        },
+        {
+          "heading": "5.2 token 合法性校验（`auth.ValidateAccessToken`）",
+          "level": 3,
+          "line": 165
+        },
+        {
+          "heading": "5.3 模板授权校验（`auth.Validate`）",
+          "level": 3,
+          "line": 176
+        },
+        {
+          "heading": "6. 短期 Docker Token 颁发（`handlers/token.go`）",
+          "level": 2,
+          "line": 192
+        },
+        {
+          "heading": "6.1 流程",
+          "level": 3,
+          "line": 196
+        },
+        {
+          "heading": "6.2 Scope 正则",
+          "level": 3,
+          "line": 234
+        },
+        {
+          "heading": "6.3 `AuthCache.Create` 的设计",
+          "level": 3,
+          "line": 244
+        },
+        {
+          "heading": "7. 反向代理（`handlers/proxy.go`）",
+          "level": 2,
+          "line": 264
+        },
+        {
+          "heading": "7.1 三段式保护",
+          "level": 3,
+          "line": 266
+        },
+        {
+          "heading": "7.2 路径改写",
+          "level": 3,
+          "line": 289
+        },
+        {
+          "heading": "7.3 越权防护层级",
+          "level": 3,
+          "line": 303
+        },
+        {
+          "heading": "8. 缓存层（`cache/auth.go`）",
+          "level": 2,
+          "line": 314
+        },
+        {
+          "heading": "9. 工具函数（`utils/`）",
+          "level": 2,
+          "line": 334
+        },
+        {
+          "heading": "9.1 `SetDockerUnauthorizedHeaders`（`authorization.go`）",
+          "level": 3,
+          "line": 336
+        },
+        {
+          "heading": "9.2 `GenerateRandomString`（`random.go`）",
+          "level": 3,
+          "line": 349
+        },
+        {
+          "heading": "9.3 `SubstringMax`（`string.go`）",
+          "level": 3,
+          "line": 363
+        },
+        {
+          "heading": "10. 配置与启动校验（`constants/main.go`）",
+          "level": 2,
+          "line": 375
+        },
+        {
+          "heading": "11. 部署（IaC）",
+          "level": 2,
+          "line": 399
+        },
+        {
+          "heading": "11.1 GCP 资源（`iac/provider-gcp/docker-reverse-proxy.tf`）",
+          "level": 3,
+          "line": 401
+        },
+        {
+          "heading": "11.2 Nomad Job（`iac/provider-gcp/nomad/jobs/docker-reverse-proxy.hcl`）",
+          "level": 3,
+          "line": 428
+        },
+        {
+          "heading": "11.3 Dockerfile",
+          "level": 3,
+          "line": 472
+        },
+        {
+          "heading": "12. 测试覆盖",
+          "level": 2,
+          "line": 480
+        },
+        {
+          "heading": "13. 完整请求流（时序图）",
+          "level": 2,
+          "line": 489
+        },
+        {
+          "heading": "14. 设计要点与权衡",
+          "level": 2,
+          "line": 531
+        },
+        {
+          "heading": "15. 关键文件速查表",
+          "level": 2,
+          "line": 547
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 35
+      }
+    },
+    {
+      "path": "docs/envd-module.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 352,
+      "nonEmptyLines": 280,
+      "sections": [
+        {
+          "heading": "Envd 模块详细介绍",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "📌 模块定位",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "🏗️ 顶层结构",
+          "level": 2,
+          "line": 23
+        },
+        {
+          "heading": "🔌 HTTP API（`internal/api/`）",
+          "level": 2,
+          "line": 62
+        },
+        {
+          "heading": "🛠️ gRPC 服务（`internal/services/`）",
+          "level": 2,
+          "line": 87
+        },
+        {
+          "heading": "Process 服务（`internal/services/process/`）",
+          "level": 3,
+          "line": 89
+        },
+        {
+          "heading": "Filesystem 服务（`internal/services/filesystem/`）",
+          "level": 3,
+          "line": 119
+        },
+        {
+          "heading": "Cgroups 服务（`internal/services/cgroups/`）",
+          "level": 3,
+          "line": 132
+        },
+        {
+          "heading": "Legacy 兼容层（`internal/services/legacy/`）",
+          "level": 3,
+          "line": 139
+        },
+        {
+          "heading": "🌐 主机层服务（`internal/host/`）",
+          "level": 2,
+          "line": 153
+        },
+        {
+          "heading": "MMDS 客户端（MicroVM Metadata Service）",
+          "level": 3,
+          "line": 155
+        },
+        {
+          "heading": "CA 证书安装器（`cacerts.go`）",
+          "level": 3,
+          "line": 161
+        },
+        {
+          "heading": "指标采集（`metrics.go`）",
+          "level": 3,
+          "line": 169
+        },
+        {
+          "heading": "📝 日志系统（`internal/logs/`）",
+          "level": 2,
+          "line": 176
+        },
+        {
+          "heading": "🔐 权限与路径（`internal/permissions/`）",
+          "level": 2,
+          "line": 184
+        },
+        {
+          "heading": "🔌 端口子系统（`internal/port/`）",
+          "level": 2,
+          "line": 191
+        },
+        {
+          "heading": "🧰 工具与运行时上下文（`internal/utils/` + `internal/execcontext/`）",
+          "level": 2,
+          "line": 199
+        },
+        {
+          "heading": "🚀 主入口 `main.go`（300 行）",
+          "level": 2,
+          "line": 208
+        },
+        {
+          "heading": "🔁 关键调用流",
+          "level": 2,
+          "line": 221
+        },
+        {
+          "heading": "沙箱启动时",
+          "level": 3,
+          "line": 223
+        },
+        {
+          "heading": "用户执行命令时",
+          "level": 3,
+          "line": 240
+        },
+        {
+          "heading": "暂停 / 恢复时",
+          "level": 3,
+          "line": 261
+        },
+        {
+          "heading": "🎯 关键设计模式",
+          "level": 2,
+          "line": 290
+        },
+        {
+          "heading": "📦 依赖与外部集成",
+          "level": 2,
+          "line": 300
+        },
+        {
+          "heading": "🔍 关键文件速查",
+          "level": 2,
+          "line": 309
+        },
+        {
+          "heading": "🚢 部署与调试",
+          "level": 2,
+          "line": 330
+        },
+        {
+          "heading": "📋 总结",
+          "level": 2,
+          "line": 339
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 27
+      }
+    },
+    {
+      "path": "docs/envd-package.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 928,
+      "nonEmptyLines": 747,
+      "sections": [
+        {
+          "heading": "`packages/envd/` 原理详解",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 背景与定位",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "1.1 它是什么",
+          "level": 3,
+          "line": 7
+        },
+        {
+          "heading": "1.2 它在 VM 里的位置",
+          "level": 3,
+          "line": 22
+        },
+        {
+          "heading": "1.3 版本机制（`pkg/version.go`）",
+          "level": 3,
+          "line": 31
+        },
+        {
+          "heading": "2. 目录结构",
+          "level": 2,
+          "line": 46
+        },
+        {
+          "heading": "3. 启动流程（`main.go`）",
+          "level": 2,
+          "line": 116
+        },
+        {
+          "heading": "3.1 关键 flag",
+          "level": 3,
+          "line": 140
+        },
+        {
+          "heading": "3.2 三种 cgroup 管理器",
+          "level": 3,
+          "line": 150
+        },
+        {
+          "heading": "4. Protobuf 契约（`spec/`）",
+          "level": 2,
+          "line": 160
+        },
+        {
+          "heading": "4.1 `process.proto`",
+          "level": 3,
+          "line": 162
+        },
+        {
+          "heading": "4.2 `filesystem.proto`",
+          "level": 3,
+          "line": 187
+        },
+        {
+          "heading": "4.3 兼容旧 SDK（`internal/services/legacy/`）",
+          "level": 3,
+          "line": 210
+        },
+        {
+          "heading": "5. 进程管理（`internal/services/process/`）",
+          "level": 2,
+          "line": 227
+        },
+        {
+          "heading": "5.1 整体结构",
+          "level": 3,
+          "line": 229
+        },
+        {
+          "heading": "5.2 单进程 `Handler`（`handler/handler.go`）",
+          "level": 3,
+          "line": 241
+        },
+        {
+          "heading": "5.3 流式事件多路复用 `MultiplexedChannel[T]`",
+          "level": 3,
+          "line": 309
+        },
+        {
+          "heading": "5.4 `Start` 时序",
+          "level": 3,
+          "line": 343
+        },
+        {
+          "heading": "5.5 输入侧",
+          "level": 3,
+          "line": 380
+        },
+        {
+          "heading": "5.6 Keepalive",
+          "level": 3,
+          "line": 396
+        },
+        {
+          "heading": "6. 文件系统服务（`internal/services/filesystem/`）",
+          "level": 2,
+          "line": 407
+        },
+        {
+          "heading": "6.1 普通文件操作",
+          "level": 3,
+          "line": 421
+        },
+        {
+          "heading": "6.2 文件监听两套接口",
+          "level": 3,
+          "line": 434
+        },
+        {
+          "heading": "7. MMDS 与元数据获取（`internal/host/mmds.go`）",
+          "level": 2,
+          "line": 448
+        },
+        {
+          "heading": "7.1 什么是 MMDS",
+          "level": 3,
+          "line": 450
+        },
+        {
+          "heading": "7.2 轮询流程",
+          "level": 3,
+          "line": 454
+        },
+        {
+          "heading": "7.3 MMDS 路由自愈（`mmds_route_linux.go`）",
+          "level": 3,
+          "line": 482
+        },
+        {
+          "heading": "8. cgroup 资源管控（`internal/services/cgroups/`）",
+          "level": 2,
+          "line": 494
+        },
+        {
+          "heading": "8.1 三种进程类型",
+          "level": 3,
+          "line": 496
+        },
+        {
+          "heading": "8.2 实现机制",
+          "level": 3,
+          "line": 520
+        },
+        {
+          "heading": "8.3 `Freeze` / `Unfreeze`",
+          "level": 3,
+          "line": 530
+        },
+        {
+          "heading": "9. 自动端口转发（`internal/port/`）",
+          "level": 2,
+          "line": 545
+        },
+        {
+          "heading": "9.1 为什么需要它",
+          "level": 3,
+          "line": 547
+        },
+        {
+          "heading": "9.2 扫描器",
+          "level": 3,
+          "line": 554
+        },
+        {
+          "heading": "9.3 转发器",
+          "level": 3,
+          "line": 574
+        },
+        {
+          "heading": "10. 认证与权限（`internal/permissions/`）",
+          "level": 2,
+          "line": 591
+        },
+        {
+          "heading": "10.1 Basic Auth 解析",
+          "level": 3,
+          "line": 593
+        },
+        {
+          "heading": "10.2 Access Token 与签名（`api/auth.go`）",
+          "level": 3,
+          "line": 616
+        },
+        {
+          "heading": "10.3 路径签名",
+          "level": 3,
+          "line": 642
+        },
+        {
+          "heading": "10.4 `/init` MMDS hash 校验（`api/init.go`）",
+          "level": 3,
+          "line": 662
+        },
+        {
+          "heading": "11. `/init` 端点（`api/init.go`）",
+          "level": 2,
+          "line": 681
+        },
+        {
+          "heading": "12. NFS 卷挂载（`api/init.go`）",
+          "level": 2,
+          "line": 716
+        },
+        {
+          "heading": "13. 服务端 OpenAPI/JSON 接口（`internal/api/`）",
+          "level": 2,
+          "line": 747
+        },
+        {
+          "heading": "13.1 端点（`api.gen.go` 推断）",
+          "level": 3,
+          "line": 751
+        },
+        {
+          "heading": "13.2 路径处理一致性",
+          "level": 3,
+          "line": 769
+        },
+        {
+          "heading": "14. 安全令牌存储（`api/secure_token.go`）",
+          "level": 2,
+          "line": 780
+        },
+        {
+          "heading": "15. 启动期默认环境（`internal/execcontext/`）",
+          "level": 2,
+          "line": 798
+        },
+        {
+          "heading": "16. 完整调用流",
+          "level": 2,
+          "line": 814
+        },
+        {
+          "heading": "16.1 启动 sandbox",
+          "level": 3,
+          "line": 816
+        },
+        {
+          "heading": "16.2 SDK 跑命令",
+          "level": 3,
+          "line": 837
+        },
+        {
+          "heading": "16.3 用户开 8080 端口",
+          "level": 3,
+          "line": 860
+        },
+        {
+          "heading": "17. 关键设计要点",
+          "level": 2,
+          "line": 877
+        },
+        {
+          "heading": "18. 关键文件速查表",
+          "level": 2,
+          "line": 897
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 53
+      }
+    },
+    {
+      "path": "docs/orchestrator-module.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 828,
+      "nonEmptyLines": 685,
+      "sections": [
+        {
+          "heading": "`packages/orchestrator/` 模块原理详解",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "0. 一句话定位",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "1. 模块在整体架构中的位置",
+          "level": 2,
+          "line": 15
+        },
+        {
+          "heading": "2. 目录结构与职责",
+          "level": 2,
+          "line": 55
+        },
+        {
+          "heading": "3. 启动流程 (`main.go` → `factories.Run` → `run`)",
+          "level": 2,
+          "line": 214
+        },
+        {
+          "heading": "3.1 入口 (`main.go`)",
+          "level": 3,
+          "line": 216
+        },
+        {
+          "heading": "3.2 启动工厂 (`factories/run.go`)",
+          "level": 3,
+          "line": 237
+        },
+        {
+          "heading": "启动顺序 (按依赖拓扑)",
+          "level": 4,
+          "line": 241
+        },
+        {
+          "heading": "关键设计: 依赖注入的 `Deps`",
+          "level": 4,
+          "line": 300
+        },
+        {
+          "heading": "关键设计: 优雅退出",
+          "level": 4,
+          "line": 317
+        },
+        {
+          "heading": "3.3 多协议复用: cmux",
+          "level": 3,
+          "line": 329
+        },
+        {
+          "heading": "4. 核心状态机: `pkg/sandbox/sandbox.go`",
+          "level": 2,
+          "line": 342
+        },
+        {
+          "heading": "4.1 顶层数据结构",
+          "level": 3,
+          "line": 346
+        },
+        {
+          "heading": "4.2 生命周期端点 (gRPC)",
+          "level": 3,
+          "line": 366
+        },
+        {
+          "heading": "4.3 `CreateSandbox` 内部流程",
+          "level": 3,
+          "line": 380
+        },
+        {
+          "heading": "4.4 `Pause` / `Checkpoint` 流程",
+          "level": 3,
+          "line": 399
+        },
+        {
+          "heading": "5. 子系统深读",
+          "level": 2,
+          "line": 412
+        },
+        {
+          "heading": "5.1 Firecracker 集成 (`pkg/sandbox/fc/`)",
+          "level": 3,
+          "line": 414
+        },
+        {
+          "heading": "`client.go` — 与 FC 的全部交互",
+          "level": 4,
+          "line": 416
+        },
+        {
+          "heading": "`process.go` — FC 进程管理",
+          "level": 4,
+          "line": 438
+        },
+        {
+          "heading": "5.2 块设备子系统 (`pkg/sandbox/nbd/` + `pkg/sandbox/block/`)",
+          "level": 3,
+          "line": 449
+        },
+        {
+          "heading": "NBD wire-protocol dispatcher (`dispatch.go`)",
+          "level": 4,
+          "line": 451
+        },
+        {
+          "heading": "`path_direct.go` — 零拷贝直读",
+          "level": 4,
+          "line": 459
+        },
+        {
+          "heading": "`pool.go` — 设备池化",
+          "level": 4,
+          "line": 463
+        },
+        {
+          "heading": "`block/cache.go` — 块级去重",
+          "level": 4,
+          "line": 467
+        },
+        {
+          "heading": "5.3 网络子系统 (`pkg/sandbox/network/`)",
+          "level": 3,
+          "line": 471
+        },
+        {
+          "heading": "`network.go` — veth + netns",
+          "level": 4,
+          "line": 473
+        },
+        {
+          "heading": "`pool.go` — slot 池",
+          "level": 4,
+          "line": 484
+        },
+        {
+          "heading": "`egressproxy.go` + `tcpfirewall/`",
+          "level": 4,
+          "line": 495
+        },
+        {
+          "heading": "5.4 模板子系统 (`pkg/sandbox/template/` + `pkg/template/`)",
+          "level": 3,
+          "line": 500
+        },
+        {
+          "heading": "`cache.go` — 多级缓存",
+          "level": 4,
+          "line": 504
+        },
+        {
+          "heading": "`peerclient/` — P2P 客户端",
+          "level": 4,
+          "line": 516
+        },
+        {
+          "heading": "5.5 cgroup 资源管控 (`pkg/sandbox/cgroup/`)",
+          "level": 3,
+          "line": 523
+        },
+        {
+          "heading": "6. 数据流: 一次完整沙箱创建",
+          "level": 2,
+          "line": 540
+        },
+        {
+          "heading": "7. 关键设计模式与权衡",
+          "level": 2,
+          "line": 586
+        },
+        {
+          "heading": "7.1 启动的\"纯函数化\"(`factories.Run`)",
+          "level": 3,
+          "line": 588
+        },
+        {
+          "heading": "7.2 \"沙箱路由表\"作为编排核心",
+          "level": 3,
+          "line": 600
+        },
+        {
+          "heading": "7.3 Firecracker / Orchestrator / Envd 的三层关系",
+          "level": 3,
+          "line": 614
+        },
+        {
+          "heading": "7.4 多级缓存的模板系统",
+          "level": 3,
+          "line": 639
+        },
+        {
+          "heading": "7.5 优雅退出 (`errgroup` + 显式 closers)",
+          "level": 3,
+          "line": 669
+        },
+        {
+          "heading": "7.6 Linux-only (`//go:build linux`)",
+          "level": 3,
+          "line": 682
+        },
+        {
+          "heading": "8. 与上下游的契约",
+          "level": 2,
+          "line": 693
+        },
+        {
+          "heading": "8.1 上游: API (`packages/api/`)",
+          "level": 3,
+          "line": 695
+        },
+        {
+          "heading": "8.2 下游: Envd (`packages/envd/`)",
+          "level": 3,
+          "line": 713
+        },
+        {
+          "heading": "8.3 基础设施依赖",
+          "level": 3,
+          "line": 721
+        },
+        {
+          "heading": "9. 关键 proto 契约 (摘自 `orchestrator.proto`)",
+          "level": 2,
+          "line": 740
+        },
+        {
+          "heading": "10. 一图概览: 从 API 调用到用户代码执行",
+          "level": 2,
+          "line": 778
+        },
+        {
+          "heading": "11. 参考知识图谱节点",
+          "level": 2,
+          "line": 801
+        },
+        {
+          "heading": "12. 进一步阅读",
+          "level": 2,
+          "line": 822
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 49
+      }
+    },
+    {
+      "path": "docs/sandbox-lifecycle.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 189,
+      "nonEmptyLines": 152,
+      "sections": [
+        {
+          "heading": "Sandbox 生命周期控制详解",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "🏗️ 整体架构",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "📊 核心数据结构 (`packages/orchestrator/pkg/sandbox/sandbox.go`)",
+          "level": 2,
+          "line": 36
+        },
+        {
+          "heading": "🔄 完整生命周期流转",
+          "level": 2,
+          "line": 51
+        },
+        {
+          "heading": "1️⃣ 创建（POST /sandboxes）",
+          "level": 3,
+          "line": 53
+        },
+        {
+          "heading": "2️⃣ 运行中 (Running)",
+          "level": 3,
+          "line": 74
+        },
+        {
+          "heading": "3️⃣ 暂停（POST /sandboxes/{id}/pause）",
+          "level": 3,
+          "line": 82
+        },
+        {
+          "heading": "4️⃣ 恢复（POST /sandboxes/{id}/resume）",
+          "level": 3,
+          "line": 107
+        },
+        {
+          "heading": "5️⃣ 删除（DELETE /sandboxes/{id}）",
+          "level": 3,
+          "line": 117
+        },
+        {
+          "heading": "6️⃣ TTL 驱逐（`evictor/evict.go`）",
+          "level": 3,
+          "line": 126
+        },
+        {
+          "heading": "🔑 关键设计模式",
+          "level": 2,
+          "line": 131
+        },
+        {
+          "heading": "📁 关键文件清单",
+          "level": 2,
+          "line": 140
+        },
+        {
+          "heading": "🌊 完整状态流图",
+          "level": 2,
+          "line": 166
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 13
+      }
+    }
+  ]
+}

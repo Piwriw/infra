@@ -1,0 +1,189 @@
+{
+  "nodes": [
+    {
+      "id": "service:packages/clickhouse/Makefile",
+      "type": "service",
+      "name": "Makefile",
+      "filePath": "packages/clickhouse/Makefile",
+      "summary": "ClickHouse 包的构建、迁移与本地运行编排 Makefile，提供 migrate/build/build-and-upload/connect-clickhouse/run 等目标，使用 Docker 构建 clickhouse-migrator 镜像并通过 goose 执行 ClickHouse 模式迁移。",
+      "tags": ["build-system", "containerization", "migration", "infrastructure", "clickhouse"],
+      "complexity": "moderate",
+      "languageNotes": "通过 .PHONY 声明多个任务，migrate 依赖 build 与 migrate-without-build；运行时会从 .last_used_env 加载当前环境配置。"
+    },
+    {
+      "id": "step:packages/clickhouse/Makefile:migrate",
+      "type": "function",
+      "name": "migrate",
+      "filePath": "packages/clickhouse/Makefile",
+      "lineRange": [13, 15],
+      "summary": "顶层 migrate 目标，先构建 clickhouse-migrator 镜像再执行 ClickHouse 模式迁移。",
+      "tags": ["migration", "build", "clickhouse"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/clickhouse/Makefile:migrate-without-build",
+      "type": "function",
+      "name": "migrate-without-build",
+      "filePath": "packages/clickhouse/Makefile",
+      "lineRange": [16, 27],
+      "summary": "在 e2b docker 网络内以挂载本地 migrations 目录的方式运行 clickhouse-migrator 容器，应用 ClickHouse 数据库迁移。",
+      "tags": ["migration", "docker", "clickhouse", "goose"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:packages/clickhouse/Makefile:migrate-local",
+      "type": "function",
+      "name": "migrate-local",
+      "filePath": "packages/clickhouse/Makefile",
+      "lineRange": [28, 33],
+      "summary": "本地环境 ClickHouse 迁移命令，通过 go tool goose 直接连接 localhost:9000 执行 migrations 目录下的迁移。",
+      "tags": ["migration", "local-development", "clickhouse", "goose"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/clickhouse/Makefile:build",
+      "type": "function",
+      "name": "build",
+      "filePath": "packages/clickhouse/Makefile",
+      "lineRange": [34, 38],
+      "summary": "构建 linux/amd64 平台的 clickhouse-migrator Docker 镜像，并同时打上 latest 与当前 git 短 SHA 两个 tag。",
+      "tags": ["build", "docker", "containerization"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/clickhouse/Makefile:build-and-upload",
+      "type": "function",
+      "name": "build-and-upload",
+      "filePath": "packages/clickhouse/Makefile",
+      "lineRange": [39, 44],
+      "summary": "依赖 build 目标，构建后将 clickhouse-migrator 镜像推送至 GCR 或 ECR 仓库。",
+      "tags": ["build", "upload", "docker", "deployment"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/clickhouse/Makefile:connect-clickhouse",
+      "type": "function",
+      "name": "connect-clickhouse",
+      "filePath": "packages/clickhouse/Makefile",
+      "lineRange": [45, 55],
+      "summary": "通过 gcloud 查找 GCP clickhouse 实例组并建立 SSH 隧道，把远端 9000 端口转发到本地 9000，便于客户端连接。",
+      "tags": ["gcloud", "ssh-tunnel", "clickhouse", "connectivity"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:packages/clickhouse/Makefile:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "packages/clickhouse/Makefile",
+      "lineRange": [56, 83],
+      "summary": "本地启动 ClickHouse 容器：先用 envsubst 渲染 local/config.xml 与 users.xml 模板，再在 e2b 网络上以健康检查方式运行 clickhouse/clickhouse-server:25.4.5.24 镜像。",
+      "tags": ["local-development", "docker", "clickhouse", "configuration"],
+      "complexity": "moderate",
+      "languageNotes": "结合 envsubst 模板渲染与 Docker 健康检查参数，演示了一个完整的本地服务启动模式。"
+    },
+    {
+      "id": "config:packages/clickhouse/go.mod",
+      "type": "config",
+      "name": "go.mod",
+      "filePath": "packages/clickhouse/go.mod",
+      "summary": "ClickHouse 包（clickhouse-migrator）的 Go 模块定义，声明模块路径、Go 版本及所需的直接依赖。",
+      "tags": ["configuration", "go-module", "build-system", "clickhouse"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:packages/clickhouse/go.sum",
+      "type": "config",
+      "name": "go.sum",
+      "filePath": "packages/clickhouse/go.sum",
+      "summary": "Go 模块校验和文件，记录 clickhouse-migrator 所有直接和间接依赖的哈希，用于构建时校验模块完整性。",
+      "tags": ["configuration", "go-module", "checksums", "dependency-management"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:packages/clickhouse/Makefile",
+      "target": "step:packages/clickhouse/Makefile:migrate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/clickhouse/Makefile",
+      "target": "step:packages/clickhouse/Makefile:migrate-without-build",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/clickhouse/Makefile",
+      "target": "step:packages/clickhouse/Makefile:migrate-local",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/clickhouse/Makefile",
+      "target": "step:packages/clickhouse/Makefile:build",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/clickhouse/Makefile",
+      "target": "step:packages/clickhouse/Makefile:build-and-upload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/clickhouse/Makefile",
+      "target": "step:packages/clickhouse/Makefile:connect-clickhouse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/clickhouse/Makefile",
+      "target": "step:packages/clickhouse/Makefile:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "step:packages/clickhouse/Makefile:migrate",
+      "target": "step:packages/clickhouse/Makefile:build",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "step:packages/clickhouse/Makefile:migrate",
+      "target": "step:packages/clickhouse/Makefile:migrate-without-build",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "step:packages/clickhouse/Makefile:build-and-upload",
+      "target": "step:packages/clickhouse/Makefile:build",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/clickhouse/Makefile",
+      "target": "config:packages/clickhouse/go.mod",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/clickhouse/Makefile",
+      "target": "config:packages/clickhouse/go.sum",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

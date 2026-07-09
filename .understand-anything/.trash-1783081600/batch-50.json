@@ -1,0 +1,156 @@
+{
+  "nodes": [
+    {
+      "id": "file:tests/periodic-test/internet-works.ts",
+      "type": "file",
+      "name": "internet-works.ts",
+      "filePath": "tests/periodic-test/internet-works.ts",
+      "summary": "周期性集成测试，创建 E2B 沙箱并通过 wget 请求 gstatic 的 204 端点验证沙箱内的网络连通性。",
+      "tags": ["test", "integration", "network", "e2b-sandbox"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/periodic-test/run-code.ts",
+      "type": "file",
+      "name": "run-code.ts",
+      "filePath": "tests/periodic-test/run-code.ts",
+      "summary": "周期性集成测试，使用 @e2b/code-interpreter 在沙箱中执行 JavaScript 单元格并验证变量状态的持久化。",
+      "tags": ["test", "integration", "code-interpreter", "e2b-sandbox"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/periodic-test/snapshot-and-resume.ts",
+      "type": "file",
+      "name": "snapshot-and-resume.ts",
+      "filePath": "tests/periodic-test/snapshot-and-resume.ts",
+      "summary": "周期性集成测试，验证沙箱在 pause 后通过 Sandbox.connect 恢复时仍能保留之前的内存状态（变量 x 的累加）。",
+      "tags": ["test", "integration", "snapshot", "pause-resume", "e2b-sandbox"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/periodic-test/time-is-synchronized/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "tests/periodic-test/time-is-synchronized/index.ts",
+      "summary": "周期性集成测试，构建自定义模板并验证沙箱内系统时间与本地时间的偏差小于 2 秒，覆盖模板构建与删除的完整生命周期。",
+      "tags": ["test", "integration", "time-sync", "template-build", "e2b-sandbox"],
+      "complexity": "moderate",
+      "languageNotes": "使用 Bun.spawn 调用 @e2b/cli 进行模板的构建与删除，并通过 sleep 15 秒制造时间差以验证同步精度。"
+    },
+    {
+      "id": "file:tests/periodic-test/utils.ts",
+      "type": "file",
+      "name": "utils.ts",
+      "filePath": "tests/periodic-test/utils.ts",
+      "summary": "周期性测试共享工具模块，提供带时间戳的日志输出、调试超时常量以及统一的沙箱测试包装器（捕获失败并延长超时以便调试）。",
+      "tags": ["utility", "test-harness", "shared", "e2b-sandbox", "logging"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/periodic-test/utils.ts:runTestWithSandbox",
+      "type": "function",
+      "name": "runTestWithSandbox",
+      "filePath": "tests/periodic-test/utils.ts",
+      "lineRange": [13, 32],
+      "summary": "测试包装器：执行测试函数，成功时销毁沙箱；失败时延长沙箱超时并打印连接命令，便于在 E2B_TEST_DEBUG_MODE 下保留现场。",
+      "tags": ["test-harness", "error-handling", "cleanup", "e2b-sandbox"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/periodic-test/utils.ts:log",
+      "type": "function",
+      "name": "log",
+      "filePath": "tests/periodic-test/utils.ts",
+      "lineRange": [5, 7],
+      "summary": "向 console.log 注入 ISO 时间戳前缀的日志辅助函数。",
+      "tags": ["utility", "logging"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:tests/periodic-test/utils.ts",
+      "target": "function:tests/periodic-test/utils.ts:runTestWithSandbox",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/periodic-test/utils.ts",
+      "target": "function:tests/periodic-test/utils.ts:log",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/periodic-test/utils.ts",
+      "target": "function:tests/periodic-test/utils.ts:runTestWithSandbox",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/periodic-test/utils.ts",
+      "target": "function:tests/periodic-test/utils.ts:log",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/periodic-test/internet-works.ts",
+      "target": "file:tests/periodic-test/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/periodic-test/run-code.ts",
+      "target": "file:tests/periodic-test/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/periodic-test/snapshot-and-resume.ts",
+      "target": "file:tests/periodic-test/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/periodic-test/time-is-synchronized/index.ts",
+      "target": "file:tests/periodic-test/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/periodic-test/internet-works.ts",
+      "target": "function:tests/periodic-test/utils.ts:runTestWithSandbox",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/periodic-test/run-code.ts",
+      "target": "function:tests/periodic-test/utils.ts:runTestWithSandbox",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/periodic-test/snapshot-and-resume.ts",
+      "target": "function:tests/periodic-test/utils.ts:runTestWithSandbox",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/periodic-test/time-is-synchronized/index.ts",
+      "target": "function:tests/periodic-test/utils.ts:runTestWithSandbox",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

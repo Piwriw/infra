@@ -1,0 +1,95 @@
+{
+  "nodes": [
+    {
+      "id": "file:scripts/confirm.sh",
+      "type": "file",
+      "name": "confirm.sh",
+      "filePath": "scripts/confirm.sh",
+      "summary": "部署确认脚本，检查是否从 main 分支部署到非开发环境，并通过交互式要求用户输入 'production' 来防止误操作部署到生产环境。",
+      "tags": ["deployment", "safety", "interactive", "shell-script"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/download-prod-env.sh",
+      "type": "file",
+      "name": "download-prod-env.sh",
+      "filePath": "scripts/download-prod-env.sh",
+      "summary": "从 Infisical 下载指定环境的 .env 配置文件，在覆盖本地现有文件前显示差异并要求用户确认。",
+      "tags": ["configuration", "secrets", "environment", "shell-script"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/fix-meters.sh",
+      "type": "file",
+      "name": "fix-meters.sh",
+      "filePath": "scripts/fix-meters.sh",
+      "summary": "重构辅助脚本，将 Go 源码中的 otel.Meter 实例名称字符串替换为对应的包路径前缀，便于在指标系统中按服务来源分类。",
+      "tags": ["refactoring", "observability", "otel", "code-generation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/fix-tracers.sh",
+      "type": "file",
+      "name": "fix-tracers.sh",
+      "filePath": "scripts/fix-tracers.sh",
+      "summary": "重构辅助脚本，扫描 Go/JS/TS/Java/Python 源码中的 otel.Tracer 实例名称字符串，并将其替换为对应的包路径前缀。",
+      "tags": ["refactoring", "observability", "otel", "code-generation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/get-latest-migration.sh",
+      "type": "file",
+      "name": "get-latest-migration.sh",
+      "filePath": "scripts/get-latest-migration.sh",
+      "summary": "通过 git ls-tree 列出 packages/db/migrations 目录下的迁移文件，提取版本号并输出最大的版本号。",
+      "tags": ["database", "migration", "utility", "shell-script"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/golang-dependencies-integrity.sh",
+      "type": "file",
+      "name": "golang-dependencies-integrity.sh",
+      "filePath": "scripts/golang-dependencies-integrity.sh",
+      "summary": "在 go workspace 每个模块中执行 go mod tidy，并通过 modfmt 工具格式化 go.mod 文件，最后在项目根目录运行 go work sync。",
+      "tags": ["go-modules", "workspace", "maintenance", "shell-script"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/remove-row-level-security.sql",
+      "type": "file",
+      "name": "remove-row-level-security.sql",
+      "filePath": "scripts/remove-row-level-security.sql",
+      "summary": "手动清理脚本，从非 Supabase 的 PostgreSQL 数据库删除所有 RLS 策略并禁用所有表的行级安全性。",
+      "tags": ["database", "rls", "migration", "cleanup"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:scripts/start-service.sh",
+      "type": "file",
+      "name": "start-service.sh",
+      "filePath": "scripts/start-service.sh",
+      "summary": "通用服务启动辅助脚本，通过 make 在后台启动服务并轮询健康检查 URL 等待其就绪。",
+      "tags": ["deployment", "health-check", "make", "shell-script"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:scripts/confirm.sh:usage",
+      "type": "function",
+      "name": "usage",
+      "filePath": "scripts/confirm.sh",
+      "lineRange": [12, 15],
+      "summary": "打印部署脚本的使用说明并退出码为 1。",
+      "tags": ["utility", "error-handling"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:scripts/confirm.sh",
+      "target": "function:scripts/confirm.sh:usage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ]
+}

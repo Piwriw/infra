@@ -1,0 +1,791 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 7,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "iac/provider-aws/init/buckets.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 157,
+      "nonEmptyLines": 122,
+      "resources": [
+        {
+          "name": "aws_s3_bucket.setup",
+          "kind": "aws_s3_bucket",
+          "startLine": 1,
+          "endLine": 4
+        },
+        {
+          "name": "aws_s3_bucket.fc_kernels",
+          "kind": "aws_s3_bucket",
+          "startLine": 6,
+          "endLine": 9
+        },
+        {
+          "name": "aws_s3_bucket.fc_versions",
+          "kind": "aws_s3_bucket",
+          "startLine": 11,
+          "endLine": 14
+        },
+        {
+          "name": "aws_s3_bucket.fc_env_pipeline",
+          "kind": "aws_s3_bucket",
+          "startLine": 16,
+          "endLine": 19
+        },
+        {
+          "name": "aws_s3_bucket.fc_busybox",
+          "kind": "aws_s3_bucket",
+          "startLine": 21,
+          "endLine": 24
+        },
+        {
+          "name": "aws_s3_bucket.fc_templates",
+          "kind": "aws_s3_bucket",
+          "startLine": 26,
+          "endLine": 29
+        },
+        {
+          "name": "aws_s3_bucket.fc_template_build_cache",
+          "kind": "aws_s3_bucket",
+          "startLine": 31,
+          "endLine": 34
+        },
+        {
+          "name": "aws_s3_bucket.loki_storage",
+          "kind": "aws_s3_bucket",
+          "startLine": 40,
+          "endLine": 43
+        },
+        {
+          "name": "aws_s3_bucket_lifecycle_configuration.loki_storage",
+          "kind": "aws_s3_bucket_lifecycle_configuration",
+          "startLine": 45,
+          "endLine": 61
+        },
+        {
+          "name": "aws_s3_bucket_server_side_encryption_configuration.loki_storage",
+          "kind": "aws_s3_bucket_server_side_encryption_configuration",
+          "startLine": 63,
+          "endLine": 71
+        },
+        {
+          "name": "aws_s3_bucket.load_balancer_logs",
+          "kind": "aws_s3_bucket",
+          "startLine": 77,
+          "endLine": 80
+        },
+        {
+          "name": "aws_s3_bucket_lifecycle_configuration.load_balancer_logs",
+          "kind": "aws_s3_bucket_lifecycle_configuration",
+          "startLine": 82,
+          "endLine": 98
+        },
+        {
+          "name": "aws_s3_bucket_server_side_encryption_configuration.load_balancer_logs",
+          "kind": "aws_s3_bucket_server_side_encryption_configuration",
+          "startLine": 100,
+          "endLine": 108
+        },
+        {
+          "name": "aws_s3_bucket_policy.load_balancer_logs",
+          "kind": "aws_s3_bucket_policy",
+          "startLine": 127,
+          "endLine": 130
+        },
+        {
+          "name": "aws_s3_bucket.clickhouse_backups",
+          "kind": "aws_s3_bucket",
+          "startLine": 136,
+          "endLine": 139
+        },
+        {
+          "name": "aws_s3_bucket_lifecycle_configuration.clickhouse_backups",
+          "kind": "aws_s3_bucket_lifecycle_configuration",
+          "startLine": 141,
+          "endLine": 157
+        },
+        {
+          "name": "data.aws_iam_policy_document.load_balancer_logs",
+          "kind": "data.aws_iam_policy_document",
+          "startLine": 110,
+          "endLine": 125
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 17
+      }
+    },
+    {
+      "path": "iac/provider-aws/init/main.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 17,
+      "nonEmptyLines": 12,
+      "resources": [
+        {
+          "name": "data.aws_region.current",
+          "kind": "data.aws_region",
+          "startLine": 1,
+          "endLine": 1
+        },
+        {
+          "name": "data.aws_elb_service_account.current",
+          "kind": "data.aws_elb_service_account",
+          "startLine": 3,
+          "endLine": 3
+        },
+        {
+          "name": "module.network",
+          "kind": "module",
+          "startLine": 5,
+          "endLine": 11
+        },
+        {
+          "name": "module.cloudflare",
+          "kind": "module",
+          "startLine": 13,
+          "endLine": 17
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 4
+      }
+    },
+    {
+      "path": "iac/provider-aws/init/outputs.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 95,
+      "nonEmptyLines": 75,
+      "definitions": [
+        {
+          "name": "setup_bucket_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 4,
+          "endLine": 6
+        },
+        {
+          "name": "fc_template_build_cache_bucket_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 8,
+          "endLine": 10
+        },
+        {
+          "name": "fc_template_bucket_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 12,
+          "endLine": 14
+        },
+        {
+          "name": "fc_env_pipeline_bucket_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 16,
+          "endLine": 18
+        },
+        {
+          "name": "fc_kernels_bucket_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 20,
+          "endLine": 22
+        },
+        {
+          "name": "fc_versions_bucket_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 24,
+          "endLine": 26
+        },
+        {
+          "name": "fc_busybox_bucket_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 28,
+          "endLine": 30
+        },
+        {
+          "name": "load_balancer_logs_bucket_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 32,
+          "endLine": 34
+        },
+        {
+          "name": "loki_bucket_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 36,
+          "endLine": 38
+        },
+        {
+          "name": "clickhouse_backups_bucket_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 40,
+          "endLine": 42
+        },
+        {
+          "name": "client_proxy_repository_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 47,
+          "endLine": 49
+        },
+        {
+          "name": "clickhouse_migrator_repository_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 51,
+          "endLine": 53
+        },
+        {
+          "name": "custom_environments_repository_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 55,
+          "endLine": 57
+        },
+        {
+          "name": "api_repository_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 59,
+          "endLine": 61
+        },
+        {
+          "name": "db_migrator_repository_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 63,
+          "endLine": 65
+        },
+        {
+          "name": "cloudflare",
+          "kind": "output",
+          "fields": [],
+          "startLine": 70,
+          "endLine": 72
+        },
+        {
+          "name": "vpc_id",
+          "kind": "output",
+          "fields": [],
+          "startLine": 77,
+          "endLine": 79
+        },
+        {
+          "name": "vpc_public_subnet_ids",
+          "kind": "output",
+          "fields": [],
+          "startLine": 81,
+          "endLine": 83
+        },
+        {
+          "name": "vpc_private_subnet_ids",
+          "kind": "output",
+          "fields": [],
+          "startLine": 85,
+          "endLine": 87
+        },
+        {
+          "name": "vpc_elasticache_subnet_group_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 89,
+          "endLine": 91
+        },
+        {
+          "name": "vpc_instance_connect_security_group_id",
+          "kind": "output",
+          "fields": [],
+          "startLine": 93,
+          "endLine": 95
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 21,
+        "resourceCount": 0
+      }
+    },
+    {
+      "path": "iac/provider-aws/init/repositories.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 41,
+      "nonEmptyLines": 35,
+      "resources": [
+        {
+          "name": "aws_ecr_repository.client_proxy",
+          "kind": "aws_ecr_repository",
+          "startLine": 1,
+          "endLine": 5
+        },
+        {
+          "name": "aws_ecr_repository.clickhouse_migrator",
+          "kind": "aws_ecr_repository",
+          "startLine": 7,
+          "endLine": 11
+        },
+        {
+          "name": "aws_ecr_repository.db_migrator",
+          "kind": "aws_ecr_repository",
+          "startLine": 13,
+          "endLine": 17
+        },
+        {
+          "name": "aws_ecr_repository.api",
+          "kind": "aws_ecr_repository",
+          "startLine": 19,
+          "endLine": 23
+        },
+        {
+          "name": "aws_ecr_repository.custom_environments",
+          "kind": "aws_ecr_repository",
+          "startLine": 25,
+          "endLine": 29
+        },
+        {
+          "name": "aws_ecr_repository.dashboard_api",
+          "kind": "aws_ecr_repository",
+          "startLine": 31,
+          "endLine": 35
+        },
+        {
+          "name": "aws_ecr_repository.docker_reverse_proxy",
+          "kind": "aws_ecr_repository",
+          "startLine": 37,
+          "endLine": 41
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 7
+      }
+    },
+    {
+      "path": "iac/provider-aws/init/secrets-cluster.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 47,
+      "nonEmptyLines": 38,
+      "definitions": [
+        {
+          "name": "cluster",
+          "kind": "output",
+          "fields": [],
+          "startLine": 39,
+          "endLine": 47
+        }
+      ],
+      "resources": [
+        {
+          "name": "random_uuid.nomad_acl_token",
+          "kind": "random_uuid",
+          "startLine": 1,
+          "endLine": 1
+        },
+        {
+          "name": "random_uuid.consul_acl_token",
+          "kind": "random_uuid",
+          "startLine": 3,
+          "endLine": 3
+        },
+        {
+          "name": "random_uuid.consul_dns_request_token",
+          "kind": "random_uuid",
+          "startLine": 5,
+          "endLine": 5
+        },
+        {
+          "name": "random_id.consul_gossip_encryption_key",
+          "kind": "random_id",
+          "startLine": 7,
+          "endLine": 9
+        },
+        {
+          "name": "aws_secretsmanager_secret.cluster",
+          "kind": "aws_secretsmanager_secret",
+          "startLine": 11,
+          "endLine": 13
+        },
+        {
+          "name": "aws_secretsmanager_secret_version.cluster",
+          "kind": "aws_secretsmanager_secret_version",
+          "startLine": 15,
+          "endLine": 27
+        },
+        {
+          "name": "data.aws_secretsmanager_secret_version.cluster",
+          "kind": "data.aws_secretsmanager_secret_version",
+          "startLine": 29,
+          "endLine": 33
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 1,
+        "resourceCount": 7
+      }
+    },
+    {
+      "path": "iac/provider-aws/init/secrets.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 294,
+      "nonEmptyLines": 242,
+      "definitions": [
+        {
+          "name": "clickhouse",
+          "kind": "output",
+          "fields": [],
+          "startLine": 41,
+          "endLine": 47
+        },
+        {
+          "name": "grafana",
+          "kind": "output",
+          "fields": [],
+          "startLine": 83,
+          "endLine": 91
+        },
+        {
+          "name": "api_secret",
+          "kind": "output",
+          "fields": [],
+          "startLine": 120,
+          "endLine": 123
+        },
+        {
+          "name": "launch_darkly_api_key",
+          "kind": "output",
+          "fields": [],
+          "startLine": 147,
+          "endLine": 150
+        },
+        {
+          "name": "postgres_connection_string_secret_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 174,
+          "endLine": 176
+        },
+        {
+          "name": "postgres_connection_string",
+          "kind": "output",
+          "fields": [],
+          "startLine": 178,
+          "endLine": 181
+        },
+        {
+          "name": "admin_token",
+          "kind": "output",
+          "fields": [],
+          "startLine": 210,
+          "endLine": 213
+        },
+        {
+          "name": "sandbox_access_token_hash_seed",
+          "kind": "output",
+          "fields": [],
+          "startLine": 242,
+          "endLine": 245
+        },
+        {
+          "name": "redis_cluster_url_secret_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 288,
+          "endLine": 290
+        },
+        {
+          "name": "redis_tls_ca_base64_secret_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 292,
+          "endLine": 294
+        }
+      ],
+      "resources": [
+        {
+          "name": "aws_secretsmanager_secret.clickhouse",
+          "kind": "aws_secretsmanager_secret",
+          "startLine": 4,
+          "endLine": 6
+        },
+        {
+          "name": "random_string.clickhouse_password",
+          "kind": "random_string",
+          "startLine": 8,
+          "endLine": 11
+        },
+        {
+          "name": "random_string.clickhouse_server_secret",
+          "kind": "random_string",
+          "startLine": 13,
+          "endLine": 16
+        },
+        {
+          "name": "aws_secretsmanager_secret_version.clickhouse_initial",
+          "kind": "aws_secretsmanager_secret_version",
+          "startLine": 18,
+          "endLine": 29
+        },
+        {
+          "name": "aws_secretsmanager_secret.grafana",
+          "kind": "aws_secretsmanager_secret",
+          "startLine": 52,
+          "endLine": 54
+        },
+        {
+          "name": "aws_secretsmanager_secret_version.grafana",
+          "kind": "aws_secretsmanager_secret_version",
+          "startLine": 56,
+          "endLine": 71
+        },
+        {
+          "name": "random_string.api_secret",
+          "kind": "random_string",
+          "startLine": 96,
+          "endLine": 99
+        },
+        {
+          "name": "aws_secretsmanager_secret.api_secret",
+          "kind": "aws_secretsmanager_secret",
+          "startLine": 101,
+          "endLine": 103
+        },
+        {
+          "name": "aws_secretsmanager_secret_version.api_secret",
+          "kind": "aws_secretsmanager_secret_version",
+          "startLine": 105,
+          "endLine": 112
+        },
+        {
+          "name": "aws_secretsmanager_secret.launch_darkly_api_key",
+          "kind": "aws_secretsmanager_secret",
+          "startLine": 128,
+          "endLine": 130
+        },
+        {
+          "name": "aws_secretsmanager_secret_version.launch_darkly_api_key",
+          "kind": "aws_secretsmanager_secret_version",
+          "startLine": 132,
+          "endLine": 139
+        },
+        {
+          "name": "aws_secretsmanager_secret.postgres_connection_string",
+          "kind": "aws_secretsmanager_secret",
+          "startLine": 155,
+          "endLine": 157
+        },
+        {
+          "name": "aws_secretsmanager_secret_version.postgres_connection_string",
+          "kind": "aws_secretsmanager_secret_version",
+          "startLine": 159,
+          "endLine": 166
+        },
+        {
+          "name": "random_string.admin_token",
+          "kind": "random_string",
+          "startLine": 186,
+          "endLine": 189
+        },
+        {
+          "name": "aws_secretsmanager_secret.admin_token",
+          "kind": "aws_secretsmanager_secret",
+          "startLine": 191,
+          "endLine": 193
+        },
+        {
+          "name": "aws_secretsmanager_secret_version.admin_token",
+          "kind": "aws_secretsmanager_secret_version",
+          "startLine": 195,
+          "endLine": 202
+        },
+        {
+          "name": "random_string.sandbox_access_token_hash_seed",
+          "kind": "random_string",
+          "startLine": 218,
+          "endLine": 221
+        },
+        {
+          "name": "aws_secretsmanager_secret.sandbox_access_token_hash_seed",
+          "kind": "aws_secretsmanager_secret",
+          "startLine": 223,
+          "endLine": 225
+        },
+        {
+          "name": "aws_secretsmanager_secret_version.sandbox_access_token_hash_seed",
+          "kind": "aws_secretsmanager_secret_version",
+          "startLine": 227,
+          "endLine": 234
+        },
+        {
+          "name": "aws_secretsmanager_secret.redis_cluster_url",
+          "kind": "aws_secretsmanager_secret",
+          "startLine": 250,
+          "endLine": 252
+        },
+        {
+          "name": "aws_secretsmanager_secret_version.redis_cluster_url",
+          "kind": "aws_secretsmanager_secret_version",
+          "startLine": 254,
+          "endLine": 261
+        },
+        {
+          "name": "aws_secretsmanager_secret.redis_tls_ca_base64",
+          "kind": "aws_secretsmanager_secret",
+          "startLine": 269,
+          "endLine": 271
+        },
+        {
+          "name": "aws_secretsmanager_secret_version.redis_tls_ca_base64",
+          "kind": "aws_secretsmanager_secret_version",
+          "startLine": 273,
+          "endLine": 280
+        },
+        {
+          "name": "data.aws_secretsmanager_secret_version.clickhouse",
+          "kind": "data.aws_secretsmanager_secret_version",
+          "startLine": 31,
+          "endLine": 35
+        },
+        {
+          "name": "data.aws_secretsmanager_secret_version.grafana",
+          "kind": "data.aws_secretsmanager_secret_version",
+          "startLine": 73,
+          "endLine": 77
+        },
+        {
+          "name": "data.aws_secretsmanager_secret_version.api_secret",
+          "kind": "data.aws_secretsmanager_secret_version",
+          "startLine": 114,
+          "endLine": 118
+        },
+        {
+          "name": "data.aws_secretsmanager_secret_version.launch_darkly_api_key",
+          "kind": "data.aws_secretsmanager_secret_version",
+          "startLine": 141,
+          "endLine": 145
+        },
+        {
+          "name": "data.aws_secretsmanager_secret_version.postgres_connection_string",
+          "kind": "data.aws_secretsmanager_secret_version",
+          "startLine": 168,
+          "endLine": 172
+        },
+        {
+          "name": "data.aws_secretsmanager_secret_version.admin_token",
+          "kind": "data.aws_secretsmanager_secret_version",
+          "startLine": 204,
+          "endLine": 208
+        },
+        {
+          "name": "data.aws_secretsmanager_secret_version.sandbox_access_token_hash_seed",
+          "kind": "data.aws_secretsmanager_secret_version",
+          "startLine": 236,
+          "endLine": 240
+        },
+        {
+          "name": "data.aws_secretsmanager_secret_version.redis_cluster_url",
+          "kind": "data.aws_secretsmanager_secret_version",
+          "startLine": 263,
+          "endLine": 267
+        },
+        {
+          "name": "data.aws_secretsmanager_secret_version.redis_tls_ca_base64",
+          "kind": "data.aws_secretsmanager_secret_version",
+          "startLine": 282,
+          "endLine": 286
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 10,
+        "resourceCount": 32
+      }
+    },
+    {
+      "path": "iac/provider-aws/init/variables.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 19,
+      "nonEmptyLines": 15,
+      "definitions": [
+        {
+          "name": "prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 1,
+          "endLine": 3
+        },
+        {
+          "name": "bucket_prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 5,
+          "endLine": 7
+        },
+        {
+          "name": "allow_force_destroy",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 9,
+          "endLine": 11
+        },
+        {
+          "name": "region",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 13,
+          "endLine": 15
+        },
+        {
+          "name": "endpoint_ingress_subnet_ids",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 17,
+          "endLine": 19
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 5,
+        "resourceCount": 0
+      }
+    }
+  ]
+}

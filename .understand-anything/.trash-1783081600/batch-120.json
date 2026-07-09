@@ -1,0 +1,93 @@
+{
+  "nodes": [
+    {
+      "id": "file:tests/integration/.env.local",
+      "type": "file",
+      "name": ".env.local",
+      "filePath": "tests/integration/.env.local",
+      "summary": "集成测试的本地环境变量配置文件，包含 API 服务地址、沙箱模板 ID、API 密钥、访问令牌以及 envd 代理地址共 5 个配置项。",
+      "tags": ["configuration", "environment-variables", "testing", "integration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/integration/Makefile",
+      "type": "file",
+      "name": "Makefile",
+      "filePath": "tests/integration/Makefile",
+      "summary": "集成测试模块的构建脚本，定义了 generate、build-debug、seed、test、connect-orchestrator 等 5 个 make 目标，用于代码生成、调试构建、数据种子化和远程连接。",
+      "tags": ["build-system", "makefile", "integration", "infrastructure"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/integration/README.md",
+      "type": "file",
+      "name": "README.md",
+      "filePath": "tests/integration/README.md",
+      "summary": "集成测试模块的说明文档，介绍如何本地运行测试，并分类说明 API、Orchestrator 和 Envd 客户端的使用方式（含 HTTP/GRPC 子节）。",
+      "tags": ["documentation", "entry-point", "testing", "integration"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/go.mod",
+      "type": "file",
+      "name": "go.mod",
+      "filePath": "tests/integration/go.mod",
+      "summary": "集成测试模块的 Go 模块定义文件，声明独立的 Go module 及其依赖版本（约 188 行非空内容），与主项目解耦。",
+      "tags": ["configuration", "go-module", "dependencies", "integration"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/go.sum",
+      "type": "file",
+      "name": "go.sum",
+      "filePath": "tests/integration/go.sum",
+      "summary": "集成测试模块的 Go 依赖校验和文件，记录 584 行精确哈希用于保证依赖完整性。",
+      "tags": ["configuration", "go-module", "dependencies", "checksums"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:tests/integration/Makefile",
+      "target": "file:tests/integration/README.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/README.md",
+      "target": "file:tests/integration/Makefile",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/go.mod",
+      "target": "file:tests/integration/go.sum",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/integration/go.sum",
+      "target": "file:tests/integration/go.mod",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/integration/Makefile",
+      "target": "file:tests/integration/go.mod",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/integration/.env.local",
+      "target": "file:tests/integration/README.md",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

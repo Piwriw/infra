@@ -1,0 +1,33 @@
+{
+  "nodes": [
+    {
+      "id": "config:packages/envd/spec/buf.gen.shared.yaml",
+      "type": "config",
+      "name": "buf.gen.shared.yaml",
+      "filePath": "packages/envd/spec/buf.gen.shared.yaml",
+      "summary": "Buf 代码生成配置，将 envd proto 文件生成为 Go 和 Connect-Go 的客户端/服务端代码，输出到共享的 packages/shared/pkg/grpc/envd 包，供其他模块（如 orchestrator）复用。",
+      "tags": ["configuration", "protobuf", "code-generation", "buf", "grpc"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:packages/envd/spec/buf.gen.yaml",
+      "type": "config",
+      "name": "buf.gen.yaml",
+      "filePath": "packages/envd/spec/buf.gen.yaml",
+      "summary": "Buf 代码生成配置，将 envd proto 文件生成为 Go 和 Connect-Go 的客户端/服务端代码，输出到 envd 内部 internal/services/spec 包，专供 envd 服务自身使用。",
+      "tags": ["configuration", "protobuf", "code-generation", "buf", "grpc"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:packages/envd/spec/envd.yaml",
+      "type": "config",
+      "name": "envd.yaml",
+      "filePath": "packages/envd/spec/envd.yaml",
+      "summary": "Envd HTTP API 的 OpenAPI 3.0 规范，定义了运行在 Firecracker VM 内的守护进程所暴露的健康检查、指标、初始化、沙箱冻结/解冻、文件上传下载以及零拷贝文件合并等接口。",
+      "tags": ["api-schema", "openapi", "envd", "schema-definition", "http"],
+      "complexity": "complex",
+      "languageNotes": "OpenAPI 3.0 规范，包含约 10 个端点；/init、/freeze、/unfreeze、/collapse、/fsfreeze、/fsthaw 等端点均与 Firecracker VM 的暂停/恢复机制紧密耦合。"
+    }
+  ],
+  "edges": []
+}

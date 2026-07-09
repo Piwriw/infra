@@ -1,0 +1,1228 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/envd/internal/services/filesystem/move.go",
+      "type": "file",
+      "name": "move.go",
+      "filePath": "packages/envd/internal/services/filesystem/move.go",
+      "summary": "实现 filesystem 服务的 Move RPC：将源路径重命名到目标路径，处理路径展开、用户/目录权限校验与 EntryInfo 返回。",
+      "tags": [
+        "api-handler",
+        "filesystem",
+        "rpc-handler",
+        "service"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Connect RPC handler，依赖 permissions 包做身份认证和路径解析。"
+    },
+    {
+      "id": "file:packages/envd/internal/services/filesystem/move_test.go",
+      "type": "file",
+      "name": "move_test.go",
+      "filePath": "packages/envd/internal/services/filesystem/move_test.go",
+      "summary": "针对 Move RPC 的端到端测试，覆盖目录移动、不存在文件、相对路径解析和符号链接等场景。",
+      "tags": [
+        "test",
+        "filesystem",
+        "integration"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/envd/internal/services/filesystem/remove.go",
+      "type": "file",
+      "name": "remove.go",
+      "filePath": "packages/envd/internal/services/filesystem/remove.go",
+      "summary": "实现 filesystem 服务的 Remove RPC：根据用户身份解析路径并删除指定文件或目录。",
+      "tags": [
+        "api-handler",
+        "filesystem",
+        "rpc-handler",
+        "service"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/internal/services/filesystem/service.go",
+      "type": "file",
+      "name": "service.go",
+      "filePath": "packages/envd/internal/services/filesystem/service.go",
+      "summary": "filesystem 服务装配入口：定义 Service 结构体（持有 logger、watchers map 和 defaults），并提供 Handle 将 RPC handler 挂载到 chi 路由。",
+      "tags": [
+        "entry-point",
+        "service",
+        "filesystem",
+        "router"
+      ],
+      "complexity": "simple",
+      "languageNotes": "通过 connect.WithInterceptors 注册日志拦截器和 legacy 转换拦截器。"
+    },
+    {
+      "id": "file:packages/envd/internal/services/filesystem/service_test.go",
+      "type": "file",
+      "name": "service_test.go",
+      "filePath": "packages/envd/internal/services/filesystem/service_test.go",
+      "summary": "为 filesystem Service 提供测试用 mockService 工厂，辅助其他测试用例构造 Service 实例。",
+      "tags": [
+        "test",
+        "filesystem",
+        "test-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/internal/services/filesystem/stat.go",
+      "type": "file",
+      "name": "stat.go",
+      "filePath": "packages/envd/internal/services/filesystem/stat.go",
+      "summary": "实现 filesystem 服务的 Stat RPC：返回指定路径的 EntryInfo 元数据。",
+      "tags": [
+        "api-handler",
+        "filesystem",
+        "rpc-handler",
+        "service"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/internal/services/filesystem/stat_test.go",
+      "type": "file",
+      "name": "stat_test.go",
+      "filePath": "packages/envd/internal/services/filesystem/stat_test.go",
+      "summary": "测试 Stat RPC 的正常返回和缺失路径的 NotFound 错误处理。",
+      "tags": [
+        "test",
+        "filesystem"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/envd/internal/services/filesystem/utils.go",
+      "type": "file",
+      "name": "utils.go",
+      "filePath": "packages/envd/internal/services/filesystem/utils.go",
+      "summary": "filesystem 服务共享工具函数：网络挂载检测、EntryInfo 构造、watch 事件转换、文件归属与类型映射等。",
+      "tags": [
+        "utility",
+        "filesystem",
+        "shared"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "使用 syscall.Statfs 通过 Linux 魔数识别 NFS/CIFS/SMB/FUSE 等网络文件系统。"
+    },
+    {
+      "id": "file:packages/envd/internal/services/filesystem/utils_test.go",
+      "type": "file",
+      "name": "utils_test.go",
+      "filePath": "packages/envd/internal/services/filesystem/utils_test.go",
+      "summary": "测试 IsPathOnNetworkMount 和 getFileOwnership 工具函数，包含 FUSE 挂载和当前用户场景。",
+      "tags": [
+        "test",
+        "filesystem",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/envd/internal/services/filesystem/watch.go",
+      "type": "file",
+      "name": "watch.go",
+      "filePath": "packages/envd/internal/services/filesystem/watch.go",
+      "summary": "实现 filesystem 服务的 WatchDir 流式 RPC：监听目录变化并持续推送文件系统事件。",
+      "tags": [
+        "api-handler",
+        "filesystem",
+        "streaming",
+        "rpc-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "type": "file",
+      "name": "watch_sync.go",
+      "filePath": "packages/envd/internal/services/filesystem/watch_sync.go",
+      "summary": "实现可同步拉取事件的 FileWatcher 抽象及 CreateWatcher/GetWatcherEvents/RemoveWatcher RPC，封装 fsnotify 实例与事件缓冲。",
+      "tags": [
+        "api-handler",
+        "filesystem",
+        "streaming",
+        "watcher"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/envd/internal/services/filesystem/watch_test.go",
+      "type": "file",
+      "name": "watch_test.go",
+      "filePath": "packages/envd/internal/services/filesystem/watch_test.go",
+      "summary": "测试 watcher 的 EntryInfo 携带、REMOVE 事件不携带替换项以及网络挂载场景下的 watcher 行为。",
+      "tags": [
+        "test",
+        "filesystem",
+        "watcher"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/envd/internal/services/fsfreeze/fsfreeze.go",
+      "type": "file",
+      "name": "fsfreeze.go",
+      "filePath": "packages/envd/internal/services/fsfreeze/fsfreeze.go",
+      "summary": "定义 Freezer 接口，通过 FIFREEZE/FITHAW ioctl 在快照前冻结文件系统以保证磁盘状态一致性。",
+      "tags": [
+        "interface",
+        "filesystem",
+        "snapshot",
+        "service"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/internal/services/fsfreeze/fsfreeze_linux.go",
+      "type": "file",
+      "name": "fsfreeze_linux.go",
+      "filePath": "packages/envd/internal/services/fsfreeze/fsfreeze_linux.go",
+      "summary": "Linux 平台的 Freezer 实现，通过 unix.IoctlFilesystemFreeze/Thaw 调用 FIFREEZE/FITHAW ioctl。",
+      "tags": [
+        "platform-specific",
+        "linux",
+        "filesystem",
+        "implementation"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "使用 build constraint 区分 Linux 实现。"
+    },
+    {
+      "id": "function:packages/envd/internal/services/filesystem/move.go:Move",
+      "type": "function",
+      "name": "Move",
+      "filePath": "packages/envd/internal/services/filesystem/move.go",
+      "lineRange": [
+        15,
+        58
+      ],
+      "summary": "filesystem Move RPC handler：鉴权、展开源/目标路径、确保目标父目录存在后执行 os.Rename，返回目标 EntryInfo。",
+      "tags": [
+        "api-handler",
+        "filesystem",
+        "rpc"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/filesystem/remove.go:Remove",
+      "type": "function",
+      "name": "Remove",
+      "filePath": "packages/envd/internal/services/filesystem/remove.go",
+      "lineRange": [
+        14,
+        31
+      ],
+      "summary": "filesystem Remove RPC handler：鉴权后调用 os.RemoveAll 删除解析后的路径。",
+      "tags": [
+        "api-handler",
+        "filesystem",
+        "rpc"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/envd/internal/services/filesystem/service.go:Service",
+      "type": "class",
+      "name": "Service",
+      "filePath": "packages/envd/internal/services/filesystem/service.go",
+      "lineRange": [
+        15,
+        19
+      ],
+      "summary": "filesystem 服务的核心结构体，持有 logger、watchers map 和 execcontext 默认值。",
+      "tags": [
+        "service",
+        "data-model",
+        "filesystem"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/filesystem/service.go:Handle",
+      "type": "function",
+      "name": "Handle",
+      "filePath": "packages/envd/internal/services/filesystem/service.go",
+      "lineRange": [
+        21,
+        36
+      ],
+      "summary": "构造 filesystem Service 实例并挂载到 chi 路由，附带日志和 legacy 转换拦截器。",
+      "tags": [
+        "entry-point",
+        "router",
+        "filesystem"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/filesystem/stat.go:Stat",
+      "type": "function",
+      "name": "Stat",
+      "filePath": "packages/envd/internal/services/filesystem/stat.go",
+      "lineRange": [
+        12,
+        29
+      ],
+      "summary": "filesystem Stat RPC handler：鉴权并解析路径后返回 EntryInfo 元数据。",
+      "tags": [
+        "api-handler",
+        "filesystem",
+        "rpc"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/filesystem/utils.go:IsPathOnNetworkMount",
+      "type": "function",
+      "name": "IsPathOnNetworkMount",
+      "filePath": "packages/envd/internal/services/filesystem/utils.go",
+      "lineRange": [
+        29,
+        41
+      ],
+      "summary": "通过 syscall.Statfs 判断路径是否位于 NFS/CIFS/SMB/FUSE 等网络文件系统挂载点。",
+      "tags": [
+        "utility",
+        "filesystem",
+        "detection"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/filesystem/utils.go:entryInfo",
+      "type": "function",
+      "name": "entryInfo",
+      "filePath": "packages/envd/internal/services/filesystem/utils.go",
+      "lineRange": [
+        43,
+        68
+      ],
+      "summary": "从文件路径构造 rpc.EntryInfo 元数据，文件不存在时返回 connect.CodeNotFound。",
+      "tags": [
+        "utility",
+        "filesystem",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/filesystem/utils.go:getFileOwnership",
+      "type": "function",
+      "name": "getFileOwnership",
+      "filePath": "packages/envd/internal/services/filesystem/utils.go",
+      "lineRange": [
+        116,
+        130
+      ],
+      "summary": "从 syscall.Stat_t 提取文件的 uid/gid 并解析为可读的用户与组名。",
+      "tags": [
+        "utility",
+        "filesystem",
+        "ownership"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/filesystem/watch.go:watchHandler",
+      "type": "function",
+      "name": "watchHandler",
+      "filePath": "packages/envd/internal/services/filesystem/watch.go",
+      "lineRange": [
+        23,
+        157
+      ],
+      "summary": "WatchDir 的核心实现：监听目录变化、过滤事件、推送流式响应，并周期性发送 keepalive。",
+      "tags": [
+        "api-handler",
+        "streaming",
+        "watcher",
+        "filesystem"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/envd/internal/services/filesystem/watch_sync.go:FileWatcher",
+      "type": "class",
+      "name": "FileWatcher",
+      "filePath": "packages/envd/internal/services/filesystem/watch_sync.go",
+      "lineRange": [
+        21,
+        28
+      ],
+      "summary": "封装 fsnotify.Watcher 与事件缓冲的同步 watcher 抽象，供 GetWatcherEvents 拉取。",
+      "tags": [
+        "data-model",
+        "watcher",
+        "filesystem"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/filesystem/watch_sync.go:CreateFileWatcher",
+      "type": "function",
+      "name": "CreateFileWatcher",
+      "filePath": "packages/envd/internal/services/filesystem/watch_sync.go",
+      "lineRange": [
+        30,
+        124
+      ],
+      "summary": "创建并初始化 FileWatcher：建立 fsnotify watcher、可选递归监听、按需附加 EntryInfo，并在独立 goroutine 中转发事件。",
+      "tags": [
+        "factory",
+        "watcher",
+        "filesystem"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/envd/internal/services/filesystem/watch_sync.go:CreateWatcher",
+      "type": "function",
+      "name": "CreateWatcher",
+      "filePath": "packages/envd/internal/services/filesystem/watch_sync.go",
+      "lineRange": [
+        140,
+        187
+      ],
+      "summary": "filesystem CreateWatcher RPC handler：鉴权、解析路径、调用 CreateFileWatcher 并把新 watcher 注册到 Service 映射表。",
+      "tags": [
+        "api-handler",
+        "watcher",
+        "rpc"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/filesystem/watch_sync.go:GetWatcherEvents",
+      "type": "function",
+      "name": "GetWatcherEvents",
+      "filePath": "packages/envd/internal/services/filesystem/watch_sync.go",
+      "lineRange": [
+        189,
+        210
+      ],
+      "summary": "filesystem GetWatcherEvents RPC handler：按 watcherID 取出已缓冲事件返回给客户端。",
+      "tags": [
+        "api-handler",
+        "watcher",
+        "rpc"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/filesystem/watch_sync.go:RemoveWatcher",
+      "type": "function",
+      "name": "RemoveWatcher",
+      "filePath": "packages/envd/internal/services/filesystem/watch_sync.go",
+      "lineRange": [
+        212,
+        224
+      ],
+      "summary": "filesystem RemoveWatcher RPC handler：从 Service 映射表中删除并关闭指定 watcher。",
+      "tags": [
+        "api-handler",
+        "watcher",
+        "rpc"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/fsfreeze/fsfreeze_linux.go:Freeze",
+      "type": "function",
+      "name": "Freeze",
+      "filePath": "packages/envd/internal/services/fsfreeze/fsfreeze_linux.go",
+      "lineRange": [
+        29,
+        47
+      ],
+      "summary": "打开指定挂载点文件并通过 FIFREEZE ioctl 冻结文件系统，已冻结时视为 no-op。",
+      "tags": [
+        "filesystem",
+        "snapshot",
+        "linux"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/fsfreeze/fsfreeze_linux.go:Thaw",
+      "type": "function",
+      "name": "Thaw",
+      "filePath": "packages/envd/internal/services/fsfreeze/fsfreeze_linux.go",
+      "lineRange": [
+        49,
+        67
+      ],
+      "summary": "通过 FITHAW ioctl 解冻文件系统，未冻结时视为 no-op。",
+      "tags": [
+        "filesystem",
+        "snapshot",
+        "linux"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/envd/internal/services/filesystem/move.go",
+      "target": "function:packages/envd/internal/services/filesystem/move.go:Move",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/remove.go",
+      "target": "function:packages/envd/internal/services/filesystem/remove.go:Remove",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "class:packages/envd/internal/services/filesystem/service.go:Service",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "function:packages/envd/internal/services/filesystem/service.go:Handle",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/stat.go",
+      "target": "function:packages/envd/internal/services/filesystem/stat.go:Stat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/utils.go",
+      "target": "function:packages/envd/internal/services/filesystem/utils.go:IsPathOnNetworkMount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/utils.go",
+      "target": "function:packages/envd/internal/services/filesystem/utils.go:entryInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/utils.go",
+      "target": "function:packages/envd/internal/services/filesystem/utils.go:getFileOwnership",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch.go",
+      "target": "function:packages/envd/internal/services/filesystem/watch.go:watchHandler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "class:packages/envd/internal/services/filesystem/watch_sync.go:FileWatcher",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "function:packages/envd/internal/services/filesystem/watch_sync.go:CreateFileWatcher",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "function:packages/envd/internal/services/filesystem/watch_sync.go:CreateWatcher",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "function:packages/envd/internal/services/filesystem/watch_sync.go:GetWatcherEvents",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "function:packages/envd/internal/services/filesystem/watch_sync.go:RemoveWatcher",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/fsfreeze/fsfreeze_linux.go",
+      "target": "function:packages/envd/internal/services/fsfreeze/fsfreeze_linux.go:Freeze",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/fsfreeze/fsfreeze_linux.go",
+      "target": "function:packages/envd/internal/services/fsfreeze/fsfreeze_linux.go:Thaw",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/move.go",
+      "target": "function:packages/envd/internal/services/filesystem/move.go:Move",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/remove.go",
+      "target": "function:packages/envd/internal/services/filesystem/remove.go:Remove",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "class:packages/envd/internal/services/filesystem/service.go:Service",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "function:packages/envd/internal/services/filesystem/service.go:Handle",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/stat.go",
+      "target": "function:packages/envd/internal/services/filesystem/stat.go:Stat",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/utils.go",
+      "target": "function:packages/envd/internal/services/filesystem/utils.go:IsPathOnNetworkMount",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "class:packages/envd/internal/services/filesystem/watch_sync.go:FileWatcher",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "function:packages/envd/internal/services/filesystem/watch_sync.go:CreateFileWatcher",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/move.go",
+      "target": "file:packages/envd/internal/permissions/authenticate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/move.go",
+      "target": "file:packages/envd/internal/permissions/keepalive.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/move.go",
+      "target": "file:packages/envd/internal/permissions/path.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/move.go",
+      "target": "file:packages/envd/internal/permissions/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/move.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/move_test.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/remove.go",
+      "target": "file:packages/envd/internal/permissions/authenticate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/remove.go",
+      "target": "file:packages/envd/internal/permissions/keepalive.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/remove.go",
+      "target": "file:packages/envd/internal/permissions/path.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/remove.go",
+      "target": "file:packages/envd/internal/permissions/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/remove.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/execcontext/context.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/logs/interceptor.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/logs/logger.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/services/legacy/conversion_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/services/legacy/conversion.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/services/legacy/interceptor_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/services/legacy/interceptor.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/services/legacy/legacyfilesystem.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/services/legacy/legacyprocess.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/services/legacy/stream.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystemconnect/filesystem.connect.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/utils/atomic_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/utils/atomic.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/utils/envvars_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/utils/envvars.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/utils/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/utils/multipart.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/utils/rfsnotify.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service_test.go",
+      "target": "file:packages/envd/internal/execcontext/context.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service_test.go",
+      "target": "file:packages/envd/internal/utils/atomic_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service_test.go",
+      "target": "file:packages/envd/internal/utils/atomic.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service_test.go",
+      "target": "file:packages/envd/internal/utils/envvars_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service_test.go",
+      "target": "file:packages/envd/internal/utils/envvars.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service_test.go",
+      "target": "file:packages/envd/internal/utils/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service_test.go",
+      "target": "file:packages/envd/internal/utils/multipart.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service_test.go",
+      "target": "file:packages/envd/internal/utils/rfsnotify.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/stat.go",
+      "target": "file:packages/envd/internal/permissions/authenticate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/stat.go",
+      "target": "file:packages/envd/internal/permissions/keepalive.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/stat.go",
+      "target": "file:packages/envd/internal/permissions/path.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/stat.go",
+      "target": "file:packages/envd/internal/permissions/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/stat.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/stat_test.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/utils.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch.go",
+      "target": "file:packages/envd/internal/logs/interceptor.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch.go",
+      "target": "file:packages/envd/internal/logs/logger.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch.go",
+      "target": "file:packages/envd/internal/permissions/authenticate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch.go",
+      "target": "file:packages/envd/internal/permissions/keepalive.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch.go",
+      "target": "file:packages/envd/internal/permissions/path.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch.go",
+      "target": "file:packages/envd/internal/permissions/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch.go",
+      "target": "file:packages/envd/internal/utils/atomic_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch.go",
+      "target": "file:packages/envd/internal/utils/atomic.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch.go",
+      "target": "file:packages/envd/internal/utils/envvars_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch.go",
+      "target": "file:packages/envd/internal/utils/envvars.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch.go",
+      "target": "file:packages/envd/internal/utils/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch.go",
+      "target": "file:packages/envd/internal/utils/multipart.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch.go",
+      "target": "file:packages/envd/internal/utils/rfsnotify.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "file:packages/envd/internal/permissions/authenticate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "file:packages/envd/internal/permissions/keepalive.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "file:packages/envd/internal/permissions/path.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "file:packages/envd/internal/permissions/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "file:packages/envd/internal/utils/atomic_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "file:packages/envd/internal/utils/atomic.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "file:packages/envd/internal/utils/envvars_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "file:packages/envd/internal/utils/envvars.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "file:packages/envd/internal/utils/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "file:packages/envd/internal/utils/multipart.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "file:packages/envd/internal/utils/rfsnotify.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_test.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/move.go",
+      "target": "file:packages/envd/internal/services/filesystem/move_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "file:packages/envd/internal/services/filesystem/service_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/stat.go",
+      "target": "file:packages/envd/internal/services/filesystem/stat_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/utils.go",
+      "target": "file:packages/envd/internal/services/filesystem/utils_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch.go",
+      "target": "file:packages/envd/internal/services/filesystem/watch_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "target": "file:packages/envd/internal/services/filesystem/watch_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/envd/internal/services/filesystem/service.go",
+      "target": "function:packages/envd/internal/services/filesystem/service.go:Handle",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "class:packages/envd/internal/services/filesystem/service.go:Service",
+      "target": "class:packages/envd/internal/services/filesystem/watch_sync.go:FileWatcher",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:packages/envd/internal/services/filesystem/move.go:Move",
+      "target": "function:packages/envd/internal/services/filesystem/utils.go:entryInfo",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:packages/envd/internal/services/filesystem/stat.go:Stat",
+      "target": "function:packages/envd/internal/services/filesystem/utils.go:entryInfo",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:packages/envd/internal/services/filesystem/watch_sync.go:CreateWatcher",
+      "target": "function:packages/envd/internal/services/filesystem/watch_sync.go:CreateFileWatcher",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:packages/envd/internal/services/filesystem/watch.go:watchHandler",
+      "target": "function:packages/envd/internal/services/filesystem/watch_sync.go:CreateFileWatcher",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/internal/services/fsfreeze/fsfreeze_linux.go",
+      "target": "file:packages/envd/internal/services/fsfreeze/fsfreeze.go",
+      "type": "implements",
+      "direction": "forward",
+      "weight": 0.9
+    }
+  ]
+}

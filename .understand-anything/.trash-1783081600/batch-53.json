@@ -1,0 +1,69 @@
+{
+  "nodes": [
+    {
+      "id": "service:packages/api/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "packages/api/Dockerfile",
+      "summary": "多阶段 Docker 构建，先在 golang:1.26.3-alpine 镜像中编译 E2B API 服务二进制，再将产物拷贝到精简的 alpine 运行时镜像中以 release 模式启动 Gin 服务。",
+      "tags": ["containerization", "infrastructure", "deployment", "multi-stage-build", "api"],
+      "complexity": "moderate",
+      "languageNotes": "采用两阶段构建：builder 阶段利用 BuildKit 缓存挂载（--mount=type=cache）加速 Go 编译，并优先拷贝各模块 go.mod/go.sum 以最大化 Docker 层缓存命中率；运行时镜像基于 alpine 仅包含二进制，显著减小镜像体积。"
+    },
+    {
+      "id": "service:packages/api/Dockerfile:builder",
+      "type": "service",
+      "name": "builder",
+      "filePath": "packages/api/Dockerfile",
+      "summary": "基于 golang:1.26.3-alpine 的构建阶段，安装 make，拷贝 shared/clickhouse/db/auth/api 五个模块的源码与依赖清单，执行 go mod download 与 make build 生成 API 二进制。",
+      "tags": ["build-stage", "golang", "containerization", "infrastructure"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "service:packages/api/Dockerfile:runtime",
+      "type": "service",
+      "name": "runtime",
+      "filePath": "packages/api/Dockerfile",
+      "summary": "基于 alpine:3.22 的运行时阶段，仅从 builder 拷贝编译好的 /build/api/bin/api 二进制，设置 GIN_MODE=release 并作为入口启动。",
+      "tags": ["runtime-stage", "alpine", "containerization", "infrastructure"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:packages/api/Dockerfile",
+      "target": "service:packages/api/Dockerfile:builder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/api/Dockerfile",
+      "target": "service:packages/api/Dockerfile:runtime",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/api/Dockerfile",
+      "target": "file:packages/api/main.go",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "service:packages/api/Dockerfile:builder",
+      "target": "service:packages/api/Dockerfile:runtime",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/api/Dockerfile",
+      "target": "file:packages/api/Makefile",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

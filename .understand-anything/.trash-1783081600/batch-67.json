@@ -1,0 +1,206 @@
+{
+  "nodes": [
+    {
+      "id": "document:docs/MODULE_GUIDE.md",
+      "type": "document",
+      "name": "MODULE_GUIDE.md",
+      "filePath": "docs/MODULE_GUIDE.md",
+      "summary": "Envd 模块的详细使用与开发指南，涵盖入口启动、REST API 层（init/freeze/upload/download/compose/auth/secure_token/encoding/envs）、Process 与 Filesystem gRPC 服务、cgroup 管理、MMDS/CA 证书、日志系统、权限与端口转发、proto 接口、代码生成与端到端数据流。",
+      "tags": ["documentation", "envd", "module-guide", "grpc", "rest-api"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:docs/README_zh.md",
+      "type": "document",
+      "name": "README_zh.md",
+      "filePath": "docs/README_zh.md",
+      "summary": "Client-Proxy 模块的中文详解文档，说明其作为无状态反向 HTTP 代理的定位、目录结构、配置项、启动装配、Redis sandbox-catalog 查询、Auto-Resume 唤醒、Draining/Unhealthy 两阶段优雅关停等关键机制。",
+      "tags": ["documentation", "client-proxy", "reverse-proxy", "auto-resume", "redis"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/SCHEMA.md",
+      "type": "document",
+      "name": "SCHEMA.md",
+      "filePath": "docs/SCHEMA.md",
+      "summary": "E2B PostgreSQL 数据库 Schema 全景图，基于 100+ goose 迁移整理的最终状态 ER 总览，按业务域分组（身份认证、团队/订阅、模板构建、env/snapshot/snapshot_templates、集群、度量等）并给出迁移轨迹与外键约束细节。",
+      "tags": ["documentation", "database", "schema", "postgres", "er-diagram"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:docs/clickhouse-package.md",
+      "type": "document",
+      "name": "clickhouse-package.md",
+      "filePath": "docs/clickhouse-package.md",
+      "summary": "packages/clickhouse 分析/可观测数据层的原理详解，包含客户端与连接管理接口、批量写入 Batcher、生命周期/hoststats 事件交付、sandbox/team 时间序列指标查询接口以及独立 Go module 的依赖边界。",
+      "tags": ["documentation", "clickhouse", "observability", "batch-writer", "analytics"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:docs/docker-reverse-proxy.md",
+      "type": "document",
+      "name": "docker-reverse-proxy.md",
+      "filePath": "docs/docker-reverse-proxy.md",
+      "summary": "自托管 Docker registry 反向代理的原理详解，针对 GCP Artifact Registry 的薄包装层：解析 E2B access token、按租户校验模板权限、用 SA 凭证换取短期 token、改写 path 前缀并透传 Docker v2 registry API。",
+      "tags": ["documentation", "docker-registry", "reverse-proxy", "artifact-registry", "auth"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/envd-module.md",
+      "type": "document",
+      "name": "envd-module.md",
+      "filePath": "docs/envd-module.md",
+      "summary": "基于知识图谱自动生成的 Envd 模块介绍，涵盖模块定位（VM 守护进程层 106 节点）、顶层目录、HTTP API、Connect-RPC gRPC 服务、初始化/文件系统/进程/端口转发/cgroup 资源控制等核心职责。",
+      "tags": ["documentation", "envd", "auto-generated", "knowledge-graph", "vm-daemon"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/envd-package.md",
+      "type": "document",
+      "name": "envd-package.md",
+      "filePath": "docs/envd-package.md",
+      "summary": "packages/envd 的完整原理详解，涵盖 envd 在 VM 中的位置（root 运行、49983 端口、h2c、CORS、idle timeout）、protobuf 契约、版本机制（pkg/version.go）、子系统（filesystem/process/cgroup/host/logs/permissions/port/utils）以及端到端调用链。",
+      "tags": ["documentation", "envd", "protobuf", "vm-daemon", "grpc"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:docs/orchestrator-module.md",
+      "type": "document",
+      "name": "orchestrator-module.md",
+      "filePath": "docs/orchestrator-module.md",
+      "summary": "packages/orchestrator 模块原理详解，作为核心编排层（layer:core-orchestrator）负责 Firecracker microVM 生命周期、网络命名空间、NBD 块设备、模板缓存与出入站流量控制，剖析 gRPC server、sandbox.Map、Template Cache、fc/nbd/network/template 子系统的协作。",
+      "tags": ["documentation", "orchestrator", "firecracker", "vm-lifecycle", "grpc"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:docs/sandbox-lifecycle.md",
+      "type": "document",
+      "name": "sandbox-lifecycle.md",
+      "filePath": "docs/sandbox-lifecycle.md",
+      "summary": "Sandbox 生命周期控制详解，从 API 网关层 → API Orchestrator 客户端层 → Orchestrator 核心层（pkg/sandbox/sandbox.go 1519 行状态机）→ VM 守护进程层（envd init/freeze/unfreeze）四层协调，阐述 create/pause/resume/kill/refresh/connect 等流程。",
+      "tags": ["documentation", "sandbox-lifecycle", "orchestrator", "state-machine", "firecracker"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:docs/MODULE_GUIDE.md",
+      "target": "file:packages/envd/main.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/MODULE_GUIDE.md",
+      "target": "file:packages/envd/internal/api/store.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/MODULE_GUIDE.md",
+      "target": "file:packages/envd/internal/services/process/service.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/MODULE_GUIDE.md",
+      "target": "file:packages/envd/internal/services/filesystem/service.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/README_zh.md",
+      "target": "file:packages/client-proxy/main.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/SCHEMA.md",
+      "target": "file:packages/db/migrations/20260603120000_some_migration.sql",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/clickhouse-package.md",
+      "target": "file:packages/clickhouse/pkg/clickhouse.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/clickhouse-package.md",
+      "target": "file:packages/clickhouse/pkg/batcher/batcher.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/docker-reverse-proxy.md",
+      "target": "file:packages/docker-reverse-proxy/main.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/envd-module.md",
+      "target": "file:packages/envd/main.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/envd-package.md",
+      "target": "file:packages/envd/pkg/version.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/envd-package.md",
+      "target": "file:packages/envd/main.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/orchestrator-module.md",
+      "target": "file:packages/orchestrator/main.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/orchestrator-module.md",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/sandbox-lifecycle.md",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/sandbox-lifecycle.md",
+      "target": "file:packages/orchestrator/internal/orchestrator/create_instance.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/sandbox-lifecycle.md",
+      "target": "file:packages/envd/internal/api/init.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

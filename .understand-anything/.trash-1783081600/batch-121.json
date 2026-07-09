@@ -1,0 +1,649 @@
+{
+  "nodes": [
+    {
+      "id": "file:.cursor/BUGBOT.md",
+      "type": "document",
+      "name": "BUGBOT.md",
+      "filePath": ".cursor/BUGBOT.md",
+      "summary": "Cursor 编辑器中 BugBot AI 助手的配置文档,定义 PR 描述与代码评审的输出规范。",
+      "tags": ["documentation", "ai-assistant", "code-review", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.devcontainer/devcontainer.json",
+      "type": "config",
+      "name": "devcontainer.json",
+      "filePath": ".devcontainer/devcontainer.json",
+      "summary": "VS Code 开发容器配置,基于 Go 1.26 bookworm 镜像,集成 Terraform、gcloud、Docker-in-Docker、mise 等开发工具及对应 VS Code 扩展。",
+      "tags": ["configuration", "devcontainer", "vscode", "tooling"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:.envrc",
+      "type": "file",
+      "name": ".envrc",
+      "filePath": ".envrc",
+      "summary": "direnv 配置文件,检测到 mise 工具链时自动通过 direnv 加载项目级运行时版本。",
+      "tags": ["direnv", "mise", "shell-config"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.gemini/config.yaml",
+      "type": "config",
+      "name": "config.yaml",
+      "filePath": ".gemini/config.yaml",
+      "summary": "Gemini Code Assist 配置,关闭非必要 PR 总结、只展示高危级别的评审意见,并忽略生成代码、Mock 与 Markdown 文件。",
+      "tags": ["configuration", "ai-assistant", "code-review"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.gemini/styleguide.md",
+      "type": "document",
+      "name": "styleguide.md",
+      "filePath": ".gemini/styleguide.md",
+      "summary": "Gemini 评审输出风格指南,要求只输出具体缺陷,跳过风格/测试覆盖度等与 linter/Codecov 重复的内容,聚焦并发、空指针、鉴权、SQL 等关键问题。",
+      "tags": ["documentation", "ai-assistant", "code-review", "styleguide"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.gitattributes",
+      "type": "file",
+      "name": ".gitattributes",
+      "filePath": ".gitattributes",
+      "summary": "Git 属性配置,统一换行策略为 LF,并把 go.sum 标记为 linguist-generated 以在统计中排除。",
+      "tags": ["git", "configuration", "line-endings"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.github/actions/build-packages/action.yml",
+      "type": "config",
+      "name": "action.yml",
+      "filePath": ".github/actions/build-packages/action.yml",
+      "summary": "复合 GitHub Action,组合 go-setup-cache 后调用 Makefile 调试构建入口,编译 integration tests、db、orchestrator、api、envd 与 client-proxy 等 Go 服务。",
+      "tags": ["configuration", "ci-cd", "github-actions", "build-system"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.github/actions/build-sandbox-template/action.yml",
+      "type": "config",
+      "name": "action.yml",
+      "filePath": ".github/actions/build-sandbox-template/action.yml",
+      "summary": "复合 Action,通过 orchestrator 的 build-template 目标在本地构建 Firecracker sandbox 模板,支持压缩参数与磁盘大小配置,并将构建 ID 写入 .env.test。",
+      "tags": ["configuration", "ci-cd", "github-actions", "firecracker", "sandbox-template"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:.github/actions/deploy-setup/action.yml",
+      "type": "config",
+      "name": "action.yml",
+      "filePath": ".github/actions/deploy-setup/action.yml",
+      "summary": "部署前置环境设置 Action:使用 Infisical 拉取密钥、完成 GCP 身份认证、初始化 Terraform 并配置插件缓存,作为部署流水线的通用引导步骤。",
+      "tags": ["configuration", "ci-cd", "github-actions", "deployment", "terraform", "gcp"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:.github/actions/go-setup-cache/action.yml",
+      "type": "config",
+      "name": "action.yml",
+      "filePath": ".github/actions/go-setup-cache/action.yml",
+      "summary": "复合 Action,基于 go.work 的 Go 版本安装与依赖缓存,通过 cache-dependency-path 限定每个 job 缓存自身所需的 Go 模块。",
+      "tags": ["configuration", "ci-cd", "github-actions", "cache", "go"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.github/actions/host-init/action.yml",
+      "type": "config",
+      "name": "action.yml",
+      "filePath": ".github/actions/host-init/action.yml",
+      "summary": "宿主初始化复合 Action,设置本地 PostgreSQL 测试连接串并执行 host-init/init-client.sh 脚本,完成 orchestrator 运行所需的内核与环境准备。",
+      "tags": ["configuration", "ci-cd", "github-actions", "host-setup"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.github/actions/host-init/init-client.sh",
+      "type": "file",
+      "name": "init-client.sh",
+      "filePath": ".github/actions/host-init/init-client.sh",
+      "summary": "Orchestrator 宿主初始化脚本:挂载 orchestrator/sandbox 目录、配置 swap、加载 NBD 模块、关闭 inotify、从 GCS 拉取 envd/kernels/firecracker/busybox,并按物理内存比例分配 hugepages。",
+      "tags": ["shell", "ci-cd", "host-setup", "firecracker", "nbd", "hugepages"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:.github/actions/promote-envd/action.yml",
+      "type": "config",
+      "name": "action.yml",
+      "filePath": ".github/actions/promote-envd/action.yml",
+      "summary": "复合 Action,加载 Infisical 中的部署/运行时密钥,完成 GCP 鉴权后调用 envd 的 promote 目标,把指定 commit SHA 的 envd 构建版本提升为 latest。",
+      "tags": ["configuration", "ci-cd", "github-actions", "deployment", "envd"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:.github/actions/start-services/action.yml",
+      "type": "config",
+      "name": "action.yml",
+      "filePath": ".github/actions/start-services/action.yml",
+      "summary": "复合 Action,启动集成测试所需的 PostgreSQL、ClickHouse、Redis 容器,以及 OtelCollector、Orchestrator、API、ClientProxy 服务,并配置 memfile 去重等内存相关参数。",
+      "tags": ["configuration", "ci-cd", "github-actions", "integration-tests", "postgresql", "clickhouse", "redis"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:.github/scripts/setup-arm64-runner.sh",
+      "type": "file",
+      "name": "setup-arm64-runner.sh",
+      "filePath": ".github/scripts/setup-arm64-runner.sh",
+      "summary": "ARM64 GitHub Actions 自托管 runner 引导脚本,安装 KVM、hugepages、NBD 等 orchestrator 运行依赖,并打印注册指引(标签 infra-tests-arm64)。",
+      "tags": ["shell", "ci-cd", "arm64", "github-actions-runner", "host-setup"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:.redocly/plugins/e2b-consistency.mjs",
+      "type": "file",
+      "name": "e2b-consistency.mjs",
+      "filePath": ".redocly/plugins/e2b-consistency.mjs",
+      "summary": "Redocly CLI 自定义插件,实现 e2b-consistency 规则集:校验 OpenAPI 版本化端点 summary 包含版本号、不以 Get 开头、不含 deprecated 字样。",
+      "tags": ["openapi", "lint", "plugin", "redocly", "documentation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:.tool-versions",
+      "type": "file",
+      "name": ".tool-versions",
+      "filePath": ".tool-versions",
+      "summary": "mise/asdf 多语言工具版本声明,固定 Go 1.26.3、buf、protoc、gcloud、terraform、golangci-lint、packer 等工具链版本。",
+      "tags": ["configuration", "tooling", "mise", "asdf"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.understand-anything/.understandignore",
+      "type": "file",
+      "name": ".understandignore",
+      "filePath": ".understand-anything/.understandignore",
+      "summary": "Understand-Anything 静态分析忽略规则模板,使用 .gitignore 语法声明需要排除的目录与生成代码,默认全部以注释形式给出。",
+      "tags": ["configuration", "tooling", "ignore-patterns"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.understand-anything/intermediate/scan-result.json",
+      "type": "config",
+      "name": "scan-result.json",
+      "filePath": ".understand-anything/intermediate/scan-result.json",
+      "summary": "Understand-Anything 项目扫描器产出的中间结果文件,记录仓库中每个文件的语言、类别、依赖与统计信息。",
+      "tags": ["configuration", "tooling", "scan-result", "intermediate"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:CODEOWNERS",
+      "type": "file",
+      "name": "CODEOWNERS",
+      "filePath": "CODEOWNERS",
+      "summary": "GitHub CODEOWNERS 配置,默认审查者 ValentaTomas/jakubno/dobrac,packages/dashboard-api/ 目录额外指定 ben-fornefeld。",
+      "tags": ["configuration", "github", "code-owners"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:fixtures/ory/identity.v1.schema.json",
+      "type": "config",
+      "name": "identity.v1.schema.json",
+      "filePath": "fixtures/ory/identity.v1.schema.json",
+      "summary": "Ory Kratos 身份 trait JSON Schema 示例,定义 email、name 字段并配置 password、webauthn、totp、code、passkey 等凭证方式以及恢复/验证流程。",
+      "tags": ["configuration", "schema", "ory-kratos", "identity", "json-schema"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:go.work",
+      "type": "file",
+      "name": "go.work",
+      "filePath": "go.work",
+      "summary": "Go 1.26.3 workspace 入口,声明 13 个 packages 子模块和 tests/integration 加入同一 multi-module 构建。",
+      "tags": ["go-workspace", "monorepo", "build-system"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/modules/job-api/jobs/api.hcl",
+      "type": "file",
+      "name": "api.hcl",
+      "filePath": "iac/modules/job-api/jobs/api.hcl",
+      "summary": "Nomad API 服务任务规格模板,使用 HCL 模板参数化 node_pool、端口、env 注入,定义 start 与 db-migrator 任务、可选 rolling update stanza 以及 Traefik/Consul 服务标签。",
+      "tags": ["nomad", "hcl", "template", "api", "infrastructure"],
+      "complexity": "complex",
+      "languageNotes": "使用 %{ if/for } 模板指令以及 $$ 双重转义,在 HCL 模板与 Nomad 环境变量之间做插值。"
+    },
+    {
+      "id": "file:iac/modules/job-api/main.tf",
+      "type": "resource",
+      "name": "main.tf",
+      "filePath": "iac/modules/job-api/main.tf",
+      "summary": "Terraform job-api 模块入口,定义 nomad_job.api 资源,通过 templatefile 把变量注入到 jobs/api.hcl 并执行 env 变量 trim 过滤。",
+      "tags": ["terraform", "infrastructure", "nomad", "api", "module"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/modules/job-api/variables.tf",
+      "type": "resource",
+      "name": "variables.tf",
+      "filePath": "iac/modules/job-api/variables.tf",
+      "summary": "job-api 模块的输入变量声明,涵盖节点池、滚动更新、实例数、CPU/内存、端口、镜像与环境变量等 13 个变量,env 变量标记为 sensitive。",
+      "tags": ["terraform", "infrastructure", "variables", "module"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:.github/actions/host-init/init-client.sh:max",
+      "type": "function",
+      "name": "max",
+      "filePath": ".github/actions/host-init/init-client.sh",
+      "lineRange": [122, 128],
+      "summary": "Bash 实现的 max 函数,返回两个整数参数中的较大者,用于 hugepages RAM 计算中的上下限裁剪。",
+      "tags": ["shell", "utility", "math"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:.github/actions/host-init/init-client.sh:min",
+      "type": "function",
+      "name": "min",
+      "filePath": ".github/actions/host-init/init-client.sh",
+      "lineRange": [130, 136],
+      "summary": "Bash 实现的 min 函数,返回两个整数参数中的较小者,用于 hugepages RAM 计算中的最小保留值控制。",
+      "tags": ["shell", "utility", "math"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:.github/actions/host-init/init-client.sh:ensure_even",
+      "type": "function",
+      "name": "ensure_even",
+      "filePath": ".github/actions/host-init/init-client.sh",
+      "lineRange": [138, 144],
+      "summary": "Bash 函数,若参数为奇数则减 1 返回,确保 hugepages 数量为偶数以满足内存对齐要求。",
+      "tags": ["shell", "utility", "math"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:.github/actions/host-init/init-client.sh:remove_decimal",
+      "type": "function",
+      "name": "remove_decimal",
+      "filePath": ".github/actions/host-init/init-client.sh",
+      "lineRange": [146, 148],
+      "summary": "Bash 函数,通过 sed 去掉数字的小数部分,返回整数形式的 hugepages 数量。",
+      "tags": ["shell", "utility", "math"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:.redocly/plugins/e2b-consistency.mjs:versionFromPath",
+      "type": "function",
+      "name": "versionFromPath",
+      "filePath": ".redocly/plugins/e2b-consistency.mjs",
+      "lineRange": [1, 4],
+      "summary": "从 OpenAPI 路径中匹配版本号段(如 /v3/...),返回形如 v3 的版本标识,辅助版本化端点校验。",
+      "tags": ["openapi", "utility", "versioning"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:.redocly/plugins/e2b-consistency.mjs:decodePointerPath",
+      "type": "function",
+      "name": "decodePointerPath",
+      "filePath": ".redocly/plugins/e2b-consistency.mjs",
+      "lineRange": [6, 8],
+      "summary": "解码 JSON Pointer 转义:把 ~1 还原为 /,~0 还原为 ~,符合 RFC 6901 的反规范化规则。",
+      "tags": ["openapi", "utility", "json-pointer"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:.redocly/plugins/e2b-consistency.mjs:pathFromPointer",
+      "type": "function",
+      "name": "pathFromPointer",
+      "filePath": ".redocly/plugins/e2b-consistency.mjs",
+      "lineRange": [10, 21],
+      "summary": "从 #/paths/.../#/components/... 形式的 OpenAPI 指针中提取 /paths/ 段并通过 decodePointerPath 还原为真实路径字符串。",
+      "tags": ["openapi", "utility", "json-pointer"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:.redocly/plugins/e2b-consistency.mjs:operationPath",
+      "type": "function",
+      "name": "operationPath",
+      "filePath": ".redocly/plugins/e2b-consistency.mjs",
+      "lineRange": [23, 43],
+      "summary": "从 Redocly RuleContext 中获取当前 operation 所在路径,兼容 parent.key、location.pointer、sourcePointer 等多种来源。",
+      "tags": ["openapi", "utility", "plugin-helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:.redocly/plugins/e2b-consistency.mjs:VersionedOperationSummary",
+      "type": "function",
+      "name": "VersionedOperationSummary",
+      "filePath": ".redocly/plugins/e2b-consistency.mjs",
+      "lineRange": [45, 74],
+      "summary": "规则 oas3/versioned-operation-summary,要求版本化端点(/vN/...)的 summary 包含对应的版本号(如 \"Create template (v3)\"),否则报告问题。",
+      "tags": ["openapi", "lint-rule", "versioning"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:.redocly/plugins/e2b-consistency.mjs:OperationSummaryNoGetPrefix",
+      "type": "function",
+      "name": "OperationSummaryNoGetPrefix",
+      "filePath": ".redocly/plugins/e2b-consistency.mjs",
+      "lineRange": [76, 96],
+      "summary": "规则 oas3/operation-summary-no-get-prefix,禁止 operation summary 以 Get/Get 开头,避免与 HTTP Method 信息重复。",
+      "tags": ["openapi", "lint-rule", "summary"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:.redocly/plugins/e2b-consistency.mjs:OperationSummaryNoDeprecatedLabel",
+      "type": "function",
+      "name": "OperationSummaryNoDeprecatedLabel",
+      "filePath": ".redocly/plugins/e2b-consistency.mjs",
+      "lineRange": [98, 118],
+      "summary": "规则 oas3/operation-summary-no-deprecated-label,禁止 operation summary 出现 deprecated 字样,要求通过 deprecated: true 与 description 表达。",
+      "tags": ["openapi", "lint-rule", "summary"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:.redocly/plugins/e2b-consistency.mjs:e2bConsistencyPlugin",
+      "type": "function",
+      "name": "e2bConsistencyPlugin",
+      "filePath": ".redocly/plugins/e2b-consistency.mjs",
+      "lineRange": [120, 131],
+      "summary": "默认导出的 Redocly 插件入口,聚合三个 oas3 规则(versioned-operation-summary、operation-summary-no-get-prefix、operation-summary-no-deprecated-label)。",
+      "tags": ["openapi", "plugin", "lint"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/modules/job-api/main.tf:nomad_job.api",
+      "type": "resource",
+      "name": "nomad_job.api",
+      "filePath": "iac/modules/job-api/main.tf",
+      "lineRange": [13, 31],
+      "summary": "Terraform 资源 nomad_job.api,通过 templatefile 渲染 jobs/api.hcl,把模块变量映射为 Nomad job-spec 占位符。",
+      "tags": ["terraform", "nomad", "api", "resource"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:.github/actions/build-packages/action.yml",
+      "target": "file:.github/actions/go-setup-cache/action.yml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:.github/actions/build-sandbox-template/action.yml",
+      "target": "file:iac/modules/job-api/main.tf",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:.github/actions/deploy-setup/action.yml",
+      "target": "file:iac/modules/job-api/main.tf",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:.github/actions/host-init/action.yml",
+      "target": "file:.github/actions/host-init/init-client.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:.github/actions/promote-envd/action.yml",
+      "target": "file:.envrc",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:.github/actions/start-services/action.yml",
+      "target": "file:.envrc",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:.github/actions/start-services/action.yml",
+      "target": "file:.github/actions/host-init/init-client.sh",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:.cursor/BUGBOT.md",
+      "target": "file:.gemini/styleguide.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:.cursor/BUGBOT.md",
+      "target": "file:.gemini/config.yaml",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:iac/modules/job-api/main.tf",
+      "target": "file:iac/modules/job-api/jobs/api.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/modules/job-api/main.tf",
+      "target": "file:iac/modules/job-api/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-api/main.tf:nomad_job.api",
+      "target": "file:iac/modules/job-api/jobs/api.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/modules/job-api/jobs/api.hcl",
+      "target": "file:iac/modules/job-api/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:fixtures/ory/identity.v1.schema.json",
+      "target": "file:go.work",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:go.work",
+      "target": "file:.tool-versions",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:.tool-versions",
+      "target": "file:go.work",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:go.work",
+      "target": "file:iac/modules/job-api/main.tf",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:.envrc",
+      "target": "file:.tool-versions",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:.devcontainer/devcontainer.json",
+      "target": "file:.tool-versions",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:.devcontainer/devcontainer.json",
+      "target": "file:go.work",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:.github/actions/host-init/init-client.sh",
+      "target": "function:.github/actions/host-init/init-client.sh:max",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:.github/actions/host-init/init-client.sh",
+      "target": "function:.github/actions/host-init/init-client.sh:min",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:.github/actions/host-init/init-client.sh",
+      "target": "function:.github/actions/host-init/init-client.sh:ensure_even",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:.github/actions/host-init/init-client.sh",
+      "target": "function:.github/actions/host-init/init-client.sh:remove_decimal",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:.redocly/plugins/e2b-consistency.mjs",
+      "target": "function:.redocly/plugins/e2b-consistency.mjs:versionFromPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:.redocly/plugins/e2b-consistency.mjs",
+      "target": "function:.redocly/plugins/e2b-consistency.mjs:decodePointerPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:.redocly/plugins/e2b-consistency.mjs",
+      "target": "function:.redocly/plugins/e2b-consistency.mjs:pathFromPointer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:.redocly/plugins/e2b-consistency.mjs",
+      "target": "function:.redocly/plugins/e2b-consistency.mjs:operationPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:.redocly/plugins/e2b-consistency.mjs",
+      "target": "function:.redocly/plugins/e2b-consistency.mjs:VersionedOperationSummary",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:.redocly/plugins/e2b-consistency.mjs",
+      "target": "function:.redocly/plugins/e2b-consistency.mjs:OperationSummaryNoGetPrefix",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:.redocly/plugins/e2b-consistency.mjs",
+      "target": "function:.redocly/plugins/e2b-consistency.mjs:OperationSummaryNoDeprecatedLabel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:.redocly/plugins/e2b-consistency.mjs",
+      "target": "function:.redocly/plugins/e2b-consistency.mjs:e2bConsistencyPlugin",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:.redocly/plugins/e2b-consistency.mjs",
+      "target": "function:.redocly/plugins/e2b-consistency.mjs:e2bConsistencyPlugin",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:.redocly/plugins/e2b-consistency.mjs:e2bConsistencyPlugin",
+      "target": "function:.redocly/plugins/e2b-consistency.mjs:VersionedOperationSummary",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:.redocly/plugins/e2b-consistency.mjs:e2bConsistencyPlugin",
+      "target": "function:.redocly/plugins/e2b-consistency.mjs:OperationSummaryNoGetPrefix",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:.redocly/plugins/e2b-consistency.mjs:e2bConsistencyPlugin",
+      "target": "function:.redocly/plugins/e2b-consistency.mjs:OperationSummaryNoDeprecatedLabel",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:.redocly/plugins/e2b-consistency.mjs:VersionedOperationSummary",
+      "target": "function:.redocly/plugins/e2b-consistency.mjs:versionFromPath",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:.redocly/plugins/e2b-consistency.mjs:VersionedOperationSummary",
+      "target": "function:.redocly/plugins/e2b-consistency.mjs:operationPath",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:.redocly/plugins/e2b-consistency.mjs:operationPath",
+      "target": "function:.redocly/plugins/e2b-consistency.mjs:pathFromPointer",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:.redocly/plugins/e2b-consistency.mjs:pathFromPointer",
+      "target": "function:.redocly/plugins/e2b-consistency.mjs:decodePointerPath",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/modules/job-api/main.tf",
+      "target": "resource:iac/modules/job-api/main.tf:nomad_job.api",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ]
+}

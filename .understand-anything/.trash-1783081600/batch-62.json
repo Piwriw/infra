@@ -1,0 +1,576 @@
+{
+  "nodes": [
+    {
+      "id": "table:packages/clickhouse/migrations/20250521131545_add_metrics_local.sql:metrics_gauge_local",
+      "type": "table",
+      "name": "metrics_gauge_local",
+      "filePath": "packages/clickhouse/migrations/20250521131545_add_metrics_local.sql",
+      "lineRange": [3, 8],
+      "summary": "创建 metrics_gauge_local 本地表，作为 OpenTelemetry Gauge 指标的本地 MergeTree 表，配合分布式视图使用。",
+      "tags": ["database", "clickhouse", "metrics", "schema-definition", "infrastructure"],
+      "complexity": "moderate",
+      "languageNotes": "ClickHouse ReplicatedMergeTree 本地表，搭配分布式表使用，承载 OTLP 格式的 Gauge 指标数据。"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20250521131546_add_metrics.sql:metrics_gauge",
+      "type": "table",
+      "name": "metrics_gauge",
+      "filePath": "packages/clickhouse/migrations/20250521131546_add_metrics.sql",
+      "lineRange": [3, 4],
+      "summary": "创建 metrics_gauge 分布式表，作为 metrics_gauge_local 的 Distributed 视图，统一对外查询入口。",
+      "tags": ["database", "clickhouse", "metrics", "schema-definition", "distributed-table"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20250717135224_sandbox_metrics.sql:sandbox_metrics_gauge_local",
+      "type": "table",
+      "name": "sandbox_metrics_gauge_local",
+      "filePath": "packages/clickhouse/migrations/20250717135224_sandbox_metrics.sql",
+      "lineRange": [4, 17],
+      "summary": "创建 sandbox_metrics_gauge_local 本地表，按 sandbox_id/team_id 维度存储沙箱级 Gauge 指标，带 7 天 TTL。",
+      "tags": ["database", "clickhouse", "sandbox-metrics", "schema-definition", "observability"],
+      "complexity": "moderate",
+      "languageNotes": "通过物化视图从 metrics_gauge 中过滤 e2b.sandbox.* 指标后聚合到本表，避免全表扫描。"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20250717135224_sandbox_metrics.sql:sandbox_metrics_gauge",
+      "type": "table",
+      "name": "sandbox_metrics_gauge",
+      "filePath": "packages/clickhouse/migrations/20250717135224_sandbox_metrics.sql",
+      "lineRange": [16, 17],
+      "summary": "创建 sandbox_metrics_gauge 分布式表，作为 sandbox_metrics_gauge_local 的 Distributed 视图。",
+      "tags": ["database", "clickhouse", "sandbox-metrics", "schema-definition", "distributed-table"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20250721084412_routing.sql:metrics_gauge",
+      "type": "table",
+      "name": "metrics_gauge",
+      "filePath": "packages/clickhouse/migrations/20250721084412_routing.sql",
+      "lineRange": [7, 43],
+      "summary": "重建 metrics_gauge 表，定义完整的 OTLP ResourceSpans/Metrics 字段集（ServiceName、Attributes、SpanId、TraceId 等），并新增 sandbox/team 维度的路由视图。",
+      "tags": ["database", "clickhouse", "metrics", "schema-definition", "otlp"],
+      "complexity": "complex",
+      "languageNotes": "字段遵循 OpenTelemetry OTLP 规范，包含 ResourceAttributes、ScopeAttributes、Exemplars 等标准 OTel 字段。"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20250721084412_routing.sql:metrics_gauge_local",
+      "type": "table",
+      "name": "metrics_gauge_local",
+      "filePath": "packages/clickhouse/migrations/20250721084412_routing.sql",
+      "lineRange": [46, 51],
+      "summary": "在 routing 迁移中重新创建 metrics_gauge_local 本地表，以匹配 metrics_gauge 的字段定义。",
+      "tags": ["database", "clickhouse", "metrics", "schema-definition", "infrastructure"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20250725223340_add_sandbox_events_local.sql:sandbox_events_local",
+      "type": "table",
+      "name": "sandbox_events_local",
+      "filePath": "packages/clickhouse/migrations/20250725223340_add_sandbox_events_local.sql",
+      "lineRange": [3, 8],
+      "summary": "创建 sandbox_events_local 本地表，记录沙箱生命周期事件（创建/暂停/恢复/销毁），按时间分区并设 7 天 TTL。",
+      "tags": ["database", "clickhouse", "sandbox-events", "schema-definition", "observability"],
+      "complexity": "moderate",
+      "languageNotes": "事件表使用 event_category/event_label/version 三元组来组织事件类型，后续迁移到 type/version 模型。"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20250725223341_add_sandbox_events.sql:sandbox_events",
+      "type": "table",
+      "name": "sandbox_events",
+      "filePath": "packages/clickhouse/migrations/20250725223341_add_sandbox_events.sql",
+      "lineRange": [3, 4],
+      "summary": "创建 sandbox_events 分布式表，作为 sandbox_events_local 的 Distributed 视图，供 API 层查询沙箱事件。",
+      "tags": ["database", "clickhouse", "sandbox-events", "schema-definition", "distributed-table"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20250801113224_team_metrics.sql:team_metrics_gauge_local",
+      "type": "table",
+      "name": "team_metrics_gauge_local",
+      "filePath": "packages/clickhouse/migrations/20250801113224_team_metrics.sql",
+      "lineRange": [4, 16],
+      "summary": "创建 team_metrics_gauge_local 本地表，按 team_id 维度聚合 Gauge 指标，带 30 天 TTL。",
+      "tags": ["database", "clickhouse", "team-metrics", "schema-definition", "observability"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20250801113224_team_metrics.sql:team_metrics_gauge",
+      "type": "table",
+      "name": "team_metrics_gauge",
+      "filePath": "packages/clickhouse/migrations/20250801113224_team_metrics.sql",
+      "lineRange": [15, 16],
+      "summary": "创建 team_metrics_gauge 分布式表，作为 team_metrics_gauge_local 的 Distributed 视图。",
+      "tags": ["database", "clickhouse", "team-metrics", "schema-definition", "distributed-table"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20250801113226_team_counters.sql:metrics_sum",
+      "type": "table",
+      "name": "metrics_sum",
+      "filePath": "packages/clickhouse/migrations/20250801113226_team_counters.sql",
+      "lineRange": [3, 43],
+      "summary": "创建 metrics_sum 表（SumMetric），承载 OTLP 单调递增计数器指标，扩展标准字段并附加 team_id/metric_name/value 列。",
+      "tags": ["database", "clickhouse", "metrics", "schema-definition", "otlp"],
+      "complexity": "complex",
+      "languageNotes": "包含 AggregationTemporality 和 IsMonotonic 字段，符合 OTLP SumMetric 规范。"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20250801113226_team_counters.sql:team_metrics_sum_local",
+      "type": "table",
+      "name": "team_metrics_sum_local",
+      "filePath": "packages/clickhouse/migrations/20250801113226_team_counters.sql",
+      "lineRange": [32, 43],
+      "summary": "创建 team_metrics_sum_local 本地表，按 team_id 维度聚合单调递增计数器（如请求次数、CPU 时间），带 30 天 TTL。",
+      "tags": ["database", "clickhouse", "team-metrics", "schema-definition", "observability"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20250801113226_team_counters.sql:team_metrics_sum",
+      "type": "table",
+      "name": "team_metrics_sum",
+      "filePath": "packages/clickhouse/migrations/20250801113226_team_counters.sql",
+      "lineRange": [42, 43],
+      "summary": "创建 team_metrics_sum 分布式表，作为 team_metrics_sum_local 的 Distributed 视图。",
+      "tags": ["database", "clickhouse", "team-metrics", "schema-definition", "distributed-table"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20250825213612_product_usage_local.sql:product_usage_local",
+      "type": "table",
+      "name": "product_usage_local",
+      "filePath": "packages/clickhouse/migrations/20250825213612_product_usage_local.sql",
+      "lineRange": [3, 8],
+      "summary": "创建 product_usage_local 本地表，记录产品使用事件（category/action/label），带 30 天 TTL。该表后被 20251017213617 迁移废弃。",
+      "tags": ["database", "clickhouse", "product-usage", "schema-definition", "deprecated"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20250825213613_product_usage.sql:product_usage",
+      "type": "table",
+      "name": "product_usage",
+      "filePath": "packages/clickhouse/migrations/20250825213613_product_usage.sql",
+      "lineRange": [3, 4],
+      "summary": "创建 product_usage 分布式表，作为 product_usage_local 的 Distributed 视图。该表后被废弃。",
+      "tags": ["database", "clickhouse", "product-usage", "schema-definition", "deprecated"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20251017213617_remove_product_usage.sql:product_usage_local",
+      "type": "table",
+      "name": "product_usage_local",
+      "filePath": "packages/clickhouse/migrations/20251017213617_remove_product_usage.sql",
+      "lineRange": [11, 23],
+      "summary": "在废弃 product_usage 表前的迁移中重新定义 product_usage_local 表结构（含 team_id/category/action/label 字段），用于数据落盘归档。",
+      "tags": ["database", "clickhouse", "product-usage", "schema-definition", "deprecated"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20251017213617_remove_product_usage.sql:product_usage",
+      "type": "table",
+      "name": "product_usage",
+      "filePath": "packages/clickhouse/migrations/20251017213617_remove_product_usage.sql",
+      "lineRange": [22, 23],
+      "summary": "在废弃前的迁移中重新定义 product_usage 分布式表，用于从本地表导出数据。",
+      "tags": ["database", "clickhouse", "product-usage", "schema-definition", "deprecated"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20260209152327_add_sandbox_host_stats.sql:sandbox_host_stats_local",
+      "type": "table",
+      "name": "sandbox_host_stats_local",
+      "filePath": "packages/clickhouse/migrations/20260209152327_add_sandbox_host_stats.sql",
+      "lineRange": [3, 24],
+      "summary": "创建 sandbox_host_stats_local 本地表，记录每个沙箱的 Firecracker 主机级统计（CPU user/system time、RSS/VMS 内存、vCPU 配额、模板/构建 ID）。",
+      "tags": ["database", "clickhouse", "host-stats", "schema-definition", "observability"],
+      "complexity": "complex",
+      "languageNotes": "字段命名区分 firecracker_cpu_*（VM 内视图）与 sandbox_vcpu_count（配置），结合 execution_id/template_id/build_id/team_id 做多维聚合。"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20260209152327_add_sandbox_host_stats.sql:sandbox_host_stats",
+      "type": "table",
+      "name": "sandbox_host_stats",
+      "filePath": "packages/clickhouse/migrations/20260209152327_add_sandbox_host_stats.sql",
+      "lineRange": [23, 24],
+      "summary": "创建 sandbox_host_stats 分布式表，作为 sandbox_host_stats_local 的 Distributed 视图。",
+      "tags": ["database", "clickhouse", "host-stats", "schema-definition", "distributed-table"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20260512185000_add_webhook_deliveries.sql:webhook_deliveries_local",
+      "type": "table",
+      "name": "webhook_deliveries_local",
+      "filePath": "packages/clickhouse/migrations/20260512185000_add_webhook_deliveries.sql",
+      "lineRange": [3, 30],
+      "summary": "创建 webhook_deliveries_local 本地表，记录 Webhook 投递明细（请求/响应头与体、状态码、耗时、错误类与消息），用于诊断与重放。",
+      "tags": ["database", "clickhouse", "webhook", "schema-definition", "observability"],
+      "complexity": "complex",
+      "languageNotes": "同时存储 request_body/request_headers/request_url 和 response_*，方便事后审计；按时间分区并设 TTL。"
+    },
+    {
+      "id": "table:packages/clickhouse/migrations/20260512185000_add_webhook_deliveries.sql:webhook_deliveries",
+      "type": "table",
+      "name": "webhook_deliveries",
+      "filePath": "packages/clickhouse/migrations/20260512185000_add_webhook_deliveries.sql",
+      "lineRange": [29, 30],
+      "summary": "创建 webhook_deliveries 分布式表，作为 webhook_deliveries_local 的 Distributed 视图。",
+      "tags": ["database", "clickhouse", "webhook", "schema-definition", "distributed-table"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/clickhouse/migrations/20250801113225_sandbox_filter.sql",
+      "type": "table",
+      "name": "20250801113225_sandbox_filter.sql",
+      "filePath": "packages/clickhouse/migrations/20250801113225_sandbox_filter.sql",
+      "summary": "修改 sandbox_metrics_gauge_mv 物化视图的查询定义，按 MetricName LIKE 'e2b.sandbox.%' 过滤，并改用 toDateTime64 提升时间精度。",
+      "tags": ["database", "migration", "clickhouse", "materialized-view", "metrics"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/clickhouse/migrations/20250822155059_extend_team_metrics_ttl.sql",
+      "type": "table",
+      "name": "20250822155059_extend_team_metrics_ttl.sql",
+      "filePath": "packages/clickhouse/migrations/20250822155059_extend_team_metrics_ttl.sql",
+      "summary": "扩展 team_metrics_gauge_local 与 team_metrics_sum_local 表的 TTL，将数据保留期从短周期延长到更长的窗口，便于团队级指标回溯。",
+      "tags": ["database", "migration", "clickhouse", "ttl", "team-metrics"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/clickhouse/migrations/20251017213615_sandbox_events.sql",
+      "type": "table",
+      "name": "20251017213615_sandbox_events.sql",
+      "filePath": "packages/clickhouse/migrations/20251017213615_sandbox_events.sql",
+      "summary": "对 sandbox_events 表结构进行变更，配合后续 v2 事件模型迁移，统一沙箱生命周期事件表示。",
+      "tags": ["database", "migration", "clickhouse", "sandbox-events"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/clickhouse/migrations/20251017213616_sandbox_events_id.sql",
+      "type": "table",
+      "name": "20251017213616_sandbox_events_id.sql",
+      "filePath": "packages/clickhouse/migrations/20251017213616_sandbox_events_id.sql",
+      "summary": "为 sandbox_events 表添加事件唯一标识列，确保每条事件可被外部追踪与去重。",
+      "tags": ["database", "migration", "clickhouse", "sandbox-events", "schema-change"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/clickhouse/migrations/20251017213618_migrate_sandbox_events.sql",
+      "type": "table",
+      "name": "20251017213618_migrate_sandbox_events.sql",
+      "filePath": "packages/clickhouse/migrations/20251017213618_migrate_sandbox_events.sql",
+      "summary": "将 sandbox_events_local 表中存量事件从 v1 (event_category/event_label) 模型批量迁移到 v2 (type) 模型，覆盖 create/kill/pause/resume/update 五类生命周期事件。",
+      "tags": ["database", "migration", "clickhouse", "sandbox-events", "data-migration"],
+      "complexity": "moderate",
+      "languageNotes": "使用 ALTER TABLE ... UPDATE 进行 ClickHouse 轻量级 mutation，按 event_category/event_label 组合 WHERE 条件精确匹配历史行。"
+    },
+    {
+      "id": "file:packages/clickhouse/migrations/20260213152118_add_cgroup_columns_to_host_stats.sql",
+      "type": "table",
+      "name": "20260213152118_add_cgroup_columns_to_host_stats.sql",
+      "filePath": "packages/clickhouse/migrations/20260213152118_add_cgroup_columns_to_host_stats.sql",
+      "summary": "为 sandbox_host_stats_local 表添加 cgroup 相关列（如 CPU/内存的 cgroup 配额与使用量），用于更精确地度量沙箱资源使用。",
+      "tags": ["database", "migration", "clickhouse", "host-stats", "schema-change"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/clickhouse/migrations/20260223120000_add_sandbox_type_to_host_stats.sql",
+      "type": "table",
+      "name": "20260223120000_add_sandbox_type_to_host_stats.sql",
+      "filePath": "packages/clickhouse/migrations/20260223120000_add_sandbox_type_to_host_stats.sql",
+      "summary": "为 sandbox_host_stats_local 表添加 sandbox_type 列，区分普通沙箱与构建/特殊用途沙箱，便于按类型聚合主机统计。",
+      "tags": ["database", "migration", "clickhouse", "host-stats", "schema-change"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/clickhouse/migrations/20260223120001_add_build_columns_to_metrics_gauge.sql",
+      "type": "table",
+      "name": "20260223120001_add_build_columns_to_metrics_gauge.sql",
+      "filePath": "packages/clickhouse/migrations/20260223120001_add_build_columns_to_metrics_gauge.sql",
+      "summary": "为 metrics_gauge 系列表添加构建相关列（build_id 等），让指标可与模板构建版本关联，支撑构建级监控查询。",
+      "tags": ["database", "migration", "clickhouse", "metrics", "schema-change"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/clickhouse/migrations/20260328132903_add_delta_columns_to_host_stats.sql",
+      "type": "table",
+      "name": "20260328132903_add_delta_columns_to_host_stats.sql",
+      "filePath": "packages/clickhouse/migrations/20260328132903_add_delta_columns_to_host_stats.sql",
+      "summary": "为 sandbox_host_stats_local 表添加差值列（如相邻样本间的 CPU 时间/内存增量），避免下游消费者重复计算微分。",
+      "tags": ["database", "migration", "clickhouse", "host-stats", "schema-change"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/clickhouse/migrations/20260401061835_add_sandbox_events_team_id_index.sql",
+      "type": "table",
+      "name": "20260401061835_add_sandbox_events_team_id_index.sql",
+      "filePath": "packages/clickhouse/migrations/20260401061835_add_sandbox_events_team_id_index.sql",
+      "summary": "为 sandbox_events_local 表的 sandbox_team_id 字段添加 bloom_filter 索引，加速按团队维度过滤事件查询。",
+      "tags": ["database", "migration", "clickhouse", "index", "performance"],
+      "complexity": "simple",
+      "languageNotes": "使用 bloom_filter(0.01) 索引类型，对高基数 team_id 等值过滤有较好的跳过率。"
+    },
+    {
+      "id": "file:packages/clickhouse/migrations/20260413080000_add_sandbox_events_team_projection.sql",
+      "type": "table",
+      "name": "20260413080000_add_sandbox_events_team_projection.sql",
+      "filePath": "packages/clickhouse/migrations/20260413080000_add_sandbox_events_team_projection.sql",
+      "summary": "为 sandbox_events_local 表添加按 (sandbox_team_id, timestamp) 排序的投影 proj_team_id，并物化后移除冗余的 idx_team_id bloom 索引，提升按团队查询性能。",
+      "tags": ["database", "migration", "clickhouse", "projection", "performance"],
+      "complexity": "moderate",
+      "languageNotes": "ClickHouse Projection 是多版本排序的数据结构，比二级索引更高效，但占用额外存储；注释明确这是临时方案，等待 ORDER BY 整体改造。"
+    },
+    {
+      "id": "file:packages/clickhouse/migrations/20260417120000_ttl_only_drop_parts.sql",
+      "type": "table",
+      "name": "20260417120000_ttl_only_drop_parts.sql",
+      "filePath": "packages/clickhouse/migrations/20260417120000_ttl_only_drop_parts.sql",
+      "summary": "对所有按 toDate(timestamp) 分区的本地 MergeTree 表启用 ttl_only_drop_parts=1，让 TTL 过期时直接整 part 删除，避免昂贵的 part 重写。",
+      "tags": ["database", "migration", "clickhouse", "ttl", "performance"],
+      "complexity": "simple",
+      "languageNotes": "ttl_only_drop_parts 设置仅在分区边界与 TTL 边界对齐时有效，本仓库所有表均按 toDate(timestamp) 分区满足此条件。"
+    },
+    {
+      "id": "file:packages/clickhouse/migrations/20260702120000_add_sandbox_events_ttl_days.sql",
+      "type": "table",
+      "name": "20260702120000_add_sandbox_events_ttl_days.sql",
+      "filePath": "packages/clickhouse/migrations/20260702120000_add_sandbox_events_ttl_days.sql",
+      "summary": "为 sandbox_events 表引入 per-team 事件保留期（events_ttl_days 列），把固定 7 天 TTL 改为按行的可变 TTL，并针对该表关闭 ttl_only_drop_parts 以精确驱逐过期行。",
+      "tags": ["database", "migration", "clickhouse", "ttl", "retention-policy"],
+      "complexity": "moderate",
+      "languageNotes": "因 per-row TTL 使同一 part 内混合不同到期时间，必须关闭 ttl_only_drop_parts（否则 part 会保留到最晚行过期），代价是需要 part 重写。"
+    }
+  ],
+  "edges": [
+    {
+      "source": "table:packages/clickhouse/migrations/20250521131546_add_metrics.sql:metrics_gauge",
+      "target": "table:packages/clickhouse/migrations/20250521131545_add_metrics_local.sql:metrics_gauge_local",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "table:packages/clickhouse/migrations/20250717135224_sandbox_metrics.sql:sandbox_metrics_gauge",
+      "target": "table:packages/clickhouse/migrations/20250717135224_sandbox_metrics.sql:sandbox_metrics_gauge_local",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "table:packages/clickhouse/migrations/20250717135224_sandbox_metrics.sql:sandbox_metrics_gauge_local",
+      "target": "table:packages/clickhouse/migrations/20250721084412_routing.sql:metrics_gauge_local",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20250801113225_sandbox_filter.sql",
+      "target": "table:packages/clickhouse/migrations/20250717135224_sandbox_metrics.sql:sandbox_metrics_gauge_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:packages/clickhouse/migrations/20250801113224_team_metrics.sql:team_metrics_gauge",
+      "target": "table:packages/clickhouse/migrations/20250801113224_team_metrics.sql:team_metrics_gauge_local",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "table:packages/clickhouse/migrations/20250801113226_team_counters.sql:team_metrics_sum",
+      "target": "table:packages/clickhouse/migrations/20250801113226_team_counters.sql:team_metrics_sum_local",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "table:packages/clickhouse/migrations/20250801113226_team_counters.sql:team_metrics_sum_local",
+      "target": "table:packages/clickhouse/migrations/20250801113226_team_counters.sql:metrics_sum",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20250822155059_extend_team_metrics_ttl.sql",
+      "target": "table:packages/clickhouse/migrations/20250801113224_team_metrics.sql:team_metrics_gauge_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20250822155059_extend_team_metrics_ttl.sql",
+      "target": "table:packages/clickhouse/migrations/20250801113226_team_counters.sql:team_metrics_sum_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:packages/clickhouse/migrations/20250825213613_product_usage.sql:product_usage",
+      "target": "table:packages/clickhouse/migrations/20250825213612_product_usage_local.sql:product_usage_local",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20251017213616_sandbox_events_id.sql",
+      "target": "table:packages/clickhouse/migrations/20250725223340_add_sandbox_events_local.sql:sandbox_events_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20251017213618_migrate_sandbox_events.sql",
+      "target": "table:packages/clickhouse/migrations/20250725223340_add_sandbox_events_local.sql:sandbox_events_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:packages/clickhouse/migrations/20251017213617_remove_product_usage.sql:product_usage",
+      "target": "table:packages/clickhouse/migrations/20251017213617_remove_product_usage.sql:product_usage_local",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "table:packages/clickhouse/migrations/20251017213617_remove_product_usage.sql:product_usage_local",
+      "target": "table:packages/clickhouse/migrations/20250825213612_product_usage_local.sql:product_usage_local",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20260213152118_add_cgroup_columns_to_host_stats.sql",
+      "target": "table:packages/clickhouse/migrations/20260209152327_add_sandbox_host_stats.sql:sandbox_host_stats_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20260223120000_add_sandbox_type_to_host_stats.sql",
+      "target": "table:packages/clickhouse/migrations/20260209152327_add_sandbox_host_stats.sql:sandbox_host_stats_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20260223120001_add_build_columns_to_metrics_gauge.sql",
+      "target": "table:packages/clickhouse/migrations/20250721084412_routing.sql:metrics_gauge_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20260328132903_add_delta_columns_to_host_stats.sql",
+      "target": "table:packages/clickhouse/migrations/20260209152327_add_sandbox_host_stats.sql:sandbox_host_stats_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20260401061835_add_sandbox_events_team_id_index.sql",
+      "target": "table:packages/clickhouse/migrations/20250725223340_add_sandbox_events_local.sql:sandbox_events_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20260413080000_add_sandbox_events_team_projection.sql",
+      "target": "table:packages/clickhouse/migrations/20250725223340_add_sandbox_events_local.sql:sandbox_events_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20260417120000_ttl_only_drop_parts.sql",
+      "target": "table:packages/clickhouse/migrations/20250717135224_sandbox_metrics.sql:sandbox_metrics_gauge_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20260417120000_ttl_only_drop_parts.sql",
+      "target": "table:packages/clickhouse/migrations/20250801113224_team_metrics.sql:team_metrics_gauge_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20260417120000_ttl_only_drop_parts.sql",
+      "target": "table:packages/clickhouse/migrations/20250801113226_team_counters.sql:team_metrics_sum_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20260417120000_ttl_only_drop_parts.sql",
+      "target": "table:packages/clickhouse/migrations/20250725223340_add_sandbox_events_local.sql:sandbox_events_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20260417120000_ttl_only_drop_parts.sql",
+      "target": "table:packages/clickhouse/migrations/20260209152327_add_sandbox_host_stats.sql:sandbox_host_stats_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20260702120000_add_sandbox_events_ttl_days.sql",
+      "target": "table:packages/clickhouse/migrations/20250725223340_add_sandbox_events_local.sql:sandbox_events_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20260702120000_add_sandbox_events_ttl_days.sql",
+      "target": "file:packages/clickhouse/migrations/20260417120000_ttl_only_drop_parts.sql",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "table:packages/clickhouse/migrations/20260512185000_add_webhook_deliveries.sql:webhook_deliveries",
+      "target": "table:packages/clickhouse/migrations/20260512185000_add_webhook_deliveries.sql:webhook_deliveries_local",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "table:packages/clickhouse/migrations/20250725223341_add_sandbox_events.sql:sandbox_events",
+      "target": "table:packages/clickhouse/migrations/20250725223340_add_sandbox_events_local.sql:sandbox_events_local",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "table:packages/clickhouse/migrations/20260209152327_add_sandbox_host_stats.sql:sandbox_host_stats",
+      "target": "table:packages/clickhouse/migrations/20260209152327_add_sandbox_host_stats.sql:sandbox_host_stats_local",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "table:packages/clickhouse/migrations/20250721084412_routing.sql:metrics_gauge",
+      "target": "table:packages/clickhouse/migrations/20250721084412_routing.sql:metrics_gauge_local",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "table:packages/clickhouse/migrations/20250721084412_routing.sql:metrics_gauge",
+      "target": "table:packages/clickhouse/migrations/20250521131545_add_metrics_local.sql:metrics_gauge_local",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/clickhouse/migrations/20251017213615_sandbox_events.sql",
+      "target": "table:packages/clickhouse/migrations/20250725223340_add_sandbox_events_local.sql:sandbox_events_local",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

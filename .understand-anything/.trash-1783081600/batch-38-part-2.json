@@ -1,0 +1,507 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/envd/internal/services/process/start.go",
+      "type": "file",
+      "name": "start.go",
+      "filePath": "packages/envd/internal/services/process/start.go",
+      "summary": "实现 Start Connect RPC 流式端点,创建新进程 Handler 并将 stdout/stderr/exit 事件流式回客户端,处理请求超时与认证。",
+      "tags": [
+        "api-handler",
+        "connect-rpc",
+        "process-management",
+        "streaming"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/start.go:Start",
+      "type": "function",
+      "name": "Start",
+      "filePath": "packages/envd/internal/services/process/start.go",
+      "lineRange": [
+        19,
+        21
+      ],
+      "summary": "Connect RPC Start 端点入口,委托给 handleStart 处理实际启动与流式响应。",
+      "tags": [
+        "api-handler",
+        "connect-rpc",
+        "entry-point"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/start.go:handleStart",
+      "type": "function",
+      "name": "handleStart",
+      "filePath": "packages/envd/internal/services/process/start.go",
+      "lineRange": [
+        23,
+        194
+      ],
+      "summary": "Start 端点的实际实现:鉴权用户、构造 Handler、启动子进程、订阅输出与退出事件,并通过 stream 持续推送至客户端,直到进程结束或客户端断开。",
+      "tags": [
+        "api-handler",
+        "streaming",
+        "process-management",
+        "core"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/start.go:determineTimeoutFromHeader",
+      "type": "function",
+      "name": "determineTimeoutFromHeader",
+      "filePath": "packages/envd/internal/services/process/start.go",
+      "lineRange": [
+        196,
+        209
+      ],
+      "summary": "从请求 header 中解析进程级超时配置,支持覆盖默认值。",
+      "tags": [
+        "validation",
+        "header-parsing",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/envd/internal/services/process/start_test.go",
+      "type": "file",
+      "name": "start_test.go",
+      "filePath": "packages/envd/internal/services/process/start_test.go",
+      "summary": "Start 端点的集成测试,验证短命令的正常退出流程与客户端中途断开时的进程清理行为。",
+      "tags": [
+        "test",
+        "connect-rpc",
+        "process-management"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/start_test.go:newTestService",
+      "type": "function",
+      "name": "newTestService",
+      "filePath": "packages/envd/internal/services/process/start_test.go",
+      "lineRange": [
+        24,
+        53
+      ],
+      "summary": "测试辅助函数,构造用于测试的 Service 实例,使用 Noop cgroup 管理器与默认配置。",
+      "tags": [
+        "test",
+        "factory",
+        "fixture"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/envd/internal/services/process/update.go",
+      "type": "file",
+      "name": "update.go",
+      "filePath": "packages/envd/internal/services/process/update.go",
+      "summary": "实现 Update Connect RPC 处理器,动态更新运行中进程的标签、cgroup 优先级等可变属性。",
+      "tags": [
+        "api-handler",
+        "connect-rpc",
+        "process-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/update.go:Update",
+      "type": "function",
+      "name": "Update",
+      "filePath": "packages/envd/internal/services/process/update.go",
+      "lineRange": [
+        13,
+        30
+      ],
+      "summary": "Connect RPC Update 处理器,定位目标进程并应用属性更新,处理鉴权与错误路径。",
+      "tags": [
+        "api-handler",
+        "connect-rpc",
+        "process-management"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
+      "type": "file",
+      "name": "filesystem.pb.go",
+      "filePath": "packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
+      "summary": "由 protoc-gen-go 生成的 filesystem 服务消息与类型定义文件,包含所有 RPC 请求/响应、枚举与序列化代码。",
+      "tags": [
+        "generated",
+        "protobuf",
+        "schema-definition",
+        "filesystem"
+      ],
+      "complexity": "complex",
+      "languageNotes": "由 buf/protoc 自动生成,不应手工编辑;包含大量 message 与 marshal/unmarshal 方法。"
+    },
+    {
+      "id": "file:packages/envd/internal/services/spec/filesystem/filesystemconnect/filesystem.connect.go",
+      "type": "file",
+      "name": "filesystem.connect.go",
+      "filePath": "packages/envd/internal/services/spec/filesystem/filesystemconnect/filesystem.connect.go",
+      "summary": "由 connect-go 生成的 filesystem 服务客户端与服务端接口,定义 NewFilesystemClient、NewFilesystemHandler 与各端点的 Handler 包装。",
+      "tags": [
+        "generated",
+        "connect-rpc",
+        "client-server",
+        "filesystem"
+      ],
+      "complexity": "complex",
+      "languageNotes": "由 buf + connect-go 插件自动生成,提供强类型 RPC 接口。"
+    },
+    {
+      "id": "file:packages/envd/internal/services/spec/filesystem/filesystemconnect/mocks/mocks.go",
+      "type": "file",
+      "name": "mocks.go",
+      "filePath": "packages/envd/internal/services/spec/filesystem/filesystemconnect/mocks/mocks.go",
+      "summary": "filesystem 服务的 Connect RPC 客户端 mock 实现,用于单元测试中替代真实服务调用。",
+      "tags": [
+        "generated",
+        "test",
+        "mock",
+        "connect-rpc"
+      ],
+      "complexity": "complex",
+      "languageNotes": "由 mockery 自动生成,实现 FilesystemClient 接口的所有方法。"
+    },
+    {
+      "id": "file:packages/envd/internal/services/spec/process/process.pb.go",
+      "type": "file",
+      "name": "process.pb.go",
+      "filePath": "packages/envd/internal/services/spec/process/process.pb.go",
+      "summary": "由 protoc-gen-go 生成的 process 服务消息与类型定义,包含 Start/SendInput/StreamInput/SendSignal/List/Update 等请求/响应与序列化代码。",
+      "tags": [
+        "generated",
+        "protobuf",
+        "schema-definition",
+        "process"
+      ],
+      "complexity": "complex",
+      "languageNotes": "由 buf/protoc 自动生成,不应手工编辑;定义进程服务所有消息格式。"
+    },
+    {
+      "id": "file:packages/envd/internal/services/spec/process/processconnect/process.connect.go",
+      "type": "file",
+      "name": "process.connect.go",
+      "filePath": "packages/envd/internal/services/spec/process/processconnect/process.connect.go",
+      "summary": "由 connect-go 生成的 process 服务客户端与服务端接口,提供 NewProcessClient、NewProcessHandler 与各端点的 Handler 包装。",
+      "tags": [
+        "generated",
+        "connect-rpc",
+        "client-server",
+        "process"
+      ],
+      "complexity": "complex",
+      "languageNotes": "由 buf + connect-go 插件自动生成,提供强类型 RPC 接口。"
+    },
+    {
+      "id": "file:packages/envd/internal/utils/atomic_test.go",
+      "type": "file",
+      "name": "atomic_test.go",
+      "filePath": "packages/envd/internal/utils/atomic_test.go",
+      "summary": "AtomicMax 的单元测试,覆盖初始化、相等值、负值、大于值与并发场景下的行为。",
+      "tags": [
+        "test",
+        "concurrency",
+        "atomic"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "file:packages/envd/internal/logs/interceptor.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "file:packages/envd/internal/logs/logger.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "file:packages/envd/internal/permissions/authenticate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "file:packages/envd/internal/permissions/keepalive.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "file:packages/envd/internal/permissions/path.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "file:packages/envd/internal/permissions/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "file:packages/envd/internal/services/process/handler/cgroupfd_linux.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "file:packages/envd/internal/services/process/handler/cgroupfd_other.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "file:packages/envd/internal/services/process/handler/handler.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "file:packages/envd/internal/services/process/handler/multiplex_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "file:packages/envd/internal/services/spec/process/process.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "file:packages/envd/internal/execcontext/context.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "file:packages/envd/internal/services/cgroups/cgroup2_stub.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "file:packages/envd/internal/services/cgroups/cgroup2_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "file:packages/envd/internal/services/cgroups/cgroup2.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "file:packages/envd/internal/services/cgroups/iface.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "file:packages/envd/internal/services/cgroups/noop.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "file:packages/envd/internal/services/spec/process/process.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "file:packages/envd/internal/services/spec/process/processconnect/process.connect.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "file:packages/envd/internal/utils/atomic_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "file:packages/envd/internal/utils/atomic.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "file:packages/envd/internal/utils/envvars_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "file:packages/envd/internal/utils/envvars.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "file:packages/envd/internal/utils/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "file:packages/envd/internal/utils/multipart.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "file:packages/envd/internal/utils/rfsnotify.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/update.go",
+      "target": "file:packages/envd/internal/services/spec/process/process.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/spec/filesystem/filesystemconnect/filesystem.connect.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/spec/filesystem/filesystemconnect/mocks/mocks.go",
+      "target": "file:packages/envd/internal/services/spec/filesystem/filesystem.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/spec/process/processconnect/process.connect.go",
+      "target": "file:packages/envd/internal/services/spec/process/process.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "function:packages/envd/internal/services/process/start.go:Start",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "function:packages/envd/internal/services/process/start.go:handleStart",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "function:packages/envd/internal/services/process/start.go:determineTimeoutFromHeader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "function:packages/envd/internal/services/process/start.go:Start",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start.go",
+      "target": "file:packages/envd/internal/services/process/handler/handler.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "function:packages/envd/internal/services/process/start_test.go:newTestService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/start_test.go",
+      "target": "file:packages/envd/internal/services/process/start.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/update.go",
+      "target": "function:packages/envd/internal/services/process/update.go:Update",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/update.go",
+      "target": "function:packages/envd/internal/services/process/update.go:Update",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/utils/atomic_test.go",
+      "target": "file:packages/envd/internal/utils/atomic.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

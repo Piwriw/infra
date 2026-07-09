@@ -1,0 +1,1373 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/envd/internal/utils/atomic.go",
+      "type": "file",
+      "name": "atomic.go",
+      "filePath": "packages/envd/internal/utils/atomic.go",
+      "summary": "提供 AtomicMax 并发原语,在线程安全方式下跟踪最大值,用于跨 goroutine 维护单调递增的数值。",
+      "tags": [
+        "utility",
+        "concurrency",
+        "atomic",
+        "primitive"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/envd/internal/utils/atomic.go:AtomicMax",
+      "type": "class",
+      "name": "AtomicMax",
+      "filePath": "packages/envd/internal/utils/atomic.go",
+      "lineRange": [
+        7,
+        10
+      ],
+      "summary": "线程安全的最大值追踪器,使用互斥锁保护内部值,提供 SetToGreater 方法仅在大于当前值时更新。",
+      "tags": [
+        "concurrency",
+        "data-model",
+        "atomic"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/utils/atomic.go:SetToGreater",
+      "type": "function",
+      "name": "SetToGreater",
+      "filePath": "packages/envd/internal/utils/atomic.go",
+      "lineRange": [
+        16,
+        27
+      ],
+      "summary": "在临界区内将 newValue 与当前值比较,仅当 newValue 更大时更新,并返回是否更新成功。",
+      "tags": [
+        "concurrency",
+        "atomic",
+        "thread-safe"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/utils/atomic.go:NewAtomicMax",
+      "type": "function",
+      "name": "NewAtomicMax",
+      "filePath": "packages/envd/internal/utils/atomic.go",
+      "lineRange": [
+        12,
+        14
+      ],
+      "summary": "AtomicMax 构造函数,初始化为零值。",
+      "tags": [
+        "factory",
+        "concurrency"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/internal/utils/envvars.go",
+      "type": "file",
+      "name": "envvars.go",
+      "filePath": "packages/envd/internal/utils/envvars.go",
+      "summary": "提供线程安全的 EnvVars 容器,区分内部与用户环境变量,支持 Store/Load/All/ReplaceUserVars 操作,供进程启动时构建环境。",
+      "tags": [
+        "utility",
+        "environment",
+        "concurrency",
+        "configuration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/envd/internal/utils/envvars.go:EnvVars",
+      "type": "class",
+      "name": "EnvVars",
+      "filePath": "packages/envd/internal/utils/envvars.go",
+      "lineRange": [
+        7,
+        10
+      ],
+      "summary": "线程安全的环境变量集合,使用互斥锁保护内部 map,标记每个变量为内部或用户来源。",
+      "tags": [
+        "concurrency",
+        "data-model",
+        "environment"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/utils/envvars.go:ReplaceUserVars",
+      "type": "function",
+      "name": "ReplaceUserVars",
+      "filePath": "packages/envd/internal/utils/envvars.go",
+      "lineRange": [
+        65,
+        82
+      ],
+      "summary": "用新的用户变量集合替换当前所有用户变量,保留内部变量,并在键冲突时正确合并。",
+      "tags": [
+        "environment",
+        "state-mutation",
+        "concurrency"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/utils/envvars.go:StoreUser",
+      "type": "function",
+      "name": "StoreUser",
+      "filePath": "packages/envd/internal/utils/envvars.go",
+      "lineRange": [
+        29,
+        38
+      ],
+      "summary": "以用户来源存储一个环境变量,拒绝覆盖同名的内部变量。",
+      "tags": [
+        "environment",
+        "state-mutation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/utils/envvars.go:Store",
+      "type": "function",
+      "name": "Store",
+      "filePath": "packages/envd/internal/utils/envvars.go",
+      "lineRange": [
+        22,
+        26
+      ],
+      "summary": "以内部来源存储一个环境变量,允许覆盖用户变量。",
+      "tags": [
+        "environment",
+        "state-mutation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/utils/envvars.go:Load",
+      "type": "function",
+      "name": "Load",
+      "filePath": "packages/envd/internal/utils/envvars.go",
+      "lineRange": [
+        40,
+        49
+      ],
+      "summary": "按 key 读取环境变量值,返回值与是否存在的标志。",
+      "tags": [
+        "environment",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/utils/envvars.go:All",
+      "type": "function",
+      "name": "All",
+      "filePath": "packages/envd/internal/utils/envvars.go",
+      "lineRange": [
+        52,
+        61
+      ],
+      "summary": "返回所有环境变量的快照 map,供子进程 exec 时使用。",
+      "tags": [
+        "environment",
+        "snapshot"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/utils/envvars.go:NewEnvVars",
+      "type": "function",
+      "name": "NewEnvVars",
+      "filePath": "packages/envd/internal/utils/envvars.go",
+      "lineRange": [
+        17,
+        19
+      ],
+      "summary": "EnvVars 构造函数,初始化空的环境变量集合。",
+      "tags": [
+        "factory",
+        "environment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/internal/utils/envvars_test.go",
+      "type": "file",
+      "name": "envvars_test.go",
+      "filePath": "packages/envd/internal/utils/envvars_test.go",
+      "summary": "EnvVars 的单元测试,覆盖内部/用户变量优先级、覆盖拒绝、用户替换与遗漏键的清理。",
+      "tags": [
+        "test",
+        "environment"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/envd/internal/utils/map.go",
+      "type": "file",
+      "name": "map.go",
+      "filePath": "packages/envd/internal/utils/map.go",
+      "summary": "提供泛型 Map[K,V] 并发安全容器,封装 sync.Map 风格的 Load/Store/LoadOrStore/LoadAndDelete/Delete/Range 接口。",
+      "tags": [
+        "utility",
+        "concurrency",
+        "generic",
+        "data-structure"
+      ],
+      "complexity": "simple",
+      "languageNotes": "使用 Go 1.18+ 泛型类型参数 [K comparable, V any] 实现类型安全的并发 map。"
+    },
+    {
+      "id": "class:packages/envd/internal/utils/map.go:Map",
+      "type": "class",
+      "name": "Map",
+      "filePath": "packages/envd/internal/utils/map.go",
+      "lineRange": [
+        5,
+        7
+      ],
+      "summary": "泛型并发安全 map 的类型定义,内部使用 sync.RWMutex 保护的底层 map。",
+      "tags": [
+        "concurrency",
+        "data-model",
+        "generic",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/utils/map.go:NewMap",
+      "type": "function",
+      "name": "NewMap",
+      "filePath": "packages/envd/internal/utils/map.go",
+      "lineRange": [
+        9,
+        13
+      ],
+      "summary": "Map 泛型构造函数,初始化底层 map 与锁。",
+      "tags": [
+        "factory",
+        "generic",
+        "concurrency"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/utils/map.go:LoadOrStore",
+      "type": "function",
+      "name": "LoadOrStore",
+      "filePath": "packages/envd/internal/utils/map.go",
+      "lineRange": [
+        37,
+        41
+      ],
+      "summary": "返回键的现有值,若不存在则存储新值;返回实际加载的值与是否本次存储。",
+      "tags": [
+        "concurrency",
+        "data-structure",
+        "atomic"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/utils/map.go:LoadAndDelete",
+      "type": "function",
+      "name": "LoadAndDelete",
+      "filePath": "packages/envd/internal/utils/map.go",
+      "lineRange": [
+        28,
+        35
+      ],
+      "summary": "原子地读取并删除指定键的值,返回被删除的值与是否删除成功。",
+      "tags": [
+        "concurrency",
+        "data-structure",
+        "atomic"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/internal/utils/multipart.go",
+      "type": "file",
+      "name": "multipart.go",
+      "filePath": "packages/envd/internal/utils/multipart.go",
+      "summary": "提供 CustomPart 扩展,封装 multipart.Part 并解析完整文件路径(含 directory 字段),供上传端点使用。",
+      "tags": [
+        "utility",
+        "multipart",
+        "upload",
+        "http"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/envd/internal/utils/multipart.go:CustomPart",
+      "type": "class",
+      "name": "CustomPart",
+      "filePath": "packages/envd/internal/utils/multipart.go",
+      "lineRange": [
+        10,
+        12
+      ],
+      "summary": "扩展标准 multipart.Part,提供从 Content-Disposition 中提取 directory+filename 的能力。",
+      "tags": [
+        "data-model",
+        "multipart",
+        "upload"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/utils/multipart.go:FileNameWithPath",
+      "type": "function",
+      "name": "FileNameWithPath",
+      "filePath": "packages/envd/internal/utils/multipart.go",
+      "lineRange": [
+        17,
+        28
+      ],
+      "summary": "从 Content-Disposition header 中解析出文件名(可选包含完整路径),返回路径与文件名以供上传处理。",
+      "tags": [
+        "header-parsing",
+        "multipart",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/utils/multipart.go:parseContentDisposition",
+      "type": "function",
+      "name": "parseContentDisposition",
+      "filePath": "packages/envd/internal/utils/multipart.go",
+      "lineRange": [
+        30,
+        38
+      ],
+      "summary": "解析 multipart Part 的 Content-Disposition header,提取 filename 与 directory 参数。",
+      "tags": [
+        "header-parsing",
+        "multipart",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/utils/multipart.go:NewCustomPart",
+      "type": "function",
+      "name": "NewCustomPart",
+      "filePath": "packages/envd/internal/utils/multipart.go",
+      "lineRange": [
+        41,
+        43
+      ],
+      "summary": "CustomPart 构造函数,包装标准 multipart.Part。",
+      "tags": [
+        "factory",
+        "multipart"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/internal/utils/rfsnotify.go",
+      "type": "file",
+      "name": "rfsnotify.go",
+      "filePath": "packages/envd/internal/utils/rfsnotify.go",
+      "summary": "提供 FsnotifyPath 辅助函数,根据是否递归决定使用 fsnotify 直接监听或递归遍历目录添加 watcher。",
+      "tags": [
+        "utility",
+        "filesystem",
+        "fsnotify",
+        "watcher"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/utils/rfsnotify.go:FsnotifyPath",
+      "type": "function",
+      "name": "FsnotifyPath",
+      "filePath": "packages/envd/internal/utils/rfsnotify.go",
+      "lineRange": [
+        6,
+        12
+      ],
+      "summary": "在给定路径上添加 fsnotify watcher,若 recursive 为 true 则递归添加所有子目录。",
+      "tags": [
+        "filesystem",
+        "fsnotify",
+        "watcher",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/envd/main.go",
+      "summary": "envd 守护进程的入口点,解析命令行参数、初始化 logger/telemetry/cgroup 管理器,启动 HTTP 与 Connect RPC 服务器并优雅处理 SIGTERM 关闭。",
+      "tags": [
+        "entry-point",
+        "server",
+        "connect-rpc",
+        "lifecycle"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/envd/main.go:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "packages/envd/main.go",
+      "lineRange": [
+        139,
+        157
+      ],
+      "summary": "main 包入口,调用 parseFlags 解析参数后调用 run,处理顶层 panic 与错误退出码。",
+      "tags": [
+        "entry-point",
+        "lifecycle"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/main.go:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "packages/envd/main.go",
+      "lineRange": [
+        159,
+        235
+      ],
+      "summary": "初始化 logger、telemetry、cgroup 管理器、HTTP/CORS 中间件,注册 process/filesystem 服务,启动监听并等待信号触发优雅关闭。",
+      "tags": [
+        "server",
+        "lifecycle",
+        "connect-rpc",
+        "initialization"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/envd/main.go:parseFlags",
+      "type": "function",
+      "name": "parseFlags",
+      "filePath": "packages/envd/main.go",
+      "lineRange": [
+        62,
+        113
+      ],
+      "summary": "定义与解析 envd 命令行 flag(端口、日志级别、cgroup 配置等),返回配置结构体。",
+      "tags": [
+        "configuration",
+        "cli",
+        "flag-parsing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/main.go:withCORS",
+      "type": "function",
+      "name": "withCORS",
+      "filePath": "packages/envd/main.go",
+      "lineRange": [
+        115,
+        137
+      ],
+      "summary": "HTTP 中间件工厂,为 Connect RPC 服务添加 CORS 头以支持浏览器客户端跨域请求。",
+      "tags": [
+        "middleware",
+        "http",
+        "cors"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/main.go:createCgroupManager",
+      "type": "function",
+      "name": "createCgroupManager",
+      "filePath": "packages/envd/main.go",
+      "lineRange": [
+        237,
+        298
+      ],
+      "summary": "根据运行环境与配置选择并实例化 cgroup v2 管理器或 Noop 管理器,处理 cgroup 挂载检测与降级路径。",
+      "tags": [
+        "cgroup",
+        "factory",
+        "initialization"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/envd/pkg/version.go",
+      "type": "file",
+      "name": "version.go",
+      "filePath": "packages/envd/pkg/version.go",
+      "summary": "定义 envd 二进制版本号常量,用于运行时与构建产物版本上报;按项目约定行为变更必须 bump。",
+      "tags": [
+        "version",
+        "configuration",
+        "metadata"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/api.gen.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/auth_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/auth.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/clock_linux.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/clock_other.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/collapse.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/compose_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/compose.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/download_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/download.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/encoding_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/encoding.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/envs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/error.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/fsfreeze_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/fsfreeze.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/init_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/init.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/secure_token_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/secure_token.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/store.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/upload_metadata_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/api/upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/execcontext/context.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/host/cacerts_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/host/cacerts.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/host/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/host/mmds_route_linux.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/host/mmds_route_other.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/host/mmds.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/logs/interceptor.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/logs/logger.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/permissions/authenticate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/permissions/keepalive.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/permissions/path.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/permissions/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/port/forward_cgroupfd_linux.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/port/forward_cgroupfd_other.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/port/forward.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/port/scan.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/port/scanfilter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/port/scanSubscriber.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/cgroups/cgroup2_stub.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/cgroups/cgroup2_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/cgroups/cgroup2.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/cgroups/iface.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/cgroups/noop.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/filesystem/dir_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/filesystem/dir.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/filesystem/move_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/filesystem/move.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/filesystem/remove.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/filesystem/service_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/filesystem/service.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/filesystem/stat_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/filesystem/stat.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/filesystem/utils_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/filesystem/utils.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/filesystem/watch_sync.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/filesystem/watch_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/filesystem/watch.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/process/connect.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/process/input.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/process/list.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/process/service.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/process/signal.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/process/start_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/process/start.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/process/update.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/utils/atomic_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/utils/atomic.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/utils/envvars_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/utils/envvars.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/utils/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/utils/multipart.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/utils/rfsnotify.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/pkg/version.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/utils/atomic.go",
+      "target": "class:packages/envd/internal/utils/atomic.go:AtomicMax",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/atomic.go",
+      "target": "function:packages/envd/internal/utils/atomic.go:SetToGreater",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/atomic.go",
+      "target": "function:packages/envd/internal/utils/atomic.go:NewAtomicMax",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/atomic.go",
+      "target": "class:packages/envd/internal/utils/atomic.go:AtomicMax",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/utils/atomic.go",
+      "target": "function:packages/envd/internal/utils/atomic.go:NewAtomicMax",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/utils/atomic.go",
+      "target": "function:packages/envd/internal/utils/atomic.go:SetToGreater",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/utils/envvars.go",
+      "target": "class:packages/envd/internal/utils/envvars.go:EnvVars",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/envvars.go",
+      "target": "function:packages/envd/internal/utils/envvars.go:ReplaceUserVars",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/envvars.go",
+      "target": "function:packages/envd/internal/utils/envvars.go:StoreUser",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/envvars.go",
+      "target": "function:packages/envd/internal/utils/envvars.go:Store",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/envvars.go",
+      "target": "function:packages/envd/internal/utils/envvars.go:Load",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/envvars.go",
+      "target": "function:packages/envd/internal/utils/envvars.go:All",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/envvars.go",
+      "target": "function:packages/envd/internal/utils/envvars.go:NewEnvVars",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/envvars.go",
+      "target": "class:packages/envd/internal/utils/envvars.go:EnvVars",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/utils/envvars.go",
+      "target": "function:packages/envd/internal/utils/envvars.go:NewEnvVars",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/utils/envvars.go",
+      "target": "function:packages/envd/internal/utils/envvars.go:ReplaceUserVars",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/utils/envvars_test.go",
+      "target": "file:packages/envd/internal/utils/envvars.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/envd/internal/utils/map.go",
+      "target": "class:packages/envd/internal/utils/map.go:Map",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/map.go",
+      "target": "function:packages/envd/internal/utils/map.go:NewMap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/map.go",
+      "target": "function:packages/envd/internal/utils/map.go:LoadOrStore",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/map.go",
+      "target": "function:packages/envd/internal/utils/map.go:LoadAndDelete",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/map.go",
+      "target": "class:packages/envd/internal/utils/map.go:Map",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/utils/map.go",
+      "target": "function:packages/envd/internal/utils/map.go:NewMap",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/utils/multipart.go",
+      "target": "class:packages/envd/internal/utils/multipart.go:CustomPart",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/multipart.go",
+      "target": "function:packages/envd/internal/utils/multipart.go:FileNameWithPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/multipart.go",
+      "target": "function:packages/envd/internal/utils/multipart.go:parseContentDisposition",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/multipart.go",
+      "target": "function:packages/envd/internal/utils/multipart.go:NewCustomPart",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/multipart.go",
+      "target": "class:packages/envd/internal/utils/multipart.go:CustomPart",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/utils/multipart.go",
+      "target": "function:packages/envd/internal/utils/multipart.go:FileNameWithPath",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/utils/multipart.go",
+      "target": "function:packages/envd/internal/utils/multipart.go:NewCustomPart",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/utils/rfsnotify.go",
+      "target": "function:packages/envd/internal/utils/rfsnotify.go:FsnotifyPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/utils/rfsnotify.go",
+      "target": "function:packages/envd/internal/utils/rfsnotify.go:FsnotifyPath",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "function:packages/envd/main.go:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "function:packages/envd/main.go:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "function:packages/envd/main.go:parseFlags",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "function:packages/envd/main.go:withCORS",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "function:packages/envd/main.go:createCgroupManager",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/process/service.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/process/input.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/process/list.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/process/signal.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/process/start.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/main.go",
+      "target": "file:packages/envd/internal/services/process/update.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

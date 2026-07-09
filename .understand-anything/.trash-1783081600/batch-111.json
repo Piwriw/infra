@@ -1,0 +1,1005 @@
+{
+  "nodes": [
+    {
+      "id": "config:packages/orchestrator/.env.local",
+      "type": "config",
+      "name": ".env.local",
+      "filePath": "packages/orchestrator/.env.local",
+      "summary": "Orchestrator 本地开发环境变量配置,定义 ClickHouse、Redis、Firecracker、模板存储、NBD 池等本地运行所需的所有环境变量。",
+      "tags": ["configuration", "environment", "local-development", "orchestrator"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:packages/orchestrator/.mockery.yaml",
+      "type": "config",
+      "name": ".mockery.yaml",
+      "filePath": "packages/orchestrator/.mockery.yaml",
+      "summary": "Orchestrator 包的 mockery mock 代码生成配置,声明需要生成 mock 的包和接口,用于单元测试中模拟依赖。",
+      "tags": ["configuration", "mockery", "testing", "code-generation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:packages/orchestrator/FIRECRACKER_IMPLEMENTATION.md",
+      "type": "document",
+      "name": "FIRECRACKER_IMPLEMENTATION.md",
+      "filePath": "packages/orchestrator/FIRECRACKER_IMPLEMENTATION.md",
+      "summary": "Firecracker 模块实现原理详解,深入剖析 orchestrator 中 Firecracker microVM 集成的 fc/、rootfs/、nbd/、uffd/、network/、template/、block/、cgroup/ 等子系统的数据结构和调用流程。",
+      "tags": ["documentation", "firecracker", "microvm", "architecture", "internal-design"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:packages/orchestrator/MODULE_GUIDE.md",
+      "type": "document",
+      "name": "MODULE_GUIDE.md",
+      "filePath": "packages/orchestrator/MODULE_GUIDE.md",
+      "summary": "Orchestrator 模块详细指南,按 pkg 子包逐个介绍入口、命令行工具、配置、sandbox 核心、gRPC server、NFS 代理、TCP 防火墙、沙箱反向代理等模块,包含端到端数据流和接口总览。",
+      "tags": ["documentation", "module-guide", "orchestrator", "api-reference", "architecture"],
+      "complexity": "complex"
+    },
+    {
+      "id": "service:packages/orchestrator/Makefile",
+      "type": "service",
+      "name": "Makefile",
+      "filePath": "packages/orchestrator/Makefile",
+      "summary": "Orchestrator 服务的构建、生成、运行、测试 Makefile,包含 init、generate、build、run-local、test、build-template 等 15 个目标,封装 Go 工具链与 Docker 镜像构建流程。",
+      "tags": ["build-system", "makefile", "infrastructure", "deployment", "development"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:packages/orchestrator/PRINCIPLES.md",
+      "type": "document",
+      "name": "PRINCIPLES.md",
+      "filePath": "packages/orchestrator/PRINCIPLES.md",
+      "summary": "Orchestrator 模块原理文档,涵盖进程拓扑、5 个 proto 的 gRPC 契约、sandbox 生命周期状态机、块设备/NBD/UFFD/模板缓存/网络隔离/Firecracker/envd/NFS/防火墙等核心子系统原理及并发模型、调度亲和性。",
+      "tags": ["documentation", "principles", "orchestrator", "internal-design", "concurrency"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:packages/orchestrator/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "packages/orchestrator/README.md",
+      "summary": "Orchestrator 包入口文档,描述 build-template 命令(创建、恢复、复制、挂载、检查、差异查看)、ARM64 架构支持与命名约定、跨架构部署以及环境变量。",
+      "tags": ["documentation", "entry-point", "build-template", "arm64", "orchestrator"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "schema:packages/orchestrator/chunks.proto",
+      "type": "schema",
+      "name": "chunks.proto",
+      "filePath": "packages/orchestrator/chunks.proto",
+      "summary": "ChunkService gRPC 接口的 Protocol Buffers 定义,用于节点间 P2P 块传输,提供构建产物文件大小查询、存在性检查、按偏移读取以及整体 blob 拉取 4 个 RPC。",
+      "tags": ["protobuf", "grpc", "schema-definition", "p2p", "data-pipeline"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:packages/orchestrator/go.mod",
+      "type": "config",
+      "name": "go.mod",
+      "filePath": "packages/orchestrator/go.mod",
+      "summary": "Orchestrator 包的 Go 模块定义文件,声明模块路径、Go 版本以及 60+ 依赖(ent、gRPC、Connect、OpenTelemetry、k8s、Nomad、Vault 等)。",
+      "tags": ["configuration", "go-modules", "dependency-management", "build-system"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:packages/orchestrator/go.sum",
+      "type": "config",
+      "name": "go.sum",
+      "filePath": "packages/orchestrator/go.sum",
+      "summary": "Go 模块依赖校验和文件,记录 go.mod 中所有依赖模块的哈希值,确保依赖完整性与可重现构建。",
+      "tags": ["configuration", "go-modules", "checksums", "dependency-management"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "schema:packages/orchestrator/info.proto",
+      "type": "schema",
+      "name": "info.proto",
+      "filePath": "packages/orchestrator/info.proto",
+      "summary": "InfoService gRPC 接口的 Protocol Buffers 定义,用于节点自描述与状态查询,包含机器信息、CPU 架构、磁盘度量、运行中沙箱数量等指标以及状态变更请求。",
+      "tags": ["protobuf", "grpc", "schema-definition", "service-info", "observability"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "schema:packages/orchestrator/orchestrator.proto",
+      "type": "schema",
+      "name": "orchestrator.proto",
+      "filePath": "packages/orchestrator/orchestrator.proto",
+      "summary": "SandboxService 核心 gRPC 接口的 Protocol Buffers 定义,定义 sandbox 配置、网络规则、卷挂载、生命周期请求/响应(创建、更新、删除、暂停、检查点、列出、缓存构建)及调度元数据。",
+      "tags": ["protobuf", "grpc", "schema-definition", "sandbox", "core-api"],
+      "complexity": "complex"
+    },
+    {
+      "id": "schema:packages/orchestrator/template-manager.proto",
+      "type": "schema",
+      "name": "template-manager.proto",
+      "filePath": "packages/orchestrator/template-manager.proto",
+      "summary": "TemplateService 构建侧 gRPC 接口的 Protocol Buffers 定义,描述模板配置(registry 凭据、内存/CPU/磁盘、构建步骤)、构建状态查询、删除、层文件上传等 RPC。",
+      "tags": ["protobuf", "grpc", "schema-definition", "template", "build"],
+      "complexity": "complex"
+    },
+    {
+      "id": "schema:packages/orchestrator/volume.proto",
+      "type": "schema",
+      "name": "volume.proto",
+      "filePath": "packages/orchestrator/volume.proto",
+      "summary": "VolumeService gRPC 接口的 Protocol Buffers 定义,提供持久卷的文件操作能力(创建/删除卷、目录与文件 CRUD、stat、update),支持流式上传下载与错误码枚举。",
+      "tags": ["protobuf", "grpc", "schema-definition", "volume", "file-operations"],
+      "complexity": "complex"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/chunks.proto:ChunkService.GetBuildFileSize",
+      "type": "endpoint",
+      "name": "ChunkService.GetBuildFileSize",
+      "filePath": "packages/orchestrator/chunks.proto",
+      "summary": "查询指定构建产物中文件总大小与节点可用性。",
+      "tags": ["grpc", "rpc", "p2p", "metadata"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/chunks.proto:ChunkService.GetBuildFileExists",
+      "type": "endpoint",
+      "name": "ChunkService.GetBuildFileExists",
+      "filePath": "packages/orchestrator/chunks.proto",
+      "summary": "检查指定构建产物文件在节点上的可用性。",
+      "tags": ["grpc", "rpc", "p2p", "metadata"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/chunks.proto:ChunkService.ReadAtBuildSeekable",
+      "type": "endpoint",
+      "name": "ChunkService.ReadAtBuildSeekable",
+      "filePath": "packages/orchestrator/chunks.proto",
+      "summary": "从指定构建产物中按 offset/length 读取数据块,用于 P2P 块传输。",
+      "tags": ["grpc", "rpc", "p2p", "streaming"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/chunks.proto:ChunkService.GetBuildBlob",
+      "type": "endpoint",
+      "name": "ChunkService.GetBuildBlob",
+      "filePath": "packages/orchestrator/chunks.proto",
+      "summary": "按名称整体拉取指定构建产物的 blob 数据。",
+      "tags": ["grpc", "rpc", "p2p", "blob"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/info.proto:InfoService.ServiceInfo",
+      "type": "endpoint",
+      "name": "InfoService.ServiceInfo",
+      "filePath": "packages/orchestrator/info.proto",
+      "summary": "返回节点标识、服务版本、commit、状态、角色以及机器和资源使用指标。",
+      "tags": ["grpc", "rpc", "service-info", "observability"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/info.proto:InfoService.ServiceStatusOverride",
+      "type": "endpoint",
+      "name": "InfoService.ServiceStatusOverride",
+      "filePath": "packages/orchestrator/info.proto",
+      "summary": "覆盖服务状态(Healthy/Draining/Unhealthy/Standby),用于优雅下线或维护。",
+      "tags": ["grpc", "rpc", "service-info", "lifecycle"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/orchestrator.proto:SandboxService.Create",
+      "type": "endpoint",
+      "name": "SandboxService.Create",
+      "filePath": "packages/orchestrator/orchestrator.proto",
+      "summary": "创建新 sandbox,返回 client_id 与调度元数据。",
+      "tags": ["grpc", "rpc", "sandbox", "lifecycle"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/orchestrator.proto:SandboxService.Update",
+      "type": "endpoint",
+      "name": "SandboxService.Update",
+      "filePath": "packages/orchestrator/orchestrator.proto",
+      "summary": "更新已有 sandbox 的出口网络配置。",
+      "tags": ["grpc", "rpc", "sandbox", "network"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/orchestrator.proto:SandboxService.List",
+      "type": "endpoint",
+      "name": "SandboxService.List",
+      "filePath": "packages/orchestrator/orchestrator.proto",
+      "summary": "列出节点上正在运行的 sandbox 及其 client_id。",
+      "tags": ["grpc", "rpc", "sandbox", "query"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/orchestrator.proto:SandboxService.Delete",
+      "type": "endpoint",
+      "name": "SandboxService.Delete",
+      "filePath": "packages/orchestrator/orchestrator.proto",
+      "summary": "删除指定 sandbox,可携带 kill 原因。",
+      "tags": ["grpc", "rpc", "sandbox", "lifecycle"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/orchestrator.proto:SandboxService.Pause",
+      "type": "endpoint",
+      "name": "SandboxService.Pause",
+      "filePath": "packages/orchestrator/orchestrator.proto",
+      "summary": "暂停 sandbox 并打快照,返回调度元数据。",
+      "tags": ["grpc", "rpc", "sandbox", "snapshot"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/orchestrator.proto:SandboxService.Checkpoint",
+      "type": "endpoint",
+      "name": "SandboxService.Checkpoint",
+      "filePath": "packages/orchestrator/orchestrator.proto",
+      "summary": "对 sandbox 执行检查点操作,返回调度元数据。",
+      "tags": ["grpc", "rpc", "sandbox", "checkpoint"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/orchestrator.proto:SandboxService.ListCachedBuilds",
+      "type": "endpoint",
+      "name": "SandboxService.ListCachedBuilds",
+      "filePath": "packages/orchestrator/orchestrator.proto",
+      "summary": "列出节点缓存的构建产物(build_id 列表)。",
+      "tags": ["grpc", "rpc", "sandbox", "cache"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/template-manager.proto:TemplateService.TemplateCreate",
+      "type": "endpoint",
+      "name": "TemplateService.TemplateCreate",
+      "filePath": "packages/orchestrator/template-manager.proto",
+      "summary": "根据 template config 异步创建新模板构建任务。",
+      "tags": ["grpc", "rpc", "template", "build"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/template-manager.proto:TemplateService.TemplateBuildStatus",
+      "type": "endpoint",
+      "name": "TemplateService.TemplateBuildStatus",
+      "filePath": "packages/orchestrator/template-manager.proto",
+      "summary": "分页查询模板构建的状态、日志与失败原因。",
+      "tags": ["grpc", "rpc", "template", "status"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/template-manager.proto:TemplateService.TemplateBuildDelete",
+      "type": "endpoint",
+      "name": "TemplateService.TemplateBuildDelete",
+      "filePath": "packages/orchestrator/template-manager.proto",
+      "summary": "删除指定模板的某次构建产物。",
+      "tags": ["grpc", "rpc", "template", "cleanup"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/template-manager.proto:TemplateService.InitLayerFileUpload",
+      "type": "endpoint",
+      "name": "TemplateService.InitLayerFileUpload",
+      "filePath": "packages/orchestrator/template-manager.proto",
+      "summary": "初始化层文件上传,若已存在则返回标记 present,否则返回上传 URL。",
+      "tags": ["grpc", "rpc", "template", "upload"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/volume.proto:VolumeService.CreateVolume",
+      "type": "endpoint",
+      "name": "VolumeService.CreateVolume",
+      "filePath": "packages/orchestrator/volume.proto",
+      "summary": "创建新的持久卷(Volume)。",
+      "tags": ["grpc", "rpc", "volume", "lifecycle"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/volume.proto:VolumeService.DeleteVolume",
+      "type": "endpoint",
+      "name": "VolumeService.DeleteVolume",
+      "filePath": "packages/orchestrator/volume.proto",
+      "summary": "删除指定的持久卷。",
+      "tags": ["grpc", "rpc", "volume", "lifecycle"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/volume.proto:VolumeService.CreateDir",
+      "type": "endpoint",
+      "name": "VolumeService.CreateDir",
+      "filePath": "packages/orchestrator/volume.proto",
+      "summary": "在卷上创建目录,支持设置 mode/uid/gid 与父目录自动创建。",
+      "tags": ["grpc", "rpc", "volume", "filesystem"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/volume.proto:VolumeService.ListDir",
+      "type": "endpoint",
+      "name": "VolumeService.ListDir",
+      "filePath": "packages/orchestrator/volume.proto",
+      "summary": "列出卷上指定路径的目录项,支持 depth 限制。",
+      "tags": ["grpc", "rpc", "volume", "filesystem"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/volume.proto:VolumeService.CreateFile",
+      "type": "endpoint",
+      "name": "VolumeService.CreateFile",
+      "filePath": "packages/orchestrator/volume.proto",
+      "summary": "流式在卷上创建文件,支持 start/content/finish 三段式请求。",
+      "tags": ["grpc", "rpc", "volume", "filesystem", "streaming"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/volume.proto:VolumeService.GetFile",
+      "type": "endpoint",
+      "name": "VolumeService.GetFile",
+      "filePath": "packages/orchestrator/volume.proto",
+      "summary": "流式读取卷上文件内容,返回 start/content/finish 三段式响应。",
+      "tags": ["grpc", "rpc", "volume", "filesystem", "streaming"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/volume.proto:VolumeService.DeletePath",
+      "type": "endpoint",
+      "name": "VolumeService.DeletePath",
+      "filePath": "packages/orchestrator/volume.proto",
+      "summary": "删除卷上的指定路径(文件或目录)。",
+      "tags": ["grpc", "rpc", "volume", "filesystem"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/volume.proto:VolumeService.StatPath",
+      "type": "endpoint",
+      "name": "VolumeService.StatPath",
+      "filePath": "packages/orchestrator/volume.proto",
+      "summary": "查询卷上路径的文件元数据(类型、大小、权限、uid/gid、symlink target)。",
+      "tags": ["grpc", "rpc", "volume", "filesystem"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/orchestrator/volume.proto:VolumeService.UpdatePath",
+      "type": "endpoint",
+      "name": "VolumeService.UpdatePath",
+      "filePath": "packages/orchestrator/volume.proto",
+      "summary": "更新卷上路径的元数据(模式、uid、gid)。",
+      "tags": ["grpc", "rpc", "volume", "filesystem"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/orchestrator/Makefile:init",
+      "type": "file",
+      "name": "init",
+      "filePath": "packages/orchestrator/Makefile",
+      "summary": "下载 Go 模块依赖(go mod download)。",
+      "tags": ["build", "dependencies"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/orchestrator/Makefile:generate",
+      "type": "file",
+      "name": "generate",
+      "filePath": "packages/orchestrator/Makefile",
+      "summary": "运行代码生成(buf proto、sqlc、go generate)。",
+      "tags": ["build", "code-generation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/orchestrator/Makefile:build",
+      "type": "file",
+      "name": "build",
+      "filePath": "packages/orchestrator/Makefile",
+      "summary": "构建 orchestrator 服务二进制(到 bin/ 目录)。",
+      "tags": ["build", "compilation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/orchestrator/Makefile:fetch-busybox",
+      "type": "file",
+      "name": "fetch-busybox",
+      "filePath": "packages/orchestrator/Makefile",
+      "summary": "下载用于 microVM 启动的 busybox 二进制。",
+      "tags": ["build", "microvm", "dependencies"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/orchestrator/Makefile:build-local",
+      "type": "file",
+      "name": "build-local",
+      "filePath": "packages/orchestrator/Makefile",
+      "summary": "本地构建 orchestrator 二进制。",
+      "tags": ["build", "local-development"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/orchestrator/Makefile:build-debug",
+      "type": "file",
+      "name": "build-debug",
+      "filePath": "packages/orchestrator/Makefile",
+      "summary": "使用调试信息构建 orchestrator 二进制。",
+      "tags": ["build", "debug"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/orchestrator/Makefile:build-dummy",
+      "type": "file",
+      "name": "build-dummy",
+      "filePath": "packages/orchestrator/Makefile",
+      "summary": "构建 dummy orchestrator(用于集成测试的桩服务)。",
+      "tags": ["build", "test-fixture"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/orchestrator/Makefile:run-dummy",
+      "type": "file",
+      "name": "run-dummy",
+      "filePath": "packages/orchestrator/Makefile",
+      "summary": "运行 dummy orchestrator 桩服务。",
+      "tags": ["test-fixture", "run"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/orchestrator/Makefile:run-debug",
+      "type": "file",
+      "name": "run-debug",
+      "filePath": "packages/orchestrator/Makefile",
+      "summary": "使用 delve 调试器运行 orchestrator(支持 race detector)。",
+      "tags": ["run", "debug"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/orchestrator/Makefile:run-local",
+      "type": "file",
+      "name": "run-local",
+      "filePath": "packages/orchestrator/Makefile",
+      "summary": "本地运行 orchestrator 服务(从 .env.local 加载环境变量)。",
+      "tags": ["run", "local-development"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/orchestrator/Makefile:test",
+      "type": "file",
+      "name": "test",
+      "filePath": "packages/orchestrator/Makefile",
+      "summary": "运行 orchestrator 的单元测试(含 -race 检测)。",
+      "tags": ["test", "unit-test"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/orchestrator/Makefile:test-docker",
+      "type": "file",
+      "name": "test-docker",
+      "filePath": "packages/orchestrator/Makefile",
+      "summary": "在 Docker 容器中运行 orchestrator 单元测试。",
+      "tags": ["test", "docker"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/orchestrator/Makefile:build-template",
+      "type": "file",
+      "name": "build-template",
+      "filePath": "packages/orchestrator/Makefile",
+      "summary": "调用 build-template 命令构建 envd 模板镜像。",
+      "tags": ["build", "template", "envd"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/orchestrator/Makefile:migrate",
+      "type": "file",
+      "name": "migrate",
+      "filePath": "packages/orchestrator/Makefile",
+      "summary": "运行数据库迁移(orchestrator 自身的 schema 变更)。",
+      "tags": ["database", "migration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/orchestrator/Makefile:lint",
+      "type": "file",
+      "name": "lint",
+      "filePath": "packages/orchestrator/Makefile",
+      "summary": "运行 golangci-lint 检查代码风格。",
+      "tags": ["lint", "code-quality"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:packages/orchestrator/.env.local",
+      "target": "file:packages/orchestrator/main.go",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/orchestrator/.env.local",
+      "target": "service:packages/orchestrator/Makefile",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:packages/orchestrator/.mockery.yaml",
+      "target": "file:packages/orchestrator/main.go",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:packages/orchestrator/FIRECRACKER_IMPLEMENTATION.md",
+      "target": "file:packages/orchestrator/main.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:packages/orchestrator/MODULE_GUIDE.md",
+      "target": "file:packages/orchestrator/main.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:packages/orchestrator/PRINCIPLES.md",
+      "target": "file:packages/orchestrator/main.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:packages/orchestrator/README.md",
+      "target": "service:packages/orchestrator/Makefile",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:packages/orchestrator/README.md",
+      "target": "config:packages/orchestrator/.env.local",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:packages/orchestrator/README.md",
+      "target": "file:packages/orchestrator/main.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "file:packages/orchestrator/main.go",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "schema:packages/orchestrator/orchestrator.proto",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "schema:packages/orchestrator/info.proto",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "schema:packages/orchestrator/template-manager.proto",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "schema:packages/orchestrator/volume.proto",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "schema:packages/orchestrator/chunks.proto",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/orchestrator/go.mod",
+      "target": "file:packages/orchestrator/main.go",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/orchestrator/go.sum",
+      "target": "config:packages/orchestrator/go.mod",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "schema:packages/orchestrator/orchestrator.proto",
+      "target": "file:packages/orchestrator/main.go",
+      "type": "defines_schema",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "schema:packages/orchestrator/info.proto",
+      "target": "file:packages/orchestrator/main.go",
+      "type": "defines_schema",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "schema:packages/orchestrator/template-manager.proto",
+      "target": "file:packages/orchestrator/main.go",
+      "type": "defines_schema",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "schema:packages/orchestrator/volume.proto",
+      "target": "file:packages/orchestrator/main.go",
+      "type": "defines_schema",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "schema:packages/orchestrator/chunks.proto",
+      "target": "file:packages/orchestrator/main.go",
+      "type": "defines_schema",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "schema:packages/orchestrator/orchestrator.proto",
+      "target": "endpoint:packages/orchestrator/orchestrator.proto:SandboxService.Create",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/orchestrator.proto",
+      "target": "endpoint:packages/orchestrator/orchestrator.proto:SandboxService.Update",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/orchestrator.proto",
+      "target": "endpoint:packages/orchestrator/orchestrator.proto:SandboxService.List",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/orchestrator.proto",
+      "target": "endpoint:packages/orchestrator/orchestrator.proto:SandboxService.Delete",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/orchestrator.proto",
+      "target": "endpoint:packages/orchestrator/orchestrator.proto:SandboxService.Pause",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/orchestrator.proto",
+      "target": "endpoint:packages/orchestrator/orchestrator.proto:SandboxService.Checkpoint",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/orchestrator.proto",
+      "target": "endpoint:packages/orchestrator/orchestrator.proto:SandboxService.ListCachedBuilds",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/info.proto",
+      "target": "endpoint:packages/orchestrator/info.proto:InfoService.ServiceInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/info.proto",
+      "target": "endpoint:packages/orchestrator/info.proto:InfoService.ServiceStatusOverride",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/template-manager.proto",
+      "target": "endpoint:packages/orchestrator/template-manager.proto:TemplateService.TemplateCreate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/template-manager.proto",
+      "target": "endpoint:packages/orchestrator/template-manager.proto:TemplateService.TemplateBuildStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/template-manager.proto",
+      "target": "endpoint:packages/orchestrator/template-manager.proto:TemplateService.TemplateBuildDelete",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/template-manager.proto",
+      "target": "endpoint:packages/orchestrator/template-manager.proto:TemplateService.InitLayerFileUpload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/volume.proto",
+      "target": "endpoint:packages/orchestrator/volume.proto:VolumeService.CreateVolume",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/volume.proto",
+      "target": "endpoint:packages/orchestrator/volume.proto:VolumeService.DeleteVolume",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/volume.proto",
+      "target": "endpoint:packages/orchestrator/volume.proto:VolumeService.CreateDir",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/volume.proto",
+      "target": "endpoint:packages/orchestrator/volume.proto:VolumeService.ListDir",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/volume.proto",
+      "target": "endpoint:packages/orchestrator/volume.proto:VolumeService.CreateFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/volume.proto",
+      "target": "endpoint:packages/orchestrator/volume.proto:VolumeService.GetFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/volume.proto",
+      "target": "endpoint:packages/orchestrator/volume.proto:VolumeService.DeletePath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/volume.proto",
+      "target": "endpoint:packages/orchestrator/volume.proto:VolumeService.StatPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/volume.proto",
+      "target": "endpoint:packages/orchestrator/volume.proto:VolumeService.UpdatePath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/chunks.proto",
+      "target": "endpoint:packages/orchestrator/chunks.proto:ChunkService.GetBuildFileSize",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/chunks.proto",
+      "target": "endpoint:packages/orchestrator/chunks.proto:ChunkService.GetBuildFileExists",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/chunks.proto",
+      "target": "endpoint:packages/orchestrator/chunks.proto:ChunkService.ReadAtBuildSeekable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "schema:packages/orchestrator/chunks.proto",
+      "target": "endpoint:packages/orchestrator/chunks.proto:ChunkService.GetBuildBlob",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "step:packages/orchestrator/Makefile:init",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "step:packages/orchestrator/Makefile:generate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "step:packages/orchestrator/Makefile:build",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "step:packages/orchestrator/Makefile:fetch-busybox",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "step:packages/orchestrator/Makefile:build-local",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "step:packages/orchestrator/Makefile:build-debug",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "step:packages/orchestrator/Makefile:build-dummy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "step:packages/orchestrator/Makefile:run-dummy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "step:packages/orchestrator/Makefile:run-debug",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "step:packages/orchestrator/Makefile:run-local",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "step:packages/orchestrator/Makefile:test",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "step:packages/orchestrator/Makefile:test-docker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "step:packages/orchestrator/Makefile:build-template",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "step:packages/orchestrator/Makefile:migrate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Makefile",
+      "target": "step:packages/orchestrator/Makefile:lint",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "document:packages/orchestrator/FIRECRACKER_IMPLEMENTATION.md",
+      "target": "document:packages/orchestrator/PRINCIPLES.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:packages/orchestrator/MODULE_GUIDE.md",
+      "target": "document:packages/orchestrator/PRINCIPLES.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:packages/orchestrator/MODULE_GUIDE.md",
+      "target": "document:packages/orchestrator/FIRECRACKER_IMPLEMENTATION.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:packages/orchestrator/FIRECRACKER_IMPLEMENTATION.md",
+      "target": "schema:packages/orchestrator/orchestrator.proto",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:packages/orchestrator/MODULE_GUIDE.md",
+      "target": "schema:packages/orchestrator/orchestrator.proto",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:packages/orchestrator/MODULE_GUIDE.md",
+      "target": "schema:packages/orchestrator/volume.proto",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:packages/orchestrator/MODULE_GUIDE.md",
+      "target": "schema:packages/orchestrator/template-manager.proto",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:packages/orchestrator/MODULE_GUIDE.md",
+      "target": "schema:packages/orchestrator/chunks.proto",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:packages/orchestrator/MODULE_GUIDE.md",
+      "target": "schema:packages/orchestrator/info.proto",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

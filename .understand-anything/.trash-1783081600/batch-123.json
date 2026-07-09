@@ -1,0 +1,490 @@
+{
+  "nodes": [
+    {
+      "id": "config:iac/modules/job-otel-collector-nomad-server/configs/otel-collector-nomad-server.yaml",
+      "type": "config",
+      "name": "otel-collector-nomad-server.yaml",
+      "filePath": "iac/modules/job-otel-collector-nomad-server/configs/otel-collector-nomad-server.yaml",
+      "summary": "OpenTelemetry Collector 默认配置模板,运行在 Nomad server 节点上,负责采集 Nomad server 自身的遥测数据并转发到 Grafana/Google Cloud Monitoring。",
+      "tags": ["opentelemetry", "telemetry", "configuration", "nomad-server", "observability"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:iac/modules/job-otel-collector-nomad-server/jobs/otel-collector-nomad-server.hcl",
+      "type": "file",
+      "name": "otel-collector-nomad-server.hcl",
+      "filePath": "iac/modules/job-otel-collector-nomad-server/jobs/otel-collector-nomad-server.hcl",
+      "summary": "Nomad 服务作业规范,部署运行在 Nomad server 节点上的 OpenTelemetry Collector,带健康检查和服务注册。",
+      "tags": ["nomad-job", "opentelemetry", "service-job", "telemetry", "job-spec"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/modules/job-otel-collector-nomad-server/main.tf:nomad_job.otel_collector_nomad_server",
+      "type": "resource",
+      "name": "nomad_job.otel_collector_nomad_server",
+      "filePath": "iac/modules/job-otel-collector-nomad-server/main.tf",
+      "lineRange": [17, 29],
+      "summary": "Terraform 资源,渲染 OTel Collector 作业规范并提交给 Nomad,支持 GCP 遥测指标导出校验。",
+      "tags": ["terraform-resource", "nomad-job", "opentelemetry", "telemetry"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:iac/modules/job-otel-collector/configs/otel-collector.yaml",
+      "type": "config",
+      "name": "otel-collector.yaml",
+      "filePath": "iac/modules/job-otel-collector/configs/otel-collector.yaml",
+      "summary": "OpenTelemetry Collector 完整配置模板,定义 receivers、processors、exporters(支持 ClickHouse、Grafana Cloud、Google Cloud Monitoring),用于跨集群节点遥测数据采集与转发。",
+      "tags": ["opentelemetry", "telemetry", "configuration", "clickhouse", "observability"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:iac/modules/job-otel-collector/jobs/otel-collector.hcl",
+      "type": "file",
+      "name": "otel-collector.hcl",
+      "filePath": "iac/modules/job-otel-collector/jobs/otel-collector.hcl",
+      "summary": "Nomad 系统级作业规范,在每个集群节点上运行 OTel Collector 实例,提供 health/metrics/grpc/http 端口并注册为 Nomad 服务。",
+      "tags": ["nomad-job", "opentelemetry", "system-job", "telemetry", "job-spec"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/modules/job-otel-collector/main.tf:nomad_job.otel_collector",
+      "type": "resource",
+      "name": "nomad_job.otel_collector",
+      "filePath": "iac/modules/job-otel-collector/main.tf",
+      "lineRange": [29, 49],
+      "summary": "Terraform 资源,渲染 OTel Collector 作业规范并提交给 Nomad,可注入 ClickHouse、Consul、GCP 遥测等配置参数。",
+      "tags": ["terraform-resource", "nomad-job", "opentelemetry", "telemetry"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/modules/job-redis/jobs/redis.hcl",
+      "type": "file",
+      "name": "redis.hcl",
+      "filePath": "iac/modules/job-redis/jobs/redis.hcl",
+      "summary": "Nomad 服务作业规范,部署 Redis 缓存服务,配置 TCP 健康检查和 Consul 服务注册。",
+      "tags": ["nomad-job", "redis", "cache", "service-job", "job-spec"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/modules/job-redis/main.tf:nomad_job.redis",
+      "type": "resource",
+      "name": "nomad_job.redis",
+      "filePath": "iac/modules/job-redis/main.tf",
+      "lineRange": [1, 7],
+      "summary": "Terraform 资源,向 Nomad 提交 Redis 作业规范。",
+      "tags": ["terraform-resource", "nomad-job", "redis"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/modules/job-template-manager-autoscaler/jobs/nomad-autoscaler.hcl",
+      "type": "file",
+      "name": "nomad-autoscaler.hcl",
+      "filePath": "iac/modules/job-template-manager-autoscaler/jobs/nomad-autoscaler.hcl",
+      "summary": "Nomad 服务作业规范,部署 HashiCorp Nomad Autoscaler 并加载自定义的 nomad-nodepool APM 插件,用于按节点池规模自动扩缩容。",
+      "tags": ["nomad-job", "autoscaler", "service-job", "apm-plugin", "job-spec"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/modules/job-template-manager-autoscaler/main.tf:nomad_job.nomad_nodepool_apm",
+      "type": "resource",
+      "name": "nomad_job.nomad_nodepool_apm",
+      "filePath": "iac/modules/job-template-manager-autoscaler/main.tf",
+      "lineRange": [1, 8],
+      "summary": "Terraform 资源,向 Nomad 提交 nomad-autoscaler 作业规范以启用基于节点池的自动扩缩容。",
+      "tags": ["terraform-resource", "nomad-job", "autoscaler"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/modules/job-template-manager/jobs/template-manager.hcl",
+      "type": "file",
+      "name": "template-manager.hcl",
+      "filePath": "iac/modules/job-template-manager/jobs/template-manager.hcl",
+      "summary": "Nomad 服务作业规范,部署 template-manager 服务,使用 distinct_hosts 约束实现单节点一分配,可选启用 nomad-nodepool APM 扩缩容策略与滚动更新。",
+      "tags": ["nomad-job", "template-manager", "service-job", "autoscaling", "job-spec"],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/modules/job-template-manager/main.tf:nomad_job.template_manager",
+      "type": "resource",
+      "name": "nomad_job.template_manager",
+      "filePath": "iac/modules/job-template-manager/main.tf",
+      "lineRange": [22, 32],
+      "summary": "Terraform 资源,渲染 template-manager 作业规范并提交给 Nomad,使用 external 数据源读取当前任务数量以保留自动扩缩容管理的值。",
+      "tags": ["terraform-resource", "nomad-job", "template-manager", "autoscaling"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/modules/job-template-manager/main.tf:data.external.template_manager_count",
+      "type": "resource",
+      "name": "data.external.template_manager_count",
+      "filePath": "iac/modules/job-template-manager/main.tf",
+      "lineRange": [4, 13],
+      "summary": "Terraform 外部数据源,调用 get-nomad-job-count.sh 脚本从 Nomad API 获取 template-manager 当前的运行实例数。",
+      "tags": ["terraform-data-source", "nomad-api", "external-script"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/modules/job-template-manager/scripts/get-nomad-job-count.sh",
+      "type": "file",
+      "name": "get-nomad-job-count.sh",
+      "filePath": "iac/modules/job-template-manager/scripts/get-nomad-job-count.sh",
+      "summary": "Bash 脚本,通过 Nomad HTTP API 查询指定作业当前的 TaskGroups 计数,作为 Terraform 外部数据源使用,避免 Terraform 重置自动扩缩容管理的值。",
+      "tags": ["bash", "nomad-api", "autoscaling", "terraform-external"],
+      "complexity": "moderate",
+      "languageNotes": "脚本在 404 时使用最小计数,其他错误显式失败以防止意外缩容。"
+    },
+    {
+      "id": "file:iac/nomad-cluster-disk-image/setup/limits.conf",
+      "type": "file",
+      "name": "limits.conf",
+      "filePath": "iac/nomad-cluster-disk-image/setup/limits.conf",
+      "summary": "Linux PAM 安全限制配置,提升 nofile 软硬限制到 1048576,以支持 Nomad 集群节点处理大量并发连接。",
+      "tags": ["system-config", "linux", "limits", "nomad-cluster"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/nomad-cluster-disk-image/setup/supervisord.conf",
+      "type": "file",
+      "name": "supervisord.conf",
+      "filePath": "iac/nomad-cluster-disk-image/setup/supervisord.conf",
+      "summary": "Supervisor 进程管理守护进程配置,定义日志路径、socket 和包含 /etc/supervisor/conf.d/*.conf 目录中的子配置。",
+      "tags": ["supervisord", "process-manager", "system-config"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/provider-aws/.terraform.lock.hcl",
+      "type": "file",
+      "name": ".terraform.lock.hcl",
+      "filePath": "iac/provider-aws/.terraform.lock.hcl",
+      "summary": "Terraform 依赖锁文件,记录 AWS 提供商及 Cloudflare 插件等模块的精确版本和哈希,确保可重现的基础设施部署。",
+      "tags": ["terraform", "lock-file", "dependency-management"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-api/main.tf:aws_iam_policy.api_node_policy",
+      "type": "resource",
+      "name": "aws_iam_policy.api_node_policy",
+      "filePath": "iac/provider-aws/modules/nodepool-api/main.tf",
+      "lineRange": [20, 23],
+      "summary": "AWS IAM 策略,授予 API 节点对 Loki S3 桶的完整访问权限,用于日志读写。",
+      "tags": ["aws-iam", "iam-policy", "s3", "loki"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-api/main.tf:aws_iam_role.api",
+      "type": "resource",
+      "name": "aws_iam_role.api",
+      "filePath": "iac/provider-aws/modules/nodepool-api/main.tf",
+      "lineRange": [38, 41],
+      "summary": "AWS IAM 角色,API 节点使用的 EC2 实例角色,允许被集群节点 EC2 策略所代入。",
+      "tags": ["aws-iam", "iam-role", "ec2"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-api/main.tf:aws_iam_role_policy_attachment.api",
+      "type": "resource",
+      "name": "aws_iam_role_policy_attachment.api",
+      "filePath": "iac/provider-aws/modules/nodepool-api/main.tf",
+      "lineRange": [43, 51],
+      "summary": "AWS IAM 角色策略挂载,附加 cluster-node 策略和 API 节点自定义策略到 API 角色。",
+      "tags": ["aws-iam", "iam-role-attachment"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-api/main.tf:aws_iam_instance_profile.api",
+      "type": "resource",
+      "name": "aws_iam_instance_profile.api",
+      "filePath": "iac/provider-aws/modules/nodepool-api/main.tf",
+      "lineRange": [53, 56],
+      "summary": "AWS IAM 实例配置档,API 节点 EC2 启动时使用的角色容器。",
+      "tags": ["aws-iam", "instance-profile", "ec2"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-api/main.tf:aws_launch_template.api",
+      "type": "resource",
+      "name": "aws_launch_template.api",
+      "filePath": "iac/provider-aws/modules/nodepool-api/main.tf",
+      "lineRange": [68, 104],
+      "summary": "AWS EC2 启动模板,定义 API 节点镜像、机型、安全组、IMDSv2 强制、IAM 实例配置档与集群成员标签。",
+      "tags": ["aws-ec2", "launch-template", "imdsv2", "nomad-client"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-api/main.tf:aws_autoscaling_group.api",
+      "type": "resource",
+      "name": "aws_autoscaling_group.api",
+      "filePath": "iac/provider-aws/modules/nodepool-api/main.tf",
+      "lineRange": [106, 125],
+      "summary": "AWS 自动扩缩容组,维持固定数量的 API 节点,并自动注册到目标负载均衡组。",
+      "tags": ["aws-asg", "autoscaling", "load-balancer"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/provider-aws/modules/nodepool-api/scripts/start-api.sh",
+      "type": "file",
+      "name": "start-api.sh",
+      "filePath": "iac/provider-aws/modules/nodepool-api/scripts/start-api.sh",
+      "summary": "EC2 User Data 启动脚本,优化系统参数、拉取 Consul/Nomad 启动脚本、配置 Docker ECR 凭证和 systemd-resolved DNS,以便在 AWS 上运行 API 节点。",
+      "tags": ["bash", "user-data", "ec2", "consul", "nomad", "docker"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-api/variables.tf:scripts_path",
+      "type": "resource",
+      "name": "scripts_path",
+      "filePath": "iac/provider-aws/modules/nodepool-api/variables.tf",
+      "lineRange": [89, 93],
+      "summary": "Terraform 变量,指定 API 节点启动脚本所在路径,默认使用模块内置 scripts 目录。",
+      "tags": ["terraform-variable", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_iam_instance_profile.clickhouse",
+      "type": "resource",
+      "name": "aws_iam_instance_profile.clickhouse",
+      "filePath": "iac/provider-aws/modules/nodepool-clickhouse/main.tf",
+      "lineRange": [43, 46],
+      "summary": "AWS IAM 实例配置档,ClickHouse 节点 EC2 启动时使用的角色容器。",
+      "tags": ["aws-iam", "instance-profile", "ec2", "clickhouse"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_ebs_volume.clickhouse",
+      "type": "resource",
+      "name": "aws_ebs_volume.clickhouse",
+      "filePath": "iac/provider-aws/modules/nodepool-clickhouse/main.tf",
+      "lineRange": [58, 68],
+      "summary": "AWS EBS 卷资源,为每个 ClickHouse 节点创建独立的数据持久化卷。",
+      "tags": ["aws-ebs", "storage", "clickhouse", "persistent-volume"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_launch_template.clickhouse",
+      "type": "resource",
+      "name": "aws_launch_template.clickhouse",
+      "filePath": "iac/provider-aws/modules/nodepool-clickhouse/main.tf",
+      "lineRange": [70, 103],
+      "summary": "AWS EC2 启动模板,定义 ClickHouse 节点镜像、机型、安全组与 Nomad 集群成员标签。",
+      "tags": ["aws-ec2", "launch-template", "imdsv2", "clickhouse"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_instance.clickhouse",
+      "type": "resource",
+      "name": "aws_instance.clickhouse",
+      "filePath": "iac/provider-aws/modules/nodepool-clickhouse/main.tf",
+      "lineRange": [107, 150],
+      "summary": "AWS EC2 实例资源,启动 N 个 ClickHouse 实例并注入 EBS 卷 ID 与 Nomad job-constraint 标签,实现实例与卷的稳定对应。",
+      "tags": ["aws-ec2", "clickhouse", "stateful", "nomad-client"],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_volume_attachment.clickhouse",
+      "type": "resource",
+      "name": "aws_volume_attachment.clickhouse",
+      "filePath": "iac/provider-aws/modules/nodepool-clickhouse/main.tf",
+      "lineRange": [152, 158],
+      "summary": "AWS EBS 卷挂载资源,将每个 ClickHouse 数据卷挂载到对应 EC2 实例的 /dev/sdf 设备。",
+      "tags": ["aws-ebs", "volume-attachment", "clickhouse"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/provider-aws/modules/nodepool-clickhouse/scripts/start-clickhouse.sh",
+      "type": "file",
+      "name": "start-clickhouse.sh",
+      "filePath": "iac/provider-aws/modules/nodepool-clickhouse/scripts/start-clickhouse.sh",
+      "summary": "EC2 User Data 启动脚本,等待 EBS 卷出现、挂载 XFS 文件系统到 /clickhouse,并配置 Consul/Nomad/Docker/systemd-resolved 等基础设施。",
+      "tags": ["bash", "user-data", "ec2", "clickhouse", "ebs-mount", "consul", "nomad"],
+      "complexity": "complex",
+      "languageNotes": "脚本通过 nvme list 配合 EBS 卷 ID 找到设备名,实现 EC2 实例与持久化卷的稳定绑定。"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/nodepool-clickhouse/variables.tf:scripts_path",
+      "type": "resource",
+      "name": "scripts_path",
+      "filePath": "iac/provider-aws/modules/nodepool-clickhouse/variables.tf",
+      "lineRange": [101, 105],
+      "summary": "Terraform 变量,指定 ClickHouse 节点启动脚本所在路径。",
+      "tags": ["terraform-variable", "configuration"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/modules/job-otel-collector-nomad-server/main.tf:nomad_job.otel_collector_nomad_server",
+      "target": "config:iac/modules/job-otel-collector-nomad-server/configs/otel-collector-nomad-server.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-otel-collector-nomad-server/main.tf:nomad_job.otel_collector_nomad_server",
+      "target": "file:iac/modules/job-otel-collector-nomad-server/jobs/otel-collector-nomad-server.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-otel-collector/main.tf:nomad_job.otel_collector",
+      "target": "config:iac/modules/job-otel-collector/configs/otel-collector.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-otel-collector/main.tf:nomad_job.otel_collector",
+      "target": "file:iac/modules/job-otel-collector/jobs/otel-collector.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-redis/main.tf:nomad_job.redis",
+      "target": "file:iac/modules/job-redis/jobs/redis.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-template-manager-autoscaler/main.tf:nomad_job.nomad_nodepool_apm",
+      "target": "file:iac/modules/job-template-manager-autoscaler/jobs/nomad-autoscaler.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-template-manager/main.tf:nomad_job.template_manager",
+      "target": "file:iac/modules/job-template-manager/jobs/template-manager.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-template-manager/main.tf:data.external.template_manager_count",
+      "target": "file:iac/modules/job-template-manager/scripts/get-nomad-job-count.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-template-manager/main.tf:nomad_job.template_manager",
+      "target": "resource:iac/modules/job-template-manager/main.tf:data.external.template_manager_count",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/modules/job-template-manager/jobs/template-manager.hcl",
+      "target": "file:iac/modules/job-template-manager-autoscaler/jobs/nomad-autoscaler.hcl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-aws/modules/nodepool-api/scripts/start-api.sh",
+      "target": "resource:iac/provider-aws/modules/nodepool-api/main.tf:aws_launch_template.api",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:iac/provider-aws/modules/nodepool-clickhouse/scripts/start-clickhouse.sh",
+      "target": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_launch_template.clickhouse",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:iac/provider-aws/modules/nodepool-clickhouse/scripts/start-clickhouse.sh",
+      "target": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_ebs_volume.clickhouse",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_instance.clickhouse",
+      "target": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_launch_template.clickhouse",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_instance.clickhouse",
+      "target": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_ebs_volume.clickhouse",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_volume_attachment.clickhouse",
+      "target": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_instance.clickhouse",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_volume_attachment.clickhouse",
+      "target": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_ebs_volume.clickhouse",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-api/main.tf:aws_iam_role_policy_attachment.api",
+      "target": "resource:iac/provider-aws/modules/nodepool-api/main.tf:aws_iam_role.api",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-api/main.tf:aws_iam_instance_profile.api",
+      "target": "resource:iac/provider-aws/modules/nodepool-api/main.tf:aws_iam_role.api",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-api/main.tf:aws_launch_template.api",
+      "target": "resource:iac/provider-aws/modules/nodepool-api/main.tf:aws_iam_instance_profile.api",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-api/main.tf:aws_autoscaling_group.api",
+      "target": "resource:iac/provider-aws/modules/nodepool-api/main.tf:aws_launch_template.api",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-api/main.tf:aws_launch_template.api",
+      "target": "file:iac/provider-aws/modules/nodepool-api/scripts/start-api.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_launch_template.clickhouse",
+      "target": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_iam_instance_profile.clickhouse",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_instance.clickhouse",
+      "target": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_iam_instance_profile.clickhouse",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/nodepool-clickhouse/main.tf:aws_instance.clickhouse",
+      "target": "file:iac/provider-aws/modules/nodepool-clickhouse/scripts/start-clickhouse.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

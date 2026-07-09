@@ -1,0 +1,89 @@
+{
+  "nodes": [
+    {
+      "id": "resource:iac/provider-gcp/k8s-apps/images.tf",
+      "type": "resource",
+      "name": "images.tf",
+      "filePath": "iac/provider-gcp/k8s-apps/images.tf",
+      "summary": "Terraform 数据源模块，从 GCP Artifact Registry 拉取 API 服务镜像的最新 tag，用于 ArgoCD Application 部署时引用。",
+      "tags": ["infrastructure", "container-image", "artifact-registry", "data-source", "terraform"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/k8s-apps/main.tf",
+      "type": "resource",
+      "name": "main.tf",
+      "filePath": "iac/provider-gcp/k8s-apps/main.tf",
+      "summary": "Terraform 主模块，将 namespace 和 API 两个 ArgoCD Application 清单作为 YAML 写入 GCS bucket，供 ArgoCD 控制器监听并部署。",
+      "tags": ["infrastructure", "argocd", "gitops", "gcs", "terraform"],
+      "complexity": "moderate",
+      "languageNotes": "使用 yamlencode 将 ArgoCD Application spec 内联为字符串内容上传到 GCS，实现 GitOps 部署清单的集中分发。"
+    },
+    {
+      "id": "resource:iac/provider-gcp/k8s-apps/variables.tf",
+      "type": "resource",
+      "name": "variables.tf",
+      "filePath": "iac/provider-gcp/k8s-apps/variables.tf",
+      "summary": "Terraform 变量定义模块，集中声明 ArgoCD、GCP 项目信息、API 部署参数（端口、资源、副本数）以及数据库/Redis 密钥版本等共 28 个输入。",
+      "tags": ["infrastructure", "terraform", "configuration", "secrets", "api-config"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/k8s-apps/images.tf:data.google_artifact_registry_docker_image.api_image",
+      "type": "resource",
+      "name": "data.google_artifact_registry_docker_image.api_image",
+      "filePath": "iac/provider-gcp/k8s-apps/images.tf",
+      "summary": "从 GCP Artifact Registry 读取 core 仓库下 api:latest 镜像的元数据，供 ArgoCD Application 注入到 Helm values 的 image 字段。",
+      "tags": ["data-source", "container-image", "artifact-registry"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/k8s-apps/main.tf:google_storage_bucket_object.namespace",
+      "type": "resource",
+      "name": "google_storage_bucket_object.namespace",
+      "filePath": "iac/provider-gcp/k8s-apps/main.tf",
+      "summary": "将 namespace Helm chart 的 ArgoCD Application 清单上传到 GCS bucket，部署 e2b 命名空间，附带 part-of/managed-by 标签。",
+      "tags": ["argocd", "namespace", "gcs", "gitops"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/k8s-apps/main.tf:google_storage_bucket_object.api",
+      "type": "resource",
+      "name": "google_storage_bucket_object.api",
+      "filePath": "iac/provider-gcp/k8s-apps/main.tf",
+      "summary": "将 API 服务的 ArgoCD Application 清单上传到 GCS bucket，将环境变量、Artifact Registry 镜像自链接注入 Helm values 并部署到 e2b namespace。",
+      "tags": ["argocd", "api", "gcs", "gitops", "deployment"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/provider-gcp/k8s-apps/main.tf",
+      "target": "resource:iac/provider-gcp/k8s-apps/images.tf:data.google_artifact_registry_docker_image.api_image",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/k8s-apps/main.tf",
+      "target": "resource:iac/provider-gcp/k8s-apps/main.tf:google_storage_bucket_object.namespace",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/k8s-apps/main.tf",
+      "target": "resource:iac/provider-gcp/k8s-apps/main.tf:google_storage_bucket_object.api",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/k8s-apps/images.tf",
+      "target": "resource:iac/provider-gcp/k8s-apps/images.tf:data.google_artifact_registry_docker_image.api_image",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ]
+}

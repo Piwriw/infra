@@ -1,0 +1,42 @@
+{
+  "nodes": [
+    {
+      "id": "data:packages/db/pkg/auth/sql_queries/user_identities/get_user_identities_by_subjects.sql",
+      "type": "table",
+      "name": "get_user_identities_by_subjects.sql",
+      "filePath": "packages/db/pkg/auth/sql_queries/user_identities/get_user_identities_by_subjects.sql",
+      "summary": "sqlc 查询：根据一组 OIDC subject 列表批量查询 user_identities 表中已链接的外部身份记录，由 authentication 包在登录或外部身份批量解析时调用。",
+      "tags": ["sql", "sqlc", "查询", "身份认证", "user-identities"],
+      "complexity": "simple"
+    },
+    {
+      "id": "data:packages/db/pkg/auth/sql_queries/user_identities/get_user_identities_by_user_ids.sql",
+      "type": "table",
+      "name": "get_user_identities_by_user_ids.sql",
+      "filePath": "packages/db/pkg/auth/sql_queries/user_identities/get_user_identities_by_user_ids.sql",
+      "summary": "sqlc 查询：通过一组用户 ID 反查 user_identities 中与每个内部用户对应的 OIDC 身份记录，用于授权或账户合并场景。",
+      "tags": ["sql", "sqlc", "查询", "身份认证", "user-identities"],
+      "complexity": "simple"
+    },
+    {
+      "id": "data:packages/db/pkg/auth/sql_queries/user_identities/get_user_identity.sql",
+      "type": "table",
+      "name": "get_user_identity.sql",
+      "filePath": "packages/db/pkg/auth/sql_queries/user_identities/get_user_identity.sql",
+      "fileId": "GetUserIdentity",
+      "summary": "sqlc 查询：根据 (oidc_iss, oidc_sub) 唯一键获取单条 user_identities 记录，返回包含审计时间戳的完整身份信息。",
+      "tags": ["sql", "sqlc", "查询", "身份认证", "user-identities"],
+      "complexity": "simple"
+    },
+    {
+      "id": "data:packages/db/pkg/auth/sql_queries/user_identities/upsert_public_identity.sql",
+      "type": "table",
+      "name": "upsert_public_identity.sql",
+      "filePath": "packages/db/pkg/auth/sql_queries/user_identities/upsert_public_identity.sql",
+      "summary": "sqlc 写入操作：向 public.user_identities 表插入或更新 OIDC 身份记录，冲突时刷新 updated_at 并返回关联的 user_id，用于第三方登录与身份绑定流程。",
+      "tags": ["sql", "sqlc", "upsert", "身份认证", "user-identities"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": []
+}

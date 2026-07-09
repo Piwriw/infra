@@ -1,0 +1,1311 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 9,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "iac/provider-gcp/Makefile",
+      "language": "makefile",
+      "fileCategory": "infra",
+      "totalLines": 236,
+      "nonEmptyLines": 211,
+      "steps": [
+        {
+          "name": "init",
+          "startLine": 103,
+          "endLine": 125
+        },
+        {
+          "name": "state-migrate",
+          "startLine": 127,
+          "endLine": 137
+        },
+        {
+          "name": "apply-init",
+          "startLine": 139,
+          "endLine": 141
+        },
+        {
+          "name": "switch",
+          "startLine": 143,
+          "endLine": 146
+        },
+        {
+          "name": "destroy",
+          "startLine": 148,
+          "endLine": 151
+        },
+        {
+          "name": "plan",
+          "startLine": 153,
+          "endLine": 157
+        },
+        {
+          "name": "terraform",
+          "startLine": 159,
+          "endLine": 163
+        },
+        {
+          "name": "plan-only-jobs",
+          "startLine": 190,
+          "endLine": 194
+        },
+        {
+          "name": "plan-without-jobs",
+          "startLine": 196,
+          "endLine": 207
+        },
+        {
+          "name": "apply",
+          "startLine": 209,
+          "endLine": 218
+        },
+        {
+          "name": "import",
+          "startLine": 221,
+          "endLine": 224
+        },
+        {
+          "name": "move",
+          "startLine": 226,
+          "endLine": 229
+        },
+        {
+          "name": "provider-login",
+          "startLine": 233,
+          "endLine": 237
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "stepCount": 13
+      }
+    },
+    {
+      "path": "iac/provider-gcp/api.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 115,
+      "nonEmptyLines": 89,
+      "resources": [
+        {
+          "name": "google_artifact_registry_repository.custom_environments_repository",
+          "kind": "google_artifact_registry_repository",
+          "startLine": 1,
+          "endLine": 5
+        },
+        {
+          "name": "google_artifact_registry_repository_iam_member.custom_environments_repository_member",
+          "kind": "google_artifact_registry_repository_iam_member",
+          "startLine": 7,
+          "endLine": 11
+        },
+        {
+          "name": "google_secret_manager_secret.postgres_read_replica_connection_string",
+          "kind": "google_secret_manager_secret",
+          "startLine": 53,
+          "endLine": 59
+        },
+        {
+          "name": "google_secret_manager_secret_version.postgres_read_replica_connection_string",
+          "kind": "google_secret_manager_secret_version",
+          "startLine": 61,
+          "endLine": 68
+        },
+        {
+          "name": "random_password.api_secret",
+          "kind": "random_password",
+          "startLine": 70,
+          "endLine": 73
+        },
+        {
+          "name": "random_password.clickhouse_password",
+          "kind": "random_password",
+          "startLine": 75,
+          "endLine": 78
+        },
+        {
+          "name": "random_password.clickhouse_server_secret",
+          "kind": "random_password",
+          "startLine": 80,
+          "endLine": 83
+        },
+        {
+          "name": "google_secret_manager_secret.api_secret",
+          "kind": "google_secret_manager_secret",
+          "startLine": 85,
+          "endLine": 91
+        },
+        {
+          "name": "google_secret_manager_secret_version.api_secret_value",
+          "kind": "google_secret_manager_secret_version",
+          "startLine": 93,
+          "endLine": 97
+        },
+        {
+          "name": "random_password.sandbox_access_token_hash_seed",
+          "kind": "random_password",
+          "startLine": 99,
+          "endLine": 102
+        },
+        {
+          "name": "google_secret_manager_secret.sandbox_access_token_hash_seed",
+          "kind": "google_secret_manager_secret",
+          "startLine": 105,
+          "endLine": 110
+        },
+        {
+          "name": "google_secret_manager_secret_version.sandbox_access_token_hash_seed",
+          "kind": "google_secret_manager_secret_version",
+          "startLine": 112,
+          "endLine": 115
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.postgres_connection_string",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 13,
+          "endLine": 15
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.postgres_read_replica_connection_string",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 17,
+          "endLine": 23
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.posthog_api_key",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 25,
+          "endLine": 27
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.api_admin_token",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 29,
+          "endLine": 31
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.analytics_collector_host",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 33,
+          "endLine": 35
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.analytics_collector_api_token",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 37,
+          "endLine": 39
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.redis_cluster_url",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 41,
+          "endLine": 43
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.redis_tls_ca_base64",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 45,
+          "endLine": 47
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.launch_darkly_api_key",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 49,
+          "endLine": 51
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 21
+      }
+    },
+    {
+      "path": "iac/provider-gcp/dashboard-api.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 76,
+      "nonEmptyLines": 64,
+      "resources": [
+        {
+          "name": "data.google_secret_manager_secret_version.dashboard_api_admin_token",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 1,
+          "endLine": 3
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.ory_project_api_key",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 5,
+          "endLine": 10
+        },
+        {
+          "name": "data.google_secret_manager_secrets.billing_server_url",
+          "kind": "data.google_secret_manager_secrets",
+          "startLine": 12,
+          "endLine": 16
+        },
+        {
+          "name": "data.google_secret_manager_secrets.billing_server_api_token",
+          "kind": "data.google_secret_manager_secrets",
+          "startLine": 18,
+          "endLine": 22
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.billing_server_url",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 24,
+          "endLine": 28
+        },
+        {
+          "name": "data.google_secret_manager_secret_version.billing_server_api_token",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 30,
+          "endLine": 34
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 6
+      }
+    },
+    {
+      "path": "iac/provider-gcp/docker-reverse-proxy.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 14,
+      "nonEmptyLines": 12,
+      "resources": [
+        {
+          "name": "google_service_account.docker_registry_service_account",
+          "kind": "google_service_account",
+          "startLine": 1,
+          "endLine": 4
+        },
+        {
+          "name": "google_artifact_registry_repository_iam_member.orchestration_repository_member",
+          "kind": "google_artifact_registry_repository_iam_member",
+          "startLine": 6,
+          "endLine": 10
+        },
+        {
+          "name": "google_service_account_key.google_service_key",
+          "kind": "google_service_account_key",
+          "startLine": 12,
+          "endLine": 14
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 3
+      }
+    },
+    {
+      "path": "iac/provider-gcp/main.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 555,
+      "nonEmptyLines": 461,
+      "resources": [
+        {
+          "name": "data.google_secret_manager_secret_version.routing_domains",
+          "kind": "data.google_secret_manager_secret_version",
+          "startLine": 48,
+          "endLine": 50
+        },
+        {
+          "name": "module.init",
+          "kind": "module",
+          "startLine": 250,
+          "endLine": 268
+        },
+        {
+          "name": "module.cluster",
+          "kind": "module",
+          "startLine": 270,
+          "endLine": 351
+        },
+        {
+          "name": "module.k8s_apps",
+          "kind": "module",
+          "startLine": 353,
+          "endLine": 386
+        },
+        {
+          "name": "module.nomad",
+          "kind": "module",
+          "startLine": 388,
+          "endLine": 518
+        },
+        {
+          "name": "module.redis",
+          "kind": "module",
+          "startLine": 521,
+          "endLine": 537
+        },
+        {
+          "name": "module.remote_repository",
+          "kind": "module",
+          "startLine": 539,
+          "endLine": 555
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 7
+      }
+    },
+    {
+      "path": "iac/provider-gcp/moved.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 35,
+      "nonEmptyLines": 28,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 0
+      }
+    },
+    {
+      "path": "iac/provider-gcp/persistent-volumes.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 15,
+      "nonEmptyLines": 13,
+      "resources": [
+        {
+          "name": "module.persistent-volume-types",
+          "kind": "module",
+          "startLine": 1,
+          "endLine": 15
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0,
+        "resourceCount": 1
+      }
+    },
+    {
+      "path": "iac/provider-gcp/variables.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 869,
+      "nonEmptyLines": 737,
+      "definitions": [
+        {
+          "name": "gcp_project_id",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 1,
+          "endLine": 4
+        },
+        {
+          "name": "gcp_region",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 6,
+          "endLine": 8
+        },
+        {
+          "name": "gcp_zone",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 10,
+          "endLine": 13
+        },
+        {
+          "name": "server_cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 15,
+          "endLine": 17
+        },
+        {
+          "name": "server_machine_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 19,
+          "endLine": 21
+        },
+        {
+          "name": "api_cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 23,
+          "endLine": 25
+        },
+        {
+          "name": "api_machine_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 27,
+          "endLine": 29
+        },
+        {
+          "name": "api_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 31,
+          "endLine": 34
+        },
+        {
+          "name": "api_use_nat",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 36,
+          "endLine": 40
+        },
+        {
+          "name": "api_nat_ips",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 42,
+          "endLine": 46
+        },
+        {
+          "name": "api_nat_min_ports_per_vm",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 48,
+          "endLine": 52
+        },
+        {
+          "name": "api_server_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 54,
+          "endLine": 57
+        },
+        {
+          "name": "api_resources_cpu_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 59,
+          "endLine": 62
+        },
+        {
+          "name": "api_resources_memory_mb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 64,
+          "endLine": 67
+        },
+        {
+          "name": "build_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 69,
+          "endLine": 72
+        },
+        {
+          "name": "clickhouse_cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 74,
+          "endLine": 76
+        },
+        {
+          "name": "clickhouse_machine_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 78,
+          "endLine": 80
+        },
+        {
+          "name": "clickhouse_database_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 82,
+          "endLine": 86
+        },
+        {
+          "name": "clickhouse_job_constraint_prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 88,
+          "endLine": 92
+        },
+        {
+          "name": "clickhouse_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 94,
+          "endLine": 98
+        },
+        {
+          "name": "clickhouse_server_service_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 100,
+          "endLine": 109
+        },
+        {
+          "name": "clickhouse_health_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 111,
+          "endLine": 122
+        },
+        {
+          "name": "client_proxy_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 124,
+          "endLine": 127
+        },
+        {
+          "name": "ingress_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 129,
+          "endLine": 132
+        },
+        {
+          "name": "additional_api_paths_handled_by_ingress",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 134,
+          "endLine": 145
+        },
+        {
+          "name": "client_proxy_resources_memory_mb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 147,
+          "endLine": 150
+        },
+        {
+          "name": "client_proxy_resources_cpu_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 152,
+          "endLine": 155
+        },
+        {
+          "name": "client_proxy_update_max_parallel",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 157,
+          "endLine": 161
+        },
+        {
+          "name": "client_proxy_health_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 163,
+          "endLine": 174
+        },
+        {
+          "name": "client_proxy_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 176,
+          "endLine": 185
+        },
+        {
+          "name": "loki_cluster_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 187,
+          "endLine": 190
+        },
+        {
+          "name": "loki_machine_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 192,
+          "endLine": 195
+        },
+        {
+          "name": "loki_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 197,
+          "endLine": 200
+        },
+        {
+          "name": "api_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 202,
+          "endLine": 213
+        },
+        {
+          "name": "api_internal_grpc_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 215,
+          "endLine": 218
+        },
+        {
+          "name": "client_proxy_oidc_issuer_url",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 220,
+          "endLine": 223
+        },
+        {
+          "name": "auth_provider_config",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 225,
+          "endLine": 239
+        },
+        {
+          "name": "ory_sdk_url",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 241,
+          "endLine": 245
+        },
+        {
+          "name": "ory_issuer_url",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 247,
+          "endLine": 251
+        },
+        {
+          "name": "ingress_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 253,
+          "endLine": 264
+        },
+        {
+          "name": "ingress_internal_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 266,
+          "endLine": 277
+        },
+        {
+          "name": "dashboard_api_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 279,
+          "endLine": 282
+        },
+        {
+          "name": "docker_reverse_proxy_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 283,
+          "endLine": 294
+        },
+        {
+          "name": "redis_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 296,
+          "endLine": 305
+        },
+        {
+          "name": "nomad_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 307,
+          "endLine": 310
+        },
+        {
+          "name": "allow_sandbox_internal_cidrs",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 312,
+          "endLine": 316
+        },
+        {
+          "name": "orchestrator_node_pool",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 318,
+          "endLine": 321
+        },
+        {
+          "name": "orchestrator_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 323,
+          "endLine": 326
+        },
+        {
+          "name": "orchestrator_proxy_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 328,
+          "endLine": 331
+        },
+        {
+          "name": "template_manager_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 333,
+          "endLine": 336
+        },
+        {
+          "name": "envd_timeout",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 338,
+          "endLine": 341
+        },
+        {
+          "name": "environment",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 343,
+          "endLine": 346
+        },
+        {
+          "name": "otel_collector_resources_memory_mb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 348,
+          "endLine": 351
+        },
+        {
+          "name": "otel_collector_resources_cpu_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 353,
+          "endLine": 356
+        },
+        {
+          "name": "enable_otel_router_logs",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 358,
+          "endLine": 362
+        },
+        {
+          "name": "otel_router_http_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 364,
+          "endLine": 368
+        },
+        {
+          "name": "enable_otel_router_metrics",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 370,
+          "endLine": 374
+        },
+        {
+          "name": "otel_router_grpc_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 376,
+          "endLine": 380
+        },
+        {
+          "name": "enable_gcp_telemetry_metrics",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 382,
+          "endLine": 386
+        },
+        {
+          "name": "enable_gcp_telemetry_external_metrics",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 388,
+          "endLine": 392
+        },
+        {
+          "name": "clickhouse_resources_memory_mb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 394,
+          "endLine": 397
+        },
+        {
+          "name": "clickhouse_resources_cpu_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 399,
+          "endLine": 402
+        },
+        {
+          "name": "domain_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 404,
+          "endLine": 407
+        },
+        {
+          "name": "prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 409,
+          "endLine": 413
+        },
+        {
+          "name": "bucket_prefix",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 415,
+          "endLine": 417
+        },
+        {
+          "name": "labels",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 419,
+          "endLine": 426
+        },
+        {
+          "name": "loki_resources_memory_mb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 428,
+          "endLine": 431
+        },
+        {
+          "name": "loki_resources_cpu_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 433,
+          "endLine": 436
+        },
+        {
+          "name": "loki_service_port",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 438,
+          "endLine": 447
+        },
+        {
+          "name": "template_bucket_location",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 449,
+          "endLine": 452
+        },
+        {
+          "name": "template_bucket_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 454,
+          "endLine": 458
+        },
+        {
+          "name": "redis_managed",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 460,
+          "endLine": 463
+        },
+        {
+          "name": "redis_shard_count",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 465,
+          "endLine": 468
+        },
+        {
+          "name": "gcp_redis_node_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 470,
+          "endLine": 474
+        },
+        {
+          "name": "gcp_redis_engine_version",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 476,
+          "endLine": 480
+        },
+        {
+          "name": "filestore_cache_enabled",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 482,
+          "endLine": 486
+        },
+        {
+          "name": "filestore_cache_tier",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 488,
+          "endLine": 492
+        },
+        {
+          "name": "filestore_cache_capacity_gb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 494,
+          "endLine": 498
+        },
+        {
+          "name": "filestore_nfs_version",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 500,
+          "endLine": 504
+        },
+        {
+          "name": "filestore_cache_cleanup_disk_usage_target",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 506,
+          "endLine": 510
+        },
+        {
+          "name": "filestore_cache_cleanup_dry_run",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 512,
+          "endLine": 515
+        },
+        {
+          "name": "filestore_cache_cleanup_max_concurrent_stat",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 517,
+          "endLine": 521
+        },
+        {
+          "name": "filestore_cache_cleanup_max_concurrent_scan",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 523,
+          "endLine": 527
+        },
+        {
+          "name": "filestore_cache_cleanup_max_concurrent_delete",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 529,
+          "endLine": 533
+        },
+        {
+          "name": "remote_repository_enabled",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 535,
+          "endLine": 539
+        },
+        {
+          "name": "client_clusters_config",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 541,
+          "endLine": 599
+        },
+        {
+          "name": "build_clusters_config",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 601,
+          "endLine": 659
+        },
+        {
+          "name": "api_boot_disk_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 662,
+          "endLine": 666
+        },
+        {
+          "name": "server_boot_disk_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 668,
+          "endLine": 672
+        },
+        {
+          "name": "server_boot_disk_size_gb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 674,
+          "endLine": 678
+        },
+        {
+          "name": "clickhouse_boot_disk_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 680,
+          "endLine": 684
+        },
+        {
+          "name": "clickhouse_stateful_disk_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 686,
+          "endLine": 690
+        },
+        {
+          "name": "clickhouse_stateful_disk_size_gb",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 692,
+          "endLine": 696
+        },
+        {
+          "name": "loki_boot_disk_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 698,
+          "endLine": 702
+        },
+        {
+          "name": "db_max_open_connections",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 704,
+          "endLine": 707
+        },
+        {
+          "name": "db_min_idle_connections",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 709,
+          "endLine": 712
+        },
+        {
+          "name": "auth_db_max_open_connections",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 714,
+          "endLine": 717
+        },
+        {
+          "name": "auth_db_min_idle_connections",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 719,
+          "endLine": 722
+        },
+        {
+          "name": "loki_use_v13_schema_from",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 724,
+          "endLine": 733
+        },
+        {
+          "name": "persistent_volume_types",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 735,
+          "endLine": 752
+        },
+        {
+          "name": "default_persistent_volume_type",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 754,
+          "endLine": 757
+        },
+        {
+          "name": "network_name",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 759,
+          "endLine": 762
+        },
+        {
+          "name": "volume_token_issuer",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 764,
+          "endLine": 767
+        },
+        {
+          "name": "volume_token_valid_for",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 769,
+          "endLine": 772
+        },
+        {
+          "name": "volume_token_signature",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 774,
+          "endLine": 781
+        },
+        {
+          "name": "gcs_grpc_connection_pool_size",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 783,
+          "endLine": 792
+        },
+        {
+          "name": "anywhere_cache_enabled",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 794,
+          "endLine": 798
+        },
+        {
+          "name": "anywhere_cache_admission_policy",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 800,
+          "endLine": 804
+        },
+        {
+          "name": "anywhere_cache_ttl",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 806,
+          "endLine": 809
+        },
+        {
+          "name": "orchestrator_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 811,
+          "endLine": 815
+        },
+        {
+          "name": "api_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 817,
+          "endLine": 821
+        },
+        {
+          "name": "api_db_migrator_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 823,
+          "endLine": 827
+        },
+        {
+          "name": "client_proxy_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 829,
+          "endLine": 833
+        },
+        {
+          "name": "dashboard_api_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 835,
+          "endLine": 839
+        },
+        {
+          "name": "template_manager_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 841,
+          "endLine": 845
+        },
+        {
+          "name": "docker_reverse_proxy_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 847,
+          "endLine": 851
+        },
+        {
+          "name": "filestore_cleanup_env_vars",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 853,
+          "endLine": 857
+        },
+        {
+          "name": "orchestrator_enabled",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 859,
+          "endLine": 863
+        },
+        {
+          "name": "traefik_config_files",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 865,
+          "endLine": 869
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 119,
+        "resourceCount": 0
+      }
+    },
+    {
+      "path": "iac/provider-gcp/volume_content_signing_key.tf",
+      "language": "terraform",
+      "fileCategory": "infra",
+      "totalLines": 42,
+      "nonEmptyLines": 34,
+      "definitions": [
+        {
+          "name": "volume_token_signature_verification_key_name",
+          "kind": "output",
+          "fields": [],
+          "startLine": 36,
+          "endLine": 38
+        },
+        {
+          "name": "volume_token_signature_verification_key",
+          "kind": "output",
+          "fields": [],
+          "startLine": 40,
+          "endLine": 42
+        }
+      ],
+      "resources": [
+        {
+          "name": "time_static.volume_token_generation",
+          "kind": "time_static",
+          "startLine": 29,
+          "endLine": 29
+        },
+        {
+          "name": "tls_private_key.volume_token",
+          "kind": "tls_private_key",
+          "startLine": 31,
+          "endLine": 34
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 2,
+        "resourceCount": 2
+      }
+    }
+  ]
+}

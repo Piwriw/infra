@@ -1,0 +1,1909 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/db/queries/teams/team_members.sql",
+      "type": "file",
+      "name": "team_members.sql",
+      "filePath": "packages/db/queries/teams/team_members.sql",
+      "summary": "sqlc 查询集合，封装 teams_users 关联表的成员管理操作，包括查询、锁定、添加和删除团队成员。",
+      "tags": ["sql", "sqlc", "team-management", "data-access", "database"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/queries/volumes/volumes.sql",
+      "type": "file",
+      "name": "volumes.sql",
+      "filePath": "packages/db/queries/volumes/volumes.sql",
+      "summary": "sqlc 查询集合，封装 volumes 表的 CRUD 操作，按团队 ID 检索、创建、批量查找和删除卷记录。",
+      "tags": ["sql", "sqlc", "volumes", "data-access", "database"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/schema/sqlc_overrides.sql",
+      "type": "file",
+      "name": "sqlc_overrides.sql",
+      "filePath": "packages/db/schema/sqlc_overrides.sql",
+      "summary": "为 sqlc 提供无法从 goose 迁移解析的 schema 补充定义，仅用于代码生成不被执行；新增 teams.slug 列与 billing.sandbox_logs 表。",
+      "tags": ["sql", "schema", "sqlc", "billing", "override"],
+      "complexity": "simple",
+      "languageNotes": "使用 IF NOT EXISTS 与 DO $$ 块的迁移无法被 sqlc 静态解析，需在独立文件中重声明以生成类型安全的 Go 代码。"
+    },
+    {
+      "id": "table:packages/db/schema/sqlc_overrides.sql:billing",
+      "type": "table",
+      "name": "billing",
+      "filePath": "packages/db/schema/sqlc_overrides.sql",
+      "summary": "billing schema 下的 sandbox_logs 表，记录 sandbox 的 CPU、内存、磁盘等资源使用度量及其生命周期时间戳。",
+      "tags": ["table", "billing", "sandbox-logs", "metrics"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/scripts/migrator.go",
+      "type": "file",
+      "name": "migrator.go",
+      "filePath": "packages/db/scripts/migrator.go",
+      "summary": "独立 migration 运行入口，使用 goose + pgx 驱动升级数据库，并在应用迁移之前先建立 auth schema 与配置版本表。",
+      "tags": ["migration", "goose", "postgres", "schema-setup", "entry-point"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/db/scripts/migrator.go:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "packages/db/scripts/migrator.go",
+      "lineRange": [28, 109],
+      "summary": "解析环境变量构建 pgx 连接池，创建会话锁并使用 goose 迁移升级数据库，错误即终止进程。",
+      "tags": ["entry-point", "migration", "postgres", "goose"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/db/scripts/migrator.go:setupAuthSchema",
+      "type": "function",
+      "name": "setupAuthSchema",
+      "filePath": "packages/db/scripts/migrator.go",
+      "lineRange": [111, 184],
+      "summary": "为 auth 数据库建立必需的 schema/role/扩展（schema、team_subscription_usage、subscription、discount 等），并插入版本声明行。",
+      "tags": ["database-setup", "auth-schema", "migration-prep"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/envd/debug.Dockerfile",
+      "type": "file",
+      "name": "debug.Dockerfile",
+      "filePath": "packages/envd/debug.Dockerfile",
+      "summary": "envd 调试镜像构建文件，专为本地排错环境预装 delve、strace 等工具并暴露额外调试端口。",
+      "tags": ["dockerfile", "envd", "debug", "container"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/envd/internal/api/cfg.yaml",
+      "type": "file",
+      "name": "cfg.yaml",
+      "filePath": "packages/envd/internal/api/cfg.yaml",
+      "summary": "oapi-codegen 配置文件，指定输出包路径、文件名以及要生成的 models/chi-server 产物，用于 envd 的 Connect API 转换。",
+      "tags": ["configuration", "oapi-codegen", "code-generation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/spec/filesystem/filesystem.proto",
+      "type": "file",
+      "name": "filesystem.proto",
+      "filePath": "packages/envd/spec/filesystem/filesystem.proto",
+      "summary": "envd Filesystem gRPC 服务 schema，定义 stat/list/move/watch 等 RPC 消息与 FileType/EventType 枚举，支撑 VM 内文件系统操作。",
+      "tags": ["protobuf", "grpc", "filesystem", "schema-definition"],
+      "complexity": "complex"
+    },
+    {
+      "id": "schema:packages/envd/spec/filesystem/filesystem.proto",
+      "type": "schema",
+      "name": "filesystem.proto",
+      "filePath": "packages/envd/spec/filesystem/filesystem.proto",
+      "summary": "envd filesystem 服务的 protobuf schema 定义，提供 9 个 RPC 端点和 22 个消息定义。",
+      "tags": ["schema", "protobuf", "filesystem", "grpc"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/envd/spec/generate.go",
+      "type": "file",
+      "name": "generate.go",
+      "filePath": "packages/envd/spec/generate.go",
+      "summary": "通过 go:generate 指令触发 buf 生成 protobuf 和共享 Go 代码，无运行时函数。",
+      "tags": ["code-generation", "buf", "protobuf"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/spec/process/process.proto",
+      "type": "file",
+      "name": "process.proto",
+      "filePath": "packages/envd/spec/process/process.proto",
+      "summary": "envd Process gRPC 服务 schema，描述进程列表、启动、信号发送、流式 IO 等操作的 Request/Response 消息与 Signal 枚举。",
+      "tags": ["protobuf", "grpc", "process", "schema-definition"],
+      "complexity": "complex"
+    },
+    {
+      "id": "schema:packages/envd/spec/process/process.proto",
+      "type": "schema",
+      "name": "process.proto",
+      "filePath": "packages/envd/spec/process/process.proto",
+      "summary": "envd process 服务的 protobuf schema 定义，提供 8 个 RPC 端点和 23 个消息定义。",
+      "tags": ["schema", "protobuf", "process", "grpc"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/local-dev/seed-local-database_test.go",
+      "type": "file",
+      "name": "seed-local-database_test.go",
+      "filePath": "packages/local-dev/seed-local-database_test.go",
+      "summary": "使用 testcontainers 启动 Postgres 容器并运行本地数据库种子脚本的集成测试。",
+      "tags": ["test", "integration", "testcontainers", "postgres"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/local-dev/seed-local-database_test.go:TestRun",
+      "type": "function",
+      "name": "TestRun",
+      "filePath": "packages/local-dev/seed-local-database_test.go",
+      "lineRange": [19, 57],
+      "summary": "集成测试入口：启动临时 Postgres 容器、配置 goose 表名并执行 run 种子脚本验证本地数据库种子化。",
+      "tags": ["test", "testcontainers", "postgres", "local-dev"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/local-dev/seed-local-database.go",
+      "type": "file",
+      "name": "seed-local-database.go",
+      "filePath": "packages/local-dev/seed-local-database.go",
+      "summary": "本地开发数据库种子脚本：创建默认团队、用户、API key 与 access token，幂等地写入 auth 与主数据库。",
+      "tags": ["seed", "local-dev", "database", "auth", "fixture"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/local-dev/seed-local-database.go:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "packages/local-dev/seed-local-database.go",
+      "lineRange": [32, 38],
+      "summary": "入口函数，构建 context 后调用 run 函数并对错误 panic。",
+      "tags": ["entry-point", "local-dev"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/local-dev/seed-local-database.go:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "packages/local-dev/seed-local-database.go",
+      "lineRange": [40, 98],
+      "summary": "按顺序串联 upsert user/team、加入团队、写入身份、token 与 API key 的辅助函数，构建一个完整的本地种子流水线。",
+      "tags": ["seed-pipeline", "orchestration", "local-dev"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/local-dev/seed-local-database.go:upsertTeamAPIKey",
+      "type": "function",
+      "name": "upsertTeamAPIKey",
+      "filePath": "packages/local-dev/seed-local-database.go",
+      "lineRange": [100, 120],
+      "summary": "为给定团队创建或更新 API key，依赖现有约束错误时优雅忽略。",
+      "tags": ["api-key", "database", "upsert"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/local-dev/seed-local-database.go:upsertUserIdentity",
+      "type": "function",
+      "name": "upsertUserIdentity",
+      "filePath": "packages/local-dev/seed-local-database.go",
+      "lineRange": [122, 132],
+      "summary": "将 OIDC 身份条目 upsert 到 auth 数据库。",
+      "tags": ["identity", "upsert", "auth"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/local-dev/seed-local-database.go:ensureUserIsOnTeam",
+      "type": "function",
+      "name": "ensureUserIsOnTeam",
+      "filePath": "packages/local-dev/seed-local-database.go",
+      "lineRange": [134, 151],
+      "summary": "检查用户是否在团队中，否则插入关联行；使用原始 SQL 避免 ent 生成代码依赖。",
+      "tags": ["team-membership", "auth", "fixture"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/local-dev/seed-local-database.go:upsertUserToken",
+      "type": "function",
+      "name": "upsertUserToken",
+      "filePath": "packages/local-dev/seed-local-database.go",
+      "lineRange": [153, 173],
+      "summary": "为用户生成 SHA-256 哈希化的 access token 并 upsert。",
+      "tags": ["access-token", "hashing", "auth"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/local-dev/seed-local-database.go:ignoreConstraints",
+      "type": "function",
+      "name": "ignoreConstraints",
+      "filePath": "packages/local-dev/seed-local-database.go",
+      "lineRange": [175, 185],
+      "summary": "错误过滤器：识别 PostgreSQL unique_violation 并将其忽略，使 upsert 具备幂等性。",
+      "tags": ["error-handling", "idempotency", "constraint"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/local-dev/seed-local-database.go:upsertTeam",
+      "type": "function",
+      "name": "upsertTeam",
+      "filePath": "packages/local-dev/seed-local-database.go",
+      "lineRange": [187, 202],
+      "summary": "通过原始 SQL upsert 一条默认 team 记录，用于本地开发。",
+      "tags": ["team", "upsert", "fixture"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/local-dev/seed-local-database.go:upsertUser",
+      "type": "function",
+      "name": "upsertUser",
+      "filePath": "packages/local-dev/seed-local-database.go",
+      "lineRange": [204, 221],
+      "summary": "通过原始 SQL 在 auth 库插入默认用户，并调用 Write.UpsertPublicUser 同步主库用户记录。",
+      "tags": ["user", "upsert", "fixture"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/local-dev/seed-local-database.go:createTokenHash",
+      "type": "function",
+      "name": "createTokenHash",
+      "filePath": "packages/local-dev/seed-local-database.go",
+      "lineRange": [223, 237],
+      "summary": "解码 access token 的前缀并计算 SHA-256 哈希，封装为遮蔽后的字符串便于存储与回显。",
+      "tags": ["token-hash", "sha256", "key-masking"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/nomad-nodepool-apm/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/nomad-nodepool-apm/main.go",
+      "summary": "Nomad APM 插件进程入口，引导 host 插件 SDK 启动 NodePoolPlugin 工厂方法。",
+      "tags": ["entry-point", "nomad", "apm-plugin"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/nomad-nodepool-apm/main.go:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "packages/nomad-nodepool-apm/main.go",
+      "lineRange": [10, 12],
+      "summary": "使用 Nomad plugins.Serve 启动 NodePool APM 插件，使用 hclog 默认 logger。",
+      "tags": ["entry-point", "plugin-server"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/nomad-nodepool-apm/main.go:factory",
+      "type": "function",
+      "name": "factory",
+      "filePath": "packages/nomad-nodepool-apm/main.go",
+      "lineRange": [15, 17],
+      "summary": "工厂函数，通过给定的 hclog logger 创建 NodePoolPlugin 实例。",
+      "tags": ["factory", "plugin"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/nomad-nodepool-apm/plugin/plugin.go",
+      "type": "file",
+      "name": "plugin.go",
+      "filePath": "packages/nomad-nodepool-apm/plugin/plugin.go",
+      "summary": "Nomad APM 插件实现，列出 Nomad 节点并按 ready/unready/healthy 三种状态计算集群规模作为 Nomad 调度指标。",
+      "tags": ["nomad", "apm", "plugin", "kubernetes"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/nomad-nodepool-apm/plugin/plugin.go:NodePoolPlugin",
+      "type": "class",
+      "name": "NodePoolPlugin",
+      "filePath": "packages/nomad-nodepool-apm/plugin/plugin.go",
+      "lineRange": [51, 55],
+      "summary": "Nomad APM NodePoolPlugin 结构体，承载 kubernetes client 与 logger/config 字段，实现 base.Plugin 接口。",
+      "tags": ["class", "plugin", "nomad"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/nomad-nodepool-apm/plugin/plugin.go:NewNodePoolPlugin",
+      "type": "function",
+      "name": "NewNodePoolPlugin",
+      "filePath": "packages/nomad-nodepool-apm/plugin/plugin.go",
+      "lineRange": [58, 62],
+      "summary": "构造函数，使用 hclog logger 创建并返回一个新的 NodePoolPlugin。",
+      "tags": ["constructor", "plugin"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/nomad-nodepool-apm/plugin/plugin.go:SetConfig",
+      "type": "function",
+      "name": "SetConfig",
+      "filePath": "packages/nomad-nodepool-apm/plugin/plugin.go",
+      "lineRange": [65, 102],
+      "summary": "解析 base.Config 中的 KUBECONFIG 或 in-cluster 配置建立 Kubernetes client 并存入插件实例。",
+      "tags": ["config", "kubernetes", "client"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/nomad-nodepool-apm/plugin/plugin.go:PluginInfo",
+      "type": "function",
+      "name": "PluginInfo",
+      "filePath": "packages/nomad-nodepool-apm/plugin/plugin.go",
+      "lineRange": [105, 107],
+      "summary": "返回插件元数据（PluginInfoResponse），供 Nomad 服务端识别。",
+      "tags": ["metadata", "plugin"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/nomad-nodepool-apm/plugin/plugin.go:Query",
+      "type": "function",
+      "name": "Query",
+      "filePath": "packages/nomad-nodepool-apm/plugin/plugin.go",
+      "lineRange": [111, 150],
+      "summary": "通过 Kubernetes API 列举节点，统计 ready/unready 数量并根据健康度计算集群分数返回给 Nomad 调度器。",
+      "tags": ["scheduling", "health-check", "kubernetes"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/nomad-nodepool-apm/plugin/plugin.go:QueryMultiple",
+      "type": "function",
+      "name": "QueryMultiple",
+      "filePath": "packages/nomad-nodepool-apm/plugin/plugin.go",
+      "lineRange": [155, 163],
+      "summary": "为时间范围内的多个查询代理调用 Query，返回可供 Nomad 跟踪历史分数的列表。",
+      "tags": ["query", "time-series"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/copy-build/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/orchestrator/cmd/copy-build/main.go",
+      "summary": "CLI 工具：从本地目录或 GCS 拷贝模板构建产物（含 memfile、rootfs、snap、metadata）到目标位置，并发布到本地 NFS/磁盘缓存。",
+      "tags": ["cli", "gcs", "template-build", "orchestrator"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/copy-build/main.go:Destination",
+      "type": "class",
+      "name": "Destination",
+      "filePath": "packages/orchestrator/cmd/copy-build/main.go",
+      "lineRange": [28, 32],
+      "summary": "目标描述结构体：保存目标路径与 CRC32 校验和以及是否本地来源标记。",
+      "tags": ["data-model", "copy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/copy-build/main.go:osFileBlob",
+      "type": "class",
+      "name": "osFileBlob",
+      "filePath": "packages/orchestrator/cmd/copy-build/main.go",
+      "lineRange": [99, 101],
+      "summary": "本地文件句柄适配器，实现 storage.Blob 接口（WriteTo/Exists/Put）以便与 GCS blob 体系对等协作。",
+      "tags": ["adapter", "blob", "storage"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/copy-build/main.go:NewDestinationFromObject",
+      "type": "function",
+      "name": "NewDestinationFromObject",
+      "filePath": "packages/orchestrator/cmd/copy-build/main.go",
+      "lineRange": [34, 47],
+      "summary": "从 GCS 对象属性构造 Destination，包含桶名与对象名及 CRC32；错误以 fmt.Errorf 抛出。",
+      "tags": ["constructor", "gcs"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/copy-build/main.go:NewDestinationFromPath",
+      "type": "function",
+      "name": "NewDestinationFromPath",
+      "filePath": "packages/orchestrator/cmd/copy-build/main.go",
+      "lineRange": [49, 78],
+      "summary": "读取本地文件、计算 CRC32 构建 Destination。",
+      "tags": ["constructor", "local-file", "crc32"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/copy-build/main.go:NewHeaderFromObject",
+      "type": "function",
+      "name": "NewHeaderFromObject",
+      "filePath": "packages/orchestrator/cmd/copy-build/main.go",
+      "lineRange": [80, 97],
+      "summary": "从 GCS 下载 header blob 并反序列化为 header.Header 对象。",
+      "tags": ["gcs", "header-deserialize"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/copy-build/main.go:NewHeaderFromPath",
+      "type": "function",
+      "name": "NewHeaderFromPath",
+      "filePath": "packages/orchestrator/cmd/copy-build/main.go",
+      "lineRange": [115, 129],
+      "summary": "读取本地 header 文件并反序列化为 header.Header。",
+      "tags": ["local-file", "header-deserialize"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/copy-build/main.go:getReferencedData",
+      "type": "function",
+      "name": "getReferencedData",
+      "filePath": "packages/orchestrator/cmd/copy-build/main.go",
+      "lineRange": [131, 153],
+      "summary": "从 header.Mapping 提取实际 data chunk 文件名与压缩类型，跳过空块。",
+      "tags": ["data-extraction", "build-mapping"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/copy-build/main.go:localCopy",
+      "type": "function",
+      "name": "localCopy",
+      "filePath": "packages/orchestrator/cmd/copy-build/main.go",
+      "lineRange": [155, 174],
+      "summary": "通过 cp 系统命令执行本地文件拷贝，从源 Destination 到目标 Destination。",
+      "tags": ["local-copy", "exec"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/copy-build/main.go:gcloudCopy",
+      "type": "function",
+      "name": "gcloudCopy",
+      "filePath": "packages/orchestrator/cmd/copy-build/main.go",
+      "lineRange": [176, 195],
+      "summary": "通过 gcloud storage cp 命令完成 GCS 跨桶拷贝，并回退到本地路径。",
+      "tags": ["gcs-copy", "exec", "gcloud"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/copy-build/main.go:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "packages/orchestrator/cmd/copy-build/main.go",
+      "lineRange": [197, 425],
+      "summary": "解析 CLI 参数，扫描 memfile/rootfs/snap/metadata，构建 GCS 客户端并以有界并发错组并行上传结果至目标位置，最终输出 build ID。",
+      "tags": ["entry-point", "cli", "upload", "gcs"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/create-build/proxyport_test.go",
+      "type": "file",
+      "name": "proxyport_test.go",
+      "filePath": "packages/orchestrator/cmd/create-build/proxyport_test.go",
+      "summary": "针对 proxyPort 行为的单元测试，验证 PROXY_PORT 环境变量缺失时回退到默认值。",
+      "tags": ["test", "unit", "proxy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/create-build/proxyport_test.go:TestProxyPort",
+      "type": "function",
+      "name": "TestProxyPort",
+      "filePath": "packages/orchestrator/cmd/create-build/proxyport_test.go",
+      "lineRange": [6, 21],
+      "summary": "测试 proxyPort 缺省、显式设置、显式清空三种情况下的端口号解析。",
+      "tags": ["test", "proxy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/hammer-file/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/orchestrator/cmd/hammer-file/main.go",
+      "summary": "GCS 范围读取压测工具，对指定 bucket/object 发起顺序与并发两种模式的随机范围读取并产出 Mermaid Gantt 与统计信息。",
+      "tags": ["benchmark", "gcs", "range-read", "performance"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/hammer-file/main.go:readTiming",
+      "type": "class",
+      "name": "readTiming",
+      "filePath": "packages/orchestrator/cmd/hammer-file/main.go",
+      "lineRange": [26, 30],
+      "summary": "单次读取计时结构体：包含场景标签与开始/结束毫秒时间戳。",
+      "tags": ["data-model", "timing"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/hammer-file/main.go:stats",
+      "type": "class",
+      "name": "stats",
+      "filePath": "packages/orchestrator/cmd/hammer-file/main.go",
+      "lineRange": [207, 211],
+      "summary": "读取延迟统计结果：总次数、平均延迟、p50 延迟。",
+      "tags": ["data-model", "stats"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/hammer-file/main.go:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "packages/orchestrator/cmd/hammer-file/main.go",
+      "lineRange": [32, 46],
+      "summary": "解析 -bucket/-object 标志并在参数缺失时退出；调用 run 执行读取压测。",
+      "tags": ["entry-point", "cli"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/hammer-file/main.go:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "packages/orchestrator/cmd/hammer-file/main.go",
+      "lineRange": [48, 169],
+      "summary": "建立带 GRPC 连接池与窗口配置的 GCS 客户端，按顺序与并发两种场景执行随机范围读取并产出 Mermaid Gantt。",
+      "tags": ["benchmark", "concurrency", "gcs"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/hammer-file/main.go:writeMermaidGantt",
+      "type": "function",
+      "name": "writeMermaidGantt",
+      "filePath": "packages/orchestrator/cmd/hammer-file/main.go",
+      "lineRange": [171, 193],
+      "summary": "将 readTiming 切片写入 Mermaid Gantt 图表文件，便于可视化压测时序。",
+      "tags": ["visualization", "mermaid"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/hammer-file/main.go:readRange",
+      "type": "function",
+      "name": "readRange",
+      "filePath": "packages/orchestrator/cmd/hammer-file/main.go",
+      "lineRange": [195, 205],
+      "summary": "在 GCS 对象上调用 NewRangeReader 读取指定 [offset, length] 区间到 io.Discard。",
+      "tags": ["gcs", "range-read"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/hammer-file/main.go:getStats",
+      "type": "function",
+      "name": "getStats",
+      "filePath": "packages/orchestrator/cmd/hammer-file/main.go",
+      "lineRange": [213, 232],
+      "summary": "基于 sorted 延迟切片计算 count/mean/p50，返回 stats 结构体。",
+      "tags": ["stats", "latency"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/inspect-build/render_human.go",
+      "type": "file",
+      "name": "render_human.go",
+      "filePath": "packages/orchestrator/cmd/inspect-build/render_human.go",
+      "summary": "inspect-build 工具的人类可读渲染器：使用色块、ASCII 字符画出 firecracker rootfs 构建头、元数据、frame map 与压缩热力图。",
+      "tags": ["visualization", "inspect-build", "ascii-art"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/inspect-build/render_human.go:view",
+      "type": "class",
+      "name": "view",
+      "filePath": "packages/orchestrator/cmd/inspect-build/render_human.go",
+      "lineRange": [27, 32],
+      "summary": "视图配置：包含十进制选项、扩展数与列宽度。",
+      "tags": ["config", "view"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/inspect-build/render_human.go:span",
+      "type": "class",
+      "name": "span",
+      "filePath": "packages/orchestrator/cmd/inspect-build/render_human.go",
+      "lineRange": [47, 50],
+      "summary": "区间描述结构，包含 set/start/end，用于 overlaps 检测。",
+      "tags": ["data-model", "range"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/inspect-build/render_human.go:rgb",
+      "type": "class",
+      "name": "rgb",
+      "filePath": "packages/orchestrator/cmd/inspect-build/render_human.go",
+      "lineRange": [63, 63],
+      "summary": "RGB 颜色结构，fg 方法输出 ANSI true-color 转义序列。",
+      "tags": ["color", "ansi"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/render_human.go:renderHuman",
+      "type": "function",
+      "name": "renderHuman",
+      "filePath": "packages/orchestrator/cmd/inspect-build/render_human.go",
+      "lineRange": [164, 176],
+      "summary": "顶级渲染入口：组合 header/image/metadata/mappings/builds/data 等子视图输出到 w。",
+      "tags": ["render", "top-level"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/render_human.go:renderHeader",
+      "type": "function",
+      "name": "renderHeader",
+      "filePath": "packages/orchestrator/cmd/inspect-build/render_human.go",
+      "lineRange": [202, 227],
+      "summary": "渲染 firecracker rootfs header 部分，包括版本号、kernel、ENV variables 等字段。",
+      "tags": ["render", "metadata"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/render_human.go:renderMappings",
+      "type": "function",
+      "name": "renderMappings",
+      "filePath": "packages/orchestrator/cmd/inspect-build/render_human.go",
+      "lineRange": [288, 304],
+      "summary": "渲染 frame 映射表，并对每个 build 上色成可视色块。",
+      "tags": ["render", "mappings"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/render_human.go:renderBuilds",
+      "type": "function",
+      "name": "renderBuilds",
+      "filePath": "packages/orchestrator/cmd/inspect-build/render_human.go",
+      "lineRange": [308, 324],
+      "summary": "渲染 build 列表，每条展示压缩比、size 与主要来源 frame。",
+      "tags": ["render", "builds"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/render_human.go:renderData",
+      "type": "function",
+      "name": "renderData",
+      "filePath": "packages/orchestrator/cmd/inspect-build/render_human.go",
+      "lineRange": [338, 350],
+      "summary": "渲染 data section：chain frames 与 framemap 两类视图。",
+      "tags": ["render", "data-section"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/render_human.go:renderChainFrames",
+      "type": "function",
+      "name": "renderChainFrames",
+      "filePath": "packages/orchestrator/cmd/inspect-build/render_human.go",
+      "lineRange": [352, 369],
+      "summary": "在控制台打印 chain 形式的 frame 列表，并显示压缩热力图。",
+      "tags": ["render", "chain-frames"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/render_human.go:renderFrameMap",
+      "type": "function",
+      "name": "renderFrameMap",
+      "filePath": "packages/orchestrator/cmd/inspect-build/render_human.go",
+      "lineRange": [378, 442],
+      "summary": "渲染 framemap 行：fetch vs compression 等数据切片按 heat 颜色上色。",
+      "tags": ["render", "framemap"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/inspect-build/render_json.go",
+      "type": "file",
+      "name": "render_json.go",
+      "filePath": "packages/orchestrator/cmd/inspect-build/render_json.go",
+      "summary": "inspect-build 工具的 JSON 渲染器：把 firecracker rootfs header/report 序列化为结构化 JSON 输出。",
+      "tags": ["json", "render", "inspect-build"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/render_json.go:renderJSON",
+      "type": "function",
+      "name": "renderJSON",
+      "filePath": "packages/orchestrator/cmd/inspect-build/render_json.go",
+      "lineRange": [1, 19],
+      "summary": "将 analysis Report 序列化为 JSON 并写入 writer。",
+      "tags": ["json", "serialization"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/inspect-build/report_test.go",
+      "type": "file",
+      "name": "report_test.go",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report_test.go",
+      "summary": "针对 report.go 中 frame mapping/checksum/role/ratio 分析函数的单元测试集合。",
+      "tags": ["test", "unit", "inspect-build"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestRoleOf",
+      "type": "function",
+      "name": "TestRoleOf",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report_test.go",
+      "lineRange": [48, 71],
+      "summary": "测试根据 build 起源确定 frame role 的逻辑。",
+      "tags": ["test", "role"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestRatio",
+      "type": "function",
+      "name": "TestRatio",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report_test.go",
+      "lineRange": [73, 92],
+      "summary": "测试压缩比/去重比的四舍五入与浮点计算。",
+      "tags": ["test", "compression"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestChecksumString",
+      "type": "function",
+      "name": "TestChecksumString",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report_test.go",
+      "lineRange": [94, 108],
+      "summary": "测试 checksum string 渲染，包括前缀省略与长度截断。",
+      "tags": ["test", "checksum"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestFilteredMappings",
+      "type": "function",
+      "name": "TestFilteredMappings",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report_test.go",
+      "lineRange": [110, 142],
+      "summary": "测试 frame mapping 按 build 过滤与排序行为。",
+      "tags": ["test", "mappings"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestFilteredFrames",
+      "type": "function",
+      "name": "TestFilteredFrames",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report_test.go",
+      "lineRange": [144, 165],
+      "summary": "测试 frame 过滤与祖先关系处理。",
+      "tags": ["test", "frames"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestGatherMappings",
+      "type": "function",
+      "name": "TestGatherMappings",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report_test.go",
+      "lineRange": [167, 192],
+      "summary": "测试 gatherMappings 把分散 entries 聚集成 build mapp 的逻辑。",
+      "tags": ["test", "mappings"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestAncestorIDs",
+      "type": "function",
+      "name": "TestAncestorIDs",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report_test.go",
+      "lineRange": [194, 219],
+      "summary": "测试 ancestorIDs 提取 build 链上方的祖先 ID。",
+      "tags": ["test", "ancestors"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestBuildInfoFor",
+      "type": "function",
+      "name": "TestBuildInfoFor",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report_test.go",
+      "lineRange": [221, 245],
+      "summary": "测试 build 信息的聚合输出（kernel/FC 版本、envd 版本、size）。",
+      "tags": ["test", "build-info"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestJSONValue",
+      "type": "function",
+      "name": "TestJSONValue",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report_test.go",
+      "lineRange": [247, 268],
+      "summary": "测试 JSONValue 在不同 metric 下的展示规则。",
+      "tags": ["test", "json"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestAncestorUsageOf",
+      "type": "function",
+      "name": "TestAncestorUsageOf",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report_test.go",
+      "lineRange": [270, 297],
+      "summary": "测试汇总祖先使用率计算，保证百分比分布正确。",
+      "tags": ["test", "usage"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestGatherFetchmap",
+      "type": "function",
+      "name": "TestGatherFetchmap",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report_test.go",
+      "lineRange": [299, 322],
+      "summary": "测试 fetchmap 聚合行为。",
+      "tags": ["test", "fetchmap"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestCompressionPerChunk",
+      "type": "function",
+      "name": "TestCompressionPerChunk",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report_test.go",
+      "lineRange": [324, 350],
+      "summary": "测试每个 chunk 的压缩率分布生成。",
+      "tags": ["test", "compression"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestFramesInRange",
+      "type": "function",
+      "name": "TestFramesInRange",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report_test.go",
+      "lineRange": [352, 376],
+      "summary": "测试 by-build frames range 查询逻辑。",
+      "tags": ["test", "frames"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/inspect-build/validate_test.go",
+      "type": "file",
+      "name": "validate_test.go",
+      "filePath": "packages/orchestrator/cmd/inspect-build/validate_test.go",
+      "summary": "针对 validate.go 中 MergeRanges/CoveredBy/IntersectsAny/ValidateFrameTable 函数的单元测试集合。",
+      "tags": ["test", "unit", "inspect-build"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/validate_test.go:TestMergeRanges",
+      "type": "function",
+      "name": "TestMergeRanges",
+      "filePath": "packages/orchestrator/cmd/inspect-build/validate_test.go",
+      "lineRange": [3, 30],
+      "summary": "测试相邻区间的合并行为。",
+      "tags": ["test", "ranges"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/validate_test.go:TestCoveredBy",
+      "type": "function",
+      "name": "TestCoveredBy",
+      "filePath": "packages/orchestrator/cmd/inspect-build/validate_test.go",
+      "lineRange": [32, 50],
+      "summary": "测试范围覆盖关系 coveredBy 的判定。",
+      "tags": ["test", "coverage"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/validate_test.go:TestIntersectsAny",
+      "type": "function",
+      "name": "TestIntersectsAny",
+      "filePath": "packages/orchestrator/cmd/inspect-build/validate_test.go",
+      "lineRange": [52, 70],
+      "summary": "测试 intersectsAny 与任意一组区间的相交判定。",
+      "tags": ["test", "intersection"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/validate_test.go:TestValidateFrameTable",
+      "type": "function",
+      "name": "TestValidateFrameTable",
+      "filePath": "packages/orchestrator/cmd/inspect-build/validate_test.go",
+      "lineRange": [72, 79],
+      "summary": "测试 ValidateFrameTable 校验完整帧表时的错误识别。",
+      "tags": ["test", "validation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/resume-build/fc-debug.gdb",
+      "type": "file",
+      "name": "fc-debug.gdb",
+      "filePath": "packages/orchestrator/cmd/resume-build/fc-debug.gdb",
+      "summary": "gdb 宏脚本，用于 resume-build -gdb 调试会话：自动连接 stub、加载 vmlinux 符号，并提供 fc-faults/fc-task/fc-curr 等便捷命令。",
+      "tags": ["gdb", "debug", "macro", "firecracker"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/resume-build/gdb_test.go",
+      "type": "file",
+      "name": "gdb_test.go",
+      "filePath": "packages/orchestrator/cmd/resume-build/gdb_test.go",
+      "summary": "针对 resume-build gdb 调试相关工具函数（DebugArtifactsBaseURL、ResolveOrFetch）的单元测试。",
+      "tags": ["test", "unit", "gdb"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/resume-build/gdb_test.go:TestDebugArtifactsBaseURL",
+      "type": "function",
+      "name": "TestDebugArtifactsBaseURL",
+      "filePath": "packages/orchestrator/cmd/resume-build/gdb_test.go",
+      "lineRange": [5, 40],
+      "summary": "验证 DebugArtifactsBaseURL 默认值和环境变量覆盖行为。",
+      "tags": ["test", "gdb", "config"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/resume-build/gdb_test.go:TestResolveOrFetch",
+      "type": "function",
+      "name": "TestResolveOrFetch",
+      "filePath": "packages/orchestrator/cmd/resume-build/gdb_test.go",
+      "lineRange": [42, 90],
+      "summary": "验证 ResolveOrFetch 在显式路径、环境变量、回退下载等场景下的行为。",
+      "tags": ["test", "gdb", "artifact-fetch"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/resume-build/gdb-debugging.md",
+      "type": "file",
+      "name": "gdb-debugging.md",
+      "filePath": "packages/orchestrator/cmd/resume-build/gdb-debugging.md",
+      "summary": "使用 resume-build -gdb 调试 Firecracker guest kernel 的完整指南，含前置条件、操作步骤、宏命令说明与客户数据安全红线。",
+      "tags": ["documentation", "gdb", "firecracker", "debugging"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/simulate-gcs-traffic/csv.go",
+      "type": "file",
+      "name": "csv.go",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/csv.go",
+      "summary": "GCS 流量模拟器结果导出：将压测统计写入 CSV 文件便于后续分析。",
+      "tags": ["csv", "gcs", "report", "export"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/csv.go:dumpResultsToCSV",
+      "type": "function",
+      "name": "dumpResultsToCSV",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/csv.go",
+      "lineRange": [16, 88],
+      "summary": "接收 results 切片并 dump 到 CSV 文件，包含列标题和毫秒时间戳。",
+      "tags": ["csv", "export"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/csv.go:toMillis",
+      "type": "function",
+      "name": "toMillis",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/csv.go",
+      "lineRange": [90, 92],
+      "summary": "把 time.Duration 转换为毫秒整型。",
+      "tags": ["helper", "time"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "type": "file",
+      "name": "experiments.go",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "summary": "GCS 流量模拟实验框架：定义 experiment 中间件链、options、scenario 与多种内置实验元素（并发、块大小、共享缓冲等）。",
+      "tags": ["experiment-framework", "gcs", "middleware", "scenario"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:options",
+      "type": "class",
+      "name": "options",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [101, 116],
+      "summary": "实验配置结构体：包含 bucket、chunk size、并发、读取次数、跳读等参数以及可插拔中间件链。",
+      "tags": ["config", "experiment"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:experiment",
+      "type": "class",
+      "name": "experiment",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [144, 146],
+      "summary": "实验元素接口，仅暴露 apply(o *options) 方法供 chain 串联。",
+      "tags": ["interface", "middleware"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:element",
+      "type": "class",
+      "name": "element",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [148, 151],
+      "summary": "命名实验元素，包含 name 与 exp 两个字段。",
+      "tags": ["data-model", "experiment"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:scenario",
+      "type": "class",
+      "name": "scenario",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [153, 155],
+      "summary": "压测场景接口：拥有 Name/setup/teardown，串联多个 elements。",
+      "tags": ["interface", "scenario"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:setConcurrentRequests",
+      "type": "class",
+      "name": "setConcurrentRequests",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [217, 219],
+      "summary": "实验元素：设置 options.concurrentRequests。",
+      "tags": ["experiment-element", "concurrency"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:setChunkSize",
+      "type": "class",
+      "name": "setChunkSize",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [229, 231],
+      "summary": "实验元素：设置 options.chunkSize。",
+      "tags": ["experiment-element", "chunk-size"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:setReadCount",
+      "type": "class",
+      "name": "setReadCount",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [241, 243],
+      "summary": "实验元素：设置 options.readCount。",
+      "tags": ["experiment-element", "read-count"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:setSkipCount",
+      "type": "class",
+      "name": "setSkipCount",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [253, 255],
+      "summary": "实验元素：设置 options.skipCount。",
+      "tags": ["experiment-element", "skip-count"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:setAllowRepeatReads",
+      "type": "class",
+      "name": "setAllowRepeatReads",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [265, 267],
+      "summary": "实验元素：设置 options.allowRepeatReads。",
+      "tags": ["experiment-element", "deduplication"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:skipReads",
+      "type": "class",
+      "name": "skipReads",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [277, 280],
+      "summary": "中间件：在 N 次读取后短暂 sleep 模拟限流场景。",
+      "tags": ["middleware", "throttling"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:sharedBuffer",
+      "type": "class",
+      "name": "sharedBuffer",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [307, 309],
+      "summary": "实验元素：所有读请求共用同一缓冲池。",
+      "tags": ["experiment-element", "buffer"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:alwaysNewBuffer",
+      "type": "class",
+      "name": "alwaysNewBuffer",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [323, 323],
+      "summary": "实验元素：每次读取都使用新分配的缓冲。",
+      "tags": ["experiment-element", "buffer"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:googleOption",
+      "type": "class",
+      "name": "googleOption",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [335, 337],
+      "summary": "实验元素：注入额外的 google option.ClientOption。",
+      "tags": ["experiment-element", "gcs-option"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:googleStorageRangeRead",
+      "type": "class",
+      "name": "googleStorageRangeRead",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [347, 347],
+      "summary": "读取方法实现：调用 Google Storage 的 NewRangeReader 完成区间读取并支持 read 中间件。",
+      "tags": ["read-method", "gcs"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:createClientFactory",
+      "type": "class",
+      "name": "createClientFactory",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [387, 389],
+      "summary": "实验元素：注入自定义 client factory 函数用于重新生成 GCS client。",
+      "tags": ["experiment-element", "client-factory"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:validate",
+      "type": "function",
+      "name": "validate",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [117, 142],
+      "summary": "options.validate 收集配置错误并通过 errors.Join 一次性返回。",
+      "tags": ["validation", "error-handling"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:Name",
+      "type": "function",
+      "name": "Name",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "lineRange": [200, 215],
+      "summary": "生成 scenario 的展示名，串联每个 element 的 name 字段。",
+      "tags": ["scenario", "name"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/nomad-nodepool-apm/main.go",
+      "target": "file:packages/nomad-nodepool-apm/plugin/plugin.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/scripts/migrator.go",
+      "target": "function:packages/db/scripts/migrator.go:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/scripts/migrator.go",
+      "target": "function:packages/db/scripts/migrator.go:setupAuthSchema",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/local-dev/seed-local-database_test.go",
+      "target": "function:packages/local-dev/seed-local-database_test.go:TestRun",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/local-dev/seed-local-database_test.go",
+      "target": "function:packages/local-dev/seed-local-database.go:run",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/local-dev/seed-local-database.go",
+      "target": "function:packages/local-dev/seed-local-database.go:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/local-dev/seed-local-database.go",
+      "target": "function:packages/local-dev/seed-local-database.go:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/local-dev/seed-local-database.go",
+      "target": "function:packages/local-dev/seed-local-database.go:upsertTeamAPIKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/local-dev/seed-local-database.go",
+      "target": "function:packages/local-dev/seed-local-database.go:upsertUserIdentity",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/local-dev/seed-local-database.go",
+      "target": "function:packages/local-dev/seed-local-database.go:ensureUserIsOnTeam",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/local-dev/seed-local-database.go",
+      "target": "function:packages/local-dev/seed-local-database.go:upsertUserToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/local-dev/seed-local-database.go",
+      "target": "function:packages/local-dev/seed-local-database.go:ignoreConstraints",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/local-dev/seed-local-database.go",
+      "target": "function:packages/local-dev/seed-local-database.go:upsertTeam",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/local-dev/seed-local-database.go",
+      "target": "function:packages/local-dev/seed-local-database.go:upsertUser",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/local-dev/seed-local-database.go",
+      "target": "function:packages/local-dev/seed-local-database.go:createTokenHash",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/nomad-nodepool-apm/main.go",
+      "target": "function:packages/nomad-nodepool-apm/main.go:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/nomad-nodepool-apm/main.go",
+      "target": "function:packages/nomad-nodepool-apm/main.go:factory",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/nomad-nodepool-apm/plugin/plugin.go",
+      "target": "class:packages/nomad-nodepool-apm/plugin/plugin.go:NodePoolPlugin",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/nomad-nodepool-apm/plugin/plugin.go",
+      "target": "function:packages/nomad-nodepool-apm/plugin/plugin.go:NewNodePoolPlugin",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/nomad-nodepool-apm/plugin/plugin.go",
+      "target": "function:packages/nomad-nodepool-apm/plugin/plugin.go:SetConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/nomad-nodepool-apm/plugin/plugin.go",
+      "target": "function:packages/nomad-nodepool-apm/plugin/plugin.go:PluginInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/nomad-nodepool-apm/plugin/plugin.go",
+      "target": "function:packages/nomad-nodepool-apm/plugin/plugin.go:Query",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/nomad-nodepool-apm/plugin/plugin.go",
+      "target": "function:packages/nomad-nodepool-apm/plugin/plugin.go:QueryMultiple",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/nomad-nodepool-apm/plugin/plugin.go",
+      "target": "class:packages/nomad-nodepool-apm/plugin/plugin.go:NodePoolPlugin",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/nomad-nodepool-apm/plugin/plugin.go",
+      "target": "function:packages/nomad-nodepool-apm/plugin/plugin.go:NewNodePoolPlugin",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/nomad-nodepool-apm/plugin/plugin.go",
+      "target": "function:packages/nomad-nodepool-apm/plugin/plugin.go:SetConfig",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/nomad-nodepool-apm/plugin/plugin.go",
+      "target": "function:packages/nomad-nodepool-apm/plugin/plugin.go:PluginInfo",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/nomad-nodepool-apm/plugin/plugin.go",
+      "target": "function:packages/nomad-nodepool-apm/plugin/plugin.go:Query",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/nomad-nodepool-apm/plugin/plugin.go",
+      "target": "function:packages/nomad-nodepool-apm/plugin/plugin.go:QueryMultiple",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/copy-build/main.go",
+      "target": "class:packages/orchestrator/cmd/copy-build/main.go:Destination",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/copy-build/main.go",
+      "target": "class:packages/orchestrator/cmd/copy-build/main.go:osFileBlob",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/copy-build/main.go",
+      "target": "function:packages/orchestrator/cmd/copy-build/main.go:NewDestinationFromObject",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/copy-build/main.go",
+      "target": "function:packages/orchestrator/cmd/copy-build/main.go:NewDestinationFromPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/copy-build/main.go",
+      "target": "function:packages/orchestrator/cmd/copy-build/main.go:NewHeaderFromObject",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/copy-build/main.go",
+      "target": "function:packages/orchestrator/cmd/copy-build/main.go:NewHeaderFromPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/copy-build/main.go",
+      "target": "function:packages/orchestrator/cmd/copy-build/main.go:getReferencedData",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/copy-build/main.go",
+      "target": "function:packages/orchestrator/cmd/copy-build/main.go:localCopy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/copy-build/main.go",
+      "target": "function:packages/orchestrator/cmd/copy-build/main.go:gcloudCopy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/copy-build/main.go",
+      "target": "function:packages/orchestrator/cmd/copy-build/main.go:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/hammer-file/main.go",
+      "target": "class:packages/orchestrator/cmd/hammer-file/main.go:readTiming",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/hammer-file/main.go",
+      "target": "class:packages/orchestrator/cmd/hammer-file/main.go:stats",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/hammer-file/main.go",
+      "target": "function:packages/orchestrator/cmd/hammer-file/main.go:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/hammer-file/main.go",
+      "target": "function:packages/orchestrator/cmd/hammer-file/main.go:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/hammer-file/main.go",
+      "target": "function:packages/orchestrator/cmd/hammer-file/main.go:writeMermaidGantt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/hammer-file/main.go",
+      "target": "function:packages/orchestrator/cmd/hammer-file/main.go:readRange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/hammer-file/main.go",
+      "target": "function:packages/orchestrator/cmd/hammer-file/main.go:getStats",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/render_human.go",
+      "target": "class:packages/orchestrator/cmd/inspect-build/render_human.go:view",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/render_human.go",
+      "target": "class:packages/orchestrator/cmd/inspect-build/render_human.go:span",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/render_human.go",
+      "target": "class:packages/orchestrator/cmd/inspect-build/render_human.go:rgb",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/render_human.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/render_human.go:renderHuman",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/render_human.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/render_human.go:renderHeader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/render_human.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/render_human.go:renderMappings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/render_human.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/render_human.go:renderBuilds",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/render_human.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/render_human.go:renderData",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/render_human.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/render_human.go:renderChainFrames",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/render_human.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/render_human.go:renderFrameMap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/render_json.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/render_json.go:renderJSON",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestRoleOf",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestRatio",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestChecksumString",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestFilteredMappings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestFilteredFrames",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestGatherMappings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestAncestorIDs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestBuildInfoFor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestJSONValue",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestAncestorUsageOf",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestGatherFetchmap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestCompressionPerChunk",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report_test.go:TestFramesInRange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/validate_test.go:TestMergeRanges",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/validate_test.go:TestCoveredBy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/validate_test.go:TestIntersectsAny",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/validate_test.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/validate_test.go:TestValidateFrameTable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/resume-build/gdb_test.go",
+      "target": "function:packages/orchestrator/cmd/resume-build/gdb_test.go:TestDebugArtifactsBaseURL",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/resume-build/gdb_test.go",
+      "target": "function:packages/orchestrator/cmd/resume-build/gdb_test.go:TestResolveOrFetch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/csv.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/csv.go:dumpResultsToCSV",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/csv.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/csv.go:toMillis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:options",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:experiment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:element",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:scenario",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:setConcurrentRequests",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:setChunkSize",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:setReadCount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:setSkipCount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:setAllowRepeatReads",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:skipReads",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:sharedBuffer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:alwaysNewBuffer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:googleOption",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:googleStorageRangeRead",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:createClientFactory",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:validate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:Name",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/experiments.go:Name",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/create-build/proxyport_test.go",
+      "target": "function:packages/orchestrator/cmd/create-build/proxyport_test.go:TestProxyPort",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/create-build/proxyport_test.go",
+      "target": "function:packages/orchestrator/cmd/create-build/proxyport_test.go:TestProxyPort",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/local-dev/seed-local-database_test.go",
+      "target": "function:packages/local-dev/seed-local-database_test.go:TestRun",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/schema/sqlc_overrides.sql",
+      "target": "table:packages/db/schema/sqlc_overrides.sql:billing",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/spec/filesystem/filesystem.proto",
+      "target": "schema:packages/envd/spec/filesystem/filesystem.proto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/spec/process/process.proto",
+      "target": "schema:packages/envd/spec/process/process.proto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/envd/internal/api/cfg.yaml",
+      "target": "file:packages/envd/spec/filesystem/filesystem.proto",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/spec/generate.go",
+      "target": "file:packages/envd/spec/filesystem/filesystem.proto",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/spec/generate.go",
+      "target": "file:packages/envd/spec/process/process.proto",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/resume-build/gdb-debugging.md",
+      "target": "file:packages/orchestrator/cmd/resume-build/fc-debug.gdb",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/envd/debug.Dockerfile",
+      "target": "file:packages/envd/spec/filesystem/filesystem.proto",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/debug.Dockerfile",
+      "target": "file:packages/envd/spec/process/process.proto",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/scripts/migrator.go",
+      "target": "file:packages/db/schema/sqlc_overrides.sql",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/scripts/migrator.go",
+      "target": "table:packages/db/schema/sqlc_overrides.sql:billing",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

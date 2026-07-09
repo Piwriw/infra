@@ -1,0 +1,1558 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/shared/pkg/artifacts-registry/registry.go",
+      "type": "file",
+      "name": "registry.go",
+      "filePath": "packages/shared/pkg/artifacts-registry/registry.go",
+      "summary": "定义 ArtifactsRegistry 接口以及用于按环境选择具体实现的 Provider 工厂函数,支持模板镜像 tag 的查询与删除。",
+      "tags": [
+        "container-registry",
+        "artifact-management",
+        "provider-factory",
+        "go",
+        "shared"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/artifacts-registry/registry.go:GetArtifactsRegistryProvider",
+      "type": "function",
+      "name": "GetArtifactsRegistryProvider",
+      "filePath": "packages/shared/pkg/artifacts-registry/registry.go",
+      "lineRange": [
+        34,
+        50
+      ],
+      "summary": "GetArtifactsRegistryProvider 函数,源码位于 packages/shared/pkg/artifacts-registry/registry.go 第 34-50 行。",
+      "tags": [
+        "function",
+        "getter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/artifacts-registry/registry.go:ArtifactsRegistry",
+      "type": "class",
+      "name": "ArtifactsRegistry",
+      "filePath": "packages/shared/pkg/artifacts-registry/registry.go",
+      "lineRange": [
+        28,
+        32
+      ],
+      "summary": "ArtifactsRegistry 类型,定义于 packages/shared/pkg/artifacts-registry/registry.go 第 28-32 行。",
+      "tags": [
+        "class",
+        "go",
+        "registry"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "type": "file",
+      "name": "registry_gcp.go",
+      "filePath": "packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "summary": "基于 GCP Artifact Registry 实现 ArtifactsRegistry 接口,提供模板镜像 tag 的拉取、解析以及基于 GCP OAuth token 的认证。",
+      "tags": [
+        "container-registry",
+        "gcp",
+        "oauth",
+        "docker-image",
+        "shared"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/artifacts-registry/registry_gcp.go:NewGCPArtifactsRegistry",
+      "type": "function",
+      "name": "NewGCPArtifactsRegistry",
+      "filePath": "packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "lineRange": [
+        30,
+        37
+      ],
+      "summary": "NewGCPArtifactsRegistry 函数,源码位于 packages/shared/pkg/artifacts-registry/registry_gcp.go 第 30-37 行。",
+      "tags": [
+        "function",
+        "constructor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/artifacts-registry/registry_gcp.go:Delete",
+      "type": "function",
+      "name": "Delete",
+      "filePath": "packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "lineRange": [
+        39,
+        51
+      ],
+      "summary": "Delete 函数,源码位于 packages/shared/pkg/artifacts-registry/registry_gcp.go 第 39-51 行。",
+      "tags": [
+        "function",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/artifacts-registry/registry_gcp.go:GetTag",
+      "type": "function",
+      "name": "GetTag",
+      "filePath": "packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "lineRange": [
+        53,
+        55
+      ],
+      "summary": "GetTag 函数,源码位于 packages/shared/pkg/artifacts-registry/registry_gcp.go 第 53-55 行。",
+      "tags": [
+        "function",
+        "getter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/artifacts-registry/registry_gcp.go:GetImage",
+      "type": "function",
+      "name": "GetImage",
+      "filePath": "packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "lineRange": [
+        57,
+        79
+      ],
+      "summary": "GetImage 函数,源码位于 packages/shared/pkg/artifacts-registry/registry_gcp.go 第 57-79 行。",
+      "tags": [
+        "function",
+        "getter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/artifacts-registry/registry_gcp.go:getAuthToken",
+      "type": "function",
+      "name": "getAuthToken",
+      "filePath": "packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "lineRange": [
+        81,
+        105
+      ],
+      "summary": "getAuthToken 函数,源码位于 packages/shared/pkg/artifacts-registry/registry_gcp.go 第 81-105 行。",
+      "tags": [
+        "function",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/artifacts-registry/registry_gcp.go:GCPArtifactsRegistry",
+      "type": "class",
+      "name": "GCPArtifactsRegistry",
+      "filePath": "packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "lineRange": [
+        21,
+        23
+      ],
+      "summary": "GCPArtifactsRegistry 类型,定义于 packages/shared/pkg/artifacts-registry/registry_gcp.go 第 21-23 行。",
+      "tags": [
+        "class",
+        "go",
+        "registry"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/cache/redis.go",
+      "type": "file",
+      "name": "redis.go",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "summary": "提供基于 Redis 的通用缓存抽象 RedisCache,实现 GetOrSet single-flight 模式、按前缀批量删除、过期刷新以及分布式锁,显著降低对上游数据源的请求。",
+      "tags": [
+        "redis",
+        "cache",
+        "singleflight",
+        "distributed-lock",
+        "shared"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis.go:NewRedisCache",
+      "type": "function",
+      "name": "NewRedisCache",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        68,
+        94
+      ],
+      "summary": "NewRedisCache 函数,源码位于 packages/shared/pkg/cache/redis.go 第 68-94 行。",
+      "tags": [
+        "function",
+        "constructor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis.go:GetOrSet",
+      "type": "function",
+      "name": "GetOrSet",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        99,
+        158
+      ],
+      "summary": "GetOrSet 函数,源码位于 packages/shared/pkg/cache/redis.go 第 99-158 行。",
+      "tags": [
+        "function",
+        "getter"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis.go:Set",
+      "type": "function",
+      "name": "Set",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        161,
+        163
+      ],
+      "summary": "Set 函数,源码位于 packages/shared/pkg/cache/redis.go 第 161-163 行。",
+      "tags": [
+        "function",
+        "setter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis.go:Delete",
+      "type": "function",
+      "name": "Delete",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        166,
+        184
+      ],
+      "summary": "Delete 函数,源码位于 packages/shared/pkg/cache/redis.go 第 166-184 行。",
+      "tags": [
+        "function",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis.go:DeleteByPrefix",
+      "type": "function",
+      "name": "DeleteByPrefix",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        191,
+        222
+      ],
+      "summary": "DeleteByPrefix 函数,源码位于 packages/shared/pkg/cache/redis.go 第 191-222 行。",
+      "tags": [
+        "function",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis.go:collectKeys",
+      "type": "function",
+      "name": "collectKeys",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        224,
+        248
+      ],
+      "summary": "collectKeys 函数,源码位于 packages/shared/pkg/cache/redis.go 第 224-248 行。",
+      "tags": [
+        "function",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis.go:Close",
+      "type": "function",
+      "name": "Close",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        251,
+        253
+      ],
+      "summary": "Close 函数,源码位于 packages/shared/pkg/cache/redis.go 第 251-253 行。",
+      "tags": [
+        "function",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis.go:RedisClient",
+      "type": "function",
+      "name": "RedisClient",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        256,
+        258
+      ],
+      "summary": "RedisClient 函数,源码位于 packages/shared/pkg/cache/redis.go 第 256-258 行。",
+      "tags": [
+        "function",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis.go:RedisKey",
+      "type": "function",
+      "name": "RedisKey",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        261,
+        263
+      ],
+      "summary": "RedisKey 函数,源码位于 packages/shared/pkg/cache/redis.go 第 261-263 行。",
+      "tags": [
+        "function",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis.go:getFromRedis",
+      "type": "function",
+      "name": "getFromRedis",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        266,
+        296
+      ],
+      "summary": "getFromRedis 函数,源码位于 packages/shared/pkg/cache/redis.go 第 266-296 行。",
+      "tags": [
+        "function",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis.go:refreshRedis",
+      "type": "function",
+      "name": "refreshRedis",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        299,
+        339
+      ],
+      "summary": "refreshRedis 函数,源码位于 packages/shared/pkg/cache/redis.go 第 299-339 行。",
+      "tags": [
+        "function",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis.go:releaseLock",
+      "type": "function",
+      "name": "releaseLock",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        342,
+        351
+      ],
+      "summary": "releaseLock 函数,源码位于 packages/shared/pkg/cache/redis.go 第 342-351 行。",
+      "tags": [
+        "function",
+        "concurrency"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis.go:acquireLock",
+      "type": "function",
+      "name": "acquireLock",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        355,
+        369
+      ],
+      "summary": "acquireLock 函数,源码位于 packages/shared/pkg/cache/redis.go 第 355-369 行。",
+      "tags": [
+        "function",
+        "concurrency"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis.go:setInRedis",
+      "type": "function",
+      "name": "setInRedis",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        371,
+        390
+      ],
+      "summary": "setInRedis 函数,源码位于 packages/shared/pkg/cache/redis.go 第 371-390 行。",
+      "tags": [
+        "function",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis.go:handleRefresh",
+      "type": "function",
+      "name": "handleRefresh",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        393,
+        406
+      ],
+      "summary": "handleRefresh 函数,源码位于 packages/shared/pkg/cache/redis.go 第 393-406 行。",
+      "tags": [
+        "function",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/cache/redis.go:RedisConfig",
+      "type": "class",
+      "name": "RedisConfig",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        35,
+        57
+      ],
+      "summary": "RedisConfig 类型,定义于 packages/shared/pkg/cache/redis.go 第 35-57 行。",
+      "tags": [
+        "class",
+        "go",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/cache/redis.go:RedisCache",
+      "type": "class",
+      "name": "RedisCache",
+      "filePath": "packages/shared/pkg/cache/redis.go",
+      "lineRange": [
+        60,
+        65
+      ],
+      "summary": "RedisCache 类型,定义于 packages/shared/pkg/cache/redis.go 第 60-65 行。",
+      "tags": [
+        "class",
+        "go",
+        "infrastructure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/cache/redis_test.go",
+      "type": "file",
+      "name": "redis_test.go",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "summary": "针对 RedisCache 的完整单元测试,覆盖命中、回退、错误穿透、single-flight、过期刷新以及锁行为等多种场景。",
+      "tags": [
+        "test",
+        "redis",
+        "cache",
+        "go-testing"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis_test.go:TestRedisNoPTTL_MatchesRedisBehavior",
+      "type": "function",
+      "name": "TestRedisNoPTTL_MatchesRedisBehavior",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "lineRange": [
+        35,
+        45
+      ],
+      "summary": "TestRedisNoPTTL_MatchesRedisBehavior 函数,源码位于 packages/shared/pkg/cache/redis_test.go 第 35-45 行。",
+      "tags": [
+        "function",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisHit",
+      "type": "function",
+      "name": "TestRedisCache_RedisHit",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "lineRange": [
+        47,
+        72
+      ],
+      "summary": "TestRedisCache_RedisHit 函数,源码位于 packages/shared/pkg/cache/redis_test.go 第 47-72 行。",
+      "tags": [
+        "function",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_CallbackFallback",
+      "type": "function",
+      "name": "TestRedisCache_CallbackFallback",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "lineRange": [
+        74,
+        98
+      ],
+      "summary": "TestRedisCache_CallbackFallback 函数,源码位于 packages/shared/pkg/cache/redis_test.go 第 74-98 行。",
+      "tags": [
+        "function",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisErrorFallthrough",
+      "type": "function",
+      "name": "TestRedisCache_RedisErrorFallthrough",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "lineRange": [
+        100,
+        125
+      ],
+      "summary": "TestRedisCache_RedisErrorFallthrough 函数,源码位于 packages/shared/pkg/cache/redis_test.go 第 100-125 行。",
+      "tags": [
+        "function",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_Delete",
+      "type": "function",
+      "name": "TestRedisCache_Delete",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "lineRange": [
+        127,
+        149
+      ],
+      "summary": "TestRedisCache_Delete 函数,源码位于 packages/shared/pkg/cache/redis_test.go 第 127-149 行。",
+      "tags": [
+        "function",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_SetWritesRedis",
+      "type": "function",
+      "name": "TestRedisCache_SetWritesRedis",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "lineRange": [
+        151,
+        170
+      ],
+      "summary": "TestRedisCache_SetWritesRedis 函数,源码位于 packages/shared/pkg/cache/redis_test.go 第 151-170 行。",
+      "tags": [
+        "function",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_Singleflight",
+      "type": "function",
+      "name": "TestRedisCache_Singleflight",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "lineRange": [
+        172,
+        211
+      ],
+      "summary": "TestRedisCache_Singleflight 函数,源码位于 packages/shared/pkg/cache/redis_test.go 第 172-211 行。",
+      "tags": [
+        "function",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisRefresh_TriggeredWhenStale",
+      "type": "function",
+      "name": "TestRedisCache_RedisRefresh_TriggeredWhenStale",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "lineRange": [
+        213,
+        265
+      ],
+      "summary": "TestRedisCache_RedisRefresh_TriggeredWhenStale 函数,源码位于 packages/shared/pkg/cache/redis_test.go 第 213-265 行。",
+      "tags": [
+        "function",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisRefresh_UpdatesRedis",
+      "type": "function",
+      "name": "TestRedisCache_RedisRefresh_UpdatesRedis",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "lineRange": [
+        267,
+        310
+      ],
+      "summary": "TestRedisCache_RedisRefresh_UpdatesRedis 函数,源码位于 packages/shared/pkg/cache/redis_test.go 第 267-310 行。",
+      "tags": [
+        "function",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisRefresh_ErrorKeepsStaleValue",
+      "type": "function",
+      "name": "TestRedisCache_RedisRefresh_ErrorKeepsStaleValue",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "lineRange": [
+        312,
+        360
+      ],
+      "summary": "TestRedisCache_RedisRefresh_ErrorKeepsStaleValue 函数,源码位于 packages/shared/pkg/cache/redis_test.go 第 312-360 行。",
+      "tags": [
+        "function",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisRefresh_Disabled",
+      "type": "function",
+      "name": "TestRedisCache_RedisRefresh_Disabled",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "lineRange": [
+        362,
+        394
+      ],
+      "summary": "TestRedisCache_RedisRefresh_Disabled 函数,源码位于 packages/shared/pkg/cache/redis_test.go 第 362-394 行。",
+      "tags": [
+        "function",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_DeleteByPrefix",
+      "type": "function",
+      "name": "TestRedisCache_DeleteByPrefix",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "lineRange": [
+        396,
+        423
+      ],
+      "summary": "TestRedisCache_DeleteByPrefix 函数,源码位于 packages/shared/pkg/cache/redis_test.go 第 396-423 行。",
+      "tags": [
+        "function",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_DeleteByPrefix_NoMatches",
+      "type": "function",
+      "name": "TestRedisCache_DeleteByPrefix_NoMatches",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "lineRange": [
+        425,
+        440
+      ],
+      "summary": "TestRedisCache_DeleteByPrefix_NoMatches 函数,源码位于 packages/shared/pkg/cache/redis_test.go 第 425-440 行。",
+      "tags": [
+        "function",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_Lock_PreventsParallelCallbacks",
+      "type": "function",
+      "name": "TestRedisCache_Lock_PreventsParallelCallbacks",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "lineRange": [
+        452,
+        497
+      ],
+      "summary": "TestRedisCache_Lock_PreventsParallelCallbacks 函数,源码位于 packages/shared/pkg/cache/redis_test.go 第 452-497 行。",
+      "tags": [
+        "function",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_Lock_GracefulDegradation",
+      "type": "function",
+      "name": "TestRedisCache_Lock_GracefulDegradation",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "lineRange": [
+        499,
+        525
+      ],
+      "summary": "TestRedisCache_Lock_GracefulDegradation 函数,源码位于 packages/shared/pkg/cache/redis_test.go 第 499-525 行。",
+      "tags": [
+        "function",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_Lock_Disabled",
+      "type": "function",
+      "name": "TestRedisCache_Lock_Disabled",
+      "filePath": "packages/shared/pkg/cache/redis_test.go",
+      "lineRange": [
+        527,
+        550
+      ],
+      "summary": "TestRedisCache_Lock_Disabled 函数,源码位于 packages/shared/pkg/cache/redis_test.go 第 527-550 行。",
+      "tags": [
+        "function",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/clusters/cluster.go",
+      "type": "file",
+      "name": "cluster.go",
+      "filePath": "packages/shared/pkg/clusters/cluster.go",
+      "summary": "提供集群 ID 的兜底工具函数,在未指定 cluster 时返回本地集群常量。",
+      "tags": [
+        "cluster-id",
+        "fallback",
+        "utility",
+        "shared"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/clusters/cluster.go:WithClusterFallback",
+      "type": "function",
+      "name": "WithClusterFallback",
+      "filePath": "packages/shared/pkg/clusters/cluster.go",
+      "lineRange": [
+        9,
+        15
+      ],
+      "summary": "WithClusterFallback 函数,源码位于 packages/shared/pkg/clusters/cluster.go 第 9-15 行。",
+      "tags": [
+        "function",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/clusters/discovery/nomad.go",
+      "type": "file",
+      "name": "nomad.go",
+      "filePath": "packages/shared/pkg/clusters/discovery/nomad.go",
+      "summary": "通过 Nomad 客户端发现集群中的 orchestrator 与 template-builder allocations,封装调度层查询逻辑。",
+      "tags": [
+        "nomad",
+        "service-discovery",
+        "cluster",
+        "orchestrator",
+        "shared"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/clusters/discovery/nomad.go:ListOrchestratorAndTemplateBuilderAllocations",
+      "type": "function",
+      "name": "ListOrchestratorAndTemplateBuilderAllocations",
+      "filePath": "packages/shared/pkg/clusters/discovery/nomad.go",
+      "lineRange": [
+        47,
+        88
+      ],
+      "summary": "ListOrchestratorAndTemplateBuilderAllocations 函数,源码位于 packages/shared/pkg/clusters/discovery/nomad.go 第 47-88 行。",
+      "tags": [
+        "function",
+        "getter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/clusters/discovery/nomad.go:Allocation",
+      "type": "class",
+      "name": "Allocation",
+      "filePath": "packages/shared/pkg/clusters/discovery/nomad.go",
+      "lineRange": [
+        13,
+        17
+      ],
+      "summary": "Allocation 类型,定义于 packages/shared/pkg/clusters/discovery/nomad.go 第 13-17 行。",
+      "tags": [
+        "class",
+        "go"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry.go",
+      "target": "function:packages/shared/pkg/artifacts-registry/registry.go:GetArtifactsRegistryProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry.go",
+      "target": "function:packages/shared/pkg/artifacts-registry/registry.go:GetArtifactsRegistryProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry.go",
+      "target": "class:packages/shared/pkg/artifacts-registry/registry.go:ArtifactsRegistry",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry.go",
+      "target": "class:packages/shared/pkg/artifacts-registry/registry.go:ArtifactsRegistry",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry.go",
+      "target": "file:packages/shared/pkg/env/env.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "target": "function:packages/shared/pkg/artifacts-registry/registry_gcp.go:NewGCPArtifactsRegistry",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "target": "function:packages/shared/pkg/artifacts-registry/registry_gcp.go:NewGCPArtifactsRegistry",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "target": "function:packages/shared/pkg/artifacts-registry/registry_gcp.go:Delete",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "target": "function:packages/shared/pkg/artifacts-registry/registry_gcp.go:Delete",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "target": "function:packages/shared/pkg/artifacts-registry/registry_gcp.go:GetTag",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "target": "function:packages/shared/pkg/artifacts-registry/registry_gcp.go:GetTag",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "target": "function:packages/shared/pkg/artifacts-registry/registry_gcp.go:GetImage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "target": "function:packages/shared/pkg/artifacts-registry/registry_gcp.go:GetImage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "target": "function:packages/shared/pkg/artifacts-registry/registry_gcp.go:getAuthToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "target": "class:packages/shared/pkg/artifacts-registry/registry_gcp.go:GCPArtifactsRegistry",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "target": "class:packages/shared/pkg/artifacts-registry/registry_gcp.go:GCPArtifactsRegistry",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "target": "file:packages/shared/pkg/consts/cluster.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "target": "file:packages/shared/pkg/consts/edge.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "target": "file:packages/shared/pkg/consts/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "target": "file:packages/shared/pkg/consts/gcp.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/artifacts-registry/registry_gcp.go",
+      "target": "file:packages/shared/pkg/consts/sandboxes.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:NewRedisCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:NewRedisCache",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:GetOrSet",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:GetOrSet",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:Set",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:Set",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:Delete",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:Delete",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:DeleteByPrefix",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:DeleteByPrefix",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:collectKeys",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:Close",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:RedisClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:RedisClient",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:RedisKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:RedisKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:getFromRedis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:refreshRedis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:releaseLock",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:acquireLock",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:setInRedis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "function:packages/shared/pkg/cache/redis.go:handleRefresh",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "class:packages/shared/pkg/cache/redis.go:RedisConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "class:packages/shared/pkg/cache/redis.go:RedisConfig",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "class:packages/shared/pkg/cache/redis.go:RedisCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "class:packages/shared/pkg/cache/redis.go:RedisCache",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "file:packages/shared/pkg/logger/exporter_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "file:packages/shared/pkg/logger/exporter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "file:packages/shared/pkg/logger/fields.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "file:packages/shared/pkg/logger/grpc.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "file:packages/shared/pkg/logger/logger.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "file:packages/shared/pkg/redis/keys.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "file:packages/shared/pkg/redis/lock.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "file:packages/shared/pkg/redis/tests.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisNoPTTL_MatchesRedisBehavior",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisNoPTTL_MatchesRedisBehavior",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisHit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisHit",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_CallbackFallback",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_CallbackFallback",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisErrorFallthrough",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisErrorFallthrough",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_Delete",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_Delete",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_SetWritesRedis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_SetWritesRedis",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_Singleflight",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_Singleflight",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisRefresh_TriggeredWhenStale",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisRefresh_TriggeredWhenStale",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisRefresh_UpdatesRedis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisRefresh_UpdatesRedis",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisRefresh_ErrorKeepsStaleValue",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisRefresh_ErrorKeepsStaleValue",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisRefresh_Disabled",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_RedisRefresh_Disabled",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_DeleteByPrefix",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_DeleteByPrefix",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_DeleteByPrefix_NoMatches",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_DeleteByPrefix_NoMatches",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_Lock_PreventsParallelCallbacks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_Lock_PreventsParallelCallbacks",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_Lock_GracefulDegradation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_Lock_GracefulDegradation",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_Lock_Disabled",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "function:packages/shared/pkg/cache/redis_test.go:TestRedisCache_Lock_Disabled",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "file:packages/shared/pkg/redis/keys.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "file:packages/shared/pkg/redis/lock.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis_test.go",
+      "target": "file:packages/shared/pkg/redis/tests.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/clusters/cluster.go",
+      "target": "function:packages/shared/pkg/clusters/cluster.go:WithClusterFallback",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/clusters/cluster.go",
+      "target": "function:packages/shared/pkg/clusters/cluster.go:WithClusterFallback",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/clusters/cluster.go",
+      "target": "file:packages/shared/pkg/consts/cluster.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/clusters/cluster.go",
+      "target": "file:packages/shared/pkg/consts/edge.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/clusters/cluster.go",
+      "target": "file:packages/shared/pkg/consts/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/clusters/cluster.go",
+      "target": "file:packages/shared/pkg/consts/gcp.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/clusters/cluster.go",
+      "target": "file:packages/shared/pkg/consts/sandboxes.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/clusters/discovery/nomad.go",
+      "target": "function:packages/shared/pkg/clusters/discovery/nomad.go:ListOrchestratorAndTemplateBuilderAllocations",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/clusters/discovery/nomad.go",
+      "target": "function:packages/shared/pkg/clusters/discovery/nomad.go:ListOrchestratorAndTemplateBuilderAllocations",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/clusters/discovery/nomad.go",
+      "target": "class:packages/shared/pkg/clusters/discovery/nomad.go:Allocation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/clusters/discovery/nomad.go",
+      "target": "class:packages/shared/pkg/clusters/discovery/nomad.go:Allocation",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/clusters/discovery/nomad.go",
+      "target": "file:packages/shared/pkg/logger/exporter_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/clusters/discovery/nomad.go",
+      "target": "file:packages/shared/pkg/logger/exporter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/clusters/discovery/nomad.go",
+      "target": "file:packages/shared/pkg/logger/fields.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/clusters/discovery/nomad.go",
+      "target": "file:packages/shared/pkg/logger/grpc.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/clusters/discovery/nomad.go",
+      "target": "file:packages/shared/pkg/logger/logger.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/redis.go",
+      "target": "file:packages/shared/pkg/cache/redis_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

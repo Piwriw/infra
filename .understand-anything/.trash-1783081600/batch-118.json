@@ -1,0 +1,970 @@
+{
+  "nodes": [
+    {
+      "id": "config:spec/openapi-dashboard.yml",
+      "type": "config",
+      "name": "openapi-dashboard.yml",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "E2B Dashboard 后台管理 OpenAPI 规范,定义团队、构建、沙盒、模板、用户、API 密钥等后台管理接口,供内部 Dashboard 服务使用 oapi-codegen 生成类型与处理器。",
+      "tags": ["api-schema", "openapi", "configuration", "dashboard", "admin"],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:spec/openapi-edge.yml",
+      "type": "config",
+      "name": "openapi-edge.yml",
+      "filePath": "spec/openapi-edge.yml",
+      "summary": "E2B Edge 边缘代理 OpenAPI 规范,定义健康检查、节点服务发现、沙盒日志/指标拉取以及模板构建日志等面向边缘代理的接口,供 client-proxy 服务使用。",
+      "tags": ["api-schema", "openapi", "configuration", "edge", "service-discovery"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:spec/openapi-hyperloop.yml",
+      "type": "config",
+      "name": "openapi-hyperloop.yml",
+      "filePath": "spec/openapi-hyperloop.yml",
+      "summary": "E2B Hyperloop 轻量级 OpenAPI 规范,定义 /me 与 /logs 两个用于自检和日志查询的极简接口,服务于 hyperloop 边缘子服务。",
+      "tags": ["api-schema", "openapi", "configuration", "hyperloop", "minimal"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:spec/openapi.yml",
+      "type": "config",
+      "name": "openapi.yml",
+      "filePath": "spec/openapi.yml",
+      "summary": "E2B 核心 API 完整 OpenAPI 3.0 规范,定义公开的沙盒、模板、节点、API 密钥、访问令牌、卷、快照、监控指标等对外 REST 接口,供 packages/api 服务使用 oapi-codegen 生成 handlers。",
+      "tags": ["api-schema", "openapi", "configuration", "core-api", "public"],
+      "complexity": "complex"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/health",
+      "type": "endpoint",
+      "name": "GET /health",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "Dashboard 健康检查接口,返回服务健康状态。",
+      "tags": ["health-check", "monitoring"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/builds",
+      "type": "endpoint",
+      "name": "GET /builds",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "分页列出团队的模板构建记录,支持按 build_id/状态过滤。",
+      "tags": ["builds", "pagination", "admin"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/builds/statuses",
+      "type": "endpoint",
+      "name": "GET /builds/statuses",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "批量查询一组构建 ID 的状态。",
+      "tags": ["builds", "batch-query", "admin"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/builds/{build_id}",
+      "type": "endpoint",
+      "name": "GET /builds/{build_id}",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "按 ID 获取单个模板构建的详细信息。",
+      "tags": ["builds", "admin", "detail"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/sandboxes/{sandboxID}/record",
+      "type": "endpoint",
+      "name": "GET /sandboxes/{sandboxID}/record",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "获取沙盒运行记录,供后台审计。",
+      "tags": ["sandboxes", "audit", "admin"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/teams",
+      "type": "endpoint",
+      "name": "GET /teams",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "列出所有团队(管理后台视图)。",
+      "tags": ["teams", "admin", "list"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:POST-/admin/users/bootstrap",
+      "type": "endpoint",
+      "name": "POST /admin/users/bootstrap",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "引导创建初始管理员用户(系统初始化路径)。",
+      "tags": ["admin", "bootstrap", "users"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:POST-/admin/teams/bootstrap",
+      "type": "endpoint",
+      "name": "POST /admin/teams/bootstrap",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "引导创建初始管理员团队(系统初始化路径)。",
+      "tags": ["admin", "bootstrap", "teams"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/admin/user-profiles/resolve",
+      "type": "endpoint",
+      "name": "GET /admin/user-profiles/resolve",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "解析用户档案(根据提供的 token/identifier)。",
+      "tags": ["admin", "users", "lookup"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/admin/user-profiles/by-email",
+      "type": "endpoint",
+      "name": "GET /admin/user-profiles/by-email",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "通过邮箱查找用户档案。",
+      "tags": ["admin", "users", "lookup"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/admin/user-profiles/{userId}",
+      "type": "endpoint",
+      "name": "GET /admin/user-profiles/{userId}",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "按用户 ID 获取用户档案详情。",
+      "tags": ["admin", "users", "detail"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/admin/users/{userId}",
+      "type": "endpoint",
+      "name": "GET /admin/users/{userId}",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "按用户 ID 获取管理视图用户信息。",
+      "tags": ["admin", "users", "detail"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/teams/resolve",
+      "type": "endpoint",
+      "name": "GET /teams/resolve",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "解析当前请求对应的团队。",
+      "tags": ["teams", "lookup"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/teams/{teamID}",
+      "type": "endpoint",
+      "name": "GET /teams/{teamID}",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "按团队 ID 获取团队详情。",
+      "tags": ["teams", "detail"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/teams/{teamID}/members",
+      "type": "endpoint",
+      "name": "GET /teams/{teamID}/members",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "列出团队成员。",
+      "tags": ["teams", "members", "list"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/teams/{teamID}/members/{userId}",
+      "type": "endpoint",
+      "name": "GET /teams/{teamID}/members/{userId}",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "获取指定团队成员信息。",
+      "tags": ["teams", "members", "detail"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/templates",
+      "type": "endpoint",
+      "name": "GET /templates",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "分页列出团队模板。",
+      "tags": ["templates", "list", "pagination"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/templates/defaults",
+      "type": "endpoint",
+      "name": "GET /templates/defaults",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "获取默认模板列表。",
+      "tags": ["templates", "defaults"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/templates/{templateID}",
+      "type": "endpoint",
+      "name": "GET /templates/{templateID}",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "按模板 ID 获取模板详情。",
+      "tags": ["templates", "detail"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/templates/{templateID}/tags/groups",
+      "type": "endpoint",
+      "name": "GET /templates/{templateID}/tags/groups",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "获取模板的标签分组。",
+      "tags": ["templates", "tags", "groups"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/templates/{templateID}/tags/count",
+      "type": "endpoint",
+      "name": "GET /templates/{templateID}/tags/count",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "获取模板标签数量统计。",
+      "tags": ["templates", "tags", "count"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/templates/{templateID}/tags/exists",
+      "type": "endpoint",
+      "name": "GET /templates/{templateID}/tags/exists",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "检查模板是否存在指定标签。",
+      "tags": ["templates", "tags", "lookup"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-dashboard.yml:GET-/templates/{templateID}/tags/{tag}/assignments",
+      "type": "endpoint",
+      "name": "GET /templates/{templateID}/tags/{tag}/assignments",
+      "filePath": "spec/openapi-dashboard.yml",
+      "summary": "查询标签与沙盒/构建的分配关系。",
+      "tags": ["templates", "tags", "assignments"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-edge.yml:GET-/health",
+      "type": "endpoint",
+      "name": "GET /health",
+      "filePath": "spec/openapi-edge.yml",
+      "summary": "Edge 边缘代理的健康检查接口。",
+      "tags": ["health-check", "monitoring", "edge"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-edge.yml:GET-/health/machine",
+      "type": "endpoint",
+      "name": "GET /health/machine",
+      "filePath": "spec/openapi-edge.yml",
+      "summary": "Edge 边缘代理所在机器的硬件健康检查。",
+      "tags": ["health-check", "machine", "edge"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-edge.yml:GET-/v1/info",
+      "type": "endpoint",
+      "name": "GET /v1/info",
+      "filePath": "spec/openapi-edge.yml",
+      "summary": "返回 Edge 边缘代理版本/部署信息。",
+      "tags": ["info", "metadata", "edge"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-edge.yml:GET-/v1/service-discovery/nodes/orchestrators",
+      "type": "endpoint",
+      "name": "GET /v1/service-discovery/nodes/orchestrators",
+      "filePath": "spec/openapi-edge.yml",
+      "summary": "通过 Consul 服务发现获取 orchestrator 节点列表。",
+      "tags": ["service-discovery", "orchestrator", "edge"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:spec/openapi-edge.yml:GET-/v1/service-discovery",
+      "type": "endpoint",
+      "name": "GET /v1/service-discovery",
+      "filePath": "spec/openapi-edge.yml",
+      "summary": "通用服务发现查询接口。",
+      "tags": ["service-discovery", "edge"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-edge.yml:GET-/v1/sandboxes/{sandboxID}/logs",
+      "type": "endpoint",
+      "name": "GET /v1/sandboxes/{sandboxID}/logs",
+      "filePath": "spec/openapi-edge.yml",
+      "summary": "拉取指定沙盒的运行日志。",
+      "tags": ["sandboxes", "logs", "edge"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-edge.yml:GET-/v1/sandboxes/{sandboxID}/metrics",
+      "type": "endpoint",
+      "name": "GET /v1/sandboxes/{sandboxID}/metrics",
+      "filePath": "spec/openapi-edge.yml",
+      "summary": "拉取指定沙盒的运行指标。",
+      "tags": ["sandboxes", "metrics", "edge"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-edge.yml:GET-/v1/sandboxes/metrics",
+      "type": "endpoint",
+      "name": "GET /v1/sandboxes/metrics",
+      "filePath": "spec/openapi-edge.yml",
+      "summary": "聚合拉取多个沙盒的运行指标。",
+      "tags": ["sandboxes", "metrics", "edge"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-edge.yml:GET-/v1/templates/builds/{buildID}/logs",
+      "type": "endpoint",
+      "name": "GET /v1/templates/builds/{buildID}/logs",
+      "filePath": "spec/openapi-edge.yml",
+      "summary": "拉取指定模板构建的日志。",
+      "tags": ["templates", "builds", "logs", "edge"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-hyperloop.yml:GET-/me",
+      "type": "endpoint",
+      "name": "GET /me",
+      "filePath": "spec/openapi-hyperloop.yml",
+      "summary": "Hyperloop 自检接口,返回当前服务身份信息。",
+      "tags": ["health-check", "hyperloop", "minimal"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi-hyperloop.yml:GET-/logs",
+      "type": "endpoint",
+      "name": "GET /logs",
+      "filePath": "spec/openapi-hyperloop.yml",
+      "summary": "Hyperloop 极简日志查询接口。",
+      "tags": ["logs", "hyperloop", "minimal"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:GET-/health",
+      "type": "endpoint",
+      "name": "GET /health",
+      "filePath": "spec/openapi.yml",
+      "summary": "核心 API 健康检查接口。",
+      "tags": ["health-check", "monitoring"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:POST-/teams",
+      "type": "endpoint",
+      "name": "POST /teams",
+      "filePath": "spec/openapi.yml",
+      "summary": "创建新团队。",
+      "tags": ["teams", "create"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:GET-/teams/{teamID}/metrics",
+      "type": "endpoint",
+      "name": "GET /teams/{teamID}/metrics",
+      "filePath": "spec/openapi.yml",
+      "summary": "按团队维度查询沙盒/构建指标。",
+      "tags": ["teams", "metrics"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:GET-/teams/{teamID}/metrics/max",
+      "type": "endpoint",
+      "name": "GET /teams/{teamID}/metrics/max",
+      "filePath": "spec/openapi.yml",
+      "summary": "查询团队的历史最大指标(并发沙盒数等)。",
+      "tags": ["teams", "metrics", "max"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:POST-/sandboxes",
+      "type": "endpoint",
+      "name": "POST /sandboxes",
+      "filePath": "spec/openapi.yml",
+      "summary": "创建沙盒(v1 接口)。",
+      "tags": ["sandboxes", "create", "v1"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:POST-/v2/sandboxes",
+      "type": "endpoint",
+      "name": "POST /v2/sandboxes",
+      "filePath": "spec/openapi.yml",
+      "summary": "创建沙盒(v2 接口,支持更多参数如自动暂停策略)。",
+      "tags": ["sandboxes", "create", "v2"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:GET-/sandboxes",
+      "type": "endpoint",
+      "name": "GET /sandboxes",
+      "filePath": "spec/openapi.yml",
+      "summary": "分页列出团队的沙盒。",
+      "tags": ["sandboxes", "list", "pagination"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:GET-/sandboxes/metrics",
+      "type": "endpoint",
+      "name": "GET /sandboxes/metrics",
+      "filePath": "spec/openapi.yml",
+      "summary": "聚合查询沙盒指标。",
+      "tags": ["sandboxes", "metrics", "list"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:GET-/sandboxes/{sandboxID}/logs",
+      "type": "endpoint",
+      "name": "GET /sandboxes/{sandboxID}/logs",
+      "filePath": "spec/openapi.yml",
+      "summary": "拉取指定沙盒的运行日志(v1)。",
+      "tags": ["sandboxes", "logs", "v1"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:GET-/v2/sandboxes/{sandboxID}/logs",
+      "type": "endpoint",
+      "name": "GET /v2/sandboxes/{sandboxID}/logs",
+      "filePath": "spec/openapi.yml",
+      "summary": "拉取指定沙盒的运行日志(v2)。",
+      "tags": ["sandboxes", "logs", "v2"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:GET-/sandboxes/{sandboxID}",
+      "type": "endpoint",
+      "name": "GET /sandboxes/{sandboxID}",
+      "filePath": "spec/openapi.yml",
+      "summary": "按 ID 获取沙盒详情。",
+      "tags": ["sandboxes", "detail"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:DELETE-/sandboxes/{sandboxID}",
+      "type": "endpoint",
+      "name": "DELETE /sandboxes/{sandboxID}",
+      "filePath": "spec/openapi.yml",
+      "summary": "终止并删除沙盒。",
+      "tags": ["sandboxes", "delete"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:GET-/sandboxes/{sandboxID}/metrics",
+      "type": "endpoint",
+      "name": "GET /sandboxes/{sandboxID}/metrics",
+      "filePath": "spec/openapi.yml",
+      "summary": "查询沙盒实时指标(CPU/内存/网络)。",
+      "tags": ["sandboxes", "metrics"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:POST-/sandboxes/{sandboxID}/pause",
+      "type": "endpoint",
+      "name": "POST /sandboxes/{sandboxID}/pause",
+      "filePath": "spec/openapi.yml",
+      "summary": "暂停沙盒执行(节省资源)。",
+      "tags": ["sandboxes", "pause", "lifecycle"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:POST-/sandboxes/{sandboxID}/resume",
+      "type": "endpoint",
+      "name": "POST /sandboxes/{sandboxID}/resume",
+      "filePath": "spec/openapi.yml",
+      "summary": "恢复被暂停的沙盒。",
+      "tags": ["sandboxes", "resume", "lifecycle"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:POST-/sandboxes/{sandboxID}/connect",
+      "type": "endpoint",
+      "name": "POST /sandboxes/{sandboxID}/connect",
+      "filePath": "spec/openapi.yml",
+      "summary": "建立到沙盒 envd 的 WebSocket/TCP 连接令牌。",
+      "tags": ["sandboxes", "connect", "proxy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:POST-/sandboxes/{sandboxID}/timeout",
+      "type": "endpoint",
+      "name": "POST /sandboxes/{sandboxID}/timeout",
+      "filePath": "spec/openapi.yml",
+      "summary": "更新沙盒的空闲超时时间。",
+      "tags": ["sandboxes", "timeout", "lifecycle"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:POST-/sandboxes/{sandboxID}/network",
+      "type": "endpoint",
+      "name": "POST /sandboxes/{sandboxID}/network",
+      "filePath": "spec/openapi.yml",
+      "summary": "配置沙盒网络出站规则。",
+      "tags": ["sandboxes", "network", "configuration"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:POST-/sandboxes/{sandboxID}/refreshes",
+      "type": "endpoint",
+      "name": "POST /sandboxes/{sandboxID}/refreshes",
+      "filePath": "spec/openapi.yml",
+      "summary": "刷新沙盒的过期时间(延长 TTL)。",
+      "tags": ["sandboxes", "refresh", "lifecycle"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:POST-/sandboxes/{sandboxID}/snapshots",
+      "type": "endpoint",
+      "name": "POST /sandboxes/{sandboxID}/snapshots",
+      "filePath": "spec/openapi.yml",
+      "summary": "为运行中的沙盒创建快照。",
+      "tags": ["sandboxes", "snapshots", "lifecycle"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:GET-/snapshots",
+      "type": "endpoint",
+      "name": "GET /snapshots",
+      "filePath": "spec/openapi.yml",
+      "summary": "列出团队的快照。",
+      "tags": ["snapshots", "list"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:GET-/v3/templates",
+      "type": "endpoint",
+      "name": "GET /v3/templates",
+      "filePath": "spec/openapi.yml",
+      "summary": "分页列出模板(v3 接口,新分页/过滤参数)。",
+      "tags": ["templates", "list", "v3"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:GET-/v2/templates",
+      "type": "endpoint",
+      "name": "GET /v2/templates",
+      "filePath": "spec/openapi.yml",
+      "summary": "分页列出模板(v2 接口)。",
+      "tags": ["templates", "list", "v2"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:spec/openapi.yml:GET-/templates/{templateID}/files/{hash}",
+      "type": "endpoint",
+      "name": "GET /templates/{templateID}/files/{hash}",
+      "filePath": "spec/openapi.yml",
+      "summary": "从模板文件存储中按哈希下载文件。",
+      "tags": ["templates", "files", "download"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/health",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/builds",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/builds/statuses",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/builds/{build_id}",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/sandboxes/{sandboxID}/record",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/teams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:POST-/admin/users/bootstrap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:POST-/admin/teams/bootstrap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/admin/user-profiles/resolve",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/admin/user-profiles/by-email",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/admin/user-profiles/{userId}",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/admin/users/{userId}",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/teams/resolve",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/teams/{teamID}",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/teams/{teamID}/members",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/teams/{teamID}/members/{userId}",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/templates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/templates/defaults",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/templates/{templateID}",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/templates/{templateID}/tags/groups",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/templates/{templateID}/tags/count",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/templates/{templateID}/tags/exists",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-dashboard.yml",
+      "target": "endpoint:spec/openapi-dashboard.yml:GET-/templates/{templateID}/tags/{tag}/assignments",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-edge.yml",
+      "target": "endpoint:spec/openapi-edge.yml:GET-/health",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-edge.yml",
+      "target": "endpoint:spec/openapi-edge.yml:GET-/health/machine",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-edge.yml",
+      "target": "endpoint:spec/openapi-edge.yml:GET-/v1/info",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-edge.yml",
+      "target": "endpoint:spec/openapi-edge.yml:GET-/v1/service-discovery/nodes/orchestrators",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-edge.yml",
+      "target": "endpoint:spec/openapi-edge.yml:GET-/v1/service-discovery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-edge.yml",
+      "target": "endpoint:spec/openapi-edge.yml:GET-/v1/sandboxes/{sandboxID}/logs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-edge.yml",
+      "target": "endpoint:spec/openapi-edge.yml:GET-/v1/sandboxes/{sandboxID}/metrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-edge.yml",
+      "target": "endpoint:spec/openapi-edge.yml:GET-/v1/sandboxes/metrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-edge.yml",
+      "target": "endpoint:spec/openapi-edge.yml:GET-/v1/templates/builds/{buildID}/logs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-hyperloop.yml",
+      "target": "endpoint:spec/openapi-hyperloop.yml:GET-/me",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi-hyperloop.yml",
+      "target": "endpoint:spec/openapi-hyperloop.yml:GET-/logs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:GET-/health",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:POST-/teams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:GET-/teams/{teamID}/metrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:GET-/teams/{teamID}/metrics/max",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:POST-/sandboxes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:POST-/v2/sandboxes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:GET-/sandboxes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:GET-/sandboxes/metrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:GET-/sandboxes/{sandboxID}/logs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:GET-/v2/sandboxes/{sandboxID}/logs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:GET-/sandboxes/{sandboxID}",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:DELETE-/sandboxes/{sandboxID}",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:GET-/sandboxes/{sandboxID}/metrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:POST-/sandboxes/{sandboxID}/pause",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:POST-/sandboxes/{sandboxID}/resume",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:POST-/sandboxes/{sandboxID}/connect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:POST-/sandboxes/{sandboxID}/timeout",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:POST-/sandboxes/{sandboxID}/network",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:POST-/sandboxes/{sandboxID}/refreshes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:POST-/sandboxes/{sandboxID}/snapshots",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:GET-/snapshots",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:GET-/v3/templates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:GET-/v2/templates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:spec/openapi.yml",
+      "target": "endpoint:spec/openapi.yml:GET-/templates/{templateID}/files/{hash}",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ]
+}

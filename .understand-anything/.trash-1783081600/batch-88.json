@@ -1,0 +1,127 @@
+{
+  "nodes": [
+    {
+      "id": "resource:iac/provider-gcp/remote-repository/main.tf",
+      "type": "resource",
+      "name": "main.tf",
+      "filePath": "iac/provider-gcp/remote-repository/main.tf",
+      "summary": "Terraform 配置主文件,用于在 GCP Artifact Registry 中创建一个 Docker Hub 远程仓库代理,并配置 Secret Manager 凭据访问权限及 90 天清理策略。",
+      "tags": ["infrastructure", "terraform", "container-registry", "docker", "gcp"],
+      "complexity": "moderate",
+      "languageNotes": "使用动态块(dynamic block)根据 dockerhub 用户名是否为空来条件性注入上游凭据。"
+    },
+    {
+      "id": "resource:iac/provider-gcp/remote-repository/outputs.tf",
+      "type": "resource",
+      "name": "outputs.tf",
+      "filePath": "iac/provider-gcp/remote-repository/outputs.tf",
+      "summary": "Terraform 输出定义文件,导出 dockerhub_remote_repository_url,提供远程 Docker 仓库的标准 GCR 拉取地址。",
+      "tags": ["infrastructure", "terraform", "output", "docker-registry"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/remote-repository/variables.tf",
+      "type": "resource",
+      "name": "variables.tf",
+      "filePath": "iac/provider-gcp/remote-repository/variables.tf",
+      "summary": "Terraform 变量定义文件,声明 6 个模块输入,涵盖 GCP 项目、区域、命名前缀、Service Account 及 Docker Hub 凭据 Secret 名称。",
+      "tags": ["infrastructure", "terraform", "variable", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/remote-repository/main.tf:dockerhub_remote_repository",
+      "type": "resource",
+      "name": "google_artifact_registry_repository.dockerhub_remote_repository",
+      "filePath": "iac/provider-gcp/remote-repository/main.tf",
+      "lineRange": [16, 51],
+      "summary": "在 GCP Artifact Registry 中创建 Docker 格式的远程仓库代理,作为 Docker Hub 的镜像缓存,带 90 天自动清理策略。",
+      "tags": ["artifact-registry", "docker", "remote-repository", "gcp"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/remote-repository/main.tf:ar_service_agent_password_secret_access",
+      "type": "resource",
+      "name": "google_secret_manager_secret_iam_member.ar_service_agent_password_secret_access",
+      "filePath": "iac/provider-gcp/remote-repository/main.tf",
+      "lineRange": [10, 14],
+      "summary": "授予 GCP Artifact Registry 服务账号对 Docker Hub 密码 Secret 的 secretAccessor 权限,用于私有仓库凭据拉取。",
+      "tags": ["iam", "secret-manager", "artifact-registry", "gcp"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/remote-repository/main.tf:dockerhub_remote_repository_member",
+      "type": "resource",
+      "name": "google_artifact_registry_repository_iam_member.dockerhub_remote_repository_member",
+      "filePath": "iac/provider-gcp/remote-repository/main.tf",
+      "lineRange": [53, 57],
+      "summary": "将 Artifact Registry 仓库的 repoAdmin 角色授予指定的 Google Service Account,允许该服务账号管理镜像。",
+      "tags": ["iam", "artifact-registry", "service-account", "gcp"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/provider-gcp/remote-repository/main.tf",
+      "target": "resource:iac/provider-gcp/remote-repository/main.tf:dockerhub_remote_repository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/remote-repository/main.tf",
+      "target": "resource:iac/provider-gcp/remote-repository/main.tf:ar_service_agent_password_secret_access",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/remote-repository/main.tf",
+      "target": "resource:iac/provider-gcp/remote-repository/main.tf:dockerhub_remote_repository_member",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/remote-repository/main.tf:dockerhub_remote_repository",
+      "target": "resource:iac/provider-gcp/remote-repository/main.tf:ar_service_agent_password_secret_access",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/remote-repository/main.tf:dockerhub_remote_repository_member",
+      "target": "resource:iac/provider-gcp/remote-repository/main.tf:dockerhub_remote_repository",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/remote-repository/outputs.tf",
+      "target": "resource:iac/provider-gcp/remote-repository/main.tf:dockerhub_remote_repository",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/remote-repository/main.tf",
+      "target": "resource:iac/provider-gcp/remote-repository/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/remote-repository/outputs.tf",
+      "target": "resource:iac/provider-gcp/remote-repository/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/remote-repository/outputs.tf",
+      "target": "resource:iac/provider-gcp/remote-repository/main.tf",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

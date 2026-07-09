@@ -1,0 +1,454 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "type": "file",
+      "name": "build_cache.go",
+      "filePath": "packages/orchestrator/pkg/template/cache/build_cache.go",
+      "summary": "template-manager 端的 BuildCache：按 buildID 跟踪构建状态/结果/日志并暴露每 team 的 running builds 计数器。",
+      "tags": [
+        "build-cache",
+        "template-manager",
+        "ttlcache"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/template/cache/build_cache.go:BuildInfoResult",
+      "type": "class",
+      "name": "BuildInfoResult",
+      "filePath": "packages/orchestrator/pkg/template/cache/build_cache.go",
+      "lineRange": [
+        23,
+        27
+      ],
+      "summary": "单次模板构建的最终结果（状态、原因、元数据）。",
+      "tags": [
+        "result"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/template/cache/build_cache.go:BuildInfo",
+      "type": "class",
+      "name": "BuildInfo",
+      "filePath": "packages/orchestrator/pkg/template/cache/build_cache.go",
+      "lineRange": [
+        29,
+        33
+      ],
+      "summary": "一次构建的运行时记录，包含 team、日志缓冲与一次性结果。",
+      "tags": [
+        "internal"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/template/cache/build_cache.go:BuildCache",
+      "type": "class",
+      "name": "BuildCache",
+      "filePath": "packages/orchestrator/pkg/template/cache/build_cache.go",
+      "lineRange": [
+        79,
+        81
+      ],
+      "summary": "按 buildID 索引的 TTL cache，并提供观测型 team counter。",
+      "tags": [
+        "cache"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/template/cache/build_cache.go:NewBuildCache",
+      "type": "function",
+      "name": "NewBuildCache",
+      "filePath": "packages/orchestrator/pkg/template/cache/build_cache.go",
+      "lineRange": [
+        83,
+        130
+      ],
+      "summary": "构造 BuildCache 并注册按 team 维度上报的 running builds observable counter。",
+      "tags": [
+        "constructor",
+        "telemetry"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/template/cache/build_cache.go:Get",
+      "type": "function",
+      "name": "Get",
+      "filePath": "packages/orchestrator/pkg/template/cache/build_cache.go",
+      "lineRange": [
+        133,
+        145
+      ],
+      "summary": "按 buildID 取 BuildInfo，未命中时返回 error。",
+      "tags": [
+        "cache-read"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/template/cache/build_cache.go:Create",
+      "type": "function",
+      "name": "Create",
+      "filePath": "packages/orchestrator/pkg/template/cache/build_cache.go",
+      "lineRange": [
+        148,
+        164
+      ],
+      "summary": "创建一条新 BuildInfo；key 已存在则返回错误。",
+      "tags": [
+        "cache-write"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/template/cache/build_cache.go:Delete",
+      "type": "function",
+      "name": "Delete",
+      "filePath": "packages/orchestrator/pkg/template/cache/build_cache.go",
+      "lineRange": [
+        166,
+        168
+      ],
+      "summary": "从 cache 中删除一条 BuildInfo。",
+      "tags": [
+        "cache-delete"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/template/cache/build_cache.go:IsRunning",
+      "type": "function",
+      "name": "IsRunning",
+      "filePath": "packages/orchestrator/pkg/template/cache/build_cache.go",
+      "lineRange": [
+        35,
+        37
+      ],
+      "summary": "BuildInfo 处于 Building 状态的便捷判定。",
+      "tags": [
+        "status"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/template/cache/build_cache.go:GetStatus",
+      "type": "function",
+      "name": "GetStatus",
+      "filePath": "packages/orchestrator/pkg/template/cache/build_cache.go",
+      "lineRange": [
+        39,
+        47
+      ],
+      "summary": "返回 BuildInfo 当前状态；未完成时返回 Building。",
+      "tags": [
+        "status"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/template/cache/build_cache.go:GetResult",
+      "type": "function",
+      "name": "GetResult",
+      "filePath": "packages/orchestrator/pkg/template/cache/build_cache.go",
+      "lineRange": [
+        49,
+        57
+      ],
+      "summary": "返回一次性结果，未完成时返回 nil。",
+      "tags": [
+        "status"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/template/cache/build_cache.go:SetSuccess",
+      "type": "function",
+      "name": "SetSuccess",
+      "filePath": "packages/orchestrator/pkg/template/cache/build_cache.go",
+      "lineRange": [
+        59,
+        65
+      ],
+      "summary": "把 BuildInfo 标记为 Completed 并写入 metadata。",
+      "tags": [
+        "status"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/template/cache/build_cache.go:SetFail",
+      "type": "function",
+      "name": "SetFail",
+      "filePath": "packages/orchestrator/pkg/template/cache/build_cache.go",
+      "lineRange": [
+        67,
+        73
+      ],
+      "summary": "把 BuildInfo 标记为 Failed 并写入失败原因。",
+      "tags": [
+        "status"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/template/cache/build_cache.go:GetLogs",
+      "type": "function",
+      "name": "GetLogs",
+      "filePath": "packages/orchestrator/pkg/template/cache/build_cache.go",
+      "lineRange": [
+        75,
+        77
+      ],
+      "summary": "返回构建过程中的所有日志条目。",
+      "tags": [
+        "logs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/template/constants/service.go",
+      "type": "file",
+      "name": "service.go",
+      "filePath": "packages/orchestrator/pkg/template/constants/service.go",
+      "summary": "template manager 子模块的常量：service 名称与 systemd init 路径。",
+      "tags": [
+        "constants"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/template/server/create_template.go",
+      "type": "file",
+      "name": "create_template.go",
+      "filePath": "packages/orchestrator/pkg/template/server/create_template.go",
+      "summary": "TemplateCreate gRPC handler：解析模板配置、注册 build cache、异步触发 builder.Build 并上报 telemetry。",
+      "tags": [
+        "grpc-handler",
+        "template-manager",
+        "build",
+        "async"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/template/server/create_template.go:TemplateCreate",
+      "type": "function",
+      "name": "TemplateCreate",
+      "filePath": "packages/orchestrator/pkg/template/server/create_template.go",
+      "lineRange": [
+        27,
+        191
+      ],
+      "summary": "解析版本、特性开关、构建配置；记录 build；异步调用 builder 并在完成后写入 success/fail。",
+      "tags": [
+        "grpc-handler",
+        "async",
+        "feature-flag",
+        "telemetry"
+      ],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "class:packages/orchestrator/pkg/template/cache/build_cache.go:BuildInfoResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "class:packages/orchestrator/pkg/template/cache/build_cache.go:BuildInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "class:packages/orchestrator/pkg/template/cache/build_cache.go:BuildCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:NewBuildCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:Get",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:Create",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:Delete",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:IsRunning",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:GetStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:GetResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:SetSuccess",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:SetFail",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:GetLogs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/server/create_template.go",
+      "target": "function:packages/orchestrator/pkg/template/server/create_template.go:TemplateCreate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "class:packages/orchestrator/pkg/template/cache/build_cache.go:BuildInfoResult",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "class:packages/orchestrator/pkg/template/cache/build_cache.go:BuildInfo",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:IsRunning",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:GetStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:GetResult",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:SetSuccess",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:SetFail",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:GetLogs",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "class:packages/orchestrator/pkg/template/cache/build_cache.go:BuildCache",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:NewBuildCache",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:Get",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:Create",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/cache/build_cache.go",
+      "target": "function:packages/orchestrator/pkg/template/cache/build_cache.go:Delete",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/template/server/create_template.go",
+      "target": "function:packages/orchestrator/pkg/template/server/create_template.go:TemplateCreate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

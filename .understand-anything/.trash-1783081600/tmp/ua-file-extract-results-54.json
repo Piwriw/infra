@@ -1,0 +1,100 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/clickhouse/Dockerfile",
+      "language": "dockerfile",
+      "fileCategory": "infra",
+      "totalLines": 21,
+      "nonEmptyLines": 14,
+      "services": [
+        {
+          "name": "builder",
+          "image": "golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION}",
+          "ports": [],
+          "startLine": 5,
+          "endLine": 10
+        },
+        {
+          "name": "alpine",
+          "image": "alpine:${ALPINE_VERSION}",
+          "ports": [],
+          "startLine": 11,
+          "endLine": 22
+        }
+      ],
+      "steps": [
+        {
+          "name": "ARG GOLANG_VERSION=1.26.3",
+          "startLine": 1,
+          "endLine": 1
+        },
+        {
+          "name": "ARG ALPINE_VERSION=3.22",
+          "startLine": 2,
+          "endLine": 2
+        },
+        {
+          "name": "FROM golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION} AS builder",
+          "startLine": 5,
+          "endLine": 5
+        },
+        {
+          "name": "RUN apk add --no-cache git",
+          "startLine": 7,
+          "endLine": 7
+        },
+        {
+          "name": "RUN go install github.com/pressly/goose/v3/cmd/goose@v3.24.2",
+          "startLine": 8,
+          "endLine": 8
+        },
+        {
+          "name": "FROM alpine:${ALPINE_VERSION}",
+          "startLine": 11,
+          "endLine": 11
+        },
+        {
+          "name": "RUN apk add --no-cache bash ca-certificates",
+          "startLine": 13,
+          "endLine": 13
+        },
+        {
+          "name": "COPY --from=builder /go/bin/goose /usr/local/bin/goose",
+          "startLine": 15,
+          "endLine": 15
+        },
+        {
+          "name": "WORKDIR /app",
+          "startLine": 17,
+          "endLine": 17
+        },
+        {
+          "name": "COPY migrations/ ./migrations/",
+          "startLine": 18,
+          "endLine": 18
+        },
+        {
+          "name": "ENV GOOSE_DRIVER=clickhouse",
+          "startLine": 20,
+          "endLine": 20
+        },
+        {
+          "name": "ENTRYPOINT [\"goose\", \"-table\", \"_migrations\", \"-dir\", \"migrations\", \"up",
+          "startLine": 21,
+          "endLine": 21
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "serviceCount": 2,
+        "stepCount": 12
+      }
+    }
+  ]
+}

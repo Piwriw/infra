@@ -1,0 +1,264 @@
+{
+  "nodes": [
+    {
+      "id": "pipeline:.github/workflows/build-and-upload-images.yml",
+      "type": "pipeline",
+      "name": "build-and-upload-images.yml",
+      "filePath": ".github/workflows/build-and-upload-images.yml",
+      "summary": "在 push 到 main 或手动触发时，针对 staging、foxtrot、juliett、tango 四个环境通过矩阵并行构建并上传服务镜像。流程从 Infisical 拉取部署密钥，使用 GCP Workload Identity Federation 认证 Docker，最后执行 `make build-and-upload` 并在 staging 中调用 `make -C packages/envd promote` 提升 envd。",
+      "tags": ["ci-cd", "deployment", "containerization", "build-pipeline"],
+      "complexity": "moderate",
+      "languageNotes": "使用 matrix strategy 跨环境并行；通过 Infisical secrets-action 的 OIDC 方法在 ci-builder runner 上注入密钥；并按环境加 concurrency 锁防止重复构建。"
+    },
+    {
+      "id": "pipeline:.github/workflows/deploy-base-template.yml",
+      "type": "pipeline",
+      "name": "deploy-base-template.yml",
+      "filePath": ".github/workflows/deploy-base-template.yml",
+      "summary": "手动触发的 base 模板部署工作流，支持选择目标环境 (staging/juliett/foxtrot) 与构建缓存开关。检出代码后使用 parse-tool-versions 与 setup-bun 安装工具链，并在 packages/shared/scripts 下运行 build.prod.ts 构建 E2B 基础模板。",
+      "tags": ["ci-cd", "deployment", "template-build"],
+      "complexity": "simple",
+      "languageNotes": "通过 workflow_dispatch inputs 选择目标环境，并使用 concurrency group Base-Template-Release-${ref}-${env} 防止并发部署。"
+    },
+    {
+      "id": "pipeline:.github/workflows/fc-test.yml",
+      "type": "pipeline",
+      "name": "fc-test.yml",
+      "filePath": ".github/workflows/fc-test.yml",
+      "summary": "可复用 workflow_call 工作流，用于在 ubuntu-24.04 上启动真实的 Firecracker microVM 进行端到端验证。包含安装依赖、下载 Firecracker 1.10.1、动态计算并分配 huge pages、准备 vmlinux.bin 与 rootfs.ext4、加载 NBD 模块并最终以 60 秒超时启动 Firecracker VM。",
+      "tags": ["ci-cd", "test", "firecracker", "microvm"],
+      "complexity": "complex",
+      "languageNotes": "依赖大量 shell 算术计算 huge pages；通过 mount hugetlbfs、modprobe nbd 与 tune2fs 配置运行时；将 124 退出码视作超时成功。"
+    },
+    {
+      "id": "pipeline:.github/workflows/integration_tests.yml",
+      "type": "pipeline",
+      "name": "integration_tests.yml",
+      "filePath": ".github/workflows/integration_tests.yml",
+      "summary": "可复用 workflow_call 工作流，运行端到端集成测试矩阵（uncompressed / zstd1 / lz4 三种压缩 + dedup 模式组合）。复用 ./.github/actions 下的 build-packages、host-init、build-sandbox-template、start-services 等组合动作启动服务后执行 `make test-integration`，并在 always 时扫描日志中的 DATA RACE、上传测试结果与日志到 Codecov 与 artifact。",
+      "tags": ["ci-cd", "test", "integration-test", "data-race-detection"],
+      "complexity": "complex",
+      "languageNotes": "通过 matrix 切换压缩参数；使用复合动作 (composite actions) 共享启动逻辑；末尾的 integration_tests 聚合作业用于矩阵结果汇总。"
+    },
+    {
+      "id": "pipeline:.github/workflows/lint.yml",
+      "type": "pipeline",
+      "name": "lint.yml",
+      "filePath": ".github/workflows/lint.yml",
+      "summary": "可复用 workflow_call 工作流，使用 golangci-lint 对变更的 Go 模块进行增量 lint。先通过 go list 与 git diff 检测 PR 中变更的模块（workspace 级别文件变更会触发全量 lint），再以矩阵跑 golangci-lint 并开启 only-new-issues 只报本 PR 引入的问题。",
+      "tags": ["ci-cd", "lint", "golangci-lint", "code-quality"],
+      "complexity": "moderate",
+      "languageNotes": "通过 detect-modules 作业输出动态矩阵；空矩阵时聚合作业把 skipped 视作成功，避免 PR 因无 Go 改动而失败。"
+    },
+    {
+      "id": "pipeline:.github/workflows/out-of-order-migrations.yml",
+      "type": "pipeline",
+      "name": "out-of-order-migrations.yml",
+      "filePath": ".github/workflows/out-of-order-migrations.yml",
+      "summary": "可复用 workflow_call 工作流，校验 PR 中新增的 packages/db/migrations 迁移文件版本号严格大于 main 分支上已有的最大版本号，防止迁移乱序。从文件名前 14 位数字提取版本号并排序比对。",
+      "tags": ["ci-cd", "validation", "database-migration"],
+      "complexity": "simple",
+      "languageNotes": "通过 git ls-tree / git diff 提取迁移文件名前 14 位时间戳版本号，纯 shell 比较顺序。"
+    },
+    {
+      "id": "pipeline:.github/workflows/periodic-test.yml",
+      "type": "pipeline",
+      "name": "periodic-test.yml",
+      "filePath": ".github/workflows/periodic-test.yml",
+      "summary": "定时 (每 10 分钟) 与手动触发的监控工作流，针对 foxtrot / juliett / staging 三个集群域，矩阵执行 periodic-test 下的 run-code、time-is-synchronized、snapshot-and-resume、internet-works 等场景。失败或恢复时通过 incident.io webhook 发出告警（含去重 key 与状态徽章）。",
+      "tags": ["ci-cd", "monitoring", "synthetic-test", "alerting"],
+      "complexity": "complex",
+      "languageNotes": "schedule cron `*/10 * * * *` + workflow_dispatch + push paths 触发；按 (domain + test) 构造 deduplication_key 让 incident.io 自动 resolve；附加 shields.io 状态徽章。"
+    },
+    {
+      "id": "pipeline:.github/workflows/pr-go-dependbot-cleanup.yml",
+      "type": "pipeline",
+      "name": "pr-go-dependbot-cleanup.yml",
+      "filePath": ".github/workflows/pr-go-dependbot-cleanup.yml",
+      "summary": "在 dependabot/go_modules/** 分支上 push 或 PR 时自动触发，使用 go-setup-cache 设置 Go 后通过 git-auto-commit-action 提交依赖清理（如 `go mod tidy` 之类）的变更到 dependabot 分支。",
+      "tags": ["ci-cd", "automation", "dependabot", "dependencies"],
+      "complexity": "simple"
+    },
+    {
+      "id": "pipeline:.github/workflows/pr-no-generated-changes.yml",
+      "type": "pipeline",
+      "name": "pr-no-generated-changes.yml",
+      "filePath": ".github/workflows/pr-no-generated-changes.yml",
+      "summary": "可复用 workflow_call 工作流，确保仓库生成的代码与提交的产物一致。运行 `make tidy`、`scripts/fix-tracers.sh`、`scripts/fix-meters.sh`、`make generate` 与 `make fmt`，然后比较 git diff；若发现差异且 commit=true，使用 GitHub App token 自动提交回 PR 分支并使本次 check 失败以触发重跑。",
+      "tags": ["ci-cd", "validation", "code-generation", "automation"],
+      "complexity": "complex",
+      "languageNotes": "通过 actions/create-github-app-token 让自动提交以 GitHub App 身份触发后续 pull_request 工作流；HEAD_REF 通过 env 注入以规避 shell 注入。"
+    },
+    {
+      "id": "pipeline:.github/workflows/pr-tests-arm64.yml",
+      "type": "pipeline",
+      "name": "pr-tests-arm64.yml",
+      "filePath": ".github/workflows/pr-tests-arm64.yml",
+      "summary": "可复用 workflow_call 工作流，在 ARM64 上交叉编译并运行单元测试矩阵。先在 ubuntu 上 `GOARCH=arm64 go build/vet` 全部纯 Go 包（orchestrator 走 CGO + aarch64-linux-gnu-gcc），再在 infra-runner-arm 上分片跑各包测试；envd 与 orchestrator 在 sudo 下运行（需 root）并清理残留 Testcontainers，结果上传 Codecov。",
+      "tags": ["ci-cd", "test", "arm64", "cross-compile"],
+      "complexity": "complex",
+      "languageNotes": "为避免与 amd64 共享 cache 导致磁盘爆炸，专门禁用 go-setup-cache 改用 go-arm64-cross 缓存；通过 sudo -E env PATH=$PATH 让 sudo 下仍能找到 go 1.26.3。"
+    },
+    {
+      "id": "pipeline:.github/workflows/pr-tests.yml",
+      "type": "pipeline",
+      "name": "pr-tests.yml",
+      "filePath": ".github/workflows/pr-tests.yml",
+      "summary": "可复用 workflow_call 工作流，在 infra-tests runner 上按矩阵运行各 Go 包 (api、client-proxy、db、docker-reverse-proxy、envd、orchestrator、shared) 的单元测试。envd 与 orchestrator 需要 sudo 并分别设置 bindfs / busybox / hugepages / NBD / udev 规则；使用 gotestsum 输出 JUnit 与 coverage 上传 Codecov。",
+      "tags": ["ci-cd", "test", "unit-test", "go"],
+      "complexity": "complex",
+      "languageNotes": "禁用 Testcontainers Ryuk 防止并行 matrix 抢 reaper_<hash>；包含针对 NBD 设备的 udev nowatch 规则以避免 inotify 风暴。"
+    },
+    {
+      "id": "pipeline:.github/workflows/promote-envd.yml",
+      "type": "pipeline",
+      "name": "promote-envd.yml",
+      "filePath": ".github/workflows/promote-envd.yml",
+      "summary": "手动触发的 envd 提升工作流，输入 commit SHA（校验为 7-40 位十六进制）与目标环境 (staging/foxtrot/juliett/tango)。先在 validate-inputs 中校验输入并构造矩阵，再调用 ./.github/actions/promote-envd 复合动作按矩阵把指定 envd 版本提升到对应环境。",
+      "tags": ["ci-cd", "deployment", "envd", "release"],
+      "complexity": "moderate",
+      "languageNotes": "通过 workflow_dispatch inputs 自由组合目标环境；按环境加 concurrency 锁 promote-envd-${env} 防止重复提升。"
+    },
+    {
+      "id": "pipeline:.github/workflows/pull-request.yml",
+      "type": "pipeline",
+      "name": "pull-request.yml",
+      "filePath": ".github/workflows/pull-request.yml",
+      "summary": "PR 主编排工作流。使用 dorny/paths-filter 检测 iac / test-inputs / integration-inputs / lint-inputs / openapi-inputs / generated-inputs 等变更范围，再按需通过 `uses:` 调用 lint、validate-openapi、pr-no-generated-changes、out-of-order-migrations、pr-tests、pr-tests-arm64、validate-iac、integration_tests 等可复用工作流，并在最后聚合测试结果发布 PR 评论。",
+      "tags": ["ci-cd", "orchestrator", "pull-request", "workflow-call"],
+      "complexity": "complex",
+      "languageNotes": "用 dorny/paths-filter 的 scope 输出 + contains() 控制子工作流是否运行，避免无关 CI 文件改动触发昂贵的测试矩阵；同时为 fork PR 关闭 secret 与自动提交。"
+    },
+    {
+      "id": "pipeline:.github/workflows/push-main.yml",
+      "type": "pipeline",
+      "name": "push-main.yml",
+      "filePath": ".github/workflows/push-main.yml",
+      "summary": "push 到 main 后的主编排工作流。使用 dorny/paths-filter 检测 iac / test-inputs / generated-inputs 变更范围，按需调用 pr-no-generated-changes、pr-tests、validate-iac、integration_tests 等可复用工作流（commit=false），最后通过 publish-unit-test-result-action 聚合发布测试结果。",
+      "tags": ["ci-cd", "orchestrator", "push-main", "workflow-call"],
+      "complexity": "moderate",
+      "languageNotes": "fetch-depth: 20 以获取足够的 diff 历史；paths-filter 触发的 scope 控制，避免 main 上无关改动触发整条测试管线。"
+    },
+    {
+      "id": "pipeline:.github/workflows/release-please.yml",
+      "type": "pipeline",
+      "name": "release-please.yml",
+      "filePath": ".github/workflows/release-please.yml",
+      "summary": "push 到 main 时由 release-please 自动管理版本与发布 PR。优先用 GitHub App token（确保发布 PR 能触发必需的 status check），按 release-please-config.json 维护 docker-reverse-proxy 等包；当 docker-reverse-proxy 创建新 release 时，将镜像以 v${version} 标签推送到 us-docker.pkg.dev/e2b-artifacts 的 Artifact Registry。",
+      "tags": ["ci-cd", "release", "release-please", "containerization"],
+      "complexity": "complex",
+      "languageNotes": "通过 googleapis/release-please-action@v4 + 配置/清单文件驱动；publish 作业使用 Workload Identity Federation 推送到 e2b-artifacts 项目，并通过 --provenance=false --sbom=false 绕过 Artifact Registry 不支持的 OCI attestation。"
+    },
+    {
+      "id": "pipeline:.github/workflows/validate-iac.yml",
+      "type": "pipeline",
+      "name": "validate-iac.yml",
+      "filePath": ".github/workflows/validate-iac.yml",
+      "summary": "可复用 workflow_call 工作流，对 iac/provider-gcp 下的 Terraform 代码执行 `terraform fmt -check -recursive`、`terraform init -backend=false` 与 `terraform validate`。使用 setup-terraform 按 .tool-versions 中固定版本安装工具。",
+      "tags": ["ci-cd", "validation", "terraform", "iac"],
+      "complexity": "simple"
+    },
+    {
+      "id": "pipeline:.github/workflows/validate-openapi.yml",
+      "type": "pipeline",
+      "name": "validate-openapi.yml",
+      "filePath": ".github/workflows/validate-openapi.yml",
+      "summary": "可复用 workflow_call 工作流，使用 Redocly CLI (`npx @redocly/cli lint`) 矩阵校验 spec/openapi.yml、spec/openapi-edge.yml、spec/openapi-hyperloop.yml、spec/openapi-dashboard.yml 以及 packages/envd/spec/envd.yaml 等 OpenAPI 规范。",
+      "tags": ["ci-cd", "validation", "openapi", "api-schema"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "pipeline:.github/workflows/pull-request.yml",
+      "target": "pipeline:.github/workflows/lint.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/pull-request.yml",
+      "target": "pipeline:.github/workflows/validate-openapi.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/pull-request.yml",
+      "target": "pipeline:.github/workflows/pr-no-generated-changes.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/pull-request.yml",
+      "target": "pipeline:.github/workflows/out-of-order-migrations.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/pull-request.yml",
+      "target": "pipeline:.github/workflows/pr-tests.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/pull-request.yml",
+      "target": "pipeline:.github/workflows/validate-iac.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/pull-request.yml",
+      "target": "pipeline:.github/workflows/pr-tests-arm64.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/pull-request.yml",
+      "target": "pipeline:.github/workflows/integration_tests.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/push-main.yml",
+      "target": "pipeline:.github/workflows/pr-no-generated-changes.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/push-main.yml",
+      "target": "pipeline:.github/workflows/pr-tests.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/push-main.yml",
+      "target": "pipeline:.github/workflows/validate-iac.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/push-main.yml",
+      "target": "pipeline:.github/workflows/integration_tests.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/build-and-upload-images.yml",
+      "target": "pipeline:.github/workflows/promote-envd.yml",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

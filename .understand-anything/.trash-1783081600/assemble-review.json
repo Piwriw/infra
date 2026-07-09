@@ -1,0 +1,19 @@
+{
+  "fixedSectionOk": true,
+  "nodesRecovered": 0,
+  "edgesRestored": 0,
+  "crossBatchEdgesAdded": 0,
+  "typesRemapped": 0,
+  "complexityRemapped": 0,
+  "notes": [
+    "服务边界完整：envd 与 orchestrator/api/client-proxy 之间零交叉 import,微 VM 隔离设计正确,无架构层违规。",
+    "跨批次 import 边修复后 100% 覆盖:12243 条 importMap 边全部对应到 graph 中的实际节点,无悬空边。",
+    "55 个孤立 file 节点均为辅助文件(Makefile/go.sum/sqlc.yaml/raw .sql 查询),不构成关键代码缺失。",
+    "类型分布合理:4192 function / 1565 file / 992 class / 350 resource;边类型以 imports(12074)、contains(5570)、exports(2190) 为主。",
+    "关键服务主入口完整:api/orchestrator/envd/client-proxy 的 main.go 均已入图且边数充足(19-89 条)。",
+    "测试覆盖图覆盖 339 条 tested_by 边,大型生产文件(如 orchestrator/pkg/sandbox/fc/client.go、shared/pkg/logger)未挂测试属于 Go 项目常态(底层驱动/接口层),非图问题。",
+    "Dockerfile 节点分两种类型:24 个标为 service(顶层容器)、4 个仍为 file(中间多阶段 builder) — 这是 LLM 输出的合理分歧,符合多阶段构建语义。",
+    "tables 节点 183 个、schema 节点 9 个、endpoint 节点 106 个(mix of gRPC methods + SQL queries),均无 tested_by 边但属于架构层级而非代码覆盖,无需修复。",
+    "merged graph 整体健康,无关键架构问题需进一步处理。"
+  ]
+}

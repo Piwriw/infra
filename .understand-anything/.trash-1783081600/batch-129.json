@@ -1,0 +1,847 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/shared/pkg/cache/memory_test.go",
+      "type": "file",
+      "name": "memory_test.go",
+      "filePath": "packages/shared/pkg/cache/memory_test.go",
+      "summary": "内存缓存的单元测试，覆盖 Set/Get/Delete、TTL、GetOrSet 单飞防穿、刷新回调与上下文取消等行为。",
+      "tags": ["test", "cache", "unit-test"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/cache/memory.go",
+      "type": "file",
+      "name": "memory.go",
+      "filePath": "packages/shared/pkg/cache/memory.go",
+      "summary": "提供带 TTL、单飞和后台刷新的进程内 MemoryCache，供服务本地缓存场景复用。",
+      "tags": ["cache", "concurrency", "singleflight"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/cache/memory.go:MemoryCache",
+      "type": "class",
+      "name": "MemoryCache",
+      "filePath": "packages/shared/pkg/cache/memory.go",
+      "lineRange": [45, 49],
+      "summary": "基于 sync.Map 与 singleflight.Group 的内存缓存结构，提供 GetOrSet 与自动刷新能力。",
+      "tags": ["cache", "concurrency", "data-structure"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/memory.go:NewMemoryCache",
+      "type": "function",
+      "name": "NewMemoryCache",
+      "filePath": "packages/shared/pkg/cache/memory.go",
+      "lineRange": [52, 68],
+      "summary": "根据 Config 创建 MemoryCache 实例，并对必填项做基本校验。",
+      "tags": ["constructor", "cache", "factory"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/memory.go:GetOrSet",
+      "type": "function",
+      "name": "GetOrSet",
+      "filePath": "packages/shared/pkg/cache/memory.go",
+      "lineRange": [98, 131],
+      "summary": "缓存未命中时调用 dataCallback 回填，使用 singleflight 合并并发请求并支持刷新窗口。",
+      "tags": ["cache", "singleflight", "lazy-load"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/shared/pkg/cache/memory.go:refresh",
+      "type": "function",
+      "name": "refresh",
+      "filePath": "packages/shared/pkg/cache/memory.go",
+      "lineRange": [162, 182],
+      "summary": "异步刷新缓存项；失败时根据上下文决定保留旧值或删除条目。",
+      "tags": ["cache", "background", "refresh"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/dockerhub/repository_aws.go",
+      "type": "file",
+      "name": "repository_aws.go",
+      "filePath": "packages/shared/pkg/dockerhub/repository_aws.go",
+      "summary": "AWS ECR 远程仓库实现，通过 GetAuthorizationToken 调用拉取镜像层到本地 NBD。",
+      "tags": ["docker", "aws", "ecr"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/dockerhub/repository_aws.go:AWSRemoteRepository",
+      "type": "class",
+      "name": "AWSRemoteRepository",
+      "filePath": "packages/shared/pkg/dockerhub/repository_aws.go",
+      "lineRange": [18, 21],
+      "summary": "面向 AWS ECR 的远程镜像仓库封装，提供 GetImage 与认证能力。",
+      "tags": ["docker", "aws", "ecr"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/dockerhub/repository_aws.go:NewAWSRemoteRepository",
+      "type": "function",
+      "name": "NewAWSRemoteRepository",
+      "filePath": "packages/shared/pkg/dockerhub/repository_aws.go",
+      "lineRange": [23, 35],
+      "summary": "使用 ECR 客户端创建远程仓库实例。",
+      "tags": ["constructor", "aws", "ecr"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/dockerhub/repository_noop.go",
+      "type": "file",
+      "name": "repository_noop.go",
+      "filePath": "packages/shared/pkg/dockerhub/repository_noop.go",
+      "summary": "Noop 远程仓库实现，便于在测试或禁用远程拉取场景下替换真实仓库。",
+      "tags": ["docker", "stub", "noop"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/dockerhub/repository_noop.go:NoopRemoteRepository",
+      "type": "class",
+      "name": "NoopRemoteRepository",
+      "filePath": "packages/shared/pkg/dockerhub/repository_noop.go",
+      "lineRange": [12, 12],
+      "summary": "无操作远程仓库类型，作为 RemoteRepository 接口的空实现。",
+      "tags": ["stub", "noop", "docker"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/dockerhub/repository_test.go",
+      "type": "file",
+      "name": "repository_test.go",
+      "filePath": "packages/shared/pkg/dockerhub/repository_test.go",
+      "summary": "针对 RemoveRegistryFromTag 工具函数的单元测试，覆盖去除 registry 前缀的多种场景。",
+      "tags": ["test", "docker", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/edge/events.go",
+      "type": "file",
+      "name": "events.go",
+      "filePath": "packages/shared/pkg/edge/events.go",
+      "summary": "定义 Edge 服务使用的沙盒目录事件结构及其序列化/解析函数。",
+      "tags": ["edge", "event", "serialization"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/edge/events.go:SandboxCatalogCreateEvent",
+      "type": "class",
+      "name": "SandboxCatalogCreateEvent",
+      "filePath": "packages/shared/pkg/edge/events.go",
+      "lineRange": [39, 45],
+      "summary": "Edge 中沙盒目录创建事件的数据结构。",
+      "tags": ["edge", "event", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/edge/events.go:SandboxCatalogDeleteEvent",
+      "type": "class",
+      "name": "SandboxCatalogDeleteEvent",
+      "filePath": "packages/shared/pkg/edge/events.go",
+      "lineRange": [47, 50],
+      "summary": "Edge 中沙盒目录删除事件的数据结构。",
+      "tags": ["edge", "event", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/edge/events.go:SerializeSandboxCatalogCreateEvent",
+      "type": "function",
+      "name": "SerializeSandboxCatalogCreateEvent",
+      "filePath": "packages/shared/pkg/edge/events.go",
+      "lineRange": [52, 64],
+      "summary": "将沙盒目录创建事件序列化为 Consul 元数据格式。",
+      "tags": ["serialization", "edge", "consul"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/edge/events.go:SerializeSandboxCatalogDeleteEvent",
+      "type": "function",
+      "name": "SerializeSandboxCatalogDeleteEvent",
+      "filePath": "packages/shared/pkg/edge/events.go",
+      "lineRange": [66, 75],
+      "summary": "将沙盒目录删除事件序列化为 Consul 元数据格式。",
+      "tags": ["serialization", "edge", "consul"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/edge/events.go:ParseSandboxCatalogCreateEvent",
+      "type": "function",
+      "name": "ParseSandboxCatalogCreateEvent",
+      "filePath": "packages/shared/pkg/edge/events.go",
+      "lineRange": [77, 120],
+      "summary": "从 Consul 元数据中解析沙盒目录创建事件，字段缺失时返回 SandboxEventFieldMissingError。",
+      "tags": ["parsing", "edge", "consul"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/edge/events.go:ParseSandboxCatalogDeleteEvent",
+      "type": "function",
+      "name": "ParseSandboxCatalogDeleteEvent",
+      "filePath": "packages/shared/pkg/edge/events.go",
+      "lineRange": [122, 137],
+      "summary": "从 Consul 元数据中解析沙盒目录删除事件。",
+      "tags": ["parsing", "edge", "consul"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/events/delivery_noop.go",
+      "type": "file",
+      "name": "delivery_noop.go",
+      "filePath": "packages/shared/pkg/events/delivery_noop.go",
+      "summary": "事件投递的 Noop 实现，作为 Delivery 接口的空操作占位。",
+      "tags": ["events", "noop", "stub"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "type": "file",
+      "name": "delivery_redis_pubsub.go",
+      "filePath": "packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "summary": "基于 Redis Pub/Sub 的事件投递实现，按 key 去重后通过 channel 广播消息。",
+      "tags": ["events", "redis", "pubsub"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/events/delivery_redis_pubsub.go:RedisPubSubDelivery",
+      "type": "class",
+      "name": "RedisPubSubDelivery",
+      "filePath": "packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "lineRange": [11, 14],
+      "summary": "使用 Redis Pub/Sub 投递沙盒事件，对外实现 Delivery 接口。",
+      "tags": ["events", "redis", "pubsub"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/events/delivery_redis_streams.go",
+      "type": "file",
+      "name": "delivery_redis_streams.go",
+      "filePath": "packages/shared/pkg/events/delivery_redis_streams.go",
+      "summary": "基于 Redis Streams 的事件投递实现，将消息追加到 stream 供消费端读取。",
+      "tags": ["events", "redis", "streams"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/events/delivery_redis_streams.go:RedisStreamsDelivery",
+      "type": "class",
+      "name": "RedisStreamsDelivery",
+      "filePath": "packages/shared/pkg/events/delivery_redis_streams.go",
+      "lineRange": [11, 14],
+      "summary": "使用 Redis Streams 投递沙盒事件，对外实现 Delivery 接口。",
+      "tags": ["events", "redis", "streams"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/events/delivery.go",
+      "type": "file",
+      "name": "delivery.go",
+      "filePath": "packages/shared/pkg/events/delivery.go",
+      "summary": "定义事件投递 Delivery 接口与按团队 ID 生成的 DeliveryKey 辅助函数。",
+      "tags": ["events", "interface", "pubsub"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/events/migration_test.go",
+      "type": "file",
+      "name": "migration_test.go",
+      "filePath": "packages/shared/pkg/events/migration_test.go",
+      "summary": "对 LegacySandboxEventMigrationMapping 映射函数的表驱动测试，覆盖历史事件分类迁移。",
+      "tags": ["test", "migration", "events"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/events/migration.go",
+      "type": "file",
+      "name": "migration.go",
+      "filePath": "packages/shared/pkg/events/migration.go",
+      "summary": "提供 LegacySandboxEventMigrationMapping，将旧版事件分类与标签映射到新版结构。",
+      "tags": ["migration", "events", "data-mapping"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/events/migration.go:LegacySandboxEventMigrationMapping",
+      "type": "function",
+      "name": "LegacySandboxEventMigrationMapping",
+      "filePath": "packages/shared/pkg/events/migration.go",
+      "lineRange": [47, 95],
+      "summary": "将旧版沙盒事件类型映射为新版事件分类与标签的辅助函数。",
+      "tags": ["migration", "events", "mapping"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/events/sandbox.go",
+      "type": "file",
+      "name": "sandbox.go",
+      "filePath": "packages/shared/pkg/events/sandbox.go",
+      "summary": "定义统一的 SandboxEvent 结构，作为事件投递与分析的标准载荷。",
+      "tags": ["events", "data-model", "sandbox"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:packages/shared/pkg/fc/firecracker.yml",
+      "type": "config",
+      "name": "firecracker.yml",
+      "filePath": "packages/shared/pkg/fc/firecracker.yml",
+      "summary": "Firecracker REST API 的 OpenAPI/Swagger 规范文件，由 generate.go 转换为 Go 代码供客户端使用。",
+      "tags": ["openapi", "swagger", "firecracker", "api-schema"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/fc/generate.go",
+      "type": "file",
+      "name": "generate.go",
+      "filePath": "packages/shared/pkg/fc/generate.go",
+      "summary": "go:generate 指令入口，通过 oapi-codegen 从 firecracker.yml 生成 Firecracker 客户端。",
+      "tags": ["codegen", "firecracker", "openapi"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/fcversion/sandbox_features.go",
+      "type": "file",
+      "name": "sandbox_features.go",
+      "filePath": "packages/shared/pkg/fcversion/sandbox_features.go",
+      "summary": "通过构建标签区分 Firecracker 内核特性支持的辅助文件，提供 HugePages、Memfd 等开关。",
+      "tags": ["firecracker", "kernel", "build-tag"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/fcversion/sandbox_features.go:HasHugePages",
+      "type": "function",
+      "name": "HasHugePages",
+      "filePath": "packages/shared/pkg/fcversion/sandbox_features.go",
+      "lineRange": [3, 9],
+      "summary": "返回当前构建是否启用 HugePages 支持。",
+      "tags": ["firecracker", "kernel", "feature-flag"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/fcversion/version_test.go",
+      "type": "file",
+      "name": "version_test.go",
+      "filePath": "packages/shared/pkg/fcversion/version_test.go",
+      "summary": "对 Firecracker Info 解析与 HugePages 特性的单元测试。",
+      "tags": ["test", "firecracker", "version"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/fcversion/version.go",
+      "type": "file",
+      "name": "version.go",
+      "filePath": "packages/shared/pkg/fcversion/version.go",
+      "summary": "解析 Firecracker 版本字符串为 Info 结构体，提供 String 与 Version 访问方法。",
+      "tags": ["firecracker", "version", "parsing"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/fcversion/version.go:Info",
+      "type": "class",
+      "name": "Info",
+      "filePath": "packages/shared/pkg/fcversion/version.go",
+      "lineRange": [9, 12],
+      "summary": "保存 Firecracker 提交哈希与最新发布版本号的信息结构。",
+      "tags": ["firecracker", "version", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/fcversion/version.go:New",
+      "type": "function",
+      "name": "New",
+      "filePath": "packages/shared/pkg/fcversion/version.go",
+      "lineRange": [18, 37],
+      "summary": "从 Firecracker 版本字符串解析出 Info 实例，非法输入返回错误。",
+      "tags": ["parsing", "firecracker", "constructor"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/filesystem/entry_darwin.go",
+      "type": "file",
+      "name": "entry_darwin.go",
+      "filePath": "packages/shared/pkg/filesystem/entry_darwin.go",
+      "summary": "macOS 平台下从 syscall.Stat_t 提取 atime/ctime/mtime 的平台特定实现。",
+      "tags": ["filesystem", "platform", "darwin"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/filesystem/entry_linux.go",
+      "type": "file",
+      "name": "entry_linux.go",
+      "filePath": "packages/shared/pkg/filesystem/entry_linux.go",
+      "summary": "Linux 平台下从 syscall.Stat_t 提取 atime/ctime/mtime 的平台特定实现。",
+      "tags": ["filesystem", "platform", "linux"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/filesystem/entry_test.go",
+      "type": "file",
+      "name": "entry_test.go",
+      "filePath": "packages/shared/pkg/filesystem/entry_test.go",
+      "summary": "对 GetEntryFromPath 与 GetEntryInfo 在文件、目录、符号链接等场景下的单元测试。",
+      "tags": ["test", "filesystem", "entry"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/filesystem/entry.go",
+      "type": "file",
+      "name": "entry.go",
+      "filePath": "packages/shared/pkg/filesystem/entry.go",
+      "summary": "提供文件系统条目 EntryInfo 的获取与构造，包括符号链接跟随与时间戳提取。",
+      "tags": ["filesystem", "entry", "symlink"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/filesystem/entry.go:GetEntryFromPath",
+      "type": "function",
+      "name": "GetEntryFromPath",
+      "filePath": "packages/shared/pkg/filesystem/entry.go",
+      "lineRange": [25, 41],
+      "summary": "根据路径返回 EntryInfo，可选返回完整元数据。",
+      "tags": ["filesystem", "entry", "query"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/filesystem/entry.go:GetEntryInfo",
+      "type": "function",
+      "name": "GetEntryInfo",
+      "filePath": "packages/shared/pkg/filesystem/entry.go",
+      "lineRange": [46, 96],
+      "summary": "由路径和 os.FileInfo 构造 EntryInfo，处理符号链接与时间戳。",
+      "tags": ["filesystem", "entry", "stat"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/filesystem/model.go",
+      "type": "file",
+      "name": "model.go",
+      "filePath": "packages/shared/pkg/filesystem/model.go",
+      "summary": "定义文件系统条目 EntryInfo 的结构体及其字段。",
+      "tags": ["filesystem", "data-model", "entry"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/filesystem/xattr_metadata_test.go",
+      "type": "file",
+      "name": "xattr_metadata_test.go",
+      "filePath": "packages/shared/pkg/filesystem/xattr_metadata_test.go",
+      "summary": "对 WriteMetadata 与 ReadMetadata 在替换、跳过非法 UTF-8、跨重命名等场景下的测试。",
+      "tags": ["test", "filesystem", "xattr"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/filesystem/xattr_test.go",
+      "type": "file",
+      "name": "xattr_test.go",
+      "filePath": "packages/shared/pkg/filesystem/xattr_test.go",
+      "summary": "对 ValidateMetadata 校验元数据合法性的单元测试。",
+      "tags": ["test", "filesystem", "validation"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "class:packages/shared/pkg/cache/memory.go:MemoryCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "function:packages/shared/pkg/cache/memory.go:NewMemoryCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "function:packages/shared/pkg/cache/memory.go:GetOrSet",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "function:packages/shared/pkg/cache/memory.go:refresh",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "function:packages/shared/pkg/cache/memory.go:NewMemoryCache",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "class:packages/shared/pkg/cache/memory.go:MemoryCache",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory.go",
+      "target": "function:packages/shared/pkg/cache/memory.go:GetOrSet",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/cache/memory_test.go",
+      "target": "file:packages/shared/pkg/cache/memory.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_aws.go",
+      "target": "class:packages/shared/pkg/dockerhub/repository_aws.go:AWSRemoteRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_aws.go",
+      "target": "function:packages/shared/pkg/dockerhub/repository_aws.go:NewAWSRemoteRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_aws.go",
+      "target": "class:packages/shared/pkg/dockerhub/repository_aws.go:AWSRemoteRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_aws.go",
+      "target": "function:packages/shared/pkg/dockerhub/repository_aws.go:NewAWSRemoteRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_noop.go",
+      "target": "class:packages/shared/pkg/dockerhub/repository_noop.go:NoopRemoteRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_noop.go",
+      "target": "class:packages/shared/pkg/dockerhub/repository_noop.go:NoopRemoteRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/dockerhub/repository_test.go",
+      "target": "file:packages/shared/pkg/dockerhub/repository_aws.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "class:packages/shared/pkg/edge/events.go:SandboxCatalogCreateEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "class:packages/shared/pkg/edge/events.go:SandboxCatalogDeleteEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "function:packages/shared/pkg/edge/events.go:SerializeSandboxCatalogCreateEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "function:packages/shared/pkg/edge/events.go:SerializeSandboxCatalogDeleteEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "function:packages/shared/pkg/edge/events.go:ParseSandboxCatalogCreateEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "function:packages/shared/pkg/edge/events.go:ParseSandboxCatalogDeleteEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "class:packages/shared/pkg/edge/events.go:SandboxCatalogCreateEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "class:packages/shared/pkg/edge/events.go:SandboxCatalogDeleteEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "function:packages/shared/pkg/edge/events.go:SerializeSandboxCatalogCreateEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "function:packages/shared/pkg/edge/events.go:SerializeSandboxCatalogDeleteEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "function:packages/shared/pkg/edge/events.go:ParseSandboxCatalogCreateEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/edge/events.go",
+      "target": "function:packages/shared/pkg/edge/events.go:ParseSandboxCatalogDeleteEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "target": "class:packages/shared/pkg/events/delivery_redis_pubsub.go:RedisPubSubDelivery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "target": "class:packages/shared/pkg/events/delivery_redis_pubsub.go:RedisPubSubDelivery",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_streams.go",
+      "target": "class:packages/shared/pkg/events/delivery_redis_streams.go:RedisStreamsDelivery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_streams.go",
+      "target": "class:packages/shared/pkg/events/delivery_redis_streams.go:RedisStreamsDelivery",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery.go",
+      "target": "class:packages/shared/pkg/events/delivery_redis_pubsub.go:RedisPubSubDelivery",
+      "type": "defines_schema",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery.go",
+      "target": "class:packages/shared/pkg/events/delivery_redis_streams.go:RedisStreamsDelivery",
+      "type": "defines_schema",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_noop.go",
+      "target": "file:packages/shared/pkg/events/delivery.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_pubsub.go",
+      "target": "file:packages/shared/pkg/events/delivery.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/events/delivery_redis_streams.go",
+      "target": "file:packages/shared/pkg/events/delivery.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/events/migration.go",
+      "target": "function:packages/shared/pkg/events/migration.go:LegacySandboxEventMigrationMapping",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/events/migration.go",
+      "target": "function:packages/shared/pkg/events/migration.go:LegacySandboxEventMigrationMapping",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/events/migration.go",
+      "target": "file:packages/shared/pkg/events/sandbox.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/events/migration_test.go",
+      "target": "file:packages/shared/pkg/events/migration.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/fc/generate.go",
+      "target": "config:packages/shared/pkg/fc/firecracker.yml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/sandbox_features.go",
+      "target": "function:packages/shared/pkg/fcversion/sandbox_features.go:HasHugePages",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/sandbox_features.go",
+      "target": "function:packages/shared/pkg/fcversion/sandbox_features.go:HasHugePages",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/version.go",
+      "target": "class:packages/shared/pkg/fcversion/version.go:Info",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/version.go",
+      "target": "function:packages/shared/pkg/fcversion/version.go:New",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/version.go",
+      "target": "class:packages/shared/pkg/fcversion/version.go:Info",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/version.go",
+      "target": "function:packages/shared/pkg/fcversion/version.go:New",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/version_test.go",
+      "target": "file:packages/shared/pkg/fcversion/version.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/fcversion/version_test.go",
+      "target": "file:packages/shared/pkg/fcversion/sandbox_features.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry.go",
+      "target": "function:packages/shared/pkg/filesystem/entry.go:GetEntryFromPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry.go",
+      "target": "function:packages/shared/pkg/filesystem/entry.go:GetEntryInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry.go",
+      "target": "function:packages/shared/pkg/filesystem/entry.go:GetEntryFromPath",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry.go",
+      "target": "function:packages/shared/pkg/filesystem/entry.go:GetEntryInfo",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry.go",
+      "target": "file:packages/shared/pkg/filesystem/entry_linux.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry.go",
+      "target": "file:packages/shared/pkg/filesystem/entry_darwin.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/entry_test.go",
+      "target": "file:packages/shared/pkg/filesystem/entry.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/xattr_test.go",
+      "target": "file:packages/shared/pkg/filesystem/entry.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/filesystem/xattr_metadata_test.go",
+      "target": "file:packages/shared/pkg/filesystem/entry.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

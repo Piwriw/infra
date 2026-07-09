@@ -1,0 +1,7891 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 29,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/orchestrator/pkg/sandbox/nbd/testutils/cleaner.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 41,
+      "nonEmptyLines": 32,
+      "functions": [
+        {
+          "name": "Add",
+          "startLine": 19,
+          "endLine": 21,
+          "params": [
+            "f"
+          ]
+        },
+        {
+          "name": "Run",
+          "startLine": 23,
+          "endLine": 41,
+          "params": [
+            "ctx",
+            "timeout"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Cleaner",
+          "startLine": 14,
+          "endLine": 17,
+          "methods": [
+            "Add",
+            "Run"
+          ],
+          "properties": [
+            "steps",
+            "once"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Cleaner",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "Add",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "Run",
+          "line": 23,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Add",
+          "callee": "append",
+          "lineNumber": 20
+        },
+        {
+          "caller": "Run",
+          "callee": "context.WithTimeout",
+          "lineNumber": 24
+        },
+        {
+          "caller": "Run",
+          "callee": "context.WithoutCancel",
+          "lineNumber": 24
+        },
+        {
+          "caller": "Run",
+          "callee": "cancel",
+          "lineNumber": 25
+        },
+        {
+          "caller": "Run",
+          "callee": "c.once.Do",
+          "lineNumber": 27
+        },
+        {
+          "caller": "Run",
+          "callee": "slices.Backward",
+          "lineNumber": 30
+        },
+        {
+          "caller": "Run",
+          "callee": "step",
+          "lineNumber": 31
+        },
+        {
+          "caller": "Run",
+          "callee": "append",
+          "lineNumber": 33
+        },
+        {
+          "caller": "Run",
+          "callee": "fmt.Errorf",
+          "lineNumber": 33
+        },
+        {
+          "caller": "Run",
+          "callee": "errors.Join",
+          "lineNumber": 37
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/nbd/testutils/logger_overlay.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 96,
+      "nonEmptyLines": 69,
+      "functions": [
+        {
+          "name": "NewLoggerOverlay",
+          "startLine": 18,
+          "endLine": 20,
+          "params": [
+            "overlay"
+          ]
+        },
+        {
+          "name": "ReadAt",
+          "startLine": 22,
+          "endLine": 36,
+          "params": [
+            "ctx",
+            "p",
+            "off"
+          ]
+        },
+        {
+          "name": "WriteAt",
+          "startLine": 38,
+          "endLine": 52,
+          "params": [
+            "p",
+            "off"
+          ]
+        },
+        {
+          "name": "WriteZeroesAt",
+          "startLine": 54,
+          "endLine": 68,
+          "params": [
+            "off",
+            "length"
+          ]
+        },
+        {
+          "name": "Size",
+          "startLine": 70,
+          "endLine": 72,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "BlockSize",
+          "startLine": 74,
+          "endLine": 76,
+          "params": []
+        },
+        {
+          "name": "Header",
+          "startLine": 78,
+          "endLine": 80,
+          "params": []
+        },
+        {
+          "name": "SwapHeader",
+          "startLine": 82,
+          "endLine": 84,
+          "params": [
+            "h"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 86,
+          "endLine": 88,
+          "params": []
+        },
+        {
+          "name": "EjectCache",
+          "startLine": 90,
+          "endLine": 92,
+          "params": []
+        },
+        {
+          "name": "Slice",
+          "startLine": 94,
+          "endLine": 96,
+          "params": [
+            "ctx",
+            "off",
+            "length"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "LoggerOverlay",
+          "startLine": 14,
+          "endLine": 16,
+          "methods": [
+            "ReadAt",
+            "WriteAt",
+            "WriteZeroesAt",
+            "Size",
+            "BlockSize",
+            "Header",
+            "SwapHeader",
+            "Close",
+            "EjectCache",
+            "Slice"
+          ],
+          "properties": [
+            "overlay"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "LoggerOverlay",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "NewLoggerOverlay",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "ReadAt",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "WriteAt",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "WriteZeroesAt",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "Size",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "BlockSize",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "Header",
+          "line": 78,
+          "isDefault": false
+        },
+        {
+          "name": "SwapHeader",
+          "line": 82,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 86,
+          "isDefault": false
+        },
+        {
+          "name": "EjectCache",
+          "line": 90,
+          "isDefault": false
+        },
+        {
+          "name": "Slice",
+          "line": 94,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "ReadAt",
+          "callee": "func() {\n\t\tif r := recover(); r != nil {\n\t\t\tfmt.Fprintf(os.Stdout, \"[read panic recovered]: [%d, %d] -> %v\\n\", off, len(p), r)\n\t\t}\n\t}",
+          "lineNumber": 23
+        },
+        {
+          "caller": "ReadAt",
+          "callee": "recover",
+          "lineNumber": 24
+        },
+        {
+          "caller": "ReadAt",
+          "callee": "fmt.Fprintf",
+          "lineNumber": 25
+        },
+        {
+          "caller": "ReadAt",
+          "callee": "len",
+          "lineNumber": 25
+        },
+        {
+          "caller": "ReadAt",
+          "callee": "fmt.Fprintf",
+          "lineNumber": 29
+        },
+        {
+          "caller": "ReadAt",
+          "callee": "len",
+          "lineNumber": 29
+        },
+        {
+          "caller": "ReadAt",
+          "callee": "l.overlay.ReadAt",
+          "lineNumber": 31
+        },
+        {
+          "caller": "ReadAt",
+          "callee": "fmt.Fprintf",
+          "lineNumber": 33
+        },
+        {
+          "caller": "ReadAt",
+          "callee": "len",
+          "lineNumber": 33
+        },
+        {
+          "caller": "WriteAt",
+          "callee": "func() {\n\t\tif r := recover(); r != nil {\n\t\t\tfmt.Fprintf(os.Stdout, \"[write panic recovered]: [%d, %d] -> %v\\n\", off, len(p), r)\n\t\t}\n\t}",
+          "lineNumber": 39
+        },
+        {
+          "caller": "WriteAt",
+          "callee": "recover",
+          "lineNumber": 40
+        },
+        {
+          "caller": "WriteAt",
+          "callee": "fmt.Fprintf",
+          "lineNumber": 41
+        },
+        {
+          "caller": "WriteAt",
+          "callee": "len",
+          "lineNumber": 41
+        },
+        {
+          "caller": "WriteAt",
+          "callee": "fmt.Fprintf",
+          "lineNumber": 45
+        },
+        {
+          "caller": "WriteAt",
+          "callee": "len",
+          "lineNumber": 45
+        },
+        {
+          "caller": "WriteAt",
+          "callee": "l.overlay.WriteAt",
+          "lineNumber": 47
+        },
+        {
+          "caller": "WriteAt",
+          "callee": "fmt.Fprintf",
+          "lineNumber": 49
+        },
+        {
+          "caller": "WriteAt",
+          "callee": "len",
+          "lineNumber": 49
+        },
+        {
+          "caller": "WriteZeroesAt",
+          "callee": "func() {\n\t\tif r := recover(); r != nil {\n\t\t\tfmt.Fprintf(os.Stdout, \"[write_zeroes panic recovered]: [%d, %d] -> %v\\n\", off, length, r)\n\t\t}\n\t}",
+          "lineNumber": 55
+        },
+        {
+          "caller": "WriteZeroesAt",
+          "callee": "recover",
+          "lineNumber": 56
+        },
+        {
+          "caller": "WriteZeroesAt",
+          "callee": "fmt.Fprintf",
+          "lineNumber": 57
+        },
+        {
+          "caller": "WriteZeroesAt",
+          "callee": "fmt.Fprintf",
+          "lineNumber": 61
+        },
+        {
+          "caller": "WriteZeroesAt",
+          "callee": "l.overlay.WriteZeroesAt",
+          "lineNumber": 63
+        },
+        {
+          "caller": "WriteZeroesAt",
+          "callee": "fmt.Fprintf",
+          "lineNumber": 65
+        },
+        {
+          "caller": "Size",
+          "callee": "l.overlay.Size",
+          "lineNumber": 71
+        },
+        {
+          "caller": "BlockSize",
+          "callee": "l.overlay.BlockSize",
+          "lineNumber": 75
+        },
+        {
+          "caller": "Header",
+          "callee": "l.overlay.Header",
+          "lineNumber": 79
+        },
+        {
+          "caller": "SwapHeader",
+          "callee": "l.overlay.SwapHeader",
+          "lineNumber": 83
+        },
+        {
+          "caller": "Close",
+          "callee": "l.overlay.Close",
+          "lineNumber": 87
+        },
+        {
+          "caller": "EjectCache",
+          "callee": "l.overlay.EjectCache",
+          "lineNumber": 91
+        },
+        {
+          "caller": "Slice",
+          "callee": "l.overlay.Slice",
+          "lineNumber": 95
+        }
+      ],
+      "metrics": {
+        "importCount": 21,
+        "exportCount": 12,
+        "functionCount": 11,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/nbd/testutils/zero_device.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 77,
+      "nonEmptyLines": 61,
+      "functions": [
+        {
+          "name": "NewZeroDevice",
+          "startLine": 23,
+          "endLine": 47,
+          "params": [
+            "size",
+            "blockSize"
+          ]
+        },
+        {
+          "name": "ReadAt",
+          "startLine": 49,
+          "endLine": 53,
+          "params": [
+            "_",
+            "p",
+            "_"
+          ]
+        },
+        {
+          "name": "BlockSize",
+          "startLine": 55,
+          "endLine": 57,
+          "params": []
+        },
+        {
+          "name": "Slice",
+          "startLine": 59,
+          "endLine": 61,
+          "params": [
+            "_",
+            "_",
+            "length"
+          ]
+        },
+        {
+          "name": "Header",
+          "startLine": 63,
+          "endLine": 65,
+          "params": []
+        },
+        {
+          "name": "SwapHeader",
+          "startLine": 67,
+          "endLine": 69,
+          "params": [
+            "h"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 71,
+          "endLine": 73,
+          "params": []
+        },
+        {
+          "name": "Size",
+          "startLine": 75,
+          "endLine": 77,
+          "params": [
+            "_"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ZeroDevice",
+          "startLine": 17,
+          "endLine": 21,
+          "methods": [
+            "ReadAt",
+            "BlockSize",
+            "Slice",
+            "Header",
+            "SwapHeader",
+            "Close",
+            "Size"
+          ],
+          "properties": [
+            "blockSize",
+            "size",
+            "header"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ZeroDevice",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "NewZeroDevice",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "ReadAt",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "BlockSize",
+          "line": 55,
+          "isDefault": false
+        },
+        {
+          "name": "Slice",
+          "line": 59,
+          "isDefault": false
+        },
+        {
+          "name": "Header",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "SwapHeader",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 71,
+          "isDefault": false
+        },
+        {
+          "name": "Size",
+          "line": 75,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewZeroDevice",
+          "callee": "header.NewHeader",
+          "lineNumber": 24
+        },
+        {
+          "caller": "NewZeroDevice",
+          "callee": "header.NewTemplateMetadata",
+          "lineNumber": 24
+        },
+        {
+          "caller": "NewZeroDevice",
+          "callee": "uint64",
+          "lineNumber": 26
+        },
+        {
+          "caller": "NewZeroDevice",
+          "callee": "uint64",
+          "lineNumber": 27
+        },
+        {
+          "caller": "NewZeroDevice",
+          "callee": "uint64",
+          "lineNumber": 32
+        },
+        {
+          "caller": "NewZeroDevice",
+          "callee": "fmt.Errorf",
+          "lineNumber": 39
+        },
+        {
+          "caller": "ReadAt",
+          "callee": "clear",
+          "lineNumber": 50
+        },
+        {
+          "caller": "ReadAt",
+          "callee": "len",
+          "lineNumber": 52
+        },
+        {
+          "caller": "Slice",
+          "callee": "make",
+          "lineNumber": 60
+        }
+      ],
+      "metrics": {
+        "importCount": 21,
+        "exportCount": 9,
+        "functionCount": 8,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/rootfs/direct.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 175,
+      "nonEmptyLines": 136,
+      "functions": [
+        {
+          "name": "NewDirectProvider",
+          "startLine": 37,
+          "endLine": 66,
+          "params": [
+            "ctx",
+            "rootfs",
+            "path"
+          ]
+        },
+        {
+          "name": "Start",
+          "startLine": 68,
+          "endLine": 70,
+          "params": [
+            "_"
+          ]
+        },
+        {
+          "name": "ExportDiff",
+          "startLine": 72,
+          "endLine": 114,
+          "params": [
+            "ctx",
+            "out",
+            "stopSandbox"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 116,
+          "endLine": 124,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "Path",
+          "startLine": 126,
+          "endLine": 128,
+          "params": []
+        },
+        {
+          "name": "exportToDiff",
+          "startLine": 130,
+          "endLine": 158,
+          "params": [
+            "ctx",
+            "out"
+          ]
+        },
+        {
+          "name": "sync",
+          "startLine": 160,
+          "endLine": 167,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "ReadAt",
+          "startLine": 173,
+          "endLine": 175,
+          "params": [
+            "_",
+            "p",
+            "off"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "DirectProvider",
+          "startLine": 23,
+          "endLine": 35,
+          "methods": [
+            "Start",
+            "ExportDiff",
+            "Close",
+            "Path",
+            "exportToDiff",
+            "sync"
+          ],
+          "properties": [
+            "header",
+            "path",
+            "blockSize",
+            "finishedOperations",
+            "closed",
+            "mmap"
+          ]
+        },
+        {
+          "name": "FileCtx",
+          "startLine": 169,
+          "endLine": 171,
+          "methods": [
+            "ReadAt"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "DirectProvider",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "NewDirectProvider",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "Start",
+          "line": 68,
+          "isDefault": false
+        },
+        {
+          "name": "ExportDiff",
+          "line": 72,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 116,
+          "isDefault": false
+        },
+        {
+          "name": "Path",
+          "line": 126,
+          "isDefault": false
+        },
+        {
+          "name": "FileCtx",
+          "line": 169,
+          "isDefault": false
+        },
+        {
+          "name": "ReadAt",
+          "line": 173,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewDirectProvider",
+          "callee": "rootfs.BlockSize",
+          "lineNumber": 38
+        },
+        {
+          "caller": "NewDirectProvider",
+          "callee": "os.OpenFile",
+          "lineNumber": 40
+        },
+        {
+          "caller": "NewDirectProvider",
+          "callee": "fmt.Errorf",
+          "lineNumber": 42
+        },
+        {
+          "caller": "NewDirectProvider",
+          "callee": "f.Close",
+          "lineNumber": 44
+        },
+        {
+          "caller": "NewDirectProvider",
+          "callee": "rootfs.Size",
+          "lineNumber": 46
+        },
+        {
+          "caller": "NewDirectProvider",
+          "callee": "fmt.Errorf",
+          "lineNumber": 48
+        },
+        {
+          "caller": "NewDirectProvider",
+          "callee": "mmap.MapRegion",
+          "lineNumber": 51
+        },
+        {
+          "caller": "NewDirectProvider",
+          "callee": "int",
+          "lineNumber": 51
+        },
+        {
+          "caller": "NewDirectProvider",
+          "callee": "fmt.Errorf",
+          "lineNumber": 53
+        },
+        {
+          "caller": "NewDirectProvider",
+          "callee": "rootfs.Header",
+          "lineNumber": 57
+        },
+        {
+          "caller": "NewDirectProvider",
+          "callee": "make",
+          "lineNumber": 62
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "tracer.Start",
+          "lineNumber": 77
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "childSpan.End",
+          "lineNumber": 78
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "o.closed.CompareAndSwap",
+          "lineNumber": 80
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "errors.New",
+          "lineNumber": 81
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "func() {\n\t\terr := o.mmap.Unmap()\n\t\tif err != nil {\n\t\t\tlogger.L().Error(ctx, \"error unmapping mmap\", zap.Error(err))\n\t\t}\n\t}",
+          "lineNumber": 84
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "o.mmap.Unmap",
+          "lineNumber": 85
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "logger.L().Error",
+          "lineNumber": 87
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "logger.L",
+          "lineNumber": 87
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "zap.Error",
+          "lineNumber": 87
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "func() {\n\t\terr := stopSandbox(ctx)\n\t\tif err != nil {\n\t\t\tlogger.L().Error(ctx, \"error stopping sandbox on cow export\", zap.Error(err))\n\t\t}\n\t}",
+          "lineNumber": 92
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "stopSandbox",
+          "lineNumber": 93
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "logger.L().Error",
+          "lineNumber": 95
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "logger.L",
+          "lineNumber": 95
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "zap.Error",
+          "lineNumber": 95
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "ctx.Done",
+          "lineNumber": 101
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "errors.New",
+          "lineNumber": 102
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "telemetry.ReportEvent",
+          "lineNumber": 104
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "o.exportToDiff",
+          "lineNumber": 106
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "fmt.Errorf",
+          "lineNumber": 108
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "telemetry.ReportEvent",
+          "lineNumber": 111
+        },
+        {
+          "caller": "Close",
+          "callee": "o.closed.CompareAndSwap",
+          "lineNumber": 119
+        },
+        {
+          "caller": "Close",
+          "callee": "errors.Join",
+          "lineNumber": 123
+        },
+        {
+          "caller": "Close",
+          "callee": "o.sync",
+          "lineNumber": 123
+        },
+        {
+          "caller": "Close",
+          "callee": "o.mmap.Unmap",
+          "lineNumber": 123
+        },
+        {
+          "caller": "exportToDiff",
+          "callee": "o.sync",
+          "lineNumber": 131
+        },
+        {
+          "caller": "exportToDiff",
+          "callee": "fmt.Errorf",
+          "lineNumber": 133
+        },
+        {
+          "caller": "exportToDiff",
+          "callee": "header.NewDiffMetadataBuilder",
+          "lineNumber": 136
+        },
+        {
+          "caller": "exportToDiff",
+          "callee": "os.Open",
+          "lineNumber": 138
+        },
+        {
+          "caller": "exportToDiff",
+          "callee": "fmt.Errorf",
+          "lineNumber": 140
+        },
+        {
+          "caller": "exportToDiff",
+          "callee": "f.Close",
+          "lineNumber": 142
+        },
+        {
+          "caller": "exportToDiff",
+          "callee": "make",
+          "lineNumber": 144
+        },
+        {
+          "caller": "exportToDiff",
+          "callee": "int64",
+          "lineNumber": 145
+        },
+        {
+          "caller": "exportToDiff",
+          "callee": "int64",
+          "lineNumber": 145
+        },
+        {
+          "caller": "exportToDiff",
+          "callee": "f.ReadAt",
+          "lineNumber": 146
+        },
+        {
+          "caller": "exportToDiff",
+          "callee": "fmt.Errorf",
+          "lineNumber": 148
+        },
+        {
+          "caller": "exportToDiff",
+          "callee": "builder.Process",
+          "lineNumber": 151
+        },
+        {
+          "caller": "exportToDiff",
+          "callee": "fmt.Errorf",
+          "lineNumber": 153
+        },
+        {
+          "caller": "exportToDiff",
+          "callee": "builder.Build",
+          "lineNumber": 157
+        },
+        {
+          "caller": "sync",
+          "callee": "o.mmap.Flush",
+          "lineNumber": 161
+        },
+        {
+          "caller": "sync",
+          "callee": "fmt.Errorf",
+          "lineNumber": 163
+        },
+        {
+          "caller": "sync",
+          "callee": "flush",
+          "lineNumber": 166
+        },
+        {
+          "caller": "ReadAt",
+          "callee": "f.File.ReadAt",
+          "lineNumber": 174
+        }
+      ],
+      "metrics": {
+        "importCount": 21,
+        "exportCount": 8,
+        "functionCount": 8,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/rootfs/nbd.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 187,
+      "nonEmptyLines": 147,
+      "functions": [
+        {
+          "name": "NewNBDProvider",
+          "startLine": 36,
+          "endLine": 62,
+          "params": [
+            "ctx",
+            "rootfs",
+            "cachePath",
+            "devicePool",
+            "featureFlags"
+          ]
+        },
+        {
+          "name": "Start",
+          "startLine": 64,
+          "endLine": 71,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "ExportDiff",
+          "startLine": 73,
+          "endLine": 128,
+          "params": [
+            "ctx",
+            "out",
+            "closeSandbox"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 130,
+          "endLine": 156,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "Path",
+          "startLine": 158,
+          "endLine": 160,
+          "params": []
+        },
+        {
+          "name": "sync",
+          "startLine": 162,
+          "endLine": 187,
+          "params": [
+            "ctx"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "NBDProvider",
+          "startLine": 23,
+          "endLine": 34,
+          "methods": [
+            "Start",
+            "ExportDiff",
+            "Close",
+            "Path",
+            "sync"
+          ],
+          "properties": [
+            "overlay",
+            "mnt",
+            "featureFlags",
+            "ready",
+            "blockSize",
+            "finishedOperations",
+            "devicePool"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "NBDProvider",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "NewNBDProvider",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "Start",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "ExportDiff",
+          "line": 73,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 130,
+          "isDefault": false
+        },
+        {
+          "name": "Path",
+          "line": 158,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewNBDProvider",
+          "callee": "rootfs.Size",
+          "lineNumber": 37
+        },
+        {
+          "caller": "NewNBDProvider",
+          "callee": "fmt.Errorf",
+          "lineNumber": 39
+        },
+        {
+          "caller": "NewNBDProvider",
+          "callee": "rootfs.BlockSize",
+          "lineNumber": 42
+        },
+        {
+          "caller": "NewNBDProvider",
+          "callee": "block.NewCache",
+          "lineNumber": 44
+        },
+        {
+          "caller": "NewNBDProvider",
+          "callee": "fmt.Errorf",
+          "lineNumber": 46
+        },
+        {
+          "caller": "NewNBDProvider",
+          "callee": "block.NewOverlay",
+          "lineNumber": 49
+        },
+        {
+          "caller": "NewNBDProvider",
+          "callee": "nbd.NewDirectPathMount",
+          "lineNumber": 51
+        },
+        {
+          "caller": "NewNBDProvider",
+          "callee": "utils.NewSetOnce[string]",
+          "lineNumber": 57
+        },
+        {
+          "caller": "NewNBDProvider",
+          "callee": "make",
+          "lineNumber": 58
+        },
+        {
+          "caller": "Start",
+          "callee": "o.mnt.Open",
+          "lineNumber": 65
+        },
+        {
+          "caller": "Start",
+          "callee": "o.ready.SetError",
+          "lineNumber": 67
+        },
+        {
+          "caller": "Start",
+          "callee": "fmt.Errorf",
+          "lineNumber": 67
+        },
+        {
+          "caller": "Start",
+          "callee": "o.ready.SetValue",
+          "lineNumber": 70
+        },
+        {
+          "caller": "Start",
+          "callee": "nbd.GetDevicePath",
+          "lineNumber": 70
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "tracer.Start",
+          "lineNumber": 78
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "span.End",
+          "lineNumber": 79
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "o.overlay.EjectCache",
+          "lineNumber": 81
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "fmt.Errorf",
+          "lineNumber": 83
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "func() {\n\t\terr := closeSandbox(ctx)\n\t\tif err != nil {\n\t\t\tlogger.L().Error(ctx, \"error stopping sandbox on cow export\", zap.Error(err))\n\t\t}\n\t}",
+          "lineNumber": 87
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "closeSandbox",
+          "lineNumber": 88
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "logger.L().Error",
+          "lineNumber": 90
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "logger.L",
+          "lineNumber": 90
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "zap.Error",
+          "lineNumber": 90
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "ctx.Done",
+          "lineNumber": 96
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "cache.Close",
+          "lineNumber": 99
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "logger.L().Warn",
+          "lineNumber": 101
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "logger.L",
+          "lineNumber": 101
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "zap.Error",
+          "lineNumber": 101
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "errors.New",
+          "lineNumber": 104
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "telemetry.ReportEvent",
+          "lineNumber": 106
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "cache.ExportToDiff",
+          "lineNumber": 108
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "cache.Close",
+          "lineNumber": 112
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "logger.L().Warn",
+          "lineNumber": 114
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "logger.L",
+          "lineNumber": 114
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "zap.Error",
+          "lineNumber": 114
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "fmt.Errorf",
+          "lineNumber": 117
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "telemetry.ReportEvent",
+          "lineNumber": 120
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "cache.Close",
+          "lineNumber": 122
+        },
+        {
+          "caller": "ExportDiff",
+          "callee": "fmt.Errorf",
+          "lineNumber": 124
+        },
+        {
+          "caller": "Close",
+          "callee": "tracer.Start",
+          "lineNumber": 131
+        },
+        {
+          "caller": "Close",
+          "callee": "span.End",
+          "lineNumber": 132
+        },
+        {
+          "caller": "Close",
+          "callee": "o.sync",
+          "lineNumber": 136
+        },
+        {
+          "caller": "Close",
+          "callee": "append",
+          "lineNumber": 138
+        },
+        {
+          "caller": "Close",
+          "callee": "fmt.Errorf",
+          "lineNumber": 138
+        },
+        {
+          "caller": "Close",
+          "callee": "o.mnt.Close",
+          "lineNumber": 141
+        },
+        {
+          "caller": "Close",
+          "callee": "append",
+          "lineNumber": 143
+        },
+        {
+          "caller": "Close",
+          "callee": "fmt.Errorf",
+          "lineNumber": 143
+        },
+        {
+          "caller": "Close",
+          "callee": "o.overlay.Close",
+          "lineNumber": 148
+        },
+        {
+          "caller": "Close",
+          "callee": "append",
+          "lineNumber": 150
+        },
+        {
+          "caller": "Close",
+          "callee": "fmt.Errorf",
+          "lineNumber": 150
+        },
+        {
+          "caller": "Close",
+          "callee": "logger.L().Info",
+          "lineNumber": 153
+        },
+        {
+          "caller": "Close",
+          "callee": "logger.L",
+          "lineNumber": 153
+        },
+        {
+          "caller": "Close",
+          "callee": "errors.Join",
+          "lineNumber": 155
+        },
+        {
+          "caller": "Path",
+          "callee": "o.ready.Wait",
+          "lineNumber": 159
+        },
+        {
+          "caller": "sync",
+          "callee": "tracer.Start",
+          "lineNumber": 163
+        },
+        {
+          "caller": "sync",
+          "callee": "span.End",
+          "lineNumber": 164
+        },
+        {
+          "caller": "sync",
+          "callee": "o.Path",
+          "lineNumber": 166
+        },
+        {
+          "caller": "sync",
+          "callee": "fmt.Errorf",
+          "lineNumber": 168
+        },
+        {
+          "caller": "sync",
+          "callee": "os.Open",
+          "lineNumber": 171
+        },
+        {
+          "caller": "sync",
+          "callee": "fmt.Errorf",
+          "lineNumber": 173
+        },
+        {
+          "caller": "sync",
+          "callee": "func() {\n\t\terr := file.Close()\n\t\tif err != nil {\n\t\t\tlogger.L().Error(ctx, \"failed to close nbd file\", zap.Error(err))\n\t\t}\n\t}",
+          "lineNumber": 175
+        },
+        {
+          "caller": "sync",
+          "callee": "file.Close",
+          "lineNumber": 176
+        },
+        {
+          "caller": "sync",
+          "callee": "logger.L().Error",
+          "lineNumber": 178
+        },
+        {
+          "caller": "sync",
+          "callee": "logger.L",
+          "lineNumber": 178
+        },
+        {
+          "caller": "sync",
+          "callee": "zap.Error",
+          "lineNumber": 178
+        },
+        {
+          "caller": "sync",
+          "callee": "unix.IoctlSetInt",
+          "lineNumber": 182
+        },
+        {
+          "caller": "sync",
+          "callee": "int",
+          "lineNumber": 182
+        },
+        {
+          "caller": "sync",
+          "callee": "file.Fd",
+          "lineNumber": 182
+        },
+        {
+          "caller": "sync",
+          "callee": "fmt.Errorf",
+          "lineNumber": 183
+        },
+        {
+          "caller": "sync",
+          "callee": "flush",
+          "lineNumber": 186
+        }
+      ],
+      "metrics": {
+        "importCount": 31,
+        "exportCount": 6,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/template/local_template.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 62,
+      "nonEmptyLines": 48,
+      "functions": [
+        {
+          "name": "NewLocalTemplate",
+          "startLine": 21,
+          "endLine": 31,
+          "params": [
+            "paths",
+            "rootfs",
+            "memfile"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 33,
+          "endLine": 35,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "Files",
+          "startLine": 37,
+          "endLine": 39,
+          "params": []
+        },
+        {
+          "name": "Memfile",
+          "startLine": 41,
+          "endLine": 46,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "Rootfs",
+          "startLine": 48,
+          "endLine": 50,
+          "params": []
+        },
+        {
+          "name": "Snapfile",
+          "startLine": 52,
+          "endLine": 54,
+          "params": []
+        },
+        {
+          "name": "Metadata",
+          "startLine": 56,
+          "endLine": 58,
+          "params": []
+        },
+        {
+          "name": "UpdateMetadata",
+          "startLine": 60,
+          "endLine": 62,
+          "params": [
+            "_"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "LocalTemplate",
+          "startLine": 14,
+          "endLine": 19,
+          "methods": [
+            "Close",
+            "Files",
+            "Memfile",
+            "Rootfs",
+            "Snapfile",
+            "Metadata",
+            "UpdateMetadata"
+          ],
+          "properties": [
+            "paths",
+            "memfile",
+            "rootfs"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "LocalTemplate",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "NewLocalTemplate",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "Files",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "Memfile",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "Rootfs",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "Snapfile",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "Metadata",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateMetadata",
+          "line": 60,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Close",
+          "callee": "closeTemplate",
+          "lineNumber": 34
+        },
+        {
+          "caller": "Memfile",
+          "callee": "tracer.Start",
+          "lineNumber": 42
+        },
+        {
+          "caller": "Memfile",
+          "callee": "span.End",
+          "lineNumber": 43
+        },
+        {
+          "caller": "Snapfile",
+          "callee": "errors.New",
+          "lineNumber": 53
+        },
+        {
+          "caller": "Metadata",
+          "callee": "errors.New",
+          "lineNumber": 57
+        },
+        {
+          "caller": "UpdateMetadata",
+          "callee": "errors.New",
+          "lineNumber": 61
+        }
+      ],
+      "metrics": {
+        "importCount": 25,
+        "exportCount": 9,
+        "functionCount": 8,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/template/mask_template.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 80,
+      "nonEmptyLines": 60,
+      "functions": [
+        {
+          "name": "WithMemfile",
+          "startLine": 21,
+          "endLine": 25,
+          "params": [
+            "memfile"
+          ]
+        },
+        {
+          "name": "NewMaskTemplate",
+          "startLine": 27,
+          "endLine": 41,
+          "params": [
+            "template"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 43,
+          "endLine": 49,
+          "params": [
+            "_"
+          ]
+        },
+        {
+          "name": "Files",
+          "startLine": 51,
+          "endLine": 53,
+          "params": []
+        },
+        {
+          "name": "Memfile",
+          "startLine": 55,
+          "endLine": 64,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "Rootfs",
+          "startLine": 66,
+          "endLine": 68,
+          "params": []
+        },
+        {
+          "name": "Snapfile",
+          "startLine": 70,
+          "endLine": 72,
+          "params": []
+        },
+        {
+          "name": "Metadata",
+          "startLine": 74,
+          "endLine": 76,
+          "params": []
+        },
+        {
+          "name": "UpdateMetadata",
+          "startLine": 78,
+          "endLine": 80,
+          "params": [
+            "meta"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "MaskTemplate",
+          "startLine": 13,
+          "endLine": 17,
+          "methods": [
+            "Close",
+            "Files",
+            "Memfile",
+            "Rootfs",
+            "Snapfile",
+            "Metadata",
+            "UpdateMetadata"
+          ],
+          "properties": [
+            "template",
+            "memfile"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "MaskTemplate",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "WithMemfile",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "NewMaskTemplate",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "Files",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "Memfile",
+          "line": 55,
+          "isDefault": false
+        },
+        {
+          "name": "Rootfs",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "Snapfile",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "Metadata",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateMetadata",
+          "line": 78,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewMaskTemplate",
+          "callee": "opt",
+          "lineNumber": 37
+        },
+        {
+          "caller": "Close",
+          "callee": "(*c.memfile).Close",
+          "lineNumber": 45
+        },
+        {
+          "caller": "Files",
+          "callee": "c.template.Files",
+          "lineNumber": 52
+        },
+        {
+          "caller": "Memfile",
+          "callee": "tracer.Start",
+          "lineNumber": 56
+        },
+        {
+          "caller": "Memfile",
+          "callee": "span.End",
+          "lineNumber": 57
+        },
+        {
+          "caller": "Memfile",
+          "callee": "c.template.Memfile",
+          "lineNumber": 63
+        },
+        {
+          "caller": "Rootfs",
+          "callee": "c.template.Rootfs",
+          "lineNumber": 67
+        },
+        {
+          "caller": "Snapfile",
+          "callee": "c.template.Snapfile",
+          "lineNumber": 71
+        },
+        {
+          "caller": "Metadata",
+          "callee": "c.template.Metadata",
+          "lineNumber": 75
+        },
+        {
+          "caller": "UpdateMetadata",
+          "callee": "c.template.UpdateMetadata",
+          "lineNumber": 79
+        }
+      ],
+      "metrics": {
+        "importCount": 25,
+        "exportCount": 10,
+        "functionCount": 9,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/template/mocks/mocktemplate.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 415,
+      "nonEmptyLines": 349,
+      "functions": [
+        {
+          "name": "NewMockTemplate",
+          "startLine": 21,
+          "endLine": 31,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "EXPECT",
+          "startLine": 42,
+          "endLine": 44,
+          "params": []
+        },
+        {
+          "name": "Close",
+          "startLine": 47,
+          "endLine": 61,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 70,
+          "endLine": 72,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "Run",
+          "startLine": 74,
+          "endLine": 85,
+          "params": [
+            "run"
+          ]
+        },
+        {
+          "name": "Return",
+          "startLine": 87,
+          "endLine": 90,
+          "params": [
+            "err"
+          ]
+        },
+        {
+          "name": "RunAndReturn",
+          "startLine": 92,
+          "endLine": 95,
+          "params": [
+            "run"
+          ]
+        },
+        {
+          "name": "Files",
+          "startLine": 98,
+          "endLine": 112,
+          "params": []
+        },
+        {
+          "name": "Files",
+          "startLine": 120,
+          "endLine": 122,
+          "params": []
+        },
+        {
+          "name": "Run",
+          "startLine": 124,
+          "endLine": 129,
+          "params": [
+            "run"
+          ]
+        },
+        {
+          "name": "Return",
+          "startLine": 131,
+          "endLine": 134,
+          "params": [
+            "cachePaths"
+          ]
+        },
+        {
+          "name": "RunAndReturn",
+          "startLine": 136,
+          "endLine": 139,
+          "params": [
+            "run"
+          ]
+        },
+        {
+          "name": "Memfile",
+          "startLine": 142,
+          "endLine": 167,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "Memfile",
+          "startLine": 176,
+          "endLine": 178,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "Run",
+          "startLine": 180,
+          "endLine": 191,
+          "params": [
+            "run"
+          ]
+        },
+        {
+          "name": "Return",
+          "startLine": 193,
+          "endLine": 196,
+          "params": [
+            "readonlyDevice",
+            "err"
+          ]
+        },
+        {
+          "name": "RunAndReturn",
+          "startLine": 198,
+          "endLine": 201,
+          "params": [
+            "run"
+          ]
+        },
+        {
+          "name": "Metadata",
+          "startLine": 204,
+          "endLine": 227,
+          "params": []
+        },
+        {
+          "name": "Metadata",
+          "startLine": 235,
+          "endLine": 237,
+          "params": []
+        },
+        {
+          "name": "Run",
+          "startLine": 239,
+          "endLine": 244,
+          "params": [
+            "run"
+          ]
+        },
+        {
+          "name": "Return",
+          "startLine": 246,
+          "endLine": 249,
+          "params": [
+            "template",
+            "err"
+          ]
+        },
+        {
+          "name": "RunAndReturn",
+          "startLine": 251,
+          "endLine": 254,
+          "params": [
+            "run"
+          ]
+        },
+        {
+          "name": "Rootfs",
+          "startLine": 257,
+          "endLine": 282,
+          "params": []
+        },
+        {
+          "name": "Rootfs",
+          "startLine": 290,
+          "endLine": 292,
+          "params": []
+        },
+        {
+          "name": "Run",
+          "startLine": 294,
+          "endLine": 299,
+          "params": [
+            "run"
+          ]
+        },
+        {
+          "name": "Return",
+          "startLine": 301,
+          "endLine": 304,
+          "params": [
+            "readonlyDevice",
+            "err"
+          ]
+        },
+        {
+          "name": "RunAndReturn",
+          "startLine": 306,
+          "endLine": 309,
+          "params": [
+            "run"
+          ]
+        },
+        {
+          "name": "Snapfile",
+          "startLine": 312,
+          "endLine": 337,
+          "params": []
+        },
+        {
+          "name": "Snapfile",
+          "startLine": 345,
+          "endLine": 347,
+          "params": []
+        },
+        {
+          "name": "Run",
+          "startLine": 349,
+          "endLine": 354,
+          "params": [
+            "run"
+          ]
+        },
+        {
+          "name": "Return",
+          "startLine": 356,
+          "endLine": 359,
+          "params": [
+            "file",
+            "err"
+          ]
+        },
+        {
+          "name": "RunAndReturn",
+          "startLine": 361,
+          "endLine": 364,
+          "params": [
+            "run"
+          ]
+        },
+        {
+          "name": "UpdateMetadata",
+          "startLine": 367,
+          "endLine": 381,
+          "params": [
+            "meta"
+          ]
+        },
+        {
+          "name": "UpdateMetadata",
+          "startLine": 390,
+          "endLine": 392,
+          "params": [
+            "meta"
+          ]
+        },
+        {
+          "name": "Run",
+          "startLine": 394,
+          "endLine": 405,
+          "params": [
+            "run"
+          ]
+        },
+        {
+          "name": "Return",
+          "startLine": 407,
+          "endLine": 410,
+          "params": [
+            "err"
+          ]
+        },
+        {
+          "name": "RunAndReturn",
+          "startLine": 412,
+          "endLine": 415,
+          "params": [
+            "run"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "MockTemplate",
+          "startLine": 34,
+          "endLine": 36,
+          "methods": [
+            "EXPECT",
+            "Close",
+            "Files",
+            "Memfile",
+            "Metadata",
+            "Rootfs",
+            "Snapfile",
+            "UpdateMetadata"
+          ],
+          "properties": []
+        },
+        {
+          "name": "MockTemplate_Expecter",
+          "startLine": 38,
+          "endLine": 40,
+          "methods": [
+            "Close",
+            "Files",
+            "Memfile",
+            "Metadata",
+            "Rootfs",
+            "Snapfile",
+            "UpdateMetadata"
+          ],
+          "properties": [
+            "mock"
+          ]
+        },
+        {
+          "name": "MockTemplate_Close_Call",
+          "startLine": 64,
+          "endLine": 66,
+          "methods": [
+            "Run",
+            "Return",
+            "RunAndReturn"
+          ],
+          "properties": []
+        },
+        {
+          "name": "MockTemplate_Files_Call",
+          "startLine": 115,
+          "endLine": 117,
+          "methods": [
+            "Run",
+            "Return",
+            "RunAndReturn"
+          ],
+          "properties": []
+        },
+        {
+          "name": "MockTemplate_Memfile_Call",
+          "startLine": 170,
+          "endLine": 172,
+          "methods": [
+            "Run",
+            "Return",
+            "RunAndReturn"
+          ],
+          "properties": []
+        },
+        {
+          "name": "MockTemplate_Metadata_Call",
+          "startLine": 230,
+          "endLine": 232,
+          "methods": [
+            "Run",
+            "Return",
+            "RunAndReturn"
+          ],
+          "properties": []
+        },
+        {
+          "name": "MockTemplate_Rootfs_Call",
+          "startLine": 285,
+          "endLine": 287,
+          "methods": [
+            "Run",
+            "Return",
+            "RunAndReturn"
+          ],
+          "properties": []
+        },
+        {
+          "name": "MockTemplate_Snapfile_Call",
+          "startLine": 340,
+          "endLine": 342,
+          "methods": [
+            "Run",
+            "Return",
+            "RunAndReturn"
+          ],
+          "properties": []
+        },
+        {
+          "name": "MockTemplate_UpdateMetadata_Call",
+          "startLine": 384,
+          "endLine": 386,
+          "methods": [
+            "Run",
+            "Return",
+            "RunAndReturn"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "NewMockTemplate",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "MockTemplate",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "MockTemplate_Expecter",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "EXPECT",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "MockTemplate_Close_Call",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "Run",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "Return",
+          "line": 87,
+          "isDefault": false
+        },
+        {
+          "name": "RunAndReturn",
+          "line": 92,
+          "isDefault": false
+        },
+        {
+          "name": "Files",
+          "line": 98,
+          "isDefault": false
+        },
+        {
+          "name": "MockTemplate_Files_Call",
+          "line": 115,
+          "isDefault": false
+        },
+        {
+          "name": "Files",
+          "line": 120,
+          "isDefault": false
+        },
+        {
+          "name": "Run",
+          "line": 124,
+          "isDefault": false
+        },
+        {
+          "name": "Return",
+          "line": 131,
+          "isDefault": false
+        },
+        {
+          "name": "RunAndReturn",
+          "line": 136,
+          "isDefault": false
+        },
+        {
+          "name": "Memfile",
+          "line": 142,
+          "isDefault": false
+        },
+        {
+          "name": "MockTemplate_Memfile_Call",
+          "line": 170,
+          "isDefault": false
+        },
+        {
+          "name": "Memfile",
+          "line": 176,
+          "isDefault": false
+        },
+        {
+          "name": "Run",
+          "line": 180,
+          "isDefault": false
+        },
+        {
+          "name": "Return",
+          "line": 193,
+          "isDefault": false
+        },
+        {
+          "name": "RunAndReturn",
+          "line": 198,
+          "isDefault": false
+        },
+        {
+          "name": "Metadata",
+          "line": 204,
+          "isDefault": false
+        },
+        {
+          "name": "MockTemplate_Metadata_Call",
+          "line": 230,
+          "isDefault": false
+        },
+        {
+          "name": "Metadata",
+          "line": 235,
+          "isDefault": false
+        },
+        {
+          "name": "Run",
+          "line": 239,
+          "isDefault": false
+        },
+        {
+          "name": "Return",
+          "line": 246,
+          "isDefault": false
+        },
+        {
+          "name": "RunAndReturn",
+          "line": 251,
+          "isDefault": false
+        },
+        {
+          "name": "Rootfs",
+          "line": 257,
+          "isDefault": false
+        },
+        {
+          "name": "MockTemplate_Rootfs_Call",
+          "line": 285,
+          "isDefault": false
+        },
+        {
+          "name": "Rootfs",
+          "line": 290,
+          "isDefault": false
+        },
+        {
+          "name": "Run",
+          "line": 294,
+          "isDefault": false
+        },
+        {
+          "name": "Return",
+          "line": 301,
+          "isDefault": false
+        },
+        {
+          "name": "RunAndReturn",
+          "line": 306,
+          "isDefault": false
+        },
+        {
+          "name": "Snapfile",
+          "line": 312,
+          "isDefault": false
+        },
+        {
+          "name": "MockTemplate_Snapfile_Call",
+          "line": 340,
+          "isDefault": false
+        },
+        {
+          "name": "Snapfile",
+          "line": 345,
+          "isDefault": false
+        },
+        {
+          "name": "Run",
+          "line": 349,
+          "isDefault": false
+        },
+        {
+          "name": "Return",
+          "line": 356,
+          "isDefault": false
+        },
+        {
+          "name": "RunAndReturn",
+          "line": 361,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateMetadata",
+          "line": 367,
+          "isDefault": false
+        },
+        {
+          "name": "MockTemplate_UpdateMetadata_Call",
+          "line": 384,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateMetadata",
+          "line": 390,
+          "isDefault": false
+        },
+        {
+          "name": "Run",
+          "line": 394,
+          "isDefault": false
+        },
+        {
+          "name": "Return",
+          "line": 407,
+          "isDefault": false
+        },
+        {
+          "name": "RunAndReturn",
+          "line": 412,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewMockTemplate",
+          "callee": "mock.Mock.Test",
+          "lineNumber": 26
+        },
+        {
+          "caller": "NewMockTemplate",
+          "callee": "t.Cleanup",
+          "lineNumber": 28
+        },
+        {
+          "caller": "NewMockTemplate",
+          "callee": "mock.AssertExpectations",
+          "lineNumber": 28
+        },
+        {
+          "caller": "Close",
+          "callee": "_mock.Called",
+          "lineNumber": 48
+        },
+        {
+          "caller": "Close",
+          "callee": "len",
+          "lineNumber": 50
+        },
+        {
+          "caller": "Close",
+          "callee": "panic",
+          "lineNumber": 51
+        },
+        {
+          "caller": "Close",
+          "callee": "ret.Get",
+          "lineNumber": 55
+        },
+        {
+          "caller": "Close",
+          "callee": "returnFunc",
+          "lineNumber": 56
+        },
+        {
+          "caller": "Close",
+          "callee": "ret.Error",
+          "lineNumber": 58
+        },
+        {
+          "caller": "Close",
+          "callee": "_e.mock.On",
+          "lineNumber": 71
+        },
+        {
+          "caller": "Run",
+          "callee": "_c.Call.Run",
+          "lineNumber": 75
+        },
+        {
+          "caller": "Run",
+          "callee": "run",
+          "lineNumber": 80
+        },
+        {
+          "caller": "Return",
+          "callee": "_c.Call.Return",
+          "lineNumber": 88
+        },
+        {
+          "caller": "RunAndReturn",
+          "callee": "_c.Call.Return",
+          "lineNumber": 93
+        },
+        {
+          "caller": "Files",
+          "callee": "_mock.Called",
+          "lineNumber": 99
+        },
+        {
+          "caller": "Files",
+          "callee": "len",
+          "lineNumber": 101
+        },
+        {
+          "caller": "Files",
+          "callee": "panic",
+          "lineNumber": 102
+        },
+        {
+          "caller": "Files",
+          "callee": "ret.Get",
+          "lineNumber": 106
+        },
+        {
+          "caller": "Files",
+          "callee": "returnFunc",
+          "lineNumber": 107
+        },
+        {
+          "caller": "Files",
+          "callee": "ret.Get",
+          "lineNumber": 109
+        },
+        {
+          "caller": "Files",
+          "callee": "_e.mock.On",
+          "lineNumber": 121
+        },
+        {
+          "caller": "Run",
+          "callee": "_c.Call.Run",
+          "lineNumber": 125
+        },
+        {
+          "caller": "Run",
+          "callee": "run",
+          "lineNumber": 126
+        },
+        {
+          "caller": "Return",
+          "callee": "_c.Call.Return",
+          "lineNumber": 132
+        },
+        {
+          "caller": "RunAndReturn",
+          "callee": "_c.Call.Return",
+          "lineNumber": 137
+        },
+        {
+          "caller": "Memfile",
+          "callee": "_mock.Called",
+          "lineNumber": 143
+        },
+        {
+          "caller": "Memfile",
+          "callee": "len",
+          "lineNumber": 145
+        },
+        {
+          "caller": "Memfile",
+          "callee": "panic",
+          "lineNumber": 146
+        },
+        {
+          "caller": "Memfile",
+          "callee": "ret.Get",
+          "lineNumber": 151
+        },
+        {
+          "caller": "Memfile",
+          "callee": "returnFunc",
+          "lineNumber": 152
+        },
+        {
+          "caller": "Memfile",
+          "callee": "ret.Get",
+          "lineNumber": 154
+        },
+        {
+          "caller": "Memfile",
+          "callee": "returnFunc",
+          "lineNumber": 155
+        },
+        {
+          "caller": "Memfile",
+          "callee": "ret.Get",
+          "lineNumber": 157
+        },
+        {
+          "caller": "Memfile",
+          "callee": "ret.Get",
+          "lineNumber": 158
+        },
+        {
+          "caller": "Memfile",
+          "callee": "ret.Get",
+          "lineNumber": 161
+        },
+        {
+          "caller": "Memfile",
+          "callee": "returnFunc",
+          "lineNumber": 162
+        },
+        {
+          "caller": "Memfile",
+          "callee": "ret.Error",
+          "lineNumber": 164
+        },
+        {
+          "caller": "Memfile",
+          "callee": "_e.mock.On",
+          "lineNumber": 177
+        },
+        {
+          "caller": "Run",
+          "callee": "_c.Call.Run",
+          "lineNumber": 181
+        },
+        {
+          "caller": "Run",
+          "callee": "run",
+          "lineNumber": 186
+        },
+        {
+          "caller": "Return",
+          "callee": "_c.Call.Return",
+          "lineNumber": 194
+        },
+        {
+          "caller": "RunAndReturn",
+          "callee": "_c.Call.Return",
+          "lineNumber": 199
+        },
+        {
+          "caller": "Metadata",
+          "callee": "_mock.Called",
+          "lineNumber": 205
+        },
+        {
+          "caller": "Metadata",
+          "callee": "len",
+          "lineNumber": 207
+        },
+        {
+          "caller": "Metadata",
+          "callee": "panic",
+          "lineNumber": 208
+        },
+        {
+          "caller": "Metadata",
+          "callee": "ret.Get",
+          "lineNumber": 213
+        },
+        {
+          "caller": "Metadata",
+          "callee": "returnFunc",
+          "lineNumber": 214
+        },
+        {
+          "caller": "Metadata",
+          "callee": "ret.Get",
+          "lineNumber": 216
+        },
+        {
+          "caller": "Metadata",
+          "callee": "returnFunc",
+          "lineNumber": 217
+        },
+        {
+          "caller": "Metadata",
+          "callee": "ret.Get",
+          "lineNumber": 219
+        },
+        {
+          "caller": "Metadata",
+          "callee": "ret.Get",
+          "lineNumber": 221
+        },
+        {
+          "caller": "Metadata",
+          "callee": "returnFunc",
+          "lineNumber": 222
+        },
+        {
+          "caller": "Metadata",
+          "callee": "ret.Error",
+          "lineNumber": 224
+        },
+        {
+          "caller": "Metadata",
+          "callee": "_e.mock.On",
+          "lineNumber": 236
+        },
+        {
+          "caller": "Run",
+          "callee": "_c.Call.Run",
+          "lineNumber": 240
+        },
+        {
+          "caller": "Run",
+          "callee": "run",
+          "lineNumber": 241
+        },
+        {
+          "caller": "Return",
+          "callee": "_c.Call.Return",
+          "lineNumber": 247
+        },
+        {
+          "caller": "RunAndReturn",
+          "callee": "_c.Call.Return",
+          "lineNumber": 252
+        },
+        {
+          "caller": "Rootfs",
+          "callee": "_mock.Called",
+          "lineNumber": 258
+        },
+        {
+          "caller": "Rootfs",
+          "callee": "len",
+          "lineNumber": 260
+        },
+        {
+          "caller": "Rootfs",
+          "callee": "panic",
+          "lineNumber": 261
+        },
+        {
+          "caller": "Rootfs",
+          "callee": "ret.Get",
+          "lineNumber": 266
+        },
+        {
+          "caller": "Rootfs",
+          "callee": "returnFunc",
+          "lineNumber": 267
+        },
+        {
+          "caller": "Rootfs",
+          "callee": "ret.Get",
+          "lineNumber": 269
+        },
+        {
+          "caller": "Rootfs",
+          "callee": "returnFunc",
+          "lineNumber": 270
+        },
+        {
+          "caller": "Rootfs",
+          "callee": "ret.Get",
+          "lineNumber": 272
+        },
+        {
+          "caller": "Rootfs",
+          "callee": "ret.Get",
+          "lineNumber": 273
+        },
+        {
+          "caller": "Rootfs",
+          "callee": "ret.Get",
+          "lineNumber": 276
+        },
+        {
+          "caller": "Rootfs",
+          "callee": "returnFunc",
+          "lineNumber": 277
+        },
+        {
+          "caller": "Rootfs",
+          "callee": "ret.Error",
+          "lineNumber": 279
+        },
+        {
+          "caller": "Rootfs",
+          "callee": "_e.mock.On",
+          "lineNumber": 291
+        },
+        {
+          "caller": "Run",
+          "callee": "_c.Call.Run",
+          "lineNumber": 295
+        },
+        {
+          "caller": "Run",
+          "callee": "run",
+          "lineNumber": 296
+        },
+        {
+          "caller": "Return",
+          "callee": "_c.Call.Return",
+          "lineNumber": 302
+        },
+        {
+          "caller": "RunAndReturn",
+          "callee": "_c.Call.Return",
+          "lineNumber": 307
+        },
+        {
+          "caller": "Snapfile",
+          "callee": "_mock.Called",
+          "lineNumber": 313
+        },
+        {
+          "caller": "Snapfile",
+          "callee": "len",
+          "lineNumber": 315
+        },
+        {
+          "caller": "Snapfile",
+          "callee": "panic",
+          "lineNumber": 316
+        },
+        {
+          "caller": "Snapfile",
+          "callee": "ret.Get",
+          "lineNumber": 321
+        },
+        {
+          "caller": "Snapfile",
+          "callee": "returnFunc",
+          "lineNumber": 322
+        },
+        {
+          "caller": "Snapfile",
+          "callee": "ret.Get",
+          "lineNumber": 324
+        },
+        {
+          "caller": "Snapfile",
+          "callee": "returnFunc",
+          "lineNumber": 325
+        },
+        {
+          "caller": "Snapfile",
+          "callee": "ret.Get",
+          "lineNumber": 327
+        },
+        {
+          "caller": "Snapfile",
+          "callee": "ret.Get",
+          "lineNumber": 328
+        },
+        {
+          "caller": "Snapfile",
+          "callee": "ret.Get",
+          "lineNumber": 331
+        },
+        {
+          "caller": "Snapfile",
+          "callee": "returnFunc",
+          "lineNumber": 332
+        },
+        {
+          "caller": "Snapfile",
+          "callee": "ret.Error",
+          "lineNumber": 334
+        },
+        {
+          "caller": "Snapfile",
+          "callee": "_e.mock.On",
+          "lineNumber": 346
+        },
+        {
+          "caller": "Run",
+          "callee": "_c.Call.Run",
+          "lineNumber": 350
+        },
+        {
+          "caller": "Run",
+          "callee": "run",
+          "lineNumber": 351
+        },
+        {
+          "caller": "Return",
+          "callee": "_c.Call.Return",
+          "lineNumber": 357
+        },
+        {
+          "caller": "RunAndReturn",
+          "callee": "_c.Call.Return",
+          "lineNumber": 362
+        },
+        {
+          "caller": "UpdateMetadata",
+          "callee": "_mock.Called",
+          "lineNumber": 368
+        },
+        {
+          "caller": "UpdateMetadata",
+          "callee": "len",
+          "lineNumber": 370
+        },
+        {
+          "caller": "UpdateMetadata",
+          "callee": "panic",
+          "lineNumber": 371
+        },
+        {
+          "caller": "UpdateMetadata",
+          "callee": "ret.Get",
+          "lineNumber": 375
+        },
+        {
+          "caller": "UpdateMetadata",
+          "callee": "returnFunc",
+          "lineNumber": 376
+        },
+        {
+          "caller": "UpdateMetadata",
+          "callee": "ret.Error",
+          "lineNumber": 378
+        },
+        {
+          "caller": "UpdateMetadata",
+          "callee": "_e.mock.On",
+          "lineNumber": 391
+        },
+        {
+          "caller": "Run",
+          "callee": "_c.Call.Run",
+          "lineNumber": 395
+        },
+        {
+          "caller": "Run",
+          "callee": "run",
+          "lineNumber": 400
+        },
+        {
+          "caller": "Return",
+          "callee": "_c.Call.Return",
+          "lineNumber": 408
+        },
+        {
+          "caller": "RunAndReturn",
+          "callee": "_c.Call.Return",
+          "lineNumber": 413
+        }
+      ],
+      "metrics": {
+        "importCount": 37,
+        "exportCount": 46,
+        "functionCount": 37,
+        "classCount": 9
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/template/peerserver/header.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 55,
+      "nonEmptyLines": 41,
+      "functions": [
+        {
+          "name": "Exists",
+          "startLine": 20,
+          "endLine": 22,
+          "params": [
+            "_"
+          ]
+        },
+        {
+          "name": "Stream",
+          "startLine": 24,
+          "endLine": 55,
+          "params": [
+            "ctx",
+            "sender"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "headerSource",
+          "startLine": 16,
+          "endLine": 18,
+          "methods": [
+            "Exists",
+            "Stream"
+          ],
+          "properties": [
+            "getDevice"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Exists",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "Stream",
+          "line": 24,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Stream",
+          "callee": "tracer.Start",
+          "lineNumber": 25
+        },
+        {
+          "caller": "Stream",
+          "callee": "span.End",
+          "lineNumber": 26
+        },
+        {
+          "caller": "Stream",
+          "callee": "f.getDevice",
+          "lineNumber": 28
+        },
+        {
+          "caller": "Stream",
+          "callee": "span.RecordError",
+          "lineNumber": 30
+        },
+        {
+          "caller": "Stream",
+          "callee": "fmt.Errorf",
+          "lineNumber": 32
+        },
+        {
+          "caller": "Stream",
+          "callee": "device.Header",
+          "lineNumber": 35
+        },
+        {
+          "caller": "Stream",
+          "callee": "header.SerializeHeader",
+          "lineNumber": 47
+        },
+        {
+          "caller": "Stream",
+          "callee": "span.RecordError",
+          "lineNumber": 49
+        },
+        {
+          "caller": "Stream",
+          "callee": "fmt.Errorf",
+          "lineNumber": 51
+        },
+        {
+          "caller": "Stream",
+          "callee": "sender.Send",
+          "lineNumber": 54
+        }
+      ],
+      "metrics": {
+        "importCount": 21,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/template/peerserver/metadata.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 43,
+      "nonEmptyLines": 31,
+      "functions": [
+        {
+          "name": "Exists",
+          "startLine": 20,
+          "endLine": 22,
+          "params": [
+            "_"
+          ]
+        },
+        {
+          "name": "Stream",
+          "startLine": 24,
+          "endLine": 43,
+          "params": [
+            "ctx",
+            "sender"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "metadataSource",
+          "startLine": 16,
+          "endLine": 18,
+          "methods": [
+            "Exists",
+            "Stream"
+          ],
+          "properties": [
+            "getMetadata"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Exists",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "Stream",
+          "line": 24,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Stream",
+          "callee": "tracer.Start",
+          "lineNumber": 25
+        },
+        {
+          "caller": "Stream",
+          "callee": "span.End",
+          "lineNumber": 26
+        },
+        {
+          "caller": "Stream",
+          "callee": "f.getMetadata",
+          "lineNumber": 28
+        },
+        {
+          "caller": "Stream",
+          "callee": "span.RecordError",
+          "lineNumber": 30
+        },
+        {
+          "caller": "Stream",
+          "callee": "fmt.Errorf",
+          "lineNumber": 32
+        },
+        {
+          "caller": "Stream",
+          "callee": "json.Marshal",
+          "lineNumber": 35
+        },
+        {
+          "caller": "Stream",
+          "callee": "span.RecordError",
+          "lineNumber": 37
+        },
+        {
+          "caller": "Stream",
+          "callee": "fmt.Errorf",
+          "lineNumber": 39
+        },
+        {
+          "caller": "Stream",
+          "callee": "sender.Send",
+          "lineNumber": 42
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/template/peerserver/metadata_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 35,
+      "nonEmptyLines": 25,
+      "functions": [
+        {
+          "name": "TestMetadataSource_Stream",
+          "startLine": 17,
+          "endLine": 35,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestMetadataSource_Stream",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestMetadataSource_Stream",
+          "callee": "t.Parallel",
+          "lineNumber": 18
+        },
+        {
+          "caller": "TestMetadataSource_Stream",
+          "callee": "templatemocks.NewMockTemplate",
+          "lineNumber": 20
+        },
+        {
+          "caller": "TestMetadataSource_Stream",
+          "callee": "tmplMock.EXPECT().Metadata().Return",
+          "lineNumber": 21
+        },
+        {
+          "caller": "TestMetadataSource_Stream",
+          "callee": "tmplMock.EXPECT().Metadata",
+          "lineNumber": 21
+        },
+        {
+          "caller": "TestMetadataSource_Stream",
+          "callee": "tmplMock.EXPECT",
+          "lineNumber": 21
+        },
+        {
+          "caller": "TestMetadataSource_Stream",
+          "callee": "peerservermocks.NewMockCache",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TestMetadataSource_Stream",
+          "callee": "cache.EXPECT().GetCachedTemplate(\"build-1\").Return",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestMetadataSource_Stream",
+          "callee": "cache.EXPECT().GetCachedTemplate",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestMetadataSource_Stream",
+          "callee": "cache.EXPECT",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestMetadataSource_Stream",
+          "callee": "ResolveBlob",
+          "lineNumber": 28
+        },
+        {
+          "caller": "TestMetadataSource_Stream",
+          "callee": "require.NoError",
+          "lineNumber": 29
+        },
+        {
+          "caller": "TestMetadataSource_Stream",
+          "callee": "require.NoError",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestMetadataSource_Stream",
+          "callee": "src.Stream",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestMetadataSource_Stream",
+          "callee": "t.Context",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestMetadataSource_Stream",
+          "callee": "assert.Contains",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestMetadataSource_Stream",
+          "callee": "string",
+          "lineNumber": 34
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/template/peerserver/resolve.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 64,
+      "nonEmptyLines": 51,
+      "functions": [
+        {
+          "name": "ResolveSeekable",
+          "startLine": 22,
+          "endLine": 36,
+          "params": [
+            "cache",
+            "buildID",
+            "fileName"
+          ]
+        },
+        {
+          "name": "ResolveBlob",
+          "startLine": 42,
+          "endLine": 64,
+          "params": [
+            "cache",
+            "buildID",
+            "fileName"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ResolveSeekable",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "ResolveBlob",
+          "line": 42,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "ResolveSeekable",
+          "callee": "storage.StripCompression",
+          "lineNumber": 23
+        },
+        {
+          "caller": "ResolveSeekable",
+          "callee": "cache.LookupDiff",
+          "lineNumber": 26
+        },
+        {
+          "caller": "ResolveSeekable",
+          "callee": "build.DiffType",
+          "lineNumber": 26
+        },
+        {
+          "caller": "ResolveSeekable",
+          "callee": "fmt.Errorf",
+          "lineNumber": 34
+        },
+        {
+          "caller": "ResolveBlob",
+          "callee": "cache.GetCachedTemplate",
+          "lineNumber": 43
+        },
+        {
+          "caller": "ResolveBlob",
+          "callee": "t.Rootfs",
+          "lineNumber": 59
+        },
+        {
+          "caller": "ResolveBlob",
+          "callee": "fmt.Errorf",
+          "lineNumber": 62
+        }
+      ],
+      "metrics": {
+        "importCount": 21,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/template/storage_template.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 344,
+      "nonEmptyLines": 281,
+      "functions": [
+        {
+          "name": "newTemplateFromStorage",
+          "startLine": 46,
+          "endLine": 76,
+          "params": [
+            "config",
+            "buildId",
+            "memfileHeader",
+            "rootfsHeader",
+            "persistence",
+            "metrics",
+            "localSnapfile",
+            "localMetafile"
+          ]
+        },
+        {
+          "name": "Fetch",
+          "startLine": 78,
+          "endLine": 275,
+          "params": [
+            "ctx",
+            "buildStore"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 277,
+          "endLine": 279,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "Files",
+          "startLine": 281,
+          "endLine": 283,
+          "params": []
+        },
+        {
+          "name": "SchedulingMetadata",
+          "startLine": 288,
+          "endLine": 311,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "Memfile",
+          "startLine": 313,
+          "endLine": 318,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "Rootfs",
+          "startLine": 320,
+          "endLine": 322,
+          "params": []
+        },
+        {
+          "name": "Snapfile",
+          "startLine": 324,
+          "endLine": 326,
+          "params": []
+        },
+        {
+          "name": "Metadata",
+          "startLine": 328,
+          "endLine": 335,
+          "params": []
+        },
+        {
+          "name": "UpdateMetadata",
+          "startLine": 337,
+          "endLine": 344,
+          "params": [
+            "meta"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "storageTemplate",
+          "startLine": 29,
+          "endLine": 44,
+          "methods": [
+            "Fetch",
+            "Close",
+            "Files",
+            "SchedulingMetadata",
+            "Memfile",
+            "Rootfs",
+            "Snapfile",
+            "Metadata",
+            "UpdateMetadata"
+          ],
+          "properties": [
+            "paths",
+            "memfile",
+            "rootfs",
+            "snapfile",
+            "metafile",
+            "memfileHeader",
+            "rootfsHeader",
+            "localSnapfile",
+            "localMetafile",
+            "metrics",
+            "persistence"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Fetch",
+          "line": 78,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 277,
+          "isDefault": false
+        },
+        {
+          "name": "Files",
+          "line": 281,
+          "isDefault": false
+        },
+        {
+          "name": "SchedulingMetadata",
+          "line": 288,
+          "isDefault": false
+        },
+        {
+          "name": "Memfile",
+          "line": 313,
+          "isDefault": false
+        },
+        {
+          "name": "Rootfs",
+          "line": 320,
+          "isDefault": false
+        },
+        {
+          "name": "Snapfile",
+          "line": 324,
+          "isDefault": false
+        },
+        {
+          "name": "Metadata",
+          "line": 328,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateMetadata",
+          "line": 337,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "newTemplateFromStorage",
+          "callee": "storage.Paths{\n\t\tBuildID: buildId,\n\t}.Cache",
+          "lineNumber": 56
+        },
+        {
+          "caller": "newTemplateFromStorage",
+          "callee": "fmt.Errorf",
+          "lineNumber": 60
+        },
+        {
+          "caller": "newTemplateFromStorage",
+          "callee": "utils.NewSetOnce",
+          "lineNumber": 71
+        },
+        {
+          "caller": "newTemplateFromStorage",
+          "callee": "utils.NewSetOnce",
+          "lineNumber": 72
+        },
+        {
+          "caller": "newTemplateFromStorage",
+          "callee": "utils.NewSetOnce[File]",
+          "lineNumber": 73
+        },
+        {
+          "caller": "newTemplateFromStorage",
+          "callee": "utils.NewSetOnce[File]",
+          "lineNumber": 74
+        },
+        {
+          "caller": "Fetch",
+          "callee": "tracer.Start",
+          "lineNumber": 79
+        },
+        {
+          "caller": "Fetch",
+          "callee": "trace.WithAttributes",
+          "lineNumber": 79
+        },
+        {
+          "caller": "Fetch",
+          "callee": "telemetry.WithBuildID",
+          "lineNumber": 80
+        },
+        {
+          "caller": "Fetch",
+          "callee": "span.End",
+          "lineNumber": 82
+        },
+        {
+          "caller": "Fetch",
+          "callee": "wg.Go",
+          "lineNumber": 86
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.snapfile.SetValue",
+          "lineNumber": 88
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 89
+        },
+        {
+          "caller": "Fetch",
+          "callee": "newStorageFile",
+          "lineNumber": 95
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.paths.Snapfile",
+          "lineNumber": 98
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.paths.CacheSnapfile",
+          "lineNumber": 99
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 102
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.snapfile.SetError",
+          "lineNumber": 104
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 105
+        },
+        {
+          "caller": "Fetch",
+          "callee": "errors.Join",
+          "lineNumber": 105
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.snapfile.SetValue",
+          "lineNumber": 111
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 112
+        },
+        {
+          "caller": "Fetch",
+          "callee": "wg.Go",
+          "lineNumber": 118
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.metafile.SetValue",
+          "lineNumber": 120
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 121
+        },
+        {
+          "caller": "Fetch",
+          "callee": "newStorageFile",
+          "lineNumber": 127
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.paths.Metadata",
+          "lineNumber": 130
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.paths.CacheMetadata",
+          "lineNumber": 131
+        },
+        {
+          "caller": "Fetch",
+          "callee": "errors.Is",
+          "lineNumber": 133
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 134
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.metafile.SetError",
+          "lineNumber": 135
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 136
+        },
+        {
+          "caller": "Fetch",
+          "callee": "errors.Join",
+          "lineNumber": 136
+        },
+        {
+          "caller": "Fetch",
+          "callee": "logger.L().Info",
+          "lineNumber": 145
+        },
+        {
+          "caller": "Fetch",
+          "callee": "logger.L",
+          "lineNumber": 145
+        },
+        {
+          "caller": "Fetch",
+          "callee": "logger.WithBuildID",
+          "lineNumber": 146
+        },
+        {
+          "caller": "Fetch",
+          "callee": "zap.Error",
+          "lineNumber": 147
+        },
+        {
+          "caller": "Fetch",
+          "callee": "metadata.V1TemplateVersion",
+          "lineNumber": 149
+        },
+        {
+          "caller": "Fetch",
+          "callee": "oldTemplateMetadata.ToFile",
+          "lineNumber": 150
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.paths.CacheMetadata",
+          "lineNumber": 150
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 152
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.metafile.SetError",
+          "lineNumber": 153
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 154
+        },
+        {
+          "caller": "Fetch",
+          "callee": "errors.Join",
+          "lineNumber": 154
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.metafile.SetValue",
+          "lineNumber": 160
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.paths.CacheMetadata",
+          "lineNumber": 161
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 163
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.metafile.SetValue",
+          "lineNumber": 169
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 170
+        },
+        {
+          "caller": "Fetch",
+          "callee": "wg.Go",
+          "lineNumber": 176
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.memfileHeader.WaitWithContext",
+          "lineNumber": 177
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 179
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.memfile.SetError",
+          "lineNumber": 180
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 181
+        },
+        {
+          "caller": "Fetch",
+          "callee": "errors.Join",
+          "lineNumber": 181
+        },
+        {
+          "caller": "Fetch",
+          "callee": "NewStorage",
+          "lineNumber": 187
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 198
+        },
+        {
+          "caller": "Fetch",
+          "callee": "logger.L().Warn",
+          "lineNumber": 200
+        },
+        {
+          "caller": "Fetch",
+          "callee": "logger.L",
+          "lineNumber": 200
+        },
+        {
+          "caller": "Fetch",
+          "callee": "logger.WithBuildID",
+          "lineNumber": 201
+        },
+        {
+          "caller": "Fetch",
+          "callee": "zap.Duration",
+          "lineNumber": 202
+        },
+        {
+          "caller": "Fetch",
+          "callee": "zap.Error",
+          "lineNumber": 203
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.memfile.SetError",
+          "lineNumber": 206
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 207
+        },
+        {
+          "caller": "Fetch",
+          "callee": "errors.Join",
+          "lineNumber": 207
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.memfile.SetValue",
+          "lineNumber": 213
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 214
+        },
+        {
+          "caller": "Fetch",
+          "callee": "wg.Go",
+          "lineNumber": 220
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.rootfsHeader.WaitWithContext",
+          "lineNumber": 221
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 223
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.rootfs.SetError",
+          "lineNumber": 224
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 225
+        },
+        {
+          "caller": "Fetch",
+          "callee": "errors.Join",
+          "lineNumber": 225
+        },
+        {
+          "caller": "Fetch",
+          "callee": "NewStorage",
+          "lineNumber": 231
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 241
+        },
+        {
+          "caller": "Fetch",
+          "callee": "logger.L().Warn",
+          "lineNumber": 243
+        },
+        {
+          "caller": "Fetch",
+          "callee": "logger.L",
+          "lineNumber": 243
+        },
+        {
+          "caller": "Fetch",
+          "callee": "logger.WithBuildID",
+          "lineNumber": 244
+        },
+        {
+          "caller": "Fetch",
+          "callee": "zap.Duration",
+          "lineNumber": 245
+        },
+        {
+          "caller": "Fetch",
+          "callee": "zap.Error",
+          "lineNumber": 246
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.rootfs.SetError",
+          "lineNumber": 249
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 250
+        },
+        {
+          "caller": "Fetch",
+          "callee": "errors.Join",
+          "lineNumber": 250
+        },
+        {
+          "caller": "Fetch",
+          "callee": "t.rootfs.SetValue",
+          "lineNumber": 256
+        },
+        {
+          "caller": "Fetch",
+          "callee": "fmt.Errorf",
+          "lineNumber": 257
+        },
+        {
+          "caller": "Fetch",
+          "callee": "wg.Wait",
+          "lineNumber": 263
+        },
+        {
+          "caller": "Fetch",
+          "callee": "span.RecordError",
+          "lineNumber": 265
+        },
+        {
+          "caller": "Fetch",
+          "callee": "span.SetStatus",
+          "lineNumber": 266
+        },
+        {
+          "caller": "Fetch",
+          "callee": "err.Error",
+          "lineNumber": 266
+        },
+        {
+          "caller": "Fetch",
+          "callee": "logger.L().Error",
+          "lineNumber": 268
+        },
+        {
+          "caller": "Fetch",
+          "callee": "logger.L",
+          "lineNumber": 268
+        },
+        {
+          "caller": "Fetch",
+          "callee": "logger.WithBuildID",
+          "lineNumber": 269
+        },
+        {
+          "caller": "Fetch",
+          "callee": "zap.Error",
+          "lineNumber": 270
+        },
+        {
+          "caller": "Close",
+          "callee": "closeTemplate",
+          "lineNumber": 278
+        },
+        {
+          "caller": "SchedulingMetadata",
+          "callee": "t.rootfs.WaitWithContext",
+          "lineNumber": 291
+        },
+        {
+          "caller": "SchedulingMetadata",
+          "callee": "rootfs.Header",
+          "lineNumber": 296
+        },
+        {
+          "caller": "SchedulingMetadata",
+          "callee": "t.memfile.WaitWithContext",
+          "lineNumber": 306
+        },
+        {
+          "caller": "SchedulingMetadata",
+          "callee": "memfile.Header",
+          "lineNumber": 307
+        },
+        {
+          "caller": "SchedulingMetadata",
+          "callee": "scheduling.FromHeaders",
+          "lineNumber": 310
+        },
+        {
+          "caller": "Memfile",
+          "callee": "tracer.Start",
+          "lineNumber": 314
+        },
+        {
+          "caller": "Memfile",
+          "callee": "span.End",
+          "lineNumber": 315
+        },
+        {
+          "caller": "Memfile",
+          "callee": "t.memfile.Wait",
+          "lineNumber": 317
+        },
+        {
+          "caller": "Rootfs",
+          "callee": "t.rootfs.Wait",
+          "lineNumber": 321
+        },
+        {
+          "caller": "Snapfile",
+          "callee": "t.snapfile.Wait",
+          "lineNumber": 325
+        },
+        {
+          "caller": "Metadata",
+          "callee": "t.metafile.Wait",
+          "lineNumber": 329
+        },
+        {
+          "caller": "Metadata",
+          "callee": "fmt.Errorf",
+          "lineNumber": 331
+        },
+        {
+          "caller": "Metadata",
+          "callee": "metadata.FromFile",
+          "lineNumber": 334
+        },
+        {
+          "caller": "Metadata",
+          "callee": "metafile.Path",
+          "lineNumber": 334
+        },
+        {
+          "caller": "UpdateMetadata",
+          "callee": "t.metafile.Wait",
+          "lineNumber": 338
+        },
+        {
+          "caller": "UpdateMetadata",
+          "callee": "fmt.Errorf",
+          "lineNumber": 340
+        },
+        {
+          "caller": "UpdateMetadata",
+          "callee": "meta.ToFile",
+          "lineNumber": 343
+        },
+        {
+          "caller": "UpdateMetadata",
+          "callee": "metafile.Path",
+          "lineNumber": 343
+        }
+      ],
+      "metrics": {
+        "importCount": 32,
+        "exportCount": 9,
+        "functionCount": 10,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/template/template.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 71,
+      "nonEmptyLines": 57,
+      "functions": [
+        {
+          "name": "closeTemplate",
+          "startLine": 26,
+          "endLine": 61,
+          "params": [
+            "ctx",
+            "t"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 65,
+          "endLine": 67,
+          "params": []
+        },
+        {
+          "name": "Path",
+          "startLine": 69,
+          "endLine": 71,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "Template",
+          "startLine": 16,
+          "endLine": 24,
+          "methods": [
+            "Files",
+            "Memfile",
+            "Rootfs",
+            "Snapfile",
+            "Metadata",
+            "UpdateMetadata",
+            "Close"
+          ],
+          "properties": []
+        },
+        {
+          "name": "NoopFile",
+          "startLine": 63,
+          "endLine": 63,
+          "methods": [
+            "Close",
+            "Path"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "Template",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "NoopFile",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 65,
+          "isDefault": false
+        },
+        {
+          "name": "Path",
+          "line": 69,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "closeTemplate",
+          "callee": "make",
+          "lineNumber": 27
+        },
+        {
+          "caller": "closeTemplate",
+          "callee": "t.Memfile",
+          "lineNumber": 29
+        },
+        {
+          "caller": "closeTemplate",
+          "callee": "errors.Join",
+          "lineNumber": 31
+        },
+        {
+          "caller": "closeTemplate",
+          "callee": "append",
+          "lineNumber": 33
+        },
+        {
+          "caller": "closeTemplate",
+          "callee": "t.Rootfs",
+          "lineNumber": 36
+        },
+        {
+          "caller": "closeTemplate",
+          "callee": "errors.Join",
+          "lineNumber": 38
+        },
+        {
+          "caller": "closeTemplate",
+          "callee": "append",
+          "lineNumber": 40
+        },
+        {
+          "caller": "closeTemplate",
+          "callee": "t.Snapfile",
+          "lineNumber": 43
+        },
+        {
+          "caller": "closeTemplate",
+          "callee": "errors.Join",
+          "lineNumber": 45
+        },
+        {
+          "caller": "closeTemplate",
+          "callee": "append",
+          "lineNumber": 47
+        },
+        {
+          "caller": "closeTemplate",
+          "callee": "c.Close",
+          "lineNumber": 51
+        },
+        {
+          "caller": "closeTemplate",
+          "callee": "errors.Join",
+          "lineNumber": 52
+        },
+        {
+          "caller": "closeTemplate",
+          "callee": "fmt.Errorf",
+          "lineNumber": 57
+        }
+      ],
+      "metrics": {
+        "importCount": 25,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/fdexit/fdexit.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 55,
+      "nonEmptyLines": 45,
+      "functions": [
+        {
+          "name": "New",
+          "startLine": 20,
+          "endLine": 38,
+          "params": []
+        },
+        {
+          "name": "SignalExit",
+          "startLine": 40,
+          "endLine": 42,
+          "params": []
+        },
+        {
+          "name": "Reader",
+          "startLine": 44,
+          "endLine": 46,
+          "params": []
+        },
+        {
+          "name": "Close",
+          "startLine": 49,
+          "endLine": 55,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "FdExit",
+          "startLine": 11,
+          "endLine": 18,
+          "methods": [
+            "SignalExit",
+            "Reader",
+            "Close"
+          ],
+          "properties": [
+            "r",
+            "w",
+            "exit",
+            "closeOnce",
+            "closeErr"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "FdExit",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "New",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "SignalExit",
+          "line": 40,
+          "isDefault": false
+        },
+        {
+          "name": "Reader",
+          "line": 44,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 49,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "New",
+          "callee": "os.Pipe",
+          "lineNumber": 21
+        },
+        {
+          "caller": "New",
+          "callee": "fmt.Errorf",
+          "lineNumber": 23
+        },
+        {
+          "caller": "New",
+          "callee": "sync.OnceValue",
+          "lineNumber": 29
+        },
+        {
+          "caller": "New",
+          "callee": "w.Write",
+          "lineNumber": 30
+        },
+        {
+          "caller": "New",
+          "callee": "fmt.Errorf",
+          "lineNumber": 32
+        },
+        {
+          "caller": "SignalExit",
+          "callee": "e.exit",
+          "lineNumber": 41
+        },
+        {
+          "caller": "Reader",
+          "callee": "int32",
+          "lineNumber": 45
+        },
+        {
+          "caller": "Reader",
+          "callee": "e.r.Fd",
+          "lineNumber": 45
+        },
+        {
+          "caller": "Close",
+          "callee": "e.closeOnce.Do",
+          "lineNumber": 50
+        },
+        {
+          "caller": "Close",
+          "callee": "errors.Join",
+          "lineNumber": 51
+        },
+        {
+          "caller": "Close",
+          "callee": "e.SignalExit",
+          "lineNumber": 51
+        },
+        {
+          "caller": "Close",
+          "callee": "e.r.Close",
+          "lineNumber": 51
+        },
+        {
+          "caller": "Close",
+          "callee": "e.w.Close",
+          "lineNumber": 51
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/memory/mapping.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 108,
+      "nonEmptyLines": 82,
+      "functions": [
+        {
+          "name": "Error",
+          "startLine": 16,
+          "endLine": 18,
+          "params": []
+        },
+        {
+          "name": "Error",
+          "startLine": 24,
+          "endLine": 26,
+          "params": []
+        },
+        {
+          "name": "NewMapping",
+          "startLine": 32,
+          "endLine": 34,
+          "params": [
+            "regions"
+          ]
+        },
+        {
+          "name": "NewMappingFromFc",
+          "startLine": 36,
+          "endLine": 53,
+          "params": [
+            "regions"
+          ]
+        },
+        {
+          "name": "GetOffset",
+          "startLine": 56,
+          "endLine": 64,
+          "params": [
+            "hostVirtAddr"
+          ]
+        },
+        {
+          "name": "GetHostVirtRanges",
+          "startLine": 67,
+          "endLine": 87,
+          "params": [
+            "off",
+            "size"
+          ]
+        },
+        {
+          "name": "getHostVirtRegion",
+          "startLine": 90,
+          "endLine": 98,
+          "params": [
+            "off"
+          ]
+        },
+        {
+          "name": "GetHostVirtAddr",
+          "startLine": 101,
+          "endLine": 108,
+          "params": [
+            "off"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AddressNotFoundError",
+          "startLine": 12,
+          "endLine": 14,
+          "methods": [
+            "Error"
+          ],
+          "properties": [
+            "hostVirtAddr"
+          ]
+        },
+        {
+          "name": "OffsetNotFoundError",
+          "startLine": 20,
+          "endLine": 22,
+          "methods": [
+            "Error"
+          ],
+          "properties": [
+            "offset"
+          ]
+        },
+        {
+          "name": "Mapping",
+          "startLine": 28,
+          "endLine": 30,
+          "methods": [
+            "GetOffset",
+            "GetHostVirtRanges",
+            "getHostVirtRegion",
+            "GetHostVirtAddr"
+          ],
+          "properties": [
+            "Regions"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "AddressNotFoundError",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "Error",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "OffsetNotFoundError",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "Error",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "Mapping",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "NewMapping",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "NewMappingFromFc",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "GetOffset",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "GetHostVirtRanges",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "GetHostVirtAddr",
+          "line": 101,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Error",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 17
+        },
+        {
+          "caller": "Error",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 25
+        },
+        {
+          "caller": "NewMappingFromFc",
+          "callee": "make",
+          "lineNumber": 37
+        },
+        {
+          "caller": "NewMappingFromFc",
+          "callee": "len",
+          "lineNumber": 37
+        },
+        {
+          "caller": "NewMappingFromFc",
+          "callee": "fmt.Errorf",
+          "lineNumber": 41
+        },
+        {
+          "caller": "NewMappingFromFc",
+          "callee": "uintptr",
+          "lineNumber": 45
+        },
+        {
+          "caller": "NewMappingFromFc",
+          "callee": "uintptr",
+          "lineNumber": 46
+        },
+        {
+          "caller": "NewMappingFromFc",
+          "callee": "uintptr",
+          "lineNumber": 47
+        },
+        {
+          "caller": "NewMappingFromFc",
+          "callee": "uintptr",
+          "lineNumber": 48
+        },
+        {
+          "caller": "NewMappingFromFc",
+          "callee": "NewMapping",
+          "lineNumber": 52
+        },
+        {
+          "caller": "GetOffset",
+          "callee": "r.endHostVirtAddr",
+          "lineNumber": 58
+        },
+        {
+          "caller": "GetOffset",
+          "callee": "r.shiftedOffset",
+          "lineNumber": 59
+        },
+        {
+          "caller": "GetHostVirtRanges",
+          "callee": "int64",
+          "lineNumber": 68
+        },
+        {
+          "caller": "GetHostVirtRanges",
+          "callee": "m.getHostVirtRegion",
+          "lineNumber": 71
+        },
+        {
+          "caller": "GetHostVirtRanges",
+          "callee": "region.shiftedHostVirtAddr",
+          "lineNumber": 76
+        },
+        {
+          "caller": "GetHostVirtRanges",
+          "callee": "min",
+          "lineNumber": 77
+        },
+        {
+          "caller": "GetHostVirtRanges",
+          "callee": "int64",
+          "lineNumber": 77
+        },
+        {
+          "caller": "GetHostVirtRanges",
+          "callee": "region.endHostVirtAddr",
+          "lineNumber": 77
+        },
+        {
+          "caller": "GetHostVirtRanges",
+          "callee": "block.NewRange",
+          "lineNumber": 79
+        },
+        {
+          "caller": "GetHostVirtRanges",
+          "callee": "int64",
+          "lineNumber": 79
+        },
+        {
+          "caller": "GetHostVirtRanges",
+          "callee": "append",
+          "lineNumber": 81
+        },
+        {
+          "caller": "getHostVirtRegion",
+          "callee": "int64",
+          "lineNumber": 92
+        },
+        {
+          "caller": "getHostVirtRegion",
+          "callee": "r.endOffset",
+          "lineNumber": 92
+        },
+        {
+          "caller": "GetHostVirtAddr",
+          "callee": "m.getHostVirtRegion",
+          "lineNumber": 102
+        },
+        {
+          "caller": "GetHostVirtAddr",
+          "callee": "region.shiftedHostVirtAddr",
+          "lineNumber": 107
+        }
+      ],
+      "metrics": {
+        "importCount": 21,
+        "exportCount": 10,
+        "functionCount": 8,
+        "classCount": 3
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/memory/mapping_host_virt_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 277,
+      "nonEmptyLines": 245,
+      "functions": [
+        {
+          "name": "TestMapping_GetHostVirtRanges",
+          "startLine": 16,
+          "endLine": 158,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMapping_GetHostVirtRanges_EmptyRegions",
+          "startLine": 160,
+          "endLine": 168,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMapping_GetHostVirtRanges_BoundaryConditions",
+          "startLine": 170,
+          "endLine": 201,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMapping_GetHostVirtRanges_SingleLargeRegion",
+          "startLine": 203,
+          "endLine": 220,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMapping_GetHostVirtRanges_ZeroSizeRegion",
+          "startLine": 222,
+          "endLine": 238,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMapping_GetHostVirtRanges_MultipleRegionsSparse",
+          "startLine": 240,
+          "endLine": 277,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestMapping_GetHostVirtRanges",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "TestMapping_GetHostVirtRanges_EmptyRegions",
+          "line": 160,
+          "isDefault": false
+        },
+        {
+          "name": "TestMapping_GetHostVirtRanges_BoundaryConditions",
+          "line": 170,
+          "isDefault": false
+        },
+        {
+          "name": "TestMapping_GetHostVirtRanges_SingleLargeRegion",
+          "line": 203,
+          "isDefault": false
+        },
+        {
+          "name": "TestMapping_GetHostVirtRanges_ZeroSizeRegion",
+          "line": 222,
+          "isDefault": false
+        },
+        {
+          "name": "TestMapping_GetHostVirtRanges_MultipleRegionsSparse",
+          "line": 240,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestMapping_GetHostVirtRanges",
+          "callee": "t.Parallel",
+          "lineNumber": 17
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges",
+          "callee": "NewMapping",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges",
+          "callee": "t.Run",
+          "lineNumber": 142
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges",
+          "callee": "t.Parallel",
+          "lineNumber": 143
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges",
+          "callee": "mapping.GetHostVirtRanges",
+          "lineNumber": 145
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges",
+          "callee": "require.Error",
+          "lineNumber": 147
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges",
+          "callee": "require.ErrorAs",
+          "lineNumber": 149
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges",
+          "callee": "assert.Equal",
+          "lineNumber": 150
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges",
+          "callee": "assert.Nil",
+          "lineNumber": 151
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges",
+          "callee": "require.NoError",
+          "lineNumber": 153
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges",
+          "callee": "assert.Equal",
+          "lineNumber": 154
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_EmptyRegions",
+          "callee": "t.Parallel",
+          "lineNumber": 161
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_EmptyRegions",
+          "callee": "NewMapping",
+          "lineNumber": 163
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_EmptyRegions",
+          "callee": "mapping.GetHostVirtRanges",
+          "lineNumber": 166
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_EmptyRegions",
+          "callee": "require.ErrorIs",
+          "lineNumber": 167
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_BoundaryConditions",
+          "callee": "t.Parallel",
+          "lineNumber": 171
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_BoundaryConditions",
+          "callee": "NewMapping",
+          "lineNumber": 182
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_BoundaryConditions",
+          "callee": "mapping.GetHostVirtRanges",
+          "lineNumber": 185
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_BoundaryConditions",
+          "callee": "require.NoError",
+          "lineNumber": 186
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_BoundaryConditions",
+          "callee": "assert.Equal",
+          "lineNumber": 187
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_BoundaryConditions",
+          "callee": "mapping.GetHostVirtRanges",
+          "lineNumber": 190
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_BoundaryConditions",
+          "callee": "require.NoError",
+          "lineNumber": 191
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_BoundaryConditions",
+          "callee": "assert.Equal",
+          "lineNumber": 192
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_BoundaryConditions",
+          "callee": "mapping.GetHostVirtRanges",
+          "lineNumber": 195
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_BoundaryConditions",
+          "callee": "require.ErrorIs",
+          "lineNumber": 196
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_BoundaryConditions",
+          "callee": "mapping.GetHostVirtRanges",
+          "lineNumber": 199
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_BoundaryConditions",
+          "callee": "require.ErrorIs",
+          "lineNumber": 200
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_SingleLargeRegion",
+          "callee": "t.Parallel",
+          "lineNumber": 204
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_SingleLargeRegion",
+          "callee": "NewMapping",
+          "lineNumber": 215
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_SingleLargeRegion",
+          "callee": "mapping.GetHostVirtRanges",
+          "lineNumber": 217
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_SingleLargeRegion",
+          "callee": "require.NoError",
+          "lineNumber": 218
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_SingleLargeRegion",
+          "callee": "assert.Equal",
+          "lineNumber": 219
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_ZeroSizeRegion",
+          "callee": "t.Parallel",
+          "lineNumber": 223
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_ZeroSizeRegion",
+          "callee": "NewMapping",
+          "lineNumber": 234
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_ZeroSizeRegion",
+          "callee": "mapping.GetHostVirtRanges",
+          "lineNumber": 236
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_ZeroSizeRegion",
+          "callee": "require.ErrorIs",
+          "lineNumber": 237
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_MultipleRegionsSparse",
+          "callee": "t.Parallel",
+          "lineNumber": 241
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_MultipleRegionsSparse",
+          "callee": "NewMapping",
+          "lineNumber": 257
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_MultipleRegionsSparse",
+          "callee": "mapping.GetHostVirtRanges",
+          "lineNumber": 260
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_MultipleRegionsSparse",
+          "callee": "require.NoError",
+          "lineNumber": 261
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_MultipleRegionsSparse",
+          "callee": "assert.Equal",
+          "lineNumber": 262
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_MultipleRegionsSparse",
+          "callee": "mapping.GetHostVirtRanges",
+          "lineNumber": 265
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_MultipleRegionsSparse",
+          "callee": "require.NoError",
+          "lineNumber": 266
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_MultipleRegionsSparse",
+          "callee": "assert.Equal",
+          "lineNumber": 267
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_MultipleRegionsSparse",
+          "callee": "mapping.GetHostVirtRanges",
+          "lineNumber": 270
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_MultipleRegionsSparse",
+          "callee": "require.NoError",
+          "lineNumber": 271
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_MultipleRegionsSparse",
+          "callee": "assert.Equal",
+          "lineNumber": 272
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_MultipleRegionsSparse",
+          "callee": "mapping.GetHostVirtRanges",
+          "lineNumber": 275
+        },
+        {
+          "caller": "TestMapping_GetHostVirtRanges_MultipleRegionsSparse",
+          "callee": "require.ErrorIs",
+          "lineNumber": 276
+        }
+      ],
+      "metrics": {
+        "importCount": 21,
+        "exportCount": 6,
+        "functionCount": 6,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/memory/mapping_offset_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 254,
+      "nonEmptyLines": 217,
+      "functions": [
+        {
+          "name": "TestMapping_GetOffset",
+          "startLine": 14,
+          "endLine": 110,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMapping_EmptyRegions",
+          "startLine": 112,
+          "endLine": 120,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMapping_BoundaryConditions",
+          "startLine": 122,
+          "endLine": 153,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMapping_SingleLargeRegion",
+          "startLine": 155,
+          "endLine": 172,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMapping_ZeroSizeRegion",
+          "startLine": 174,
+          "endLine": 190,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMapping_MultipleRegionsSparse",
+          "startLine": 192,
+          "endLine": 224,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMapping_HugepagePagesize",
+          "startLine": 227,
+          "endLine": 254,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestMapping_GetOffset",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "TestMapping_EmptyRegions",
+          "line": 112,
+          "isDefault": false
+        },
+        {
+          "name": "TestMapping_BoundaryConditions",
+          "line": 122,
+          "isDefault": false
+        },
+        {
+          "name": "TestMapping_SingleLargeRegion",
+          "line": 155,
+          "isDefault": false
+        },
+        {
+          "name": "TestMapping_ZeroSizeRegion",
+          "line": 174,
+          "isDefault": false
+        },
+        {
+          "name": "TestMapping_MultipleRegionsSparse",
+          "line": 192,
+          "isDefault": false
+        },
+        {
+          "name": "TestMapping_HugepagePagesize",
+          "line": 227,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestMapping_GetOffset",
+          "callee": "t.Parallel",
+          "lineNumber": 15
+        },
+        {
+          "caller": "TestMapping_GetOffset",
+          "callee": "NewMapping",
+          "lineNumber": 32
+        },
+        {
+          "caller": "TestMapping_GetOffset",
+          "callee": "t.Run",
+          "lineNumber": 98
+        },
+        {
+          "caller": "TestMapping_GetOffset",
+          "callee": "t.Parallel",
+          "lineNumber": 99
+        },
+        {
+          "caller": "TestMapping_GetOffset",
+          "callee": "mapping.GetOffset",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestMapping_GetOffset",
+          "callee": "require.ErrorIs",
+          "lineNumber": 103
+        },
+        {
+          "caller": "TestMapping_GetOffset",
+          "callee": "require.NoError",
+          "lineNumber": 105
+        },
+        {
+          "caller": "TestMapping_GetOffset",
+          "callee": "assert.Equal",
+          "lineNumber": 106
+        },
+        {
+          "caller": "TestMapping_EmptyRegions",
+          "callee": "t.Parallel",
+          "lineNumber": 113
+        },
+        {
+          "caller": "TestMapping_EmptyRegions",
+          "callee": "NewMapping",
+          "lineNumber": 115
+        },
+        {
+          "caller": "TestMapping_EmptyRegions",
+          "callee": "mapping.GetOffset",
+          "lineNumber": 118
+        },
+        {
+          "caller": "TestMapping_EmptyRegions",
+          "callee": "require.ErrorIs",
+          "lineNumber": 119
+        },
+        {
+          "caller": "TestMapping_BoundaryConditions",
+          "callee": "t.Parallel",
+          "lineNumber": 123
+        },
+        {
+          "caller": "TestMapping_BoundaryConditions",
+          "callee": "NewMapping",
+          "lineNumber": 134
+        },
+        {
+          "caller": "TestMapping_BoundaryConditions",
+          "callee": "mapping.GetOffset",
+          "lineNumber": 137
+        },
+        {
+          "caller": "TestMapping_BoundaryConditions",
+          "callee": "require.NoError",
+          "lineNumber": 138
+        },
+        {
+          "caller": "TestMapping_BoundaryConditions",
+          "callee": "assert.Equal",
+          "lineNumber": 139
+        },
+        {
+          "caller": "TestMapping_BoundaryConditions",
+          "callee": "int64",
+          "lineNumber": 139
+        },
+        {
+          "caller": "TestMapping_BoundaryConditions",
+          "callee": "mapping.GetOffset",
+          "lineNumber": 142
+        },
+        {
+          "caller": "TestMapping_BoundaryConditions",
+          "callee": "require.NoError",
+          "lineNumber": 143
+        },
+        {
+          "caller": "TestMapping_BoundaryConditions",
+          "callee": "assert.Equal",
+          "lineNumber": 144
+        },
+        {
+          "caller": "TestMapping_BoundaryConditions",
+          "callee": "int64",
+          "lineNumber": 144
+        },
+        {
+          "caller": "TestMapping_BoundaryConditions",
+          "callee": "mapping.GetOffset",
+          "lineNumber": 147
+        },
+        {
+          "caller": "TestMapping_BoundaryConditions",
+          "callee": "require.ErrorIs",
+          "lineNumber": 148
+        },
+        {
+          "caller": "TestMapping_BoundaryConditions",
+          "callee": "mapping.GetOffset",
+          "lineNumber": 151
+        },
+        {
+          "caller": "TestMapping_BoundaryConditions",
+          "callee": "require.ErrorIs",
+          "lineNumber": 152
+        },
+        {
+          "caller": "TestMapping_SingleLargeRegion",
+          "callee": "t.Parallel",
+          "lineNumber": 156
+        },
+        {
+          "caller": "TestMapping_SingleLargeRegion",
+          "callee": "uintptr",
+          "lineNumber": 162
+        },
+        {
+          "caller": "TestMapping_SingleLargeRegion",
+          "callee": "NewMapping",
+          "lineNumber": 167
+        },
+        {
+          "caller": "TestMapping_SingleLargeRegion",
+          "callee": "mapping.GetOffset",
+          "lineNumber": 169
+        },
+        {
+          "caller": "TestMapping_SingleLargeRegion",
+          "callee": "require.NoError",
+          "lineNumber": 170
+        },
+        {
+          "caller": "TestMapping_SingleLargeRegion",
+          "callee": "assert.Equal",
+          "lineNumber": 171
+        },
+        {
+          "caller": "TestMapping_SingleLargeRegion",
+          "callee": "int64",
+          "lineNumber": 171
+        },
+        {
+          "caller": "TestMapping_ZeroSizeRegion",
+          "callee": "t.Parallel",
+          "lineNumber": 175
+        },
+        {
+          "caller": "TestMapping_ZeroSizeRegion",
+          "callee": "NewMapping",
+          "lineNumber": 186
+        },
+        {
+          "caller": "TestMapping_ZeroSizeRegion",
+          "callee": "mapping.GetOffset",
+          "lineNumber": 188
+        },
+        {
+          "caller": "TestMapping_ZeroSizeRegion",
+          "callee": "require.ErrorIs",
+          "lineNumber": 189
+        },
+        {
+          "caller": "TestMapping_MultipleRegionsSparse",
+          "callee": "t.Parallel",
+          "lineNumber": 193
+        },
+        {
+          "caller": "TestMapping_MultipleRegionsSparse",
+          "callee": "NewMapping",
+          "lineNumber": 209
+        },
+        {
+          "caller": "TestMapping_MultipleRegionsSparse",
+          "callee": "mapping.GetOffset",
+          "lineNumber": 212
+        },
+        {
+          "caller": "TestMapping_MultipleRegionsSparse",
+          "callee": "require.NoError",
+          "lineNumber": 213
+        },
+        {
+          "caller": "TestMapping_MultipleRegionsSparse",
+          "callee": "assert.Equal",
+          "lineNumber": 214
+        },
+        {
+          "caller": "TestMapping_MultipleRegionsSparse",
+          "callee": "int64",
+          "lineNumber": 214
+        },
+        {
+          "caller": "TestMapping_MultipleRegionsSparse",
+          "callee": "mapping.GetOffset",
+          "lineNumber": 217
+        },
+        {
+          "caller": "TestMapping_MultipleRegionsSparse",
+          "callee": "require.NoError",
+          "lineNumber": 218
+        },
+        {
+          "caller": "TestMapping_MultipleRegionsSparse",
+          "callee": "assert.Equal",
+          "lineNumber": 219
+        },
+        {
+          "caller": "TestMapping_MultipleRegionsSparse",
+          "callee": "int64",
+          "lineNumber": 219
+        },
+        {
+          "caller": "TestMapping_MultipleRegionsSparse",
+          "callee": "mapping.GetOffset",
+          "lineNumber": 222
+        },
+        {
+          "caller": "TestMapping_MultipleRegionsSparse",
+          "callee": "require.ErrorIs",
+          "lineNumber": 223
+        },
+        {
+          "caller": "TestMapping_HugepagePagesize",
+          "callee": "t.Parallel",
+          "lineNumber": 228
+        },
+        {
+          "caller": "TestMapping_HugepagePagesize",
+          "callee": "NewMapping",
+          "lineNumber": 239
+        },
+        {
+          "caller": "TestMapping_HugepagePagesize",
+          "callee": "mapping.GetOffset",
+          "lineNumber": 242
+        },
+        {
+          "caller": "TestMapping_HugepagePagesize",
+          "callee": "require.NoError",
+          "lineNumber": 243
+        },
+        {
+          "caller": "TestMapping_HugepagePagesize",
+          "callee": "assert.Equal",
+          "lineNumber": 244
+        },
+        {
+          "caller": "TestMapping_HugepagePagesize",
+          "callee": "int64",
+          "lineNumber": 244
+        },
+        {
+          "caller": "TestMapping_HugepagePagesize",
+          "callee": "mapping.GetOffset",
+          "lineNumber": 247
+        },
+        {
+          "caller": "TestMapping_HugepagePagesize",
+          "callee": "require.NoError",
+          "lineNumber": 248
+        },
+        {
+          "caller": "TestMapping_HugepagePagesize",
+          "callee": "assert.Equal",
+          "lineNumber": 249
+        },
+        {
+          "caller": "TestMapping_HugepagePagesize",
+          "callee": "int64",
+          "lineNumber": 249
+        },
+        {
+          "caller": "TestMapping_HugepagePagesize",
+          "callee": "mapping.GetOffset",
+          "lineNumber": 252
+        },
+        {
+          "caller": "TestMapping_HugepagePagesize",
+          "callee": "uintptr",
+          "lineNumber": 252
+        },
+        {
+          "caller": "TestMapping_HugepagePagesize",
+          "callee": "require.ErrorIs",
+          "lineNumber": 253
+        },
+        {
+          "caller": "TestMapping_HugepagePagesize",
+          "callee": "uintptr",
+          "lineNumber": 253
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 7,
+        "functionCount": 7,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/memory/region.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 36,
+      "nonEmptyLines": 30,
+      "functions": [
+        {
+          "name": "endOffset",
+          "startLine": 18,
+          "endLine": 20,
+          "params": []
+        },
+        {
+          "name": "endHostVirtAddr",
+          "startLine": 24,
+          "endLine": 26,
+          "params": []
+        },
+        {
+          "name": "shiftedOffset",
+          "startLine": 29,
+          "endLine": 31,
+          "params": [
+            "addr"
+          ]
+        },
+        {
+          "name": "shiftedHostVirtAddr",
+          "startLine": 34,
+          "endLine": 36,
+          "params": [
+            "off"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Region",
+          "startLine": 8,
+          "endLine": 14,
+          "methods": [
+            "endOffset",
+            "endHostVirtAddr",
+            "shiftedOffset",
+            "shiftedHostVirtAddr"
+          ],
+          "properties": [
+            "BaseHostVirtAddr",
+            "Size",
+            "Offset",
+            "PageSize"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Region",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "endOffset",
+          "callee": "int64",
+          "lineNumber": 19
+        },
+        {
+          "caller": "shiftedOffset",
+          "callee": "int64",
+          "lineNumber": 30
+        },
+        {
+          "caller": "shiftedHostVirtAddr",
+          "callee": "uintptr",
+          "lineNumber": 35
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/memory_backend.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 30,
+      "nonEmptyLines": 26,
+      "classes": [
+        {
+          "name": "MemoryBackend",
+          "startLine": 15,
+          "endLine": 30,
+          "methods": [
+            "DiffMetadata",
+            "PrefetchData",
+            "Prefault",
+            "Start",
+            "Stop",
+            "Ready",
+            "Exit",
+            "Memfd",
+            "ServeStats"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "MemoryBackend",
+          "line": 15,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 55,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/noop.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 96,
+      "nonEmptyLines": 73,
+      "functions": [
+        {
+          "name": "NewNoopMemory",
+          "startLine": 26,
+          "endLine": 32,
+          "params": [
+            "size",
+            "blockSize"
+          ]
+        },
+        {
+          "name": "Prefault",
+          "startLine": 34,
+          "endLine": 36,
+          "params": [
+            "_",
+            "_",
+            "_"
+          ]
+        },
+        {
+          "name": "DiffMetadata",
+          "startLine": 38,
+          "endLine": 56,
+          "params": [
+            "ctx",
+            "f"
+          ]
+        },
+        {
+          "name": "PrefetchData",
+          "startLine": 58,
+          "endLine": 64,
+          "params": [
+            "_"
+          ]
+        },
+        {
+          "name": "Start",
+          "startLine": 66,
+          "endLine": 68,
+          "params": []
+        },
+        {
+          "name": "Stop",
+          "startLine": 70,
+          "endLine": 75,
+          "params": []
+        },
+        {
+          "name": "Ready",
+          "startLine": 77,
+          "endLine": 82,
+          "params": []
+        },
+        {
+          "name": "Exit",
+          "startLine": 84,
+          "endLine": 86,
+          "params": []
+        },
+        {
+          "name": "Memfd",
+          "startLine": 88,
+          "endLine": 90,
+          "params": []
+        },
+        {
+          "name": "ServeStats",
+          "startLine": 94,
+          "endLine": 96,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "NoopMemory",
+          "startLine": 17,
+          "endLine": 22,
+          "methods": [
+            "Prefault",
+            "DiffMetadata",
+            "PrefetchData",
+            "Start",
+            "Stop",
+            "Ready",
+            "Exit",
+            "Memfd",
+            "ServeStats"
+          ],
+          "properties": [
+            "size",
+            "blockSize",
+            "exit"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "NoopMemory",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "NewNoopMemory",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "Prefault",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "DiffMetadata",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "PrefetchData",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "Start",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "Stop",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "Ready",
+          "line": 77,
+          "isDefault": false
+        },
+        {
+          "name": "Exit",
+          "line": 84,
+          "isDefault": false
+        },
+        {
+          "name": "Memfd",
+          "line": 88,
+          "isDefault": false
+        },
+        {
+          "name": "ServeStats",
+          "line": 94,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewNoopMemory",
+          "callee": "utils.NewErrorOnce",
+          "lineNumber": 30
+        },
+        {
+          "caller": "DiffMetadata",
+          "callee": "f.MemoryInfo",
+          "lineNumber": 39
+        },
+        {
+          "caller": "DiffMetadata",
+          "callee": "diffInfo.Dirty.AndNot",
+          "lineNumber": 44
+        },
+        {
+          "caller": "DiffMetadata",
+          "callee": "header.TotalBlocks",
+          "lineNumber": 46
+        },
+        {
+          "caller": "DiffMetadata",
+          "callee": "roaring.Flip",
+          "lineNumber": 48
+        },
+        {
+          "caller": "DiffMetadata",
+          "callee": "uint64",
+          "lineNumber": 48
+        },
+        {
+          "caller": "DiffMetadata",
+          "callee": "empty.RemoveRange",
+          "lineNumber": 49
+        },
+        {
+          "caller": "DiffMetadata",
+          "callee": "uint64",
+          "lineNumber": 49
+        },
+        {
+          "caller": "DiffMetadata",
+          "callee": "uint64",
+          "lineNumber": 49
+        },
+        {
+          "caller": "Stop",
+          "callee": "m.exit.SetSuccess",
+          "lineNumber": 71
+        },
+        {
+          "caller": "Ready",
+          "callee": "make",
+          "lineNumber": 78
+        },
+        {
+          "caller": "Ready",
+          "callee": "close",
+          "lineNumber": 79
+        }
+      ],
+      "metrics": {
+        "importCount": 55,
+        "exportCount": 11,
+        "functionCount": 10,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/prefetch/prefetcher.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 316,
+      "nonEmptyLines": 269,
+      "functions": [
+        {
+          "name": "New",
+          "startLine": 50,
+          "endLine": 64,
+          "params": [
+            "logger",
+            "source",
+            "uffd",
+            "mapping",
+            "featureFlags"
+          ]
+        },
+        {
+          "name": "Start",
+          "startLine": 73,
+          "endLine": 190,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "startCopyWorkers",
+          "startLine": 193,
+          "endLine": 224,
+          "params": [
+            "ctx",
+            "cancelRun",
+            "copyCh",
+            "maxCopyWorkers",
+            "copyStart",
+            "copiedCount",
+            "copySkippedCount"
+          ]
+        },
+        {
+          "name": "fetchWorker",
+          "startLine": 227,
+          "endLine": 265,
+          "params": [
+            "ctx",
+            "fetchCh",
+            "copyCh",
+            "blockSize",
+            "fetchedCount",
+            "skippedCount"
+          ]
+        },
+        {
+          "name": "copyWorker",
+          "startLine": 268,
+          "endLine": 316,
+          "params": [
+            "ctx",
+            "cancelRun",
+            "copyCh",
+            "copiedCount",
+            "skippedCount"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "prefetchData",
+          "startLine": 28,
+          "endLine": 31,
+          "methods": [],
+          "properties": [
+            "offset",
+            "data"
+          ]
+        },
+        {
+          "name": "Prefetcher",
+          "startLine": 42,
+          "endLine": 48,
+          "methods": [
+            "Start",
+            "startCopyWorkers",
+            "fetchWorker",
+            "copyWorker"
+          ],
+          "properties": [
+            "logger",
+            "source",
+            "uffd",
+            "mapping",
+            "featureFlags"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Prefetcher",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "New",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "Start",
+          "line": 73,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Start",
+          "callee": "storage.WithSkipCacheWriteback",
+          "lineNumber": 74
+        },
+        {
+          "caller": "Start",
+          "callee": "tracer.Start",
+          "lineNumber": 76
+        },
+        {
+          "caller": "Start",
+          "callee": "span.End",
+          "lineNumber": 77
+        },
+        {
+          "caller": "Start",
+          "callee": "p.logger.Debug",
+          "lineNumber": 80
+        },
+        {
+          "caller": "Start",
+          "callee": "len",
+          "lineNumber": 86
+        },
+        {
+          "caller": "Start",
+          "callee": "p.logger.Debug",
+          "lineNumber": 87
+        },
+        {
+          "caller": "Start",
+          "callee": "p.featureFlags.IntFlag",
+          "lineNumber": 93
+        },
+        {
+          "caller": "Start",
+          "callee": "p.featureFlags.IntFlag",
+          "lineNumber": 94
+        },
+        {
+          "caller": "Start",
+          "callee": "context.WithCancel",
+          "lineNumber": 100
+        },
+        {
+          "caller": "Start",
+          "callee": "cancelRun",
+          "lineNumber": 101
+        },
+        {
+          "caller": "Start",
+          "callee": "len",
+          "lineNumber": 104
+        },
+        {
+          "caller": "Start",
+          "callee": "span.SetAttributes",
+          "lineNumber": 106
+        },
+        {
+          "caller": "Start",
+          "callee": "attribute.Int64",
+          "lineNumber": 107
+        },
+        {
+          "caller": "Start",
+          "callee": "int64",
+          "lineNumber": 107
+        },
+        {
+          "caller": "Start",
+          "callee": "attribute.Int64",
+          "lineNumber": 108
+        },
+        {
+          "caller": "Start",
+          "callee": "attribute.Int",
+          "lineNumber": 109
+        },
+        {
+          "caller": "Start",
+          "callee": "attribute.Int",
+          "lineNumber": 110
+        },
+        {
+          "caller": "Start",
+          "callee": "p.logger.Debug",
+          "lineNumber": 113
+        },
+        {
+          "caller": "Start",
+          "callee": "zap.Int",
+          "lineNumber": 114
+        },
+        {
+          "caller": "Start",
+          "callee": "zap.Int64",
+          "lineNumber": 115
+        },
+        {
+          "caller": "Start",
+          "callee": "zap.Int",
+          "lineNumber": 116
+        },
+        {
+          "caller": "Start",
+          "callee": "zap.Int",
+          "lineNumber": 117
+        },
+        {
+          "caller": "Start",
+          "callee": "make",
+          "lineNumber": 122
+        },
+        {
+          "caller": "Start",
+          "callee": "make",
+          "lineNumber": 124
+        },
+        {
+          "caller": "Start",
+          "callee": "time.Now",
+          "lineNumber": 135
+        },
+        {
+          "caller": "Start",
+          "callee": "header.BlockOffset",
+          "lineNumber": 144
+        },
+        {
+          "caller": "Start",
+          "callee": "int64",
+          "lineNumber": 144
+        },
+        {
+          "caller": "Start",
+          "callee": "close",
+          "lineNumber": 146
+        },
+        {
+          "caller": "Start",
+          "callee": "fetchWg.Go",
+          "lineNumber": 150
+        },
+        {
+          "caller": "Start",
+          "callee": "p.fetchWorker",
+          "lineNumber": 151
+        },
+        {
+          "caller": "Start",
+          "callee": "copyWg.Go",
+          "lineNumber": 156
+        },
+        {
+          "caller": "Start",
+          "callee": "p.startCopyWorkers",
+          "lineNumber": 157
+        },
+        {
+          "caller": "Start",
+          "callee": "fetchWg.Wait",
+          "lineNumber": 161
+        },
+        {
+          "caller": "Start",
+          "callee": "time.Since",
+          "lineNumber": 162
+        },
+        {
+          "caller": "Start",
+          "callee": "close",
+          "lineNumber": 164
+        },
+        {
+          "caller": "Start",
+          "callee": "copyWg.Wait",
+          "lineNumber": 167
+        },
+        {
+          "caller": "Start",
+          "callee": "pagesCounter.Add",
+          "lineNumber": 171
+        },
+        {
+          "caller": "Start",
+          "callee": "int64",
+          "lineNumber": 171
+        },
+        {
+          "caller": "Start",
+          "callee": "fetchedCount.Load",
+          "lineNumber": 171
+        },
+        {
+          "caller": "Start",
+          "callee": "pagesCounter.Add",
+          "lineNumber": 172
+        },
+        {
+          "caller": "Start",
+          "callee": "int64",
+          "lineNumber": 172
+        },
+        {
+          "caller": "Start",
+          "callee": "fetchSkippedCount.Load",
+          "lineNumber": 172
+        },
+        {
+          "caller": "Start",
+          "callee": "pagesCounter.Add",
+          "lineNumber": 173
+        },
+        {
+          "caller": "Start",
+          "callee": "int64",
+          "lineNumber": 173
+        },
+        {
+          "caller": "Start",
+          "callee": "copiedCount.Load",
+          "lineNumber": 173
+        },
+        {
+          "caller": "Start",
+          "callee": "pagesCounter.Add",
+          "lineNumber": 174
+        },
+        {
+          "caller": "Start",
+          "callee": "int64",
+          "lineNumber": 174
+        },
+        {
+          "caller": "Start",
+          "callee": "copySkippedCount.Load",
+          "lineNumber": 174
+        },
+        {
+          "caller": "Start",
+          "callee": "durationHistogram.Record",
+          "lineNumber": 175
+        },
+        {
+          "caller": "Start",
+          "callee": "fetchDuration.Milliseconds",
+          "lineNumber": 175
+        },
+        {
+          "caller": "Start",
+          "callee": "copyStart.Load",
+          "lineNumber": 176
+        },
+        {
+          "caller": "Start",
+          "callee": "durationHistogram.Record",
+          "lineNumber": 177
+        },
+        {
+          "caller": "Start",
+          "callee": "time.Since(*cs).Milliseconds",
+          "lineNumber": 177
+        },
+        {
+          "caller": "Start",
+          "callee": "time.Since",
+          "lineNumber": 177
+        },
+        {
+          "caller": "Start",
+          "callee": "durationHistogram.Record",
+          "lineNumber": 179
+        },
+        {
+          "caller": "Start",
+          "callee": "time.Since(runStart).Milliseconds",
+          "lineNumber": 179
+        },
+        {
+          "caller": "Start",
+          "callee": "time.Since",
+          "lineNumber": 179
+        },
+        {
+          "caller": "Start",
+          "callee": "p.logger.Debug",
+          "lineNumber": 181
+        },
+        {
+          "caller": "Start",
+          "callee": "zap.Uint64",
+          "lineNumber": 182
+        },
+        {
+          "caller": "Start",
+          "callee": "fetchedCount.Load",
+          "lineNumber": 182
+        },
+        {
+          "caller": "Start",
+          "callee": "zap.Uint64",
+          "lineNumber": 183
+        },
+        {
+          "caller": "Start",
+          "callee": "copiedCount.Load",
+          "lineNumber": 183
+        },
+        {
+          "caller": "Start",
+          "callee": "zap.Uint64",
+          "lineNumber": 184
+        },
+        {
+          "caller": "Start",
+          "callee": "fetchSkippedCount.Load",
+          "lineNumber": 184
+        },
+        {
+          "caller": "Start",
+          "callee": "zap.Uint64",
+          "lineNumber": 185
+        },
+        {
+          "caller": "Start",
+          "callee": "copySkippedCount.Load",
+          "lineNumber": 185
+        },
+        {
+          "caller": "Start",
+          "callee": "zap.Int",
+          "lineNumber": 186
+        },
+        {
+          "caller": "startCopyWorkers",
+          "callee": "ctx.Done",
+          "lineNumber": 204
+        },
+        {
+          "caller": "startCopyWorkers",
+          "callee": "p.uffd.Ready",
+          "lineNumber": 206
+        },
+        {
+          "caller": "startCopyWorkers",
+          "callee": "time.Now",
+          "lineNumber": 209
+        },
+        {
+          "caller": "startCopyWorkers",
+          "callee": "copyStart.Store",
+          "lineNumber": 210
+        },
+        {
+          "caller": "startCopyWorkers",
+          "callee": "p.logger.Debug",
+          "lineNumber": 212
+        },
+        {
+          "caller": "startCopyWorkers",
+          "callee": "copyWorkerWg.Go",
+          "lineNumber": 218
+        },
+        {
+          "caller": "startCopyWorkers",
+          "callee": "p.copyWorker",
+          "lineNumber": 219
+        },
+        {
+          "caller": "startCopyWorkers",
+          "callee": "copyWorkerWg.Wait",
+          "lineNumber": 223
+        },
+        {
+          "caller": "fetchWorker",
+          "callee": "ctx.Done",
+          "lineNumber": 237
+        },
+        {
+          "caller": "fetchWorker",
+          "callee": "p.source.Slice",
+          "lineNumber": 245
+        },
+        {
+          "caller": "fetchWorker",
+          "callee": "p.logger.Debug",
+          "lineNumber": 247
+        },
+        {
+          "caller": "fetchWorker",
+          "callee": "zap.Int64",
+          "lineNumber": 248
+        },
+        {
+          "caller": "fetchWorker",
+          "callee": "zap.Error",
+          "lineNumber": 249
+        },
+        {
+          "caller": "fetchWorker",
+          "callee": "skippedCount.Add",
+          "lineNumber": 251
+        },
+        {
+          "caller": "fetchWorker",
+          "callee": "fetchedCount.Add",
+          "lineNumber": 256
+        },
+        {
+          "caller": "fetchWorker",
+          "callee": "ctx.Done",
+          "lineNumber": 261
+        },
+        {
+          "caller": "copyWorker",
+          "callee": "ctx.Done",
+          "lineNumber": 277
+        },
+        {
+          "caller": "copyWorker",
+          "callee": "p.uffd.Prefault",
+          "lineNumber": 284
+        },
+        {
+          "caller": "copyWorker",
+          "callee": "errors.Is",
+          "lineNumber": 285
+        },
+        {
+          "caller": "copyWorker",
+          "callee": "cancelRun",
+          "lineNumber": 291
+        },
+        {
+          "caller": "copyWorker",
+          "callee": "p.logger.Debug",
+          "lineNumber": 296
+        },
+        {
+          "caller": "copyWorker",
+          "callee": "zap.Int64",
+          "lineNumber": 297
+        },
+        {
+          "caller": "copyWorker",
+          "callee": "zap.Error",
+          "lineNumber": 298
+        },
+        {
+          "caller": "copyWorker",
+          "callee": "skippedCount.Add",
+          "lineNumber": 300
+        },
+        {
+          "caller": "copyWorker",
+          "callee": "copiedCount.Add",
+          "lineNumber": 310
+        },
+        {
+          "caller": "copyWorker",
+          "callee": "skippedCount.Add",
+          "lineNumber": 312
+        }
+      ],
+      "metrics": {
+        "importCount": 49,
+        "exportCount": 3,
+        "functionCount": 5,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/prefetch/prefetcher_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 127,
+      "nonEmptyLines": 97,
+      "functions": [
+        {
+          "name": "Prefault",
+          "startLine": 32,
+          "endLine": 36,
+          "params": []
+        },
+        {
+          "name": "newTestPrefetcher",
+          "startLine": 38,
+          "endLine": 50,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "waitDone",
+          "startLine": 52,
+          "endLine": 59,
+          "params": [
+            "t",
+            "done"
+          ]
+        },
+        {
+          "name": "TestCopyWorkerCancelsRunOnErrClosed",
+          "startLine": 64,
+          "endLine": 90,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "startLine": 95,
+          "endLine": 127,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "prefaultResult",
+          "startLine": 19,
+          "endLine": 22,
+          "methods": [],
+          "properties": [
+            "installed",
+            "err"
+          ]
+        },
+        {
+          "name": "fakeBackend",
+          "startLine": 26,
+          "endLine": 30,
+          "methods": [
+            "Prefault"
+          ],
+          "properties": [
+            "results"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Prefault",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "TestCopyWorkerCancelsRunOnErrClosed",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "line": 95,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "newTestPrefetcher",
+          "callee": "t.Helper",
+          "lineNumber": 39
+        },
+        {
+          "caller": "newTestPrefetcher",
+          "callee": "logger.NewDevelopmentLogger",
+          "lineNumber": 41
+        },
+        {
+          "caller": "newTestPrefetcher",
+          "callee": "require.NoError",
+          "lineNumber": 42
+        },
+        {
+          "caller": "newTestPrefetcher",
+          "callee": "make",
+          "lineNumber": 44
+        },
+        {
+          "caller": "newTestPrefetcher",
+          "callee": "len",
+          "lineNumber": 44
+        },
+        {
+          "caller": "waitDone",
+          "callee": "t.Helper",
+          "lineNumber": 53
+        },
+        {
+          "caller": "waitDone",
+          "callee": "time.After",
+          "lineNumber": 56
+        },
+        {
+          "caller": "waitDone",
+          "callee": "t.Fatal",
+          "lineNumber": 57
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "t.Parallel",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "newTestPrefetcher",
+          "lineNumber": 67
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "context.WithCancel",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "t.Context",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "cancelRun",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "make",
+          "lineNumber": 72
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "make",
+          "lineNumber": 78
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "func() {\n\t\tdefer close(done)\n\t\tp.copyWorker(ctx, cancelRun, copyCh, &copied, &skipped)\n\t}",
+          "lineNumber": 79
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "close",
+          "lineNumber": 80
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "p.copyWorker",
+          "lineNumber": 81
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "waitDone",
+          "lineNumber": 84
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "require.Error",
+          "lineNumber": 86
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "ctx.Err",
+          "lineNumber": 86
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "require.Zero",
+          "lineNumber": 87
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "copied.Load",
+          "lineNumber": 87
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "require.Zero",
+          "lineNumber": 88
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "skipped.Load",
+          "lineNumber": 88
+        },
+        {
+          "caller": "TestCopyWorkerCancelsRunOnErrClosed",
+          "callee": "require.Len",
+          "lineNumber": 89
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "t.Parallel",
+          "lineNumber": 96
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "newTestPrefetcher",
+          "lineNumber": 98
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "context.WithCancel",
+          "lineNumber": 105
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "t.Context",
+          "lineNumber": 105
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "cancelRun",
+          "lineNumber": 106
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "make",
+          "lineNumber": 108
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "close",
+          "lineNumber": 112
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "make",
+          "lineNumber": 116
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "func() {\n\t\tdefer close(done)\n\t\tp.copyWorker(ctx, cancelRun, copyCh, &copied, &skipped)\n\t}",
+          "lineNumber": 117
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "close",
+          "lineNumber": 118
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "p.copyWorker",
+          "lineNumber": 119
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "waitDone",
+          "lineNumber": 122
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "require.NoError",
+          "lineNumber": 124
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "ctx.Err",
+          "lineNumber": 124
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "require.EqualValues",
+          "lineNumber": 125
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "copied.Load",
+          "lineNumber": 125
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "require.EqualValues",
+          "lineNumber": 126
+        },
+        {
+          "caller": "TestCopyWorkerCountsOnlyInstalledAsCopied",
+          "callee": "skipped.Load",
+          "lineNumber": 126
+        }
+      ],
+      "metrics": {
+        "importCount": 24,
+        "exportCount": 3,
+        "functionCount": 5,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/testutils/diff_byte.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 22,
+      "nonEmptyLines": 17,
+      "functions": [
+        {
+          "name": "FirstDifferentByte",
+          "startLine": 8,
+          "endLine": 22,
+          "params": [
+            "a",
+            "b"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "FirstDifferentByte",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "FirstDifferentByte",
+          "callee": "min",
+          "lineNumber": 9
+        },
+        {
+          "caller": "FirstDifferentByte",
+          "callee": "len",
+          "lineNumber": 9
+        },
+        {
+          "caller": "FirstDifferentByte",
+          "callee": "len",
+          "lineNumber": 9
+        },
+        {
+          "caller": "FirstDifferentByte",
+          "callee": "len",
+          "lineNumber": 17
+        },
+        {
+          "caller": "FirstDifferentByte",
+          "callee": "len",
+          "lineNumber": 17
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/testutils/page_mmap.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 64,
+      "nonEmptyLines": 51,
+      "functions": [
+        {
+          "name": "NewPageMmap",
+          "startLine": 18,
+          "endLine": 39,
+          "params": [
+            "t",
+            "size",
+            "pagesize"
+          ]
+        },
+        {
+          "name": "newMmap",
+          "startLine": 44,
+          "endLine": 64,
+          "params": [
+            "t",
+            "size",
+            "pagesize",
+            "flags"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "NewPageMmap",
+          "line": 18,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewPageMmap",
+          "callee": "t.Helper",
+          "lineNumber": 19
+        },
+        {
+          "caller": "NewPageMmap",
+          "callee": "newMmap",
+          "lineNumber": 22
+        },
+        {
+          "caller": "NewPageMmap",
+          "callee": "newMmap",
+          "lineNumber": 26
+        },
+        {
+          "caller": "NewPageMmap",
+          "callee": "errors.Is",
+          "lineNumber": 30
+        },
+        {
+          "caller": "NewPageMmap",
+          "callee": "int",
+          "lineNumber": 31
+        },
+        {
+          "caller": "NewPageMmap",
+          "callee": "math.Ceil",
+          "lineNumber": 31
+        },
+        {
+          "caller": "NewPageMmap",
+          "callee": "float64",
+          "lineNumber": 31
+        },
+        {
+          "caller": "NewPageMmap",
+          "callee": "float64",
+          "lineNumber": 31
+        },
+        {
+          "caller": "NewPageMmap",
+          "callee": "t.Skipf",
+          "lineNumber": 32
+        },
+        {
+          "caller": "NewPageMmap",
+          "callee": "fmt.Errorf",
+          "lineNumber": 38
+        },
+        {
+          "caller": "newMmap",
+          "callee": "t.Helper",
+          "lineNumber": 45
+        },
+        {
+          "caller": "newMmap",
+          "callee": "int",
+          "lineNumber": 47
+        },
+        {
+          "caller": "newMmap",
+          "callee": "math.Ceil",
+          "lineNumber": 47
+        },
+        {
+          "caller": "newMmap",
+          "callee": "float64",
+          "lineNumber": 47
+        },
+        {
+          "caller": "newMmap",
+          "callee": "float64",
+          "lineNumber": 47
+        },
+        {
+          "caller": "newMmap",
+          "callee": "float64",
+          "lineNumber": 47
+        },
+        {
+          "caller": "newMmap",
+          "callee": "syscall.Mmap",
+          "lineNumber": 48
+        },
+        {
+          "caller": "newMmap",
+          "callee": "fmt.Errorf",
+          "lineNumber": 56
+        },
+        {
+          "caller": "newMmap",
+          "callee": "t.Cleanup",
+          "lineNumber": 59
+        },
+        {
+          "caller": "newMmap",
+          "callee": "syscall.Munmap",
+          "lineNumber": 60
+        },
+        {
+          "caller": "newMmap",
+          "callee": "uintptr",
+          "lineNumber": 63
+        },
+        {
+          "caller": "newMmap",
+          "callee": "unsafe.Pointer",
+          "lineNumber": 63
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/testutils/pagemap.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 84,
+      "nonEmptyLines": 68,
+      "functions": [
+        {
+          "name": "IsPresent",
+          "startLine": 37,
+          "endLine": 39,
+          "params": []
+        },
+        {
+          "name": "IsWriteProtected",
+          "startLine": 42,
+          "endLine": 44,
+          "params": []
+        },
+        {
+          "name": "NewPagemapReader",
+          "startLine": 52,
+          "endLine": 59,
+          "params": []
+        },
+        {
+          "name": "Close",
+          "startLine": 61,
+          "endLine": 63,
+          "params": []
+        },
+        {
+          "name": "ReadEntry",
+          "startLine": 68,
+          "endLine": 84,
+          "params": [
+            "virtAddr"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "PagemapEntry",
+          "startLine": 33,
+          "endLine": 35,
+          "methods": [
+            "IsPresent",
+            "IsWriteProtected"
+          ],
+          "properties": [
+            "Raw"
+          ]
+        },
+        {
+          "name": "PagemapReader",
+          "startLine": 48,
+          "endLine": 50,
+          "methods": [
+            "Close",
+            "ReadEntry"
+          ],
+          "properties": [
+            "f"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "PagemapEntry",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "IsPresent",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "IsWriteProtected",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "PagemapReader",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "NewPagemapReader",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "ReadEntry",
+          "line": 68,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewPagemapReader",
+          "callee": "os.Open",
+          "lineNumber": 53
+        },
+        {
+          "caller": "NewPagemapReader",
+          "callee": "fmt.Errorf",
+          "lineNumber": 55
+        },
+        {
+          "caller": "Close",
+          "callee": "r.f.Close",
+          "lineNumber": 62
+        },
+        {
+          "caller": "ReadEntry",
+          "callee": "uint64",
+          "lineNumber": 69
+        },
+        {
+          "caller": "ReadEntry",
+          "callee": "int64",
+          "lineNumber": 70
+        },
+        {
+          "caller": "ReadEntry",
+          "callee": "r.f.ReadAt",
+          "lineNumber": 74
+        },
+        {
+          "caller": "ReadEntry",
+          "callee": "fmt.Errorf",
+          "lineNumber": 76
+        },
+        {
+          "caller": "ReadEntry",
+          "callee": "fmt.Errorf",
+          "lineNumber": 80
+        },
+        {
+          "caller": "ReadEntry",
+          "callee": "binary.NativeEndian.Uint64",
+          "lineNumber": 83
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 7,
+        "functionCount": 5,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/testutils/testharness/barriers.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 152,
+      "nonEmptyLines": 129,
+      "functions": [
+        {
+          "name": "NewRegistry",
+          "startLine": 44,
+          "endLine": 49,
+          "params": []
+        },
+        {
+          "name": "Install",
+          "startLine": 51,
+          "endLine": 67,
+          "params": [
+            "addr",
+            "point"
+          ]
+        },
+        {
+          "name": "lookupByAddr",
+          "startLine": 69,
+          "endLine": 79,
+          "params": [
+            "addr",
+            "point"
+          ]
+        },
+        {
+          "name": "WaitArrived",
+          "startLine": 81,
+          "endLine": 95,
+          "params": [
+            "ctx",
+            "token"
+          ]
+        },
+        {
+          "name": "Release",
+          "startLine": 98,
+          "endLine": 121,
+          "params": [
+            "token"
+          ]
+        },
+        {
+          "name": "ReleaseAll",
+          "startLine": 124,
+          "endLine": 135,
+          "params": []
+        },
+        {
+          "name": "Hook",
+          "startLine": 139,
+          "endLine": 152,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "Registry",
+          "startLine": 24,
+          "endLine": 29,
+          "methods": [
+            "Install",
+            "lookupByAddr",
+            "WaitArrived",
+            "Release",
+            "ReleaseAll",
+            "Hook"
+          ],
+          "properties": [
+            "mu",
+            "next",
+            "tokens",
+            "byKey"
+          ]
+        },
+        {
+          "name": "key",
+          "startLine": 31,
+          "endLine": 34,
+          "methods": [],
+          "properties": [
+            "addr",
+            "point"
+          ]
+        },
+        {
+          "name": "slot",
+          "startLine": 36,
+          "endLine": 42,
+          "methods": [],
+          "properties": [
+            "addr",
+            "point",
+            "arrived",
+            "release",
+            "arrivedOnce"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Registry",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "NewRegistry",
+          "line": 44,
+          "isDefault": false
+        },
+        {
+          "name": "Install",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "WaitArrived",
+          "line": 81,
+          "isDefault": false
+        },
+        {
+          "name": "Release",
+          "line": 98,
+          "isDefault": false
+        },
+        {
+          "name": "ReleaseAll",
+          "line": 124,
+          "isDefault": false
+        },
+        {
+          "name": "Hook",
+          "line": 139,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewRegistry",
+          "callee": "make",
+          "lineNumber": 46
+        },
+        {
+          "caller": "NewRegistry",
+          "callee": "make",
+          "lineNumber": 47
+        },
+        {
+          "caller": "Install",
+          "callee": "r.mu.Lock",
+          "lineNumber": 52
+        },
+        {
+          "caller": "Install",
+          "callee": "r.mu.Unlock",
+          "lineNumber": 53
+        },
+        {
+          "caller": "Install",
+          "callee": "make",
+          "lineNumber": 60
+        },
+        {
+          "caller": "Install",
+          "callee": "make",
+          "lineNumber": 61
+        },
+        {
+          "caller": "lookupByAddr",
+          "callee": "r.mu.Lock",
+          "lineNumber": 70
+        },
+        {
+          "caller": "lookupByAddr",
+          "callee": "r.mu.Unlock",
+          "lineNumber": 71
+        },
+        {
+          "caller": "WaitArrived",
+          "callee": "r.mu.Lock",
+          "lineNumber": 82
+        },
+        {
+          "caller": "WaitArrived",
+          "callee": "r.mu.Unlock",
+          "lineNumber": 84
+        },
+        {
+          "caller": "WaitArrived",
+          "callee": "fmt.Errorf",
+          "lineNumber": 86
+        },
+        {
+          "caller": "WaitArrived",
+          "callee": "ctx.Done",
+          "lineNumber": 92
+        },
+        {
+          "caller": "WaitArrived",
+          "callee": "ctx.Err",
+          "lineNumber": 93
+        },
+        {
+          "caller": "Release",
+          "callee": "r.mu.Lock",
+          "lineNumber": 99
+        },
+        {
+          "caller": "Release",
+          "callee": "delete",
+          "lineNumber": 101
+        },
+        {
+          "caller": "Release",
+          "callee": "delete",
+          "lineNumber": 107
+        },
+        {
+          "caller": "Release",
+          "callee": "r.mu.Unlock",
+          "lineNumber": 110
+        },
+        {
+          "caller": "Release",
+          "callee": "close",
+          "lineNumber": 119
+        },
+        {
+          "caller": "ReleaseAll",
+          "callee": "r.mu.Lock",
+          "lineNumber": 125
+        },
+        {
+          "caller": "ReleaseAll",
+          "callee": "make",
+          "lineNumber": 126
+        },
+        {
+          "caller": "ReleaseAll",
+          "callee": "len",
+          "lineNumber": 126
+        },
+        {
+          "caller": "ReleaseAll",
+          "callee": "append",
+          "lineNumber": 128
+        },
+        {
+          "caller": "ReleaseAll",
+          "callee": "r.mu.Unlock",
+          "lineNumber": 130
+        },
+        {
+          "caller": "ReleaseAll",
+          "callee": "r.Release",
+          "lineNumber": 133
+        },
+        {
+          "caller": "Hook",
+          "callee": "r.lookupByAddr",
+          "lineNumber": 141
+        },
+        {
+          "caller": "Hook",
+          "callee": "s.arrivedOnce.Do",
+          "lineNumber": 146
+        },
+        {
+          "caller": "Hook",
+          "callee": "close",
+          "lineNumber": 147
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 7,
+        "functionCount": 7,
+        "classCount": 3
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/testutils/testharness/client.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 73,
+      "nonEmptyLines": 58,
+      "functions": [
+        {
+          "name": "NewClient",
+          "startLine": 18,
+          "endLine": 23,
+          "params": [
+            "conn"
+          ]
+        },
+        {
+          "name": "Bootstrap",
+          "startLine": 25,
+          "endLine": 27,
+          "params": [
+            "args"
+          ]
+        },
+        {
+          "name": "WaitReady",
+          "startLine": 29,
+          "endLine": 31,
+          "params": []
+        },
+        {
+          "name": "Shutdown",
+          "startLine": 33,
+          "endLine": 35,
+          "params": []
+        },
+        {
+          "name": "Pause",
+          "startLine": 37,
+          "endLine": 39,
+          "params": []
+        },
+        {
+          "name": "Resume",
+          "startLine": 41,
+          "endLine": 43,
+          "params": []
+        },
+        {
+          "name": "PageStates",
+          "startLine": 45,
+          "endLine": 52,
+          "params": []
+        },
+        {
+          "name": "InstallBarrier",
+          "startLine": 54,
+          "endLine": 61,
+          "params": [
+            "addr",
+            "point"
+          ]
+        },
+        {
+          "name": "WaitFaultHeld",
+          "startLine": 63,
+          "endLine": 65,
+          "params": [
+            "token"
+          ]
+        },
+        {
+          "name": "ReleaseFault",
+          "startLine": 67,
+          "endLine": 69,
+          "params": [
+            "token"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 71,
+          "endLine": 73,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "Client",
+          "startLine": 11,
+          "endLine": 14,
+          "methods": [
+            "Bootstrap",
+            "WaitReady",
+            "Shutdown",
+            "Pause",
+            "Resume",
+            "PageStates",
+            "InstallBarrier",
+            "WaitFaultHeld",
+            "ReleaseFault",
+            "Close"
+          ],
+          "properties": [
+            "rpc",
+            "conn"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Client",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "NewClient",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "Bootstrap",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "WaitReady",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "Shutdown",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "Pause",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "Resume",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "PageStates",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "InstallBarrier",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "WaitFaultHeld",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "ReleaseFault",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 71,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewClient",
+          "callee": "jsonrpc.NewClient",
+          "lineNumber": 20
+        },
+        {
+          "caller": "Bootstrap",
+          "callee": "c.rpc.Call",
+          "lineNumber": 26
+        },
+        {
+          "caller": "WaitReady",
+          "callee": "c.rpc.Call",
+          "lineNumber": 30
+        },
+        {
+          "caller": "Shutdown",
+          "callee": "c.rpc.Call",
+          "lineNumber": 34
+        },
+        {
+          "caller": "Pause",
+          "callee": "c.rpc.Call",
+          "lineNumber": 38
+        },
+        {
+          "caller": "Resume",
+          "callee": "c.rpc.Call",
+          "lineNumber": 42
+        },
+        {
+          "caller": "PageStates",
+          "callee": "c.rpc.Call",
+          "lineNumber": 47
+        },
+        {
+          "caller": "InstallBarrier",
+          "callee": "c.rpc.Call",
+          "lineNumber": 56
+        },
+        {
+          "caller": "InstallBarrier",
+          "callee": "uint64",
+          "lineNumber": 56
+        },
+        {
+          "caller": "InstallBarrier",
+          "callee": "uint8",
+          "lineNumber": 56
+        },
+        {
+          "caller": "WaitFaultHeld",
+          "callee": "c.rpc.Call",
+          "lineNumber": 64
+        },
+        {
+          "caller": "ReleaseFault",
+          "callee": "c.rpc.Call",
+          "lineNumber": 68
+        },
+        {
+          "caller": "Close",
+          "callee": "c.conn.Close",
+          "lineNumber": 72
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 12,
+        "functionCount": 11,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/uffd/testutils/testharness/wire.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 43,
+      "nonEmptyLines": 35,
+      "classes": [
+        {
+          "name": "Empty",
+          "startLine": 8,
+          "endLine": 8,
+          "methods": [],
+          "properties": []
+        },
+        {
+          "name": "BootstrapArgs",
+          "startLine": 10,
+          "endLine": 18,
+          "methods": [],
+          "properties": [
+            "MmapStart",
+            "Pagesize",
+            "TotalSize",
+            "AlwaysWP",
+            "Barriers",
+            "Content"
+          ]
+        },
+        {
+          "name": "BootstrapReply",
+          "startLine": 20,
+          "endLine": 20,
+          "methods": [],
+          "properties": []
+        },
+        {
+          "name": "PageStateEntry",
+          "startLine": 23,
+          "endLine": 26,
+          "methods": [],
+          "properties": [
+            "State",
+            "Offset"
+          ]
+        },
+        {
+          "name": "PageStatesReply",
+          "startLine": 28,
+          "endLine": 30,
+          "methods": [],
+          "properties": [
+            "Entries"
+          ]
+        },
+        {
+          "name": "FaultBarrierArgs",
+          "startLine": 32,
+          "endLine": 35,
+          "methods": [],
+          "properties": [
+            "Addr",
+            "Point"
+          ]
+        },
+        {
+          "name": "FaultBarrierReply",
+          "startLine": 37,
+          "endLine": 39,
+          "methods": [],
+          "properties": [
+            "Token"
+          ]
+        },
+        {
+          "name": "TokenArgs",
+          "startLine": 41,
+          "endLine": 43,
+          "methods": [],
+          "properties": [
+            "Token"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Empty",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "BootstrapArgs",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "BootstrapReply",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "PageStateEntry",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "PageStatesReply",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "FaultBarrierArgs",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "FaultBarrierReply",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "TokenArgs",
+          "line": 41,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 8,
+        "functionCount": 0,
+        "classCount": 8
+      }
+    }
+  ]
+}

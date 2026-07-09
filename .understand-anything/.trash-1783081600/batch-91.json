@@ -1,0 +1,58 @@
+{
+  "nodes": [
+    {
+      "id": "config:packages/client-proxy/.env.local",
+      "type": "config",
+      "name": ".env.local",
+      "filePath": "packages/client-proxy/.env.local",
+      "summary": "本地开发环境变量配置,定义 client-proxy 服务的运行环境参数,包括 API gRPC 地址、Edge URL、Redis URL、Loki/日志收集器地址以及服务发现(SD)的静态配置。",
+      "tags": ["configuration", "environment", "local-dev", "service-discovery"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:packages/client-proxy/go.mod",
+      "type": "config",
+      "name": "go.mod",
+      "filePath": "packages/client-proxy/go.mod",
+      "summary": "client-proxy 包的 Go 模块定义,使用 Go 1.26.3,声明模块路径 github.com/e2b-dev/infra/packages/proxy,并通过 replace 指令将 clickhouse 和 shared 包指向本地相对路径。",
+      "tags": ["configuration", "go-modules", "dependency-management", "build-system"],
+      "complexity": "moderate",
+      "languageNotes": "Go 模块文件,使用 replace 指令将内部 packages 映射到本地相对路径,支持 monorepo 工作区模式。"
+    },
+    {
+      "id": "config:packages/client-proxy/go.sum",
+      "type": "config",
+      "name": "go.sum",
+      "filePath": "packages/client-proxy/go.sum",
+      "summary": "client-proxy 包的 Go 模块校验和文件,记录所有直接和间接依赖的精确版本哈希以保证构建的可重复性。",
+      "tags": ["configuration", "go-modules", "dependency-management", "checksums"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "pipeline:packages/client-proxy/Makefile",
+      "type": "pipeline",
+      "name": "Makefile",
+      "filePath": "packages/client-proxy/Makefile",
+      "summary": "client-proxy 包的构建编排文件,提供 build、build-debug、build-and-upload(构建并推送 Docker 镜像到 GCP Artifact Registry 或 AWS ECR)、run、run-local、generate 和 test 等目标。",
+      "tags": ["build-system", "ci-cd", "deployment", "docker", "infrastructure"],
+      "complexity": "moderate",
+      "languageNotes": "Makefile 使用 IMAGE_REGISTRY 在 AWS(ECR)和 GCP(Artifact Registry)之间动态切换,支持多架构构建(amd64/arm64)。"
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:packages/client-proxy/.env.local",
+      "target": "pipeline:packages/client-proxy/Makefile",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/client-proxy/go.mod",
+      "target": "pipeline:packages/client-proxy/Makefile",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

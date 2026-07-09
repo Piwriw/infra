@@ -1,0 +1,969 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "type": "file",
+      "name": "upsert_snapshot_test.go",
+      "filePath": "packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "summary": "集成测试：快照的新建与已存在时的 upsert 行为。",
+      "tags": [
+        "test",
+        "integration",
+        "database",
+        "snapshot"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go:TestUpsertSnapshot_NewSnapshot",
+      "type": "function",
+      "name": "TestUpsertSnapshot_NewSnapshot",
+      "filePath": "packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "lineRange": [
+        17,
+        102
+      ],
+      "summary": "验证新建快照时的 upsert 行为。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go:TestUpsertSnapshot_ExistingSnapshot",
+      "type": "function",
+      "name": "TestUpsertSnapshot_ExistingSnapshot",
+      "filePath": "packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "lineRange": [
+        104,
+        294
+      ],
+      "summary": "验证快照已存在时的 upsert 行为。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "type": "file",
+      "name": "dberrors_test.go",
+      "filePath": "packages/db/pkg/dberrors/dberrors_test.go",
+      "summary": "测试 dberrors 包中错误识别函数的正确性。",
+      "tags": [
+        "test",
+        "database",
+        "error-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/dberrors/dberrors_test.go:TestIsUniqueConstraintViolation",
+      "type": "function",
+      "name": "TestIsUniqueConstraintViolation",
+      "filePath": "packages/db/pkg/dberrors/dberrors_test.go",
+      "lineRange": [
+        12,
+        32
+      ],
+      "summary": "测试 IsUniqueConstraintViolation 对各类 pg 错误的判定。",
+      "tags": [
+        "test",
+        "error-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/retry/errors.go",
+      "type": "file",
+      "name": "errors.go",
+      "filePath": "packages/db/pkg/retry/errors.go",
+      "summary": "错误分类：判断 PostgreSQL/网络/上下文错误是否可重试。",
+      "tags": [
+        "retry",
+        "error-classification",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/errors.go:IsRetriable",
+      "type": "function",
+      "name": "IsRetriable",
+      "filePath": "packages/db/pkg/retry/errors.go",
+      "lineRange": [
+        17,
+        66
+      ],
+      "summary": "判断给定的错误是否可重试（PostgreSQL、网络、连接错误等）。",
+      "tags": [
+        "retry",
+        "error-classification"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/errors.go:isRetriablePgError",
+      "type": "function",
+      "name": "isRetriablePgError",
+      "filePath": "packages/db/pkg/retry/errors.go",
+      "lineRange": [
+        69,
+        86
+      ],
+      "summary": "内部辅助：依据 pgconn.PgError 的 SQLSTATE 判定 PostgreSQL 错误是否可重试。",
+      "tags": [
+        "retry",
+        "error-classification"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/queries/get_dashboard_teams_with_users_teams_with_tier.sql.go",
+      "type": "file",
+      "name": "get_dashboard_teams_with_users_teams_with_tier.sql.go",
+      "filePath": "packages/db/pkg/dashboard/queries/get_dashboard_teams_with_users_teams_with_tier.sql.go",
+      "summary": "sqlc 生成的查询代码：获取包含用户团队和订阅层级的仪表板团队列表。",
+      "tags": [
+        "sqlc-generated",
+        "dashboard",
+        "team-query",
+        "database"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/dashboard/queries/get_dashboard_teams_with_users_teams_with_tier.sql.go:GetDashboardTeamsWithUsersTeamsWithTier",
+      "type": "function",
+      "name": "GetDashboardTeamsWithUsersTeamsWithTier",
+      "filePath": "packages/db/pkg/dashboard/queries/get_dashboard_teams_with_users_teams_with_tier.sql.go",
+      "lineRange": [
+        28,
+        67
+      ],
+      "summary": "执行 sqlc 生成的 SQL，按用户返回其所属团队及订阅层级信息。",
+      "tags": [
+        "sqlc-generated",
+        "query"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_desc.sql.go",
+      "type": "file",
+      "name": "list_template_tag_groups_by_name_desc.sql.go",
+      "filePath": "packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_desc.sql.go",
+      "summary": "sqlc 生成的查询代码：按名称降序列出模板标签组。",
+      "tags": [
+        "sqlc-generated",
+        "tag-group-query",
+        "database"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_desc.sql.go:ListTemplateTagGroupsByNameDesc",
+      "type": "function",
+      "name": "ListTemplateTagGroupsByNameDesc",
+      "filePath": "packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_desc.sql.go",
+      "lineRange": [
+        88,
+        120
+      ],
+      "summary": "执行 sqlc 生成的 SQL，按名称降序返回模板标签组。",
+      "tags": [
+        "sqlc-generated",
+        "query"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "function:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go:TestUpsertSnapshot_NewSnapshot",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "function:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go:TestUpsertSnapshot_ExistingSnapshot",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "function:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go:TestUpsertSnapshot_NewSnapshot",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "function:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go:TestUpsertSnapshot_ExistingSnapshot",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/pkg/testutils/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/pkg/testutils/queries.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/pkg/types/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/pkg/types/types_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/pkg/types/types.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/active_template_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/check_alias_exists.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/create_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/create_new_snapshot.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/create_snapshot_template_env.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/create_template_build_assignment.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/create_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/delete_old_aliases.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/delete_template_build_assignment.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/delete_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/exists_template_snapshots.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/finish_template_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_active_clusters.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_build_info.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_builds_paginated.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_builds_statuses.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_concurrent_template_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_exclusive_builds_for_template_deletion.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_inprogress_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_last_snapshot.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_sandbox_record.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_snapshot_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_snapshots_with_cursor.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_team_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_team_templates_with_cursor.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_team_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_template_aliases.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_template_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_template_by_id.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_template_with_build_by_tag.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_template_with_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/get_templatealias_by_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/list_team_snapshot_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/list_template_tags.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/models.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/resolve_team.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/team_members.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/update_snapshot_origin_node.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/update_template_build_status.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/update_template_spawns.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/update_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/upsert_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/validate_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/snapshots/upsert_snapshot_test.go",
+      "target": "file:packages/db/queries/volumes.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "function:packages/db/pkg/dberrors/dberrors_test.go:TestIsUniqueConstraintViolation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "function:packages/db/pkg/dberrors/dberrors_test.go:TestIsUniqueConstraintViolation",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/pkg/testutils/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/pkg/testutils/queries.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/active_template_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/check_alias_exists.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/create_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/create_new_snapshot.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/create_snapshot_template_env.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/create_template_build_assignment.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/create_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/delete_old_aliases.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/delete_template_build_assignment.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/delete_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/exists_template_snapshots.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/finish_template_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_active_clusters.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_build_info.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_builds_paginated.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_builds_statuses.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_concurrent_template_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_exclusive_builds_for_template_deletion.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_inprogress_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_last_snapshot.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_sandbox_record.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_snapshot_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_snapshots_with_cursor.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_team_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_team_templates_with_cursor.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_team_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_template_aliases.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_template_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_template_by_id.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_template_with_build_by_tag.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_template_with_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/get_templatealias_by_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/list_team_snapshot_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/list_template_tags.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/models.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/resolve_team.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/team_members.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/update_snapshot_origin_node.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/update_template_build_status.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/update_template_spawns.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/update_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/upsert_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/validate_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors_test.go",
+      "target": "file:packages/db/queries/volumes.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors.go",
+      "target": "function:packages/db/pkg/retry/errors.go:IsRetriable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors.go",
+      "target": "function:packages/db/pkg/retry/errors.go:isRetriablePgError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/errors.go",
+      "target": "function:packages/db/pkg/retry/errors.go:IsRetriable",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/get_dashboard_teams_with_users_teams_with_tier.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/get_dashboard_teams_with_users_teams_with_tier.sql.go:GetDashboardTeamsWithUsersTeamsWithTier",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/get_dashboard_teams_with_users_teams_with_tier.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/get_dashboard_teams_with_users_teams_with_tier.sql.go:GetDashboardTeamsWithUsersTeamsWithTier",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_desc.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_desc.sql.go:ListTemplateTagGroupsByNameDesc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_desc.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_desc.sql.go:ListTemplateTagGroupsByNameDesc",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

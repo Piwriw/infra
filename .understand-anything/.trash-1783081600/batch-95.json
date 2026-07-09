@@ -1,0 +1,59 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/db/pkg/auth/sql_queries/api_keys/create_team_api_key.sql",
+      "type": "file",
+      "name": "create_team_api_key.sql",
+      "filePath": "packages/db/pkg/auth/sql_queries/api_keys/create_team_api_key.sql",
+      "summary": "sqlc 查询定义：向 team_api_keys 表插入新的团队 API Key 记录并返回完整行，命名查询为 CreateTeamAPIKey（:one）。",
+      "tags": ["sql", "sqlc", "api-key", "insert", "auth"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/sql_queries/api_keys/delete_team_api_key.sql",
+      "type": "file",
+      "name": "delete_team_api_key.sql",
+      "filePath": "packages/db/pkg/auth/sql_queries/api_keys/delete_team_api_key.sql",
+      "summary": "sqlc 查询定义：根据 id 与 team_id 删除 team_api_keys 记录，命名查询为 DeleteTeamAPIKey（:many，返回被删除的 id）。",
+      "tags": ["sql", "sqlc", "api-key", "delete", "auth"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/sql_queries/api_keys/get_api_keys.sql",
+      "type": "file",
+      "name": "get_api_keys.sql",
+      "filePath": "packages/db/pkg/auth/sql_queries/api_keys/get_api_keys.sql",
+      "summary": "sqlc 查询定义：按 team_id 列出该团队所有 API Key 的元数据（id、name、prefix、length、mask、创建者、创建时间、最近使用时间），命名查询为 GetTeamAPIKeysWithCreator（:many）。",
+      "tags": ["sql", "sqlc", "api-key", "select", "auth"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/sql_queries/api_keys/get_team_api_key_hashes.sql",
+      "type": "file",
+      "name": "get_team_api_key_hashes.sql",
+      "filePath": "packages/db/pkg/auth/sql_queries/api_keys/get_team_api_key_hashes.sql",
+      "summary": "sqlc 查询定义：按 team_id 取出该团队所有 API Key 的哈希值列表，命名查询为 GetTeamAPIKeyHashes（:many），用于认证时的哈希比对。",
+      "tags": ["sql", "sqlc", "api-key", "hash", "auth"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/sql_queries/api_keys/update_last_time_used.sql",
+      "type": "file",
+      "name": "update_last_time_used.sql",
+      "filePath": "packages/db/pkg/auth/sql_queries/api_keys/update_last_time_used.sql",
+      "summary": "sqlc 查询定义：根据 api_key_hash 将对应记录的 last_used 字段更新为当前时间，命名查询为 UpdateLastTimeUsed（:exec）。",
+      "tags": ["sql", "sqlc", "api-key", "update", "auth"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/auth/sql_queries/api_keys/update_team_api_key.sql",
+      "type": "file",
+      "name": "update_team_api_key.sql",
+      "filePath": "packages/db/pkg/auth/sql_queries/api_keys/update_team_api_key.sql",
+      "summary": "sqlc 查询定义：按 id 与 team_id 重命名某个 API Key 并刷新 updated_at，命名查询为 UpdateTeamApiKey（:one，返回 id）。",
+      "tags": ["sql", "sqlc", "api-key", "update", "auth"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": []
+}

@@ -1,0 +1,1685 @@
+{
+  "nodes": [
+    {
+      "id": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "type": "file",
+      "name": "sandbox_network_out_test.go",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "summary": "集成测试套件,验证 sandbox 出站流量防火墙规则(IP、域名、CIDR、UDP/TCP)的语义正确性。",
+      "tags": [
+        "integration-test",
+        "go-test",
+        "sandbox",
+        "api-test",
+        "network"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:assertSuccessfulHTTPRequest",
+      "type": "function",
+      "name": "assertSuccessfulHTTPRequest",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        65,
+        71
+      ],
+      "summary": "测试辅助函数 assertSuccessfulHTTPRequest(t, ctx, sbx, envdClient, url, msg),行 65-71。",
+      "tags": [
+        "assertion",
+        "test-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:assertBlockedHTTPRequest",
+      "type": "function",
+      "name": "assertBlockedHTTPRequest",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        74,
+        79
+      ],
+      "summary": "测试辅助函数 assertBlockedHTTPRequest(t, ctx, sbx, envdClient, url, msg),行 74-79。",
+      "tags": [
+        "assertion",
+        "test-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:assertSuccessfulDNSQuery",
+      "type": "function",
+      "name": "assertSuccessfulDNSQuery",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        82,
+        86
+      ],
+      "summary": "测试辅助函数 assertSuccessfulDNSQuery(t, ctx, sbx, envdClient, dnsServer, domain, msg),行 82-86。",
+      "tags": [
+        "assertion",
+        "test-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:assertBlockedDNSQuery",
+      "type": "function",
+      "name": "assertBlockedDNSQuery",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        89,
+        93
+      ],
+      "summary": "测试辅助函数 assertBlockedDNSQuery(t, ctx, sbx, envdClient, dnsServer, domain, msg),行 89-93。",
+      "tags": [
+        "assertion",
+        "test-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:assertHTTPResponseFromServer",
+      "type": "function",
+      "name": "assertHTTPResponseFromServer",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        97,
+        103
+      ],
+      "summary": "测试辅助函数 assertHTTPResponseFromServer(t, ctx, sbx, envdClient, url, expectedServerHeader, msg),行 97-103。",
+      "tags": [
+        "assertion",
+        "test-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowSpecificIP",
+      "type": "function",
+      "name": "TestEgressFirewallAllowSpecificIP",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        110,
+        133
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallAllowSpecificIP(t),行 110-133。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallBlockSpecificIP",
+      "type": "function",
+      "name": "TestEgressFirewallBlockSpecificIP",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        136,
+        158
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallBlockSpecificIP(t),行 136-158。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowCIDRRange",
+      "type": "function",
+      "name": "TestEgressFirewallAllowCIDRRange",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        161,
+        184
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallAllowCIDRRange(t),行 161-184。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallBlockCIDRRange",
+      "type": "function",
+      "name": "TestEgressFirewallBlockCIDRRange",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        187,
+        209
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallBlockCIDRRange(t),行 187-209。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowAndBlockCombination",
+      "type": "function",
+      "name": "TestEgressFirewallAllowAndBlockCombination",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        212,
+        235
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallAllowAndBlockCombination(t),行 212-235。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallPersistsAfterResume",
+      "type": "function",
+      "name": "TestEgressFirewallPersistsAfterResume",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        238,
+        278
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallPersistsAfterResume(t),行 238-278。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallEmptyConfig",
+      "type": "function",
+      "name": "TestEgressFirewallEmptyConfig",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        281,
+        301
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallEmptyConfig(t),行 281-301。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowAll",
+      "type": "function",
+      "name": "TestEgressFirewallAllowAll",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        304,
+        326
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallAllowAll(t),行 304-326。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowOverridesBlock",
+      "type": "function",
+      "name": "TestEgressFirewallAllowOverridesBlock",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        329,
+        352
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallAllowOverridesBlock(t),行 329-352。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallMultipleAllowedIPs",
+      "type": "function",
+      "name": "TestEgressFirewallMultipleAllowedIPs",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        355,
+        379
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallMultipleAllowedIPs(t),行 355-379。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallWithInternetAccessFalse",
+      "type": "function",
+      "name": "TestEgressFirewallWithInternetAccessFalse",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        382,
+        405
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallWithInternetAccessFalse(t),行 382-405。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallPrivateIPRangesAlwaysBlocked",
+      "type": "function",
+      "name": "TestEgressFirewallPrivateIPRangesAlwaysBlocked",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        411,
+        469
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallPrivateIPRangesAlwaysBlocked(t),行 411-469。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowAllDuplicate",
+      "type": "function",
+      "name": "TestEgressFirewallAllowAllDuplicate",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        472,
+        494
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallAllowAllDuplicate(t),行 472-494。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallRegularIPThenAllowAll",
+      "type": "function",
+      "name": "TestEgressFirewallRegularIPThenAllowAll",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        497,
+        519
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallRegularIPThenAllowAll(t),行 497-519。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowDomainThroughBlockedInternet",
+      "type": "function",
+      "name": "TestEgressFirewallAllowDomainThroughBlockedInternet",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        523,
+        546
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallAllowDomainThroughBlockedInternet(t),行 523-546。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowWildcardDomainThroughBlockedInternet",
+      "type": "function",
+      "name": "TestEgressFirewallAllowWildcardDomainThroughBlockedInternet",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        549,
+        573
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallAllowWildcardDomainThroughBlockedInternet(t),行 549-573。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallExactDomainMatchVsSubdomain",
+      "type": "function",
+      "name": "TestEgressFirewallExactDomainMatchVsSubdomain",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        576,
+        599
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallExactDomainMatchVsSubdomain(t),行 576-599。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowAllDomainsWildcard",
+      "type": "function",
+      "name": "TestEgressFirewallAllowAllDomainsWildcard",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        602,
+        626
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallAllowAllDomainsWildcard(t),行 602-626。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallDomainCaseInsensitive",
+      "type": "function",
+      "name": "TestEgressFirewallDomainCaseInsensitive",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        629,
+        652
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallDomainCaseInsensitive(t),行 629-652。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowDomainAndIP",
+      "type": "function",
+      "name": "TestEgressFirewallAllowDomainAndIP",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        655,
+        680
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallAllowDomainAndIP(t),行 655-680。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallHTTPSByIPNoHostname",
+      "type": "function",
+      "name": "TestEgressFirewallHTTPSByIPNoHostname",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        684,
+        708
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallHTTPSByIPNoHostname(t),行 684-708。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallDomainPersistsAfterResume",
+      "type": "function",
+      "name": "TestEgressFirewallDomainPersistsAfterResume",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        711,
+        752
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallDomainPersistsAfterResume(t),行 711-752。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallHTTPDomainFiltering",
+      "type": "function",
+      "name": "TestEgressFirewallHTTPDomainFiltering",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        759,
+        782
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallHTTPDomainFiltering(t),行 759-782。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallUDPAllowedIP",
+      "type": "function",
+      "name": "TestEgressFirewallUDPAllowedIP",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        789,
+        812
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallUDPAllowedIP(t),行 789-812。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallUDPAllowedCIDR",
+      "type": "function",
+      "name": "TestEgressFirewallUDPAllowedCIDR",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        815,
+        838
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallUDPAllowedCIDR(t),行 815-838。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallDNSSpoofingNeutralized",
+      "type": "function",
+      "name": "TestEgressFirewallDNSSpoofingNeutralized",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        847,
+        893
+      ],
+      "summary": "测试辅助函数 TestEgressFirewallDNSSpoofingNeutralized(t),行 847-893。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestNoNetworkConfig_SSHWorks",
+      "type": "function",
+      "name": "TestNoNetworkConfig_SSHWorks",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        900,
+        927
+      ],
+      "summary": "测试辅助函数 TestNoNetworkConfig_SSHWorks(t),行 900-927。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestWithNetworkConfig_SSHWorks",
+      "type": "function",
+      "name": "TestWithNetworkConfig_SSHWorks",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        935,
+        969
+      ],
+      "summary": "测试辅助函数 TestWithNetworkConfig_SSHWorks(t),行 935-969。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestGPGKeyserverWorks",
+      "type": "function",
+      "name": "TestGPGKeyserverWorks",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "lineRange": [
+        978,
+        1039
+      ],
+      "summary": "测试辅助函数 TestGPGKeyserverWorks(t),行 978-1039。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "type": "file",
+      "name": "sandbox_network_update_test.go",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "summary": "集成测试套件,验证运行中 sandbox 的网络配置(network config)可被 PUT 接口动态更新并生效。",
+      "tags": [
+        "integration-test",
+        "go-test",
+        "sandbox",
+        "api-test",
+        "network"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go:verifyConnectivityEventually",
+      "type": "function",
+      "name": "verifyConnectivityEventually",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "lineRange": [
+        18,
+        42
+      ],
+      "summary": "测试辅助函数 verifyConnectivityEventually(t, ctx, sbx, envdClient, checks),行 18-42。",
+      "tags": [
+        "assertion",
+        "test-helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go:putNetwork",
+      "type": "function",
+      "name": "putNetwork",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "lineRange": [
+        53,
+        67
+      ],
+      "summary": "测试辅助函数 putNetwork(t, ctx, client, sandboxID, body),行 53-67。",
+      "tags": [
+        "test-helper",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go:verifyConnectivity",
+      "type": "function",
+      "name": "verifyConnectivity",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "lineRange": [
+        75,
+        90
+      ],
+      "summary": "测试辅助函数 verifyConnectivity(t, ctx, sbx, envdClient, checks),行 75-90。",
+      "tags": [
+        "assertion",
+        "test-helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go:TestUpdateNetworkConfig",
+      "type": "function",
+      "name": "TestUpdateNetworkConfig",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "lineRange": [
+        94,
+        424
+      ],
+      "summary": "测试辅助函数 TestUpdateNetworkConfig(t),行 94-424。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "type": "file",
+      "name": "sandbox_pause_test.go",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "summary": "集成测试套件,验证 sandbox 通过 API 暂停(pause)后资源保留、状态正确以及幂等性。",
+      "tags": [
+        "integration-test",
+        "go-test",
+        "sandbox",
+        "api-test",
+        "lifecycle"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go:TestSandboxPause",
+      "type": "function",
+      "name": "TestSandboxPause",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "lineRange": [
+        16,
+        103
+      ],
+      "summary": "测试辅助函数 TestSandboxPause(t),行 16-103。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "type": "file",
+      "name": "sandbox_rapid_pause_resume_test.go",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "summary": "集成测试套件,验证 sandbox 在快照链(snapshot chain)上连续快速 pause/resume 时数据完整性。",
+      "tags": [
+        "integration-test",
+        "go-test",
+        "sandbox",
+        "api-test",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go:TestSandboxRapidSnapshotForkChain",
+      "type": "function",
+      "name": "TestSandboxRapidSnapshotForkChain",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "lineRange": [
+        36,
+        75
+      ],
+      "summary": "测试辅助函数 TestSandboxRapidSnapshotForkChain(t),行 36-75。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go:verifyChainOnStorage",
+      "type": "function",
+      "name": "verifyChainOnStorage",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "lineRange": [
+        89,
+        114
+      ],
+      "summary": "测试辅助函数 verifyChainOnStorage(t, ctx, chain),行 89-114。",
+      "tags": [
+        "assertion",
+        "test-helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go:verifyHeader",
+      "type": "function",
+      "name": "verifyHeader",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "lineRange": [
+        116,
+        133
+      ],
+      "summary": "测试辅助函数 verifyHeader(t, ctx, persistence, node, paths, fileName, headerPath, ancestors),行 116-133。",
+      "tags": [
+        "assertion",
+        "test-helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go:verifyChecksum",
+      "type": "function",
+      "name": "verifyChecksum",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "lineRange": [
+        138,
+        162
+      ],
+      "summary": "测试辅助函数 verifyChecksum(t, ctx, persistence, node, paths, fileName, bd),行 138-162。",
+      "tags": [
+        "assertion",
+        "test-helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go:loadHeaderWithPolling",
+      "type": "function",
+      "name": "loadHeaderWithPolling",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "lineRange": [
+        167,
+        179
+      ],
+      "summary": "测试辅助函数 loadHeaderWithPolling(t, ctx, persistence, path, name, fileLabel),行 167-179。",
+      "tags": [
+        "assertion",
+        "test-helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go:defaultTagBuildID",
+      "type": "function",
+      "name": "defaultTagBuildID",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "lineRange": [
+        181,
+        191
+      ],
+      "summary": "测试辅助函数 defaultTagBuildID(t, ctx, c, snapshotID),行 181-191。",
+      "tags": [
+        "test-helper",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "type": "file",
+      "name": "sandbox_refresh_test.go",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "summary": "集成测试套件,验证 sandbox 续期(refresh)接口对运行中 sandbox 延长超时的行为,以及越权访问和资源不存在场景。",
+      "tags": [
+        "integration-test",
+        "go-test",
+        "sandbox",
+        "api-test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go:TestSandboxRefresh",
+      "type": "function",
+      "name": "TestSandboxRefresh",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "lineRange": [
+        15,
+        73
+      ],
+      "summary": "测试辅助函数 TestSandboxRefresh(t),行 15-73。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go:TestSandboxRefresh_NotFound",
+      "type": "function",
+      "name": "TestSandboxRefresh_NotFound",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "lineRange": [
+        75,
+        82
+      ],
+      "summary": "测试辅助函数 TestSandboxRefresh_NotFound(t),行 75-82。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go:TestSandboxRefresh_CrossTeamAccess",
+      "type": "function",
+      "name": "TestSandboxRefresh_CrossTeamAccess",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "lineRange": [
+        84,
+        104
+      ],
+      "summary": "测试辅助函数 TestSandboxRefresh_CrossTeamAccess(t),行 84-104。",
+      "tags": [
+        "test-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go:connectivityCheck",
+      "type": "class",
+      "name": "connectivityCheck",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "lineRange": [
+        70,
+        73
+      ],
+      "summary": "测试辅助结构体 connectivityCheck,用于组织测试上下文数据。",
+      "tags": [
+        "test-helper",
+        "struct"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go:chainNode",
+      "type": "class",
+      "name": "chainNode",
+      "filePath": "tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "lineRange": [
+        77,
+        82
+      ],
+      "summary": "测试辅助结构体 chainNode,用于组织测试上下文数据。",
+      "tags": [
+        "test-helper",
+        "struct"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:assertSuccessfulHTTPRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:assertBlockedHTTPRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:assertSuccessfulDNSQuery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:assertBlockedDNSQuery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:assertHTTPResponseFromServer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowSpecificIP",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallBlockSpecificIP",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowCIDRRange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallBlockCIDRRange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowAndBlockCombination",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallPersistsAfterResume",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallEmptyConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowAll",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowOverridesBlock",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallMultipleAllowedIPs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallWithInternetAccessFalse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallPrivateIPRangesAlwaysBlocked",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowAllDuplicate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallRegularIPThenAllowAll",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowDomainThroughBlockedInternet",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowWildcardDomainThroughBlockedInternet",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallExactDomainMatchVsSubdomain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowAllDomainsWildcard",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallDomainCaseInsensitive",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallAllowDomainAndIP",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallHTTPSByIPNoHostname",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallDomainPersistsAfterResume",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallHTTPDomainFiltering",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallUDPAllowedIP",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallUDPAllowedCIDR",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestEgressFirewallDNSSpoofingNeutralized",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestNoNetworkConfig_SSHWorks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestWithNetworkConfig_SSHWorks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go:TestGPGKeyserverWorks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go:verifyConnectivityEventually",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go:putNetwork",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go:verifyConnectivity",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go:TestUpdateNetworkConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go:TestSandboxPause",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go:TestSandboxRapidSnapshotForkChain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go:verifyChainOnStorage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go:verifyHeader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go:verifyChecksum",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go:loadHeaderWithPolling",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go:defaultTagBuildID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go:TestSandboxRefresh",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go:TestSandboxRefresh_NotFound",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "function:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go:TestSandboxRefresh_CrossTeamAccess",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "class:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go:connectivityCheck",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "class:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go:chainNode",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_out_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_network_update_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_pause_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_rapid_pause_resume_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/api/sandboxes/sandbox_refresh_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

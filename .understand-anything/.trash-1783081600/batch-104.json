@@ -1,0 +1,202 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/db/queries/templates/create_template.sql",
+      "type": "file",
+      "name": "create_template.sql",
+      "filePath": "packages/db/queries/templates/create_template.sql",
+      "summary": "sqlc 查询文件,定义创建或更新模板(env)、使未开始的构建失效、创建模板构建记录等操作的 SQL 语句,作为 PostgreSQL 类型安全查询的输入。",
+      "tags": ["sql", "sqlc", "template", "database", "query"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/queries/templates/create_template_build_assignment.sql",
+      "type": "file",
+      "name": "create_template_build_assignment.sql",
+      "filePath": "packages/db/queries/templates/create_template_build_assignment.sql",
+      "summary": "sqlc 查询文件,使用 FOR SHARE 锁将构建分配到模板(env),防止与并发删除产生竞态条件。",
+      "tags": ["sql", "sqlc", "template", "build-assignment", "concurrency"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/queries/templates/delete_template.sql",
+      "type": "file",
+      "name": "delete_template.sql",
+      "filePath": "packages/db/queries/templates/delete_template.sql",
+      "summary": "sqlc 查询文件,定义模板的软删除流程:标记 env 行的 deleted_at、释放别名缓存键、清理活动构建记录,均作为独立事务步骤以避免与并发注册冲突。",
+      "tags": ["sql", "sqlc", "template", "soft-delete", "database"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/queries/templates/delete_template_build_assignment.sql",
+      "type": "file",
+      "name": "delete_template_build_assignment.sql",
+      "filePath": "packages/db/queries/templates/delete_template_build_assignment.sql",
+      "summary": "sqlc 查询文件,根据模板 ID 和标签数组删除指定的构建分配(标签移除操作)。",
+      "tags": ["sql", "sqlc", "template", "tag", "database"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/queries/templates/exists_template_snapshots.sql",
+      "type": "file",
+      "name": "exists_template_snapshots.sql",
+      "filePath": "packages/db/queries/templates/exists_template_snapshots.sql",
+      "summary": "sqlc 查询文件,检查指定 env 是否存在派生快照,通过 JOIN active_envs 和 snapshots 表实现存在性判断。",
+      "tags": ["sql", "sqlc", "template", "snapshot", "exists-check"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/queries/templates/get_template.sql",
+      "type": "file",
+      "name": "get_template.sql",
+      "filePath": "packages/db/queries/templates/get_template.sql",
+      "summary": "sqlc 查询文件,提供按别名(支持命名空间)或按 ID 查询模板的两种方式,只匹配 source 为 'template' 或 'snapshot_template' 的活动 env。",
+      "tags": ["sql", "sqlc", "template", "lookup", "database"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/queries/templates/get_template_aliases.sql",
+      "type": "file",
+      "name": "get_template_aliases.sql",
+      "filePath": "packages/db/queries/templates/get_template_aliases.sql",
+      "summary": "sqlc 查询文件,根据 env_id 数组批量获取模板的别名及其命名空间信息。",
+      "tags": ["sql", "sqlc", "template", "alias", "batch-query"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/queries/templates/get_template_by_id.sql",
+      "type": "file",
+      "name": "get_template_by_id.sql",
+      "filePath": "packages/db/queries/templates/get_template_by_id.sql",
+      "summary": "sqlc 查询文件,通过模板 ID 获取完整 env 记录并使用 LATERAL 子查询聚合其所有别名及完整限定名。",
+      "tags": ["sql", "sqlc", "template", "lateral-join", "database"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/queries/templates/get_template_with_build_by_tag.sql",
+      "type": "file",
+      "name": "get_template_with_build_by_tag.sql",
+      "filePath": "packages/db/queries/templates/get_template_with_build_by_tag.sql",
+      "summary": "sqlc 查询文件,通过模板 ID 和 tag(支持 UUID 回退匹配 build_id)获取模板及其已就绪构建,使用 sqlc.embed 嵌入完整结构。",
+      "tags": ["sql", "sqlc", "template", "build-lookup", "tag"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/queries/templates/get_template_with_builds.sql",
+      "type": "file",
+      "name": "get_template_with_builds.sql",
+      "filePath": "packages/db/queries/templates/get_template_with_builds.sql",
+      "summary": "sqlc 查询文件,通过游标分页方式获取模板关联的所有去重构建记录,按 created_at 和 id 倒序排列。",
+      "tags": ["sql", "sqlc", "template", "pagination", "cursor"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/queries/templates/list_template_tags.sql",
+      "type": "file",
+      "name": "list_template_tags.sql",
+      "filePath": "packages/db/queries/templates/list_template_tags.sql",
+      "summary": "sqlc 查询文件,使用 DISTINCT ON 获取模板每个 tag 的最新构建分配记录(每个 tag 仅返回最新一条)。",
+      "tags": ["sql", "sqlc", "template", "tag", "distinct-on"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/queries/templates/update_template.sql",
+      "type": "file",
+      "name": "update_template.sql",
+      "filePath": "packages/db/queries/templates/update_template.sql",
+      "summary": "sqlc 查询文件,按团队 ID 校验所有权后更新模板的 public 可见性标志(支持按 ID 或别名匹配)。",
+      "tags": ["sql", "sqlc", "template", "update", "visibility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/queries/templates/update_template_build_status.sql",
+      "type": "file",
+      "name": "update_template_build_status.sql",
+      "filePath": "packages/db/queries/templates/update_template_build_status.sql",
+      "summary": "sqlc 查询文件,更新 env_builds 的状态及完成信息,FailTemplateBuildAndDeactivate 同时从 active_template_builds 表移除以释放并发槽位。",
+      "tags": ["sql", "sqlc", "template", "build-status", "concurrency"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/queries/templates/update_template_spawns.sql",
+      "type": "file",
+      "name": "update_template_spawns.sql",
+      "filePath": "packages/db/queries/templates/update_template_spawns.sql",
+      "summary": "sqlc 查询文件,以增量方式累加模板的 spawn_count 并更新 last_spawned_at 时间戳,用于使用统计。",
+      "tags": ["sql", "sqlc", "template", "spawn-count", "metrics"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/db/queries/templates/create_template.sql",
+      "target": "file:packages/db/queries/templates/create_template_build_assignment.sql",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/db/queries/templates/create_template.sql",
+      "target": "file:packages/db/queries/templates/delete_template.sql",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/db/queries/templates/create_template_build_assignment.sql",
+      "target": "file:packages/db/queries/templates/delete_template_build_assignment.sql",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/db/queries/templates/delete_template.sql",
+      "target": "file:packages/db/queries/templates/get_template_aliases.sql",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/db/queries/templates/get_template.sql",
+      "target": "file:packages/db/queries/templates/get_template_by_id.sql",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/db/queries/templates/get_template_with_build_by_tag.sql",
+      "target": "file:packages/db/queries/templates/get_template_by_id.sql",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/db/queries/templates/get_template_with_build_by_tag.sql",
+      "target": "file:packages/db/queries/templates/list_template_tags.sql",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/db/queries/templates/get_template_with_build_by_tag.sql",
+      "target": "file:packages/db/queries/templates/get_template_with_builds.sql",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/db/queries/templates/update_template_build_status.sql",
+      "target": "file:packages/db/queries/templates/create_template.sql",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/db/queries/templates/update_template_spawns.sql",
+      "target": "file:packages/db/queries/templates/update_template.sql",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

@@ -1,0 +1,189 @@
+{
+  "nodes": [
+    {
+      "id": "pipeline:packages/local-dev/Makefile",
+      "type": "pipeline",
+      "name": "Makefile",
+      "filePath": "packages/local-dev/Makefile",
+      "summary": "本地开发基础设施的 Makefile 入口,提供 local-infra、seed-database、stop-infra 等目标,通过 docker compose 启动容器栈并生成 ClickHouse 配置。",
+      "tags": ["build-system", "infrastructure", "ci-cd", "orchestration", "local-dev"],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:packages/local-dev/docker-compose.yaml",
+      "type": "service",
+      "name": "docker-compose.yaml",
+      "filePath": "packages/local-dev/docker-compose.yaml",
+      "summary": "本地开发的 Docker Compose 编排文件,启动 ClickHouse、Grafana、Loki、Mimir、Tempo、OTel Collector、PostgreSQL、Redis、SOCKS5 代理、Memcached 与 Vector 等 12 个服务,组成完整的可观测性栈与数据存储。",
+      "tags": ["orchestration", "infrastructure", "containerization", "observability", "local-dev"],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:packages/local-dev/go.mod",
+      "type": "config",
+      "name": "go.mod",
+      "filePath": "packages/local-dev/go.mod",
+      "summary": "local-dev 子模块的 Go 模块定义,声明对 packages/shared、packages/db、pgx、goose、testcontainers 等依赖,以及用于本地替换的 replace 指令。",
+      "tags": ["configuration", "go-module", "dependency-management", "build-system"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:packages/local-dev/go.sum",
+      "type": "config",
+      "name": "go.sum",
+      "filePath": "packages/local-dev/go.sum",
+      "summary": "local-dev 模块的 Go 依赖校验和文件,包含 214 行 hash 记录,锁定了 go.mod 中直接与间接依赖的版本。",
+      "tags": ["configuration", "go-module", "dependency-management", "checksum"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:packages/local-dev/grafana-datasources.yaml",
+      "type": "config",
+      "name": "grafana-datasources.yaml",
+      "filePath": "packages/local-dev/grafana-datasources.yaml",
+      "summary": "Grafana 数据源供应配置,默认删除内置 Prometheus,注册 Mimir (Prometheus 类型)、Tempo (trace 查询入口) 与 Loki 三个数据源,启用匿名访问并设置 Tempo 为默认。",
+      "tags": ["configuration", "observability", "grafana", "datasource-provisioning"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:packages/local-dev/mimir.yaml",
+      "type": "config",
+      "name": "mimir.yaml",
+      "filePath": "packages/local-dev/mimir.yaml",
+      "summary": "Mimir 长期指标的本地配置,使用文件系统后端、关闭多租户,定义 compactor、distributor、ingester、store_gateway 等组件的最小化参数以支持演示场景。",
+      "tags": ["configuration", "observability", "metrics", "mimir", "local-dev"],
+      "complexity": "moderate",
+      "languageNotes": "使用 memberlist kvstore 简化本地部署的 ring 通信,所有存储路径落在 /tmp 下以便快速清理。"
+    },
+    {
+      "id": "config:packages/local-dev/otel-collector.yaml",
+      "type": "config",
+      "name": "otel-collector.yaml",
+      "filePath": "packages/local-dev/otel-collector.yaml",
+      "summary": "OpenTelemetry Collector 配置,通过 OTLP gRPC/HTTP 接收 traces/metrics/logs,按不同 pipeline 分别转发到 Tempo、Mimir、Loki 以及 ClickHouse,并启用 health_check、pprof、zpages 扩展。",
+      "tags": ["configuration", "observability", "opentelemetry", "pipeline", "local-dev"],
+      "complexity": "moderate",
+      "languageNotes": "使用 filter/external_metrics 处理器仅匹配 e2b.* 前缀的指标写入 ClickHouse,实现指标分流。"
+    },
+    {
+      "id": "config:packages/local-dev/tempo.yaml",
+      "type": "config",
+      "name": "tempo.yaml",
+      "filePath": "packages/local-dev/tempo.yaml",
+      "summary": "Tempo 分布式追踪的本地配置,启用 stream_over_http_enabled,接入 jaeger/zipkin/otlp/opencensus 多协议接收器,并配置 metrics_generator 通过 remote_write 推送 service-graphs、span-metrics 与 local-blocks 到 Mimir。",
+      "tags": ["configuration", "observability", "tracing", "tempo", "local-dev"],
+      "complexity": "complex",
+      "languageNotes": "通过 overrides.defaults.cost_attribution.dimensions 将 span.http.target 重映射为 service_route 自定义标签,实现成本归因。"
+    },
+    {
+      "id": "config:packages/local-dev/vector.toml",
+      "type": "config",
+      "name": "vector.toml",
+      "filePath": "packages/local-dev/vector.toml",
+      "summary": "Vector 日志采集器配置,从 HTTP 服务器 (30006) 接收 NDJSON 日志,通过 VRL 脚本统一 sandboxID/buildID/envID/teamID 等字段命名,过滤内部日志后推送至 Loki 并附带多维标签。",
+      "tags": ["configuration", "observability", "logging", "vector", "etl"],
+      "complexity": "complex",
+      "languageNotes": "使用 remap transform 将下划线字段 (sandbox_id) 与点号字段 (sandbox.id) 标准化为驼峰命名 (sandboxID),并通过 route transform 分离 .internal=true 的内部日志。"
+    }
+  ],
+  "edges": [
+    {
+      "source": "pipeline:packages/local-dev/Makefile",
+      "target": "service:packages/local-dev/docker-compose.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:packages/local-dev/Makefile",
+      "target": "config:packages/local-dev/mimir.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/local-dev/docker-compose.yaml",
+      "target": "config:packages/local-dev/grafana-datasources.yaml",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "service:packages/local-dev/docker-compose.yaml",
+      "target": "config:packages/local-dev/mimir.yaml",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "service:packages/local-dev/docker-compose.yaml",
+      "target": "config:packages/local-dev/otel-collector.yaml",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "service:packages/local-dev/docker-compose.yaml",
+      "target": "config:packages/local-dev/tempo.yaml",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "service:packages/local-dev/docker-compose.yaml",
+      "target": "config:packages/local-dev/vector.toml",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "config:packages/local-dev/otel-collector.yaml",
+      "target": "config:packages/local-dev/tempo.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/local-dev/otel-collector.yaml",
+      "target": "config:packages/local-dev/mimir.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/local-dev/tempo.yaml",
+      "target": "config:packages/local-dev/mimir.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/local-dev/vector.toml",
+      "target": "config:packages/local-dev/grafana-datasources.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/local-dev/grafana-datasources.yaml",
+      "target": "config:packages/local-dev/mimir.yaml",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/local-dev/grafana-datasources.yaml",
+      "target": "config:packages/local-dev/tempo.yaml",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/local-dev/go.mod",
+      "target": "config:packages/local-dev/go.sum",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

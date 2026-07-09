@@ -1,0 +1,2628 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "type": "file",
+      "name": "prefetch_harvest_test.go",
+      "filePath": "packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "summary": "prefetchHarvester.run 的全面单测：成功收割、空 trace、消费开关、上传等待、错误吞咽等。",
+      "tags": [
+        "test",
+        "harvest",
+        "prefetch"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/server/prefetch_harvest_test.go:fakeHarvestInstance",
+      "type": "class",
+      "name": "fakeHarvestInstance",
+      "filePath": "packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "lineRange": [],
+      "summary": "harvestInstance 的 fake 实现，用于收割器测试。",
+      "tags": [
+        "fake",
+        "test-fixture"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/server/prefetch_harvest_test.go:fakeHarvestResumer",
+      "type": "class",
+      "name": "fakeHarvestResumer",
+      "filePath": "packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "lineRange": [],
+      "summary": "harvestResumer 的 fake 实现，可注入 ResumeForHarvest 行为。",
+      "tags": [
+        "fake",
+        "test-fixture"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/server/prefetch_harvest_test.go:fakeHarvestTemplates",
+      "type": "class",
+      "name": "fakeHarvestTemplates",
+      "filePath": "packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "lineRange": [],
+      "summary": "harvestTemplates 的 fake 实现。",
+      "tags": [
+        "fake",
+        "test-fixture"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/server/prefetch_harvest_test.go:fakeHarvestUpload",
+      "type": "class",
+      "name": "fakeHarvestUpload",
+      "filePath": "packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "lineRange": [],
+      "summary": "harvestUpload 的 fake 实现，可控制 Wait 行为和错误。",
+      "tags": [
+        "fake",
+        "test-fixture"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/server/prefetch_harvest_test.go:harvestProbe",
+      "type": "class",
+      "name": "harvestProbe",
+      "filePath": "packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "lineRange": [],
+      "summary": "记录收割器调用顺序与结果的探针 fake。",
+      "tags": [
+        "fake",
+        "test-fixture"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestClampHarvestTimeoutMs",
+      "type": "function",
+      "name": "TestClampHarvestTimeoutMs",
+      "filePath": "packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "lineRange": [],
+      "summary": "验证 clampHarvestTimeoutMs 总会把值夹到最小阈值。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_ConsumePersistsAndReaps",
+      "type": "function",
+      "name": "TestHarvestRun_ConsumePersistsAndReaps",
+      "filePath": "packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "lineRange": [],
+      "summary": "consume=true 且无错误时收割器应写本地+远端元数据，并 reap throwaway。",
+      "tags": [
+        "test",
+        "harvest"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_NoConsumePersistsNothing",
+      "type": "function",
+      "name": "TestHarvestRun_NoConsumePersistsNothing",
+      "filePath": "packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "lineRange": [],
+      "summary": "consume=false 时收割器只采集 trace 不持久化。",
+      "tags": [
+        "test",
+        "harvest"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_ResumeErrorAbortsCleanly",
+      "type": "function",
+      "name": "TestHarvestRun_ResumeErrorAbortsCleanly",
+      "filePath": "packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "lineRange": [],
+      "summary": "ResumeForHarvest 出错时收割器立即返回但不污染 metadata。",
+      "tags": [
+        "test",
+        "error-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_GetTemplateErrorAbortsCleanly",
+      "type": "function",
+      "name": "TestHarvestRun_GetTemplateErrorAbortsCleanly",
+      "filePath": "packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "lineRange": [],
+      "summary": "GetTemplate 出错时收割器应干净退出，不写 metadata。",
+      "tags": [
+        "test",
+        "error-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_UploadFailedKeepsLocalSkipsRemote",
+      "type": "function",
+      "name": "TestHarvestRun_UploadFailedKeepsLocalSkipsRemote",
+      "filePath": "packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "lineRange": [],
+      "summary": "上传失败时仍写本地 metadata 但跳过远端 enrichment。",
+      "tags": [
+        "test",
+        "partial-success"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "type": "file",
+      "name": "sandboxes.go",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "summary": "gRPC SandboxService 主体实现：Create/Update/List/Delete/Pause/Checkpoint 等核心生命周期 RPC。",
+      "tags": [
+        "grpc-handler",
+        "sandbox-lifecycle",
+        "service"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/server/sandboxes.go:snapshotResult",
+      "type": "class",
+      "name": "snapshotResult",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "lineRange": [],
+      "summary": "Pause/Checkpoint 路径上打包 meta 与 upload future 的内部结果类型。",
+      "tags": [
+        "internal",
+        "snapshot"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes.go:Create",
+      "type": "function",
+      "name": "Create",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "lineRange": [
+        75,
+        200
+      ],
+      "summary": "SandboxCreate RPC：校验 BYOP、节点配额、starting 槽位并启动新沙箱。",
+      "tags": [
+        "grpc-handler",
+        "create",
+        "feature-flag"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes.go:Update",
+      "type": "function",
+      "name": "Update",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "lineRange": [],
+      "summary": "SandboxUpdate RPC：支持调整 end time / egress 等。",
+      "tags": [
+        "grpc-handler",
+        "update"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes.go:List",
+      "type": "function",
+      "name": "List",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "lineRange": [],
+      "summary": "SandboxList RPC：列出当前节点上的沙箱并附带过滤与状态。",
+      "tags": [
+        "grpc-handler",
+        "list"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes.go:Delete",
+      "type": "function",
+      "name": "Delete",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "lineRange": [],
+      "summary": "SandboxDelete RPC：触发沙箱停止/清理流程。",
+      "tags": [
+        "grpc-handler",
+        "delete"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes.go:Pause",
+      "type": "function",
+      "name": "Pause",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "lineRange": [],
+      "summary": "SandboxPause RPC：保存快照、上传并触发预取收割。",
+      "tags": [
+        "grpc-handler",
+        "pause",
+        "snapshot"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes.go:Checkpoint",
+      "type": "function",
+      "name": "Checkpoint",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "lineRange": [],
+      "summary": "SandboxCheckpoint RPC：显式 checkpoint。",
+      "tags": [
+        "grpc-handler",
+        "checkpoint"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes.go:addKillReason",
+      "type": "function",
+      "name": "addKillReason",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "lineRange": [],
+      "summary": "记录沙箱 kill reason 到 lifecycle metadata。",
+      "tags": [
+        "lifecycle",
+        "metadata"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes.go:recordSandboxKill",
+      "type": "function",
+      "name": "recordSandboxKill",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "lineRange": [],
+      "summary": "上报 sandbox killed 计数器与 telemetry 事件。",
+      "tags": [
+        "telemetry",
+        "kill"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes.go:prepareSandboxEventData",
+      "type": "function",
+      "name": "prepareSandboxEventData",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "lineRange": [],
+      "summary": "为 sandbox event webhook 准备事件 payload 数据。",
+      "tags": [
+        "event",
+        "webhook"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes.go:getSandboxExecutionData",
+      "type": "function",
+      "name": "getSandboxExecutionData",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "lineRange": [],
+      "summary": "收集沙箱执行指标（CPU、内存等）用于事件上报。",
+      "tags": [
+        "metrics",
+        "event"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes.go:snapshotAndCacheSandbox",
+      "type": "function",
+      "name": "snapshotAndCacheSandbox",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "lineRange": [],
+      "summary": "同步快照沙箱并把结果写入 template cache。",
+      "tags": [
+        "snapshot",
+        "cache"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes.go:uploadSnapshotAsync",
+      "type": "function",
+      "name": "uploadSnapshotAsync",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "lineRange": [],
+      "summary": "异步上传快照，带重试策略；用 WaitGroup 跟踪 in-flight 上传用于优雅关闭。",
+      "tags": [
+        "upload",
+        "retry",
+        "async"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes.go:setupSandboxLifecycle",
+      "type": "function",
+      "name": "setupSandboxLifecycle",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "lineRange": [],
+      "summary": "把 lifecycle hooks、cleanup 与 telemetry 串接到 sandbox factory。",
+      "tags": [
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes.go:stopSandboxAsync",
+      "type": "function",
+      "name": "stopSandboxAsync",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "lineRange": [],
+      "summary": "异步触发 sandbox stop 并返回 future。",
+      "tags": [
+        "async",
+        "stop"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes.go:publishSandboxEvent",
+      "type": "function",
+      "name": "publishSandboxEvent",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes.go",
+      "lineRange": [],
+      "summary": "通过 events service 发布 sandbox lifecycle event 到 ClickHouse 等下游。",
+      "tags": [
+        "event",
+        "publish"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "type": "file",
+      "name": "sandboxes_test.go",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes_test.go",
+      "summary": "针对 Server.List、getSandboxExecutionData、addKillReason、recordSandboxKill 等路径的单元测试。",
+      "tags": [
+        "test",
+        "sandbox-lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes_test.go:Test_server_List",
+      "type": "function",
+      "name": "Test_server_List",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes_test.go",
+      "lineRange": [],
+      "summary": "Sandbox.List 在过滤条件下的正确性测试。",
+      "tags": [
+        "test",
+        "list"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes_test.go:TestGetSandboxExecutionData",
+      "type": "function",
+      "name": "TestGetSandboxExecutionData",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes_test.go",
+      "lineRange": [],
+      "summary": "getSandboxExecutionData 汇总执行指标的行为测试。",
+      "tags": [
+        "test",
+        "metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes_test.go:TestAddKillReason",
+      "type": "function",
+      "name": "TestAddKillReason",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes_test.go",
+      "lineRange": [],
+      "summary": "addKillReason 正确写回 lifecycle metadata。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes_test.go:TestRecordSandboxKill",
+      "type": "function",
+      "name": "TestRecordSandboxKill",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes_test.go",
+      "lineRange": [],
+      "summary": "recordSandboxKill 上报计数器和事件。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "type": "file",
+      "name": "sandboxes_update_test.go",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "summary": "SandboxUpdate 在 egress-only 失败或 partial 失败时的回滚行为测试。",
+      "tags": [
+        "test",
+        "update",
+        "rollback"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes_update_test.go:TestUpdate_EgressOnly_FailsAndDoesNotChangeEndTime",
+      "type": "function",
+      "name": "TestUpdate_EgressOnly_FailsAndDoesNotChangeEndTime",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "lineRange": [],
+      "summary": "只请求 egress 失败时 Update 必须不影响 end time。",
+      "tags": [
+        "test",
+        "rollback"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/sandboxes_update_test.go:TestUpdate_EndTimeAndEgress_EgressFails_RevertsEndTime",
+      "type": "function",
+      "name": "TestUpdate_EndTimeAndEgress_EgressFails_RevertsEndTime",
+      "filePath": "packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "lineRange": [],
+      "summary": "end time + egress 组合更新中 egress 失败时必须回滚 end time 改动。",
+      "tags": [
+        "test",
+        "rollback"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/server/template_cache.go",
+      "type": "file",
+      "name": "template_cache.go",
+      "filePath": "packages/orchestrator/pkg/server/template_cache.go",
+      "summary": "ListCachedBuilds gRPC handler：枚举本地 template cache 中已构建的 build 及其过期时间。",
+      "tags": [
+        "grpc-handler",
+        "template-cache",
+        "list"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/template_cache.go:ListCachedBuilds",
+      "type": "function",
+      "name": "ListCachedBuilds",
+      "filePath": "packages/orchestrator/pkg/server/template_cache.go",
+      "lineRange": [
+        14,
+        30
+      ],
+      "summary": "返回本地 template cache 中所有 build 及其 TTL 过期时间。",
+      "tags": [
+        "grpc-handler",
+        "list"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/server/upload_retry.go",
+      "type": "file",
+      "name": "upload_retry.go",
+      "filePath": "packages/orchestrator/pkg/server/upload_retry.go",
+      "summary": "暂停快照上传的重试策略与可重试错误分类函数。",
+      "tags": [
+        "retry-policy",
+        "upload",
+        "snapshot"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/upload_retry.go:defaultUploadRetryPolicy",
+      "type": "function",
+      "name": "defaultUploadRetryPolicy",
+      "filePath": "packages/orchestrator/pkg/server/upload_retry.go",
+      "lineRange": [
+        17,
+        25
+      ],
+      "summary": "构造共享常量定义的上传重试策略：总预算、单次超时、指数退避。",
+      "tags": [
+        "retry-policy"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/upload_retry.go:isRetryableUploadErr",
+      "type": "function",
+      "name": "isRetryableUploadErr",
+      "filePath": "packages/orchestrator/pkg/server/upload_retry.go",
+      "lineRange": [
+        31,
+        44
+      ],
+      "summary": "分类上传错误：NoDiffError、对象不存在、ctx 取消为不可重试，其余默认可重试。",
+      "tags": [
+        "error-classification"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/server/upload_retry_test.go",
+      "type": "file",
+      "name": "upload_retry_test.go",
+      "filePath": "packages/orchestrator/pkg/server/upload_retry_test.go",
+      "summary": "isRetryableUploadErr 的分类规则测试。",
+      "tags": [
+        "test",
+        "retry-policy"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/server/upload_retry_test.go:TestIsRetryableUploadErr",
+      "type": "function",
+      "name": "TestIsRetryableUploadErr",
+      "filePath": "packages/orchestrator/pkg/server/upload_retry_test.go",
+      "lineRange": [],
+      "summary": "验证 retryable 与 terminal 错误的分类边界。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/iov.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/header_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/local_file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/local_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/mask_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/storage_file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/storage_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/template/metadata/prefetch_carry_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/template/metadata/prefetch.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/template/metadata/template_metadata_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "file:packages/orchestrator/pkg/template/metadata/template_metadata.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/config_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/config.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/drain_balloon_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/fc_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/fph_gates.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/kernel_args.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/mmds.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/process_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/script_builder_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fc/script_builder.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/header_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/local_file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/local_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/mask_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/storage_file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/storage_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/template/metadata/prefetch_carry_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/template/metadata/prefetch.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/template/metadata/template_metadata_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "file:packages/orchestrator/pkg/template/metadata/template_metadata.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/dscp_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/host.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/slot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_kv.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_memory.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/service/info.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "file:packages/orchestrator/pkg/service/service_info.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/events/events.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/dscp_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/host.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/slot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_kv.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_memory.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/service/info.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "file:packages/orchestrator/pkg/service/service_info.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "class:packages/orchestrator/pkg/server/prefetch_harvest_test.go:fakeHarvestInstance",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "class:packages/orchestrator/pkg/server/prefetch_harvest_test.go:fakeHarvestResumer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "class:packages/orchestrator/pkg/server/prefetch_harvest_test.go:fakeHarvestTemplates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "class:packages/orchestrator/pkg/server/prefetch_harvest_test.go:fakeHarvestUpload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "class:packages/orchestrator/pkg/server/prefetch_harvest_test.go:harvestProbe",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestClampHarvestTimeoutMs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_ConsumePersistsAndReaps",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_NoConsumePersistsNothing",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_ResumeErrorAbortsCleanly",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_GetTemplateErrorAbortsCleanly",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_UploadFailedKeepsLocalSkipsRemote",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "class:packages/orchestrator/pkg/server/sandboxes.go:snapshotResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:Create",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:Update",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:List",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:Delete",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:Pause",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:Checkpoint",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:addKillReason",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:recordSandboxKill",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:prepareSandboxEventData",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:getSandboxExecutionData",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:snapshotAndCacheSandbox",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:uploadSnapshotAsync",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:setupSandboxLifecycle",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:stopSandboxAsync",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:publishSandboxEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes_test.go:Test_server_List",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes_test.go:TestGetSandboxExecutionData",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes_test.go:TestAddKillReason",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes_test.go:TestRecordSandboxKill",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes_update_test.go:TestUpdate_EgressOnly_FailsAndDoesNotChangeEndTime",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes_update_test.go:TestUpdate_EndTimeAndEgress_EgressFails_RevertsEndTime",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/template_cache.go",
+      "target": "function:packages/orchestrator/pkg/server/template_cache.go:ListCachedBuilds",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/upload_retry.go",
+      "target": "function:packages/orchestrator/pkg/server/upload_retry.go:defaultUploadRetryPolicy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/upload_retry.go",
+      "target": "function:packages/orchestrator/pkg/server/upload_retry.go:isRetryableUploadErr",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/upload_retry_test.go",
+      "target": "function:packages/orchestrator/pkg/server/upload_retry_test.go:TestIsRetryableUploadErr",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestClampHarvestTimeoutMs",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:MemoryPrefetchData",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:Stop",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:Close",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:ResumeForHarvest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:GetTemplate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:UpdateMetadata",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:Wait",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_ConsumePersistsAndReaps",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_ThrowawayIdentity",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_NoConsumePersistsNothing",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_EmptyTracePersistsNothing",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_ResumeErrorAbortsCleanly",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_GetTemplateErrorAbortsCleanly",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_CollectErrorStillReaps",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_AcquireErrorSkips",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_UploadFailedKeepsLocalSkipsRemote",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "target": "function:packages/orchestrator/pkg/server/prefetch_harvest_test.go:TestHarvestRun_DeadlineDuringWaitLeavesMetadataUntouched",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:Create",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:Update",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:List",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:Delete",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:Pause",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes.go:Checkpoint",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes_test.go:Test_server_List",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes_test.go:TestGetSandboxExecutionData",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes_test.go:TestAddKillReason",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes_test.go:TestRecordSandboxKill",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes_update_test.go:TestUpdate_EgressOnly_FailsAndDoesNotChangeEndTime",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "target": "function:packages/orchestrator/pkg/server/sandboxes_update_test.go:TestUpdate_EndTimeAndEgress_EgressFails_RevertsEndTime",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/template_cache.go",
+      "target": "function:packages/orchestrator/pkg/server/template_cache.go:ListCachedBuilds",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/server/upload_retry_test.go",
+      "target": "function:packages/orchestrator/pkg/server/upload_retry_test.go:TestIsRetryableUploadErr",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

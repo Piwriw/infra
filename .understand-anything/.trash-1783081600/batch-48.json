@@ -1,0 +1,728 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/clickhouse/pkg/clickhouse.go",
+      "type": "file",
+      "name": "clickhouse.go",
+      "filePath": "packages/clickhouse/pkg/clickhouse.go",
+      "summary": "ClickHouse 客户端的核心入口，定义 Client、Clickhouse、SandboxQueriesProvider 等关键类型，并提供 NewDriver / New / EndpointFromDSN 等工厂函数来解析 DSN 并建立数据库连接。",
+      "tags": ["entry-point", "data-model", "service", "factory", "clickhouse-client"],
+      "complexity": "moderate",
+      "languageNotes": "使用 ClickHouse Go 驱动 (clickhouse.ParseDSN / clickhouse.Open) 解析 DSN；接口分层为 SandboxQueriesProvider 与 Clickhouse，分别承担 sandbox 查询和 team 指标查询职责。"
+    },
+    {
+      "id": "file:packages/clickhouse/pkg/dates.go",
+      "type": "file",
+      "name": "dates.go",
+      "filePath": "packages/clickhouse/pkg/dates.go",
+      "summary": "声明 MaxDate64 常量，表示 ClickHouse DateTime64 类型可表示的最大日期，用于无上界时间范围查询的占位。",
+      "tags": ["utility", "constants", "clickhouse-client", "date-handling"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/clickhouse/pkg/mock.go",
+      "type": "file",
+      "name": "mock.go",
+      "filePath": "packages/clickhouse/pkg/mock.go",
+      "summary": "提供 NoopClient 空实现，所有查询方法返回零值，用于禁用 ClickHouse 集成的场景（如本地开发或未配置 DSN 时）。",
+      "tags": ["test", "mock", "noop", "clickhouse-client"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/clickhouse/pkg/sandbox.go",
+      "type": "file",
+      "name": "sandbox.go",
+      "filePath": "packages/clickhouse/pkg/sandbox.go",
+      "summary": "实现 sandbox 级别的 ClickHouse 指标查询，包括按 sandbox ID 列表获取最新指标、查询时间范围以及按时间步长采样的指标数据。",
+      "tags": ["data-model", "service", "query", "metrics", "clickhouse-client"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/clickhouse/pkg/switcher.go",
+      "type": "file",
+      "name": "switcher.go",
+      "filePath": "packages/clickhouse/pkg/switcher.go",
+      "summary": "实现 SwitchingClient，基于特性开关 (feature flags) 在默认 ClickHouse 客户端和备选 DSN 之间动态切换，并将所有查询方法代理到当前解析出的底层客户端。",
+      "tags": ["factory", "singleton", "middleware", "feature-flags", "clickhouse-client"],
+      "complexity": "moderate",
+      "languageNotes": "使用泛型 switching.New[Clickhouse] 工厂；通过 Option 模式 (WithAllowNoopDefault) 配置降级行为。"
+    },
+    {
+      "id": "file:packages/clickhouse/pkg/team.go",
+      "type": "file",
+      "name": "team.go",
+      "filePath": "packages/clickhouse/pkg/team.go",
+      "summary": "实现 team 级别的 ClickHouse 指标查询，包括按时间步长采样的团队指标、最大启动速率指标以及最大并发 sandbox 指标。",
+      "tags": ["data-model", "service", "query", "metrics", "clickhouse-client"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/clickhouse/pkg/utils/sandbox.go",
+      "type": "file",
+      "name": "sandbox.go",
+      "filePath": "packages/clickhouse/pkg/utils/sandbox.go",
+      "summary": "提供 GetSandboxStartEndTime 工具函数，结合 ClickHouse 时间范围查询与查询参数推断 sandbox 的起止时间，并记录错误日志。",
+      "tags": ["utility", "helper", "query", "clickhouse-client"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/clickhouse/pkg/utils/validate.go",
+      "type": "file",
+      "name": "validate.go",
+      "filePath": "packages/clickhouse/pkg/utils/validate.go",
+      "summary": "提供 ValidateRange 工具函数，校验时间范围的合法性（开始早于结束、不超出当前时间等），用于 ClickHouse 指标查询的参数预检。",
+      "tags": ["validation", "utility", "helper", "query"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/clickhouse/pkg/clickhouse.go:Client",
+      "type": "class",
+      "name": "Client",
+      "filePath": "packages/clickhouse/pkg/clickhouse.go",
+      "lineRange": [30, 32],
+      "summary": "封装底层 ClickHouse 连接 (conn) 的客户端结构体，是 Clickhouse 与 NoopClient 等具体实现的基类。",
+      "tags": ["data-model", "service", "clickhouse-client"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/clickhouse/pkg/clickhouse.go:Clickhouse",
+      "type": "class",
+      "name": "Clickhouse",
+      "filePath": "packages/clickhouse/pkg/clickhouse.go",
+      "lineRange": [19, 28],
+      "summary": "嵌入 Client 的具体 ClickHouse 客户端实现，挂载团队指标查询方法 (QueryTeamMetrics、QueryMaxStartRateTeamMetrics、QueryMaxConcurrentTeamMetrics)。",
+      "tags": ["data-model", "service", "query", "clickhouse-client"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/clickhouse/pkg/clickhouse.go:SandboxQueriesProvider",
+      "type": "class",
+      "name": "SandboxQueriesProvider",
+      "filePath": "packages/clickhouse/pkg/clickhouse.go",
+      "lineRange": [13, 17],
+      "summary": "声明 sandbox 查询能力接口，定义 QuerySandboxTimeRange、QuerySandboxMetrics、QueryLatestMetrics 三个方法。",
+      "tags": ["type-definition", "interface", "query", "clickhouse-client"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/clickhouse.go:NewDriver",
+      "type": "function",
+      "name": "NewDriver",
+      "filePath": "packages/clickhouse/pkg/clickhouse.go",
+      "lineRange": [34, 49],
+      "summary": "解析连接字符串并打开 ClickHouse 驱动连接，返回 driver.Conn 与错误。",
+      "tags": ["factory", "clickhouse-client", "initialization"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/clickhouse.go:New",
+      "type": "function",
+      "name": "New",
+      "filePath": "packages/clickhouse/pkg/clickhouse.go",
+      "lineRange": [51, 58],
+      "summary": "基于 NewDriver 创建并返回初始化好的 Client 实例。",
+      "tags": ["factory", "clickhouse-client", "initialization"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/clickhouse.go:EndpointFromDSN",
+      "type": "function",
+      "name": "EndpointFromDSN",
+      "filePath": "packages/clickhouse/pkg/clickhouse.go",
+      "lineRange": [64, 74],
+      "summary": "从 ClickHouse DSN 中提取 endpoint 地址，用于可观测性与调试。",
+      "tags": ["utility", "parsing", "clickhouse-client"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/clickhouse/pkg/mock.go:NoopClient",
+      "type": "class",
+      "name": "NoopClient",
+      "filePath": "packages/clickhouse/pkg/mock.go",
+      "lineRange": [8, 8],
+      "summary": "ClickHouse 客户端的空实现，所有查询方法返回零值，用于在未配置 ClickHouse 的环境下提供降级行为。",
+      "tags": ["mock", "noop", "test", "clickhouse-client"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/mock.go:NewNoopClient",
+      "type": "function",
+      "name": "NewNoopClient",
+      "filePath": "packages/clickhouse/pkg/mock.go",
+      "lineRange": [12, 14],
+      "summary": "构造并返回 NoopClient 实例。",
+      "tags": ["factory", "mock", "noop", "clickhouse-client"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/clickhouse/pkg/sandbox.go:Metrics",
+      "type": "class",
+      "name": "Metrics",
+      "filePath": "packages/clickhouse/pkg/sandbox.go",
+      "lineRange": [14, 25],
+      "summary": "定义单个 sandbox 的指标数据结构，包含 CPU 使用率、内存总量/已用/缓存、磁盘总量/已用等字段。",
+      "tags": ["data-model", "type-definition", "metrics"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/sandbox.go:QueryLatestMetrics",
+      "type": "function",
+      "name": "QueryLatestMetrics",
+      "filePath": "packages/clickhouse/pkg/sandbox.go",
+      "lineRange": [47, 71],
+      "summary": "根据 sandbox ID 列表和 team ID，批量查询每个 sandbox 的最新指标记录。",
+      "tags": ["query", "metrics", "clickhouse-client", "service"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/sandbox.go:QuerySandboxTimeRange",
+      "type": "function",
+      "name": "QuerySandboxTimeRange",
+      "filePath": "packages/clickhouse/pkg/sandbox.go",
+      "lineRange": [99, 111],
+      "summary": "查询指定 sandbox 的整体存在时间范围（最早到最晚的指标时间戳），用于指标查询的上下界推断。",
+      "tags": ["query", "metrics", "clickhouse-client", "service"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/sandbox.go:QuerySandboxMetrics",
+      "type": "function",
+      "name": "QuerySandboxMetrics",
+      "filePath": "packages/clickhouse/pkg/sandbox.go",
+      "lineRange": [113, 140],
+      "summary": "按时间区间和采样步长查询指定 sandbox 的指标序列，返回多行 Metrics 记录。",
+      "tags": ["query", "metrics", "clickhouse-client", "service", "timeseries"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/clickhouse/pkg/switcher.go:SwitchingClient",
+      "type": "class",
+      "name": "SwitchingClient",
+      "filePath": "packages/clickhouse/pkg/switcher.go",
+      "lineRange": [16, 18],
+      "summary": "基于特性开关在多个 ClickHouse 客户端间动态切换的代理客户端，所有查询方法都通过 switcher.Resolve(ctx) 委托到当前选中的底层客户端。",
+      "tags": ["factory", "singleton", "middleware", "feature-flags", "clickhouse-client"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/switcher.go:NewSwitchingClient",
+      "type": "function",
+      "name": "NewSwitchingClient",
+      "filePath": "packages/clickhouse/pkg/switcher.go",
+      "lineRange": [26, 56],
+      "summary": "根据特性开关、默认 DSN 和备选 DSN 列表构造 SwitchingClient，并配置 noop 降级行为。",
+      "tags": ["factory", "feature-flags", "clickhouse-client", "initialization"],
+      "complexity": "complex",
+      "languageNotes": "使用泛型 switching.New[Clickhouse] 工厂初始化切换器；通过可变 Option 函数配置降级。"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/switcher.go:WithAllowNoopDefault",
+      "type": "function",
+      "name": "WithAllowNoopDefault",
+      "filePath": "packages/clickhouse/pkg/switcher.go",
+      "lineRange": [63, 65],
+      "summary": "返回一个 Option，允许 SwitchingClient 在没有可用 DSN 时回退到 NoopClient。",
+      "tags": ["factory", "feature-flags", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/clickhouse/pkg/team.go:TeamMetrics",
+      "type": "class",
+      "name": "TeamMetrics",
+      "filePath": "packages/clickhouse/pkg/team.go",
+      "lineRange": [14, 18],
+      "summary": "定义单个时间点的团队聚合指标，包括 sandbox 启动速率和并发 sandbox 数量。",
+      "tags": ["data-model", "type-definition", "metrics"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/clickhouse/pkg/team.go:MaxTeamMetric",
+      "type": "class",
+      "name": "MaxTeamMetric",
+      "filePath": "packages/clickhouse/pkg/team.go",
+      "lineRange": [85, 88],
+      "summary": "定义某段时间窗口内的峰值指标，包含时间戳和对应的最大值。",
+      "tags": ["data-model", "type-definition", "metrics"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/team.go:QueryTeamMetrics",
+      "type": "function",
+      "name": "QueryTeamMetrics",
+      "filePath": "packages/clickhouse/pkg/team.go",
+      "lineRange": [57, 83],
+      "summary": "按时间区间和采样步长查询指定团队的聚合指标序列，返回多行 TeamMetrics 记录。",
+      "tags": ["query", "metrics", "clickhouse-client", "service", "timeseries"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/team.go:QueryMaxStartRateTeamMetrics",
+      "type": "function",
+      "name": "QueryMaxStartRateTeamMetrics",
+      "filePath": "packages/clickhouse/pkg/team.go",
+      "lineRange": [108, 139],
+      "summary": "查询指定时间区间内团队的峰值 sandbox 启动速率指标，返回 MaxTeamMetric 记录。",
+      "tags": ["query", "metrics", "clickhouse-client", "service", "aggregation"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/team.go:QueryMaxConcurrentTeamMetrics",
+      "type": "function",
+      "name": "QueryMaxConcurrentTeamMetrics",
+      "filePath": "packages/clickhouse/pkg/team.go",
+      "lineRange": [151, 182],
+      "summary": "查询指定时间区间内团队的峰值并发 sandbox 数量指标，返回 MaxTeamMetric 记录。",
+      "tags": ["query", "metrics", "clickhouse-client", "service", "aggregation"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/utils/sandbox.go:GetSandboxStartEndTime",
+      "type": "function",
+      "name": "GetSandboxStartEndTime",
+      "filePath": "packages/clickhouse/pkg/utils/sandbox.go",
+      "lineRange": [14, 47],
+      "summary": "结合传入的查询参数与 ClickHouse 时间范围查询，推断 sandbox 的实际起止时间；当查询失败或时间为零值时回退到查询参数。",
+      "tags": ["utility", "helper", "query", "clickhouse-client"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/utils/validate.go:ValidateRange",
+      "type": "function",
+      "name": "ValidateRange",
+      "filePath": "packages/clickhouse/pkg/utils/validate.go",
+      "lineRange": [11, 26],
+      "summary": "校验时间范围参数的合法性：开始时间不得晚于结束时间，结束时间不得晚于当前时间。",
+      "tags": ["validation", "utility", "helper", "query"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/clickhouse/pkg/utils/sandbox.go",
+      "target": "file:packages/clickhouse/pkg/clickhouse.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/sandbox.go",
+      "target": "file:packages/clickhouse/pkg/dates.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/sandbox.go",
+      "target": "file:packages/clickhouse/pkg/mock.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/sandbox.go",
+      "target": "file:packages/clickhouse/pkg/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/sandbox.go",
+      "target": "file:packages/clickhouse/pkg/switcher.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/sandbox.go",
+      "target": "file:packages/clickhouse/pkg/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/validate.go",
+      "target": "file:packages/clickhouse/pkg/clickhouse.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/validate.go",
+      "target": "file:packages/clickhouse/pkg/dates.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/validate.go",
+      "target": "file:packages/clickhouse/pkg/mock.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/validate.go",
+      "target": "file:packages/clickhouse/pkg/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/validate.go",
+      "target": "file:packages/clickhouse/pkg/switcher.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/validate.go",
+      "target": "file:packages/clickhouse/pkg/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/clickhouse.go",
+      "target": "class:packages/clickhouse/pkg/clickhouse.go:Client",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/clickhouse.go",
+      "target": "class:packages/clickhouse/pkg/clickhouse.go:Clickhouse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/clickhouse.go",
+      "target": "class:packages/clickhouse/pkg/clickhouse.go:SandboxQueriesProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/clickhouse.go",
+      "target": "function:packages/clickhouse/pkg/clickhouse.go:NewDriver",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/clickhouse.go",
+      "target": "function:packages/clickhouse/pkg/clickhouse.go:New",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/clickhouse.go",
+      "target": "function:packages/clickhouse/pkg/clickhouse.go:EndpointFromDSN",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/clickhouse.go",
+      "target": "class:packages/clickhouse/pkg/clickhouse.go:Clickhouse",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/clickhouse.go",
+      "target": "class:packages/clickhouse/pkg/clickhouse.go:Client",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/clickhouse.go",
+      "target": "class:packages/clickhouse/pkg/clickhouse.go:SandboxQueriesProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/clickhouse.go",
+      "target": "function:packages/clickhouse/pkg/clickhouse.go:NewDriver",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/clickhouse.go",
+      "target": "function:packages/clickhouse/pkg/clickhouse.go:New",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/clickhouse.go",
+      "target": "function:packages/clickhouse/pkg/clickhouse.go:EndpointFromDSN",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:packages/clickhouse/pkg/clickhouse.go:New",
+      "target": "function:packages/clickhouse/pkg/clickhouse.go:NewDriver",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/mock.go",
+      "target": "class:packages/clickhouse/pkg/mock.go:NoopClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/mock.go",
+      "target": "function:packages/clickhouse/pkg/mock.go:NewNoopClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/mock.go",
+      "target": "class:packages/clickhouse/pkg/mock.go:NoopClient",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/mock.go",
+      "target": "function:packages/clickhouse/pkg/mock.go:NewNoopClient",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/sandbox.go",
+      "target": "class:packages/clickhouse/pkg/sandbox.go:Metrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/sandbox.go",
+      "target": "function:packages/clickhouse/pkg/sandbox.go:QueryLatestMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/sandbox.go",
+      "target": "function:packages/clickhouse/pkg/sandbox.go:QuerySandboxTimeRange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/sandbox.go",
+      "target": "function:packages/clickhouse/pkg/sandbox.go:QuerySandboxMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/sandbox.go",
+      "target": "class:packages/clickhouse/pkg/sandbox.go:Metrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/sandbox.go",
+      "target": "function:packages/clickhouse/pkg/sandbox.go:QueryLatestMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/sandbox.go",
+      "target": "function:packages/clickhouse/pkg/sandbox.go:QuerySandboxTimeRange",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/sandbox.go",
+      "target": "function:packages/clickhouse/pkg/sandbox.go:QuerySandboxMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/switcher.go",
+      "target": "class:packages/clickhouse/pkg/switcher.go:SwitchingClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/switcher.go",
+      "target": "function:packages/clickhouse/pkg/switcher.go:NewSwitchingClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/switcher.go",
+      "target": "function:packages/clickhouse/pkg/switcher.go:WithAllowNoopDefault",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/switcher.go",
+      "target": "class:packages/clickhouse/pkg/switcher.go:SwitchingClient",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/switcher.go",
+      "target": "function:packages/clickhouse/pkg/switcher.go:NewSwitchingClient",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/switcher.go",
+      "target": "function:packages/clickhouse/pkg/switcher.go:WithAllowNoopDefault",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:packages/clickhouse/pkg/switcher.go:NewSwitchingClient",
+      "target": "function:packages/clickhouse/pkg/clickhouse.go:New",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:packages/clickhouse/pkg/switcher.go:NewSwitchingClient",
+      "target": "function:packages/clickhouse/pkg/mock.go:NewNoopClient",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/team.go",
+      "target": "class:packages/clickhouse/pkg/team.go:TeamMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/team.go",
+      "target": "class:packages/clickhouse/pkg/team.go:MaxTeamMetric",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/team.go",
+      "target": "function:packages/clickhouse/pkg/team.go:QueryTeamMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/team.go",
+      "target": "function:packages/clickhouse/pkg/team.go:QueryMaxStartRateTeamMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/team.go",
+      "target": "function:packages/clickhouse/pkg/team.go:QueryMaxConcurrentTeamMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/team.go",
+      "target": "class:packages/clickhouse/pkg/team.go:TeamMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/team.go",
+      "target": "class:packages/clickhouse/pkg/team.go:MaxTeamMetric",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/team.go",
+      "target": "function:packages/clickhouse/pkg/team.go:QueryTeamMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/team.go",
+      "target": "function:packages/clickhouse/pkg/team.go:QueryMaxStartRateTeamMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/team.go",
+      "target": "function:packages/clickhouse/pkg/team.go:QueryMaxConcurrentTeamMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/sandbox.go",
+      "target": "function:packages/clickhouse/pkg/utils/sandbox.go:GetSandboxStartEndTime",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/sandbox.go",
+      "target": "function:packages/clickhouse/pkg/utils/sandbox.go:GetSandboxStartEndTime",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:packages/clickhouse/pkg/utils/sandbox.go:GetSandboxStartEndTime",
+      "target": "function:packages/clickhouse/pkg/sandbox.go:QuerySandboxTimeRange",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/validate.go",
+      "target": "function:packages/clickhouse/pkg/utils/validate.go:ValidateRange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/clickhouse/pkg/utils/validate.go",
+      "target": "function:packages/clickhouse/pkg/utils/validate.go:ValidateRange",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:packages/clickhouse/pkg/clickhouse.go:Clickhouse",
+      "target": "class:packages/clickhouse/pkg/clickhouse.go:Client",
+      "type": "inherits",
+      "direction": "forward",
+      "weight": 0.9
+    }
+  ]
+}

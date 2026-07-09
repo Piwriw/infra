@@ -1,0 +1,591 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 5,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/envd/MODULE_GUIDE.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 1478,
+      "nonEmptyLines": 1117,
+      "sections": [
+        {
+          "heading": "envd 模块详解",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 定位与职责",
+          "level": 2,
+          "line": 12
+        },
+        {
+          "heading": "2. 启动流程（main.go）",
+          "level": 2,
+          "line": 30
+        },
+        {
+          "heading": "命令行 flags",
+          "level": 3,
+          "line": 55
+        },
+        {
+          "heading": "资源预留策略（`createCgroupManager`）",
+          "level": 3,
+          "line": 67
+        },
+        {
+          "heading": "3. 整体架构",
+          "level": 2,
+          "line": 81
+        },
+        {
+          "heading": "4. 目录结构",
+          "level": 2,
+          "line": 116
+        },
+        {
+          "heading": "5. 服务契约",
+          "level": 2,
+          "line": 149
+        },
+        {
+          "heading": "5.1 HTTP / OpenAPI 端点（`spec/envd.yaml`）",
+          "level": 3,
+          "line": 151
+        },
+        {
+          "heading": "5.2 Process Connect-RPC（`spec/process/process.proto`）",
+          "level": 3,
+          "line": 167
+        },
+        {
+          "heading": "5.3 Filesystem Connect-RPC（`spec/filesystem/filesystem.proto`）",
+          "level": 3,
+          "line": 184
+        },
+        {
+          "heading": "6. 核心子系统",
+          "level": 2,
+          "line": 204
+        },
+        {
+          "heading": "6.1 MMDS 客户端（`internal/host/mmds.go`）",
+          "level": 3,
+          "line": 206
+        },
+        {
+          "heading": "6.2 cgroup v2 管理（`internal/services/cgroups/`）",
+          "level": 3,
+          "line": 229
+        },
+        {
+          "heading": "6.3 进程执行（`internal/services/process/`）",
+          "level": 3,
+          "line": 255
+        },
+        {
+          "heading": "6.4 文件系统服务（`internal/services/filesystem/`）",
+          "level": 3,
+          "line": 285
+        },
+        {
+          "heading": "6.5 沙箱生命周期（`internal/api/init.go`）",
+          "level": 3,
+          "line": 306
+        },
+        {
+          "heading": "6.6 安全令牌（`internal/api/secure_token.go`）",
+          "level": 3,
+          "line": 355
+        },
+        {
+          "heading": "6.7 端口自动转发（`internal/port/`）",
+          "level": 3,
+          "line": 369
+        },
+        {
+          "heading": "6.8 日志与可观测性（`internal/logs/`）",
+          "level": 3,
+          "line": 392
+        },
+        {
+          "heading": "6.9 主机指标（`internal/host/metrics.go`）",
+          "level": 3,
+          "line": 416
+        },
+        {
+          "heading": "6.10 CA 证书注入（`internal/host/cacerts.go`）",
+          "level": 3,
+          "line": 433
+        },
+        {
+          "heading": "6.11 权限与用户（`internal/permissions/`）",
+          "level": 3,
+          "line": 442
+        },
+        {
+          "heading": "6.12 Legacy 兼容（`internal/services/legacy/`）",
+          "level": 3,
+          "line": 449
+        },
+        {
+          "heading": "6.13 工具集（`internal/utils/`）",
+          "level": 3,
+          "line": 458
+        },
+        {
+          "heading": "7. 关键交互流程",
+          "level": 2,
+          "line": 470
+        },
+        {
+          "heading": "7.1 沙箱冷启动",
+          "level": 3,
+          "line": 472
+        },
+        {
+          "heading": "7.2 SDK 执行命令",
+          "level": 3,
+          "line": 493
+        },
+        {
+          "heading": "7.3 沙箱 pause/resume",
+          "level": 3,
+          "line": 508
+        },
+        {
+          "heading": "7.4 文件上传",
+          "level": 3,
+          "line": 530
+        },
+        {
+          "heading": "8. 版本管理",
+          "level": 2,
+          "line": 549
+        },
+        {
+          "heading": "9. 构建与开发",
+          "level": 2,
+          "line": 565
+        },
+        {
+          "heading": "关键 Makefile 目标",
+          "level": 3,
+          "line": 567
+        },
+        {
+          "heading": "本地调试",
+          "level": 3,
+          "line": 580
+        },
+        {
+          "heading": "代码生成",
+          "level": 3,
+          "line": 590
+        },
+        {
+          "heading": "10. 跨平台支持",
+          "level": 2,
+          "line": 602
+        },
+        {
+          "heading": "11. 安全要点",
+          "level": 2,
+          "line": 616
+        },
+        {
+          "heading": "12. 性能与可靠性",
+          "level": 2,
+          "line": 628
+        },
+        {
+          "heading": "13. 在仓库中的位置",
+          "level": 2,
+          "line": 640
+        },
+        {
+          "heading": "14. 快速链接",
+          "level": 2,
+          "line": 649
+        },
+        {
+          "heading": "15. 进程 Handler 生命周期与多订阅者扇出",
+          "level": 2,
+          "line": 668
+        },
+        {
+          "heading": "15.1 构造阶段（`New`）",
+          "level": 3,
+          "line": 672
+        },
+        {
+          "heading": "15.2 oom/ionice/nice 包装脚本",
+          "level": 3,
+          "line": 706
+        },
+        {
+          "heading": "15.3 三路读循环（差异表）",
+          "level": 3,
+          "line": 720
+        },
+        {
+          "heading": "15.4 MultiplexedChannel 扇出协议（`handler/multiplex.go`）",
+          "level": 3,
+          "line": 734
+        },
+        {
+          "heading": "15.5 Start RPC 流程（`start.go:23`）",
+          "level": 3,
+          "line": 763
+        },
+        {
+          "heading": "15.6 Wait 协议（`handler.go:447`）",
+          "level": 3,
+          "line": 823
+        },
+        {
+          "heading": "16. cgroup v2 与 freeze 语义深度",
+          "level": 2,
+          "line": 843
+        },
+        {
+          "heading": "16.1 cgroup v2 校验（防 v1 假阳）",
+          "level": 3,
+          "line": 847
+        },
+        {
+          "heading": "16.2 创建 + 拿 fd 流程（`createCgroup`）",
+          "level": 3,
+          "line": 859
+        },
+        {
+          "heading": "16.3 文件描述符 + CLONE_INTO_CGROUP",
+          "level": 3,
+          "line": 875
+        },
+        {
+          "heading": "16.4 Freeze / Unfreeze 语义",
+          "level": 3,
+          "line": 888
+        },
+        {
+          "heading": "16.5 Close 协议",
+          "level": 3,
+          "line": 898
+        },
+        {
+          "heading": "17. /init 状态机与令牌校验矩阵",
+          "level": 2,
+          "line": 912
+        },
+        {
+          "heading": "17.1 PostInit 完整时序",
+          "level": 3,
+          "line": 922
+        },
+        {
+          "heading": "17.2 令牌校验决策矩阵（`validateInitAccessToken`）",
+          "level": 3,
+          "line": 969
+        },
+        {
+          "heading": "17.3 MMDS 自愈流程（`checkMMDSHash`）",
+          "level": 3,
+          "line": 987
+        },
+        {
+          "heading": "17.4 SetData 8 步（顺序敏感）",
+          "level": 3,
+          "line": 1001
+        },
+        {
+          "heading": "17.5 错误码映射（`writeInitError`）",
+          "level": 3,
+          "line": 1039
+        },
+        {
+          "heading": "18. 端口转发状态机深度",
+          "level": 2,
+          "line": 1052
+        },
+        {
+          "heading": "18.1 Scanner pub-sub 模型（`scan.go`）",
+          "level": 3,
+          "line": 1056
+        },
+        {
+          "heading": "18.2 Forwarder 三态状态机",
+          "level": 3,
+          "line": 1087
+        },
+        {
+          "heading": "18.3 socat 命令与进程组管理",
+          "level": 3,
+          "line": 1126
+        },
+        {
+          "heading": "18.4 `PortStateDelete` 不立即删除 map",
+          "level": 3,
+          "line": 1151
+        },
+        {
+          "heading": "19. 日志流水线深度（HTTPExporter）",
+          "level": 2,
+          "line": 1157
+        },
+        {
+          "heading": "19.1 启动协议（`sync.Once` 保护）",
+          "level": 3,
+          "line": 1161
+        },
+        {
+          "heading": "19.2 flush loop（`start`）",
+          "level": 3,
+          "line": 1182
+        },
+        {
+          "heading": "19.3 写入协议（`Write` + `addLogs`）",
+          "level": 3,
+          "line": 1217
+        },
+        {
+          "heading": "19.4 容量保护的驱逐策略",
+          "level": 3,
+          "line": 1248
+        },
+        {
+          "heading": "19.5 三路 rate-limited logger",
+          "level": 3,
+          "line": 1257
+        },
+        {
+          "heading": "19.6 令牌桶限速器（`ratelimit.Limiter`）",
+          "level": 3,
+          "line": 1267
+        },
+        {
+          "heading": "20. 并发模型与锁分类",
+          "level": 2,
+          "line": 1288
+        },
+        {
+          "heading": "20.1 无锁读路径",
+          "level": 3,
+          "line": 1309
+        },
+        {
+          "heading": "20.2 `context.WithoutCancel` 的三个用途",
+          "level": 3,
+          "line": 1316
+        },
+        {
+          "heading": "20.3 锁获取顺序（防死锁）",
+          "level": 3,
+          "line": 1324
+        },
+        {
+          "heading": "20.4 pub-sub 模型",
+          "level": 3,
+          "line": 1333
+        },
+        {
+          "heading": "21. 跨平台 syscall 桥接",
+          "level": 2,
+          "line": 1346
+        },
+        {
+          "heading": "21.1 Linux 关键 syscall 列表",
+          "level": 3,
+          "line": 1358
+        },
+        {
+          "heading": "21.2 非 Linux 平台的语义保证",
+          "level": 3,
+          "line": 1376
+        },
+        {
+          "heading": "22. 代码组织约定",
+          "level": 2,
+          "line": 1386
+        },
+        {
+          "heading": "22.1 build tag 规范",
+          "level": 3,
+          "line": 1388
+        },
+        {
+          "heading": "22.2 zerolog 时间字段约定",
+          "level": 3,
+          "line": 1404
+        },
+        {
+          "heading": "22.3 错误 wrapping",
+          "level": 3,
+          "line": 1414
+        },
+        {
+          "heading": "22.4 nolint 注释约定",
+          "level": 3,
+          "line": 1430
+        },
+        {
+          "heading": "22.5 测试约定",
+          "level": 3,
+          "line": 1439
+        },
+        {
+          "heading": "22.6 \"为什么\"注释规范",
+          "level": 3,
+          "line": 1450
+        },
+        {
+          "heading": "22.7 命名约定",
+          "level": 3,
+          "line": 1468
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 87
+      }
+    },
+    {
+      "path": "packages/envd/Makefile",
+      "language": "makefile",
+      "fileCategory": "infra",
+      "totalLines": 87,
+      "nonEmptyLines": 74,
+      "steps": [
+        {
+          "name": "init",
+          "startLine": 23,
+          "endLine": 25
+        },
+        {
+          "name": "upload",
+          "startLine": 26,
+          "endLine": 27
+        },
+        {
+          "name": "promote",
+          "startLine": 43,
+          "endLine": 45
+        },
+        {
+          "name": "build",
+          "startLine": 52,
+          "endLine": 54
+        },
+        {
+          "name": "build-debug",
+          "startLine": 55,
+          "endLine": 57
+        },
+        {
+          "name": "start-docker",
+          "startLine": 58,
+          "endLine": 72
+        },
+        {
+          "name": "build-and-upload",
+          "startLine": 73,
+          "endLine": 76
+        },
+        {
+          "name": "generate",
+          "startLine": 78,
+          "endLine": 80
+        },
+        {
+          "name": "test",
+          "startLine": 82,
+          "endLine": 84
+        },
+        {
+          "name": "lint",
+          "startLine": 86,
+          "endLine": 88
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "stepCount": 10
+      }
+    },
+    {
+      "path": "packages/envd/README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 42,
+      "nonEmptyLines": 25,
+      "sections": [
+        {
+          "heading": "envd",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Development",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Versioning",
+          "level": 3,
+          "line": 7
+        },
+        {
+          "heading": "Running locally",
+          "level": 3,
+          "line": 11
+        },
+        {
+          "heading": "Generating API server stubs",
+          "level": 3,
+          "line": 21
+        },
+        {
+          "heading": "Generating",
+          "level": 4,
+          "line": 29
+        },
+        {
+          "heading": "Debugging",
+          "level": 3,
+          "line": 37
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": "packages/envd/go.mod",
+      "language": "mod",
+      "fileCategory": "config",
+      "totalLines": 75,
+      "nonEmptyLines": 70,
+      "metrics": {}
+    },
+    {
+      "path": "packages/envd/go.sum",
+      "language": "sum",
+      "fileCategory": "config",
+      "totalLines": 300,
+      "nonEmptyLines": 300,
+      "metrics": {}
+    }
+  ]
+}

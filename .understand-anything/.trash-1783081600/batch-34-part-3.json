@@ -1,0 +1,1765 @@
+{
+ "nodes": [
+  {
+   "id": "file:packages/envd/internal/api/init_test.go",
+   "type": "file",
+   "name": "init_test.go",
+   "filePath": "packages/envd/internal/api/init_test.go",
+   "summary": "对沙箱初始化核心路径的完整测试:访问令牌校验、MMDS 哈希比对、SetData、NFS 重挂判断、Freeze/Unfreeze、过期时间与未授权场景。",
+   "tags": [
+    "test",
+    "init",
+    "auth-validation",
+    "cgroup",
+    "nfs"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "file:packages/envd/internal/api/secure_token.go",
+   "type": "file",
+   "name": "secure_token.go",
+   "filePath": "packages/envd/internal/api/secure_token.go",
+   "summary": "SecureToken 类型提供恒定时间比较的安全令牌,支持 Set/Equals/TakeFrom/Bytes/Destroy 等操作,内存使用后主动擦除。",
+   "tags": [
+    "utility",
+    "security",
+    "constant-time",
+    "memory-wipe"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "file:packages/envd/internal/api/secure_token_test.go",
+   "type": "file",
+   "name": "secure_token_test.go",
+   "filePath": "packages/envd/internal/api/secure_token_test.go",
+   "summary": "对 SecureToken 的设置、相等比较、销毁、并发访问、JSON 反序列化、输入擦除等行为的全面单元测试。",
+   "tags": [
+    "test",
+    "security",
+    "constant-time"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "file:packages/envd/internal/api/store.go",
+   "type": "file",
+   "name": "store.go",
+   "filePath": "packages/envd/internal/api/store.go",
+   "summary": "API 状态对象:封装日志、默认配置、MMDS 客户端、CA 证书安装器、cgroup 管理器、文件系统冻结器以及挂载路径跟踪;实现 GetHealth 与 GetMetrics 处理器。",
+   "tags": [
+    "api-handler",
+    "service-store",
+    "metrics",
+    "health"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "file:packages/envd/internal/api/upload.go",
+   "type": "file",
+   "name": "upload.go",
+   "filePath": "packages/envd/internal/api/upload.go",
+   "summary": "实现 PostFiles HTTP 处理函数,支持 multipart 表单上传与原始请求体上传,处理文件写入、目录创建、gzip 解压与元数据头解析。",
+   "tags": [
+    "api-handler",
+    "file-upload",
+    "multipart",
+    "gzip",
+    "metadata"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "file:packages/envd/internal/api/upload_metadata_test.go",
+   "type": "file",
+   "name": "upload_metadata_test.go",
+   "filePath": "packages/envd/internal/api/upload_metadata_test.go",
+   "summary": "对 extractMetadataHeaders 解析逻辑的单元测试,覆盖 Content-Type、Content-Length、散列与编码头字段。",
+   "tags": [
+    "test",
+    "metadata",
+    "upload"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "file:packages/envd/internal/api/upload_test.go",
+   "type": "file",
+   "name": "upload_test.go",
+   "filePath": "packages/envd/internal/api/upload_test.go",
+   "summary": "对 PostFiles 中 processFile 的完整测试,涵盖 tmpfs 挂载、文件写入、目录创建与权限处理。",
+   "tags": [
+    "test",
+    "file-upload",
+    "tmpfs"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "file:packages/envd/internal/execcontext/context.go",
+   "type": "file",
+   "name": "context.go",
+   "filePath": "packages/envd/internal/execcontext/context.go",
+   "summary": "定义 Defaults 配置结构体与 ResolveDefaultWorkdir/ResolveDefaultUsername 辅助函数,统一处理工作目录与用户名的回退逻辑。",
+   "tags": [
+    "utility",
+    "defaults",
+    "resolver"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "file:packages/envd/internal/host/cacerts.go",
+   "type": "file",
+   "name": "cacerts.go",
+   "filePath": "packages/envd/internal/host/cacerts.go",
+   "summary": "CACertInstaller 提供在沙箱内安装/移除 PEM CA 证书到系统信任库的幂等操作,并维护最近证书的内存状态以避免冗余写入。",
+   "tags": [
+    "utility",
+    "certificate",
+    "trust-store",
+    "host-config"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init_test.go:TestSimpleCases",
+   "type": "function",
+   "name": "TestSimpleCases",
+   "filePath": "packages/envd/internal/api/init_test.go",
+   "lineRange": [
+    27,
+    63
+   ],
+   "summary": "简单场景测试,验证 SetData 等函数在默认输入下的行为。",
+   "tags": [
+    "test",
+    "init"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init_test.go:TestShouldSetSystemTime",
+   "type": "function",
+   "name": "TestShouldSetSystemTime",
+   "filePath": "packages/envd/internal/api/init_test.go",
+   "lineRange": [
+    65,
+    128
+   ],
+   "summary": "测试 shouldSetSystemTime 在沙箱时间与主机时间不同步时返回 true。",
+   "tags": [
+    "test",
+    "system-time"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init_test.go:newTestAPI",
+   "type": "function",
+   "name": "newTestAPI",
+   "filePath": "packages/envd/internal/api/init_test.go",
+   "lineRange": [
+    146,
+    158
+   ],
+   "summary": "测试辅助函数:构造带 mock MMDS 客户端与 cgroup 管理器的 API 实例。",
+   "tags": [
+    "test",
+    "helper"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init_test.go:TestValidateInitAccessToken",
+   "type": "function",
+   "name": "TestValidateInitAccessToken",
+   "filePath": "packages/envd/internal/api/init_test.go",
+   "lineRange": [
+    160,
+    262
+   ],
+   "summary": "测试访问令牌校验的各种合法与非法输入。",
+   "tags": [
+    "test",
+    "auth-validation"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init_test.go:TestCheckMMDSHash",
+   "type": "function",
+   "name": "TestCheckMMDSHash",
+   "filePath": "packages/envd/internal/api/init_test.go",
+   "lineRange": [
+    264,
+    345
+   ],
+   "summary": "测试 MMDS 哈希比对逻辑,包括客户端错误处理。",
+   "tags": [
+    "test",
+    "mmds",
+    "auth-validation"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init_test.go:TestSetData",
+   "type": "function",
+   "name": "TestSetData",
+   "filePath": "packages/envd/internal/api/init_test.go",
+   "lineRange": [
+    347,
+    525
+   ],
+   "summary": "对 SetData 全路径的完整测试,涵盖 CA 证书、cgroup、NFS 与环境变量。",
+   "tags": [
+    "test",
+    "init"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init_test.go:TestShouldRemountNFS",
+   "type": "function",
+   "name": "TestShouldRemountNFS",
+   "filePath": "packages/envd/internal/api/init_test.go",
+   "lineRange": [
+    527,
+    597
+   ],
+   "summary": "测试 NFS 是否需要重新挂载的判断逻辑。",
+   "tags": [
+    "test",
+    "nfs-mount"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init_test.go:TestPostFreeze",
+   "type": "function",
+   "name": "TestPostFreeze",
+   "filePath": "packages/envd/internal/api/init_test.go",
+   "lineRange": [
+    643,
+    673
+   ],
+   "summary": "测试 PostFreeze 调用 cgroup 管理器冻结沙箱。",
+   "tags": [
+    "test",
+    "cgroup"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init_test.go:TestPostUnfreeze",
+   "type": "function",
+   "name": "TestPostUnfreeze",
+   "filePath": "packages/envd/internal/api/init_test.go",
+   "lineRange": [
+    675,
+    706
+   ],
+   "summary": "测试 PostUnfreeze 调用 cgroup 管理器解冻沙箱。",
+   "tags": [
+    "test",
+    "cgroup"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init_test.go:TestPostInit_UnfreezeOnStaleTimestamp",
+   "type": "function",
+   "name": "TestPostInit_UnfreezeOnStaleTimestamp",
+   "filePath": "packages/envd/internal/api/init_test.go",
+   "lineRange": [
+    710,
+    736
+   ],
+   "summary": "测试时间戳过期时 PostInit 会先解冻再处理。",
+   "tags": [
+    "test",
+    "init",
+    "timestamp"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/init_test.go:TestPostInit_UnauthorizedDoesNotUnfreeze",
+   "type": "function",
+   "name": "TestPostInit_UnauthorizedDoesNotUnfreeze",
+   "filePath": "packages/envd/internal/api/init_test.go",
+   "lineRange": [
+    739,
+    756
+   ],
+   "summary": "测试未授权请求不应触发解冻操作。",
+   "tags": [
+    "test",
+    "init",
+    "auth-validation"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/api/init_test.go:mockMMDSClient",
+   "type": "class",
+   "name": "mockMMDSClient",
+   "filePath": "packages/envd/internal/api/init_test.go",
+   "lineRange": [
+    137,
+    140
+   ],
+   "summary": "MMDSClient 的 mock 实现,返回预设的 token 哈希与可选错误。",
+   "tags": [
+    "test",
+    "stub",
+    "mmds"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/api/init_test.go:fakeCgroupManager",
+   "type": "class",
+   "name": "fakeCgroupManager",
+   "filePath": "packages/envd/internal/api/init_test.go",
+   "lineRange": [
+    599,
+    606
+   ],
+   "summary": "cgroups.Manager 的桩实现,记录冻结/解冻调用与错误注入。",
+   "tags": [
+    "test",
+    "stub",
+    "cgroup"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/api/secure_token.go:SecureToken",
+   "type": "class",
+   "name": "SecureToken",
+   "filePath": "packages/envd/internal/api/secure_token.go",
+   "lineRange": [
+    19,
+    22
+   ],
+   "summary": "安全令牌类型:存储对访问敏感信息的引用,使用后主动擦除内存并采用恒定时间比较。",
+   "tags": [
+    "security",
+    "constant-time",
+    "memory-wipe"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/secure_token.go:Set",
+   "type": "function",
+   "name": "Set",
+   "filePath": "packages/envd/internal/api/secure_token.go",
+   "lineRange": [
+    28,
+    46
+   ],
+   "summary": "设置令牌值,使用后立即擦除输入缓冲。",
+   "tags": [
+    "security",
+    "memory-wipe"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/secure_token.go:UnmarshalJSON",
+   "type": "function",
+   "name": "UnmarshalJSON",
+   "filePath": "packages/envd/internal/api/secure_token.go",
+   "lineRange": [
+    53,
+    92
+   ],
+   "summary": "从 JSON 中读取令牌字节并复制到内部缓冲,然后擦除原始输入。",
+   "tags": [
+    "security",
+    "json",
+    "memory-wipe"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/secure_token.go:TakeFrom",
+   "type": "function",
+   "name": "TakeFrom",
+   "filePath": "packages/envd/internal/api/secure_token.go",
+   "lineRange": [
+    97,
+    115
+   ],
+   "summary": "从给定源复制令牌到当前对象,然后擦除源缓冲。",
+   "tags": [
+    "security",
+    "memory-wipe"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/secure_token.go:Equals",
+   "type": "function",
+   "name": "Equals",
+   "filePath": "packages/envd/internal/api/secure_token.go",
+   "lineRange": [
+    119,
+    132
+   ],
+   "summary": "常规相等比较(快速)。",
+   "tags": [
+    "security",
+    "comparison"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/secure_token.go:EqualsSecure",
+   "type": "function",
+   "name": "EqualsSecure",
+   "filePath": "packages/envd/internal/api/secure_token.go",
+   "lineRange": [
+    136,
+    160
+   ],
+   "summary": "恒定时间的安全相等比较,避免侧信道泄露。",
+   "tags": [
+    "security",
+    "constant-time"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/secure_token.go:Bytes",
+   "type": "function",
+   "name": "Bytes",
+   "filePath": "packages/envd/internal/api/secure_token.go",
+   "lineRange": [
+    178,
+    196
+   ],
+   "summary": "返回内部令牌的副本。",
+   "tags": [
+    "security",
+    "accessor"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/secure_token.go:Destroy",
+   "type": "function",
+   "name": "Destroy",
+   "filePath": "packages/envd/internal/api/secure_token.go",
+   "lineRange": [
+    200,
+    212
+   ],
+   "summary": "主动擦除内部缓冲区并标记令牌为未设置。",
+   "tags": [
+    "security",
+    "memory-wipe"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenSetAndEquals",
+   "type": "function",
+   "name": "TestSecureTokenSetAndEquals",
+   "filePath": "packages/envd/internal/api/secure_token_test.go",
+   "lineRange": [
+    12,
+    28
+   ],
+   "summary": "测试设置令牌与常规相等比较。",
+   "tags": [
+    "test",
+    "security"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenReplace",
+   "type": "function",
+   "name": "TestSecureTokenReplace",
+   "filePath": "packages/envd/internal/api/secure_token_test.go",
+   "lineRange": [
+    30,
+    45
+   ],
+   "summary": "测试重复 Set 替换内部令牌值。",
+   "tags": [
+    "test",
+    "security"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenDestroy",
+   "type": "function",
+   "name": "TestSecureTokenDestroy",
+   "filePath": "packages/envd/internal/api/secure_token_test.go",
+   "lineRange": [
+    47,
+    74
+   ],
+   "summary": "测试 Destroy 后 IsSet 返回 false,Bytes 返回空。",
+   "tags": [
+    "test",
+    "security",
+    "memory-wipe"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenBytes",
+   "type": "function",
+   "name": "TestSecureTokenBytes",
+   "filePath": "packages/envd/internal/api/secure_token_test.go",
+   "lineRange": [
+    76,
+    103
+   ],
+   "summary": "测试 Bytes 返回的是独立副本,修改不影响内部状态。",
+   "tags": [
+    "test",
+    "security"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenConcurrentAccess",
+   "type": "function",
+   "name": "TestSecureTokenConcurrentAccess",
+   "filePath": "packages/envd/internal/api/secure_token_test.go",
+   "lineRange": [
+    105,
+    136
+   ],
+   "summary": "测试并发访问 SecureToken 的线程安全性。",
+   "tags": [
+    "test",
+    "security",
+    "concurrency"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenUnmarshalJSON",
+   "type": "function",
+   "name": "TestSecureTokenUnmarshalJSON",
+   "filePath": "packages/envd/internal/api/secure_token_test.go",
+   "lineRange": [
+    171,
+    254
+   ],
+   "summary": "测试从 JSON 反序列化令牌后正确擦除输入字节。",
+   "tags": [
+    "test",
+    "security",
+    "json"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenSetWipesInput",
+   "type": "function",
+   "name": "TestSecureTokenSetWipesInput",
+   "filePath": "packages/envd/internal/api/secure_token_test.go",
+   "lineRange": [
+    256,
+    278
+   ],
+   "summary": "测试 Set 调用后会擦除传入字节切片的内容。",
+   "tags": [
+    "test",
+    "security",
+    "memory-wipe"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenTakeFrom",
+   "type": "function",
+   "name": "TestSecureTokenTakeFrom",
+   "filePath": "packages/envd/internal/api/secure_token_test.go",
+   "lineRange": [
+    280,
+    349
+   ],
+   "summary": "测试 TakeFrom 从源拷贝令牌并擦除源缓冲区。",
+   "tags": [
+    "test",
+    "security",
+    "memory-wipe"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenEqualsSecure",
+   "type": "function",
+   "name": "TestSecureTokenEqualsSecure",
+   "filePath": "packages/envd/internal/api/secure_token_test.go",
+   "lineRange": [
+    351,
+    461
+   ],
+   "summary": "测试恒定时间比较在各种长度下的正确性。",
+   "tags": [
+    "test",
+    "security",
+    "constant-time"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "class:packages/envd/internal/api/store.go:API",
+   "type": "class",
+   "name": "API",
+   "filePath": "packages/envd/internal/api/store.go",
+   "lineRange": [
+    32,
+    59
+   ],
+   "summary": "envd HTTP API 状态对象,持有日志、默认配置、MMDS、CA 证书安装器、cgroup 管理器、Freezer 与挂载跟踪。",
+   "tags": [
+    "service-store",
+    "api-state"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "class:packages/envd/internal/api/store.go:MMDSClient",
+   "type": "class",
+   "name": "MMDSClient",
+   "filePath": "packages/envd/internal/api/store.go",
+   "lineRange": [
+    21,
+    23
+   ],
+   "summary": "MMDS 客户端接口,提供访问令牌哈希查询。",
+   "tags": [
+    "interface",
+    "mmds"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/store.go:New",
+   "type": "function",
+   "name": "New",
+   "filePath": "packages/envd/internal/api/store.go",
+   "lineRange": [
+    61,
+    77
+   ],
+   "summary": "构造 API 实例,初始化所有协作组件并装配默认配置。",
+   "tags": [
+    "constructor",
+    "service-store"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/store.go:GetHealth",
+   "type": "function",
+   "name": "GetHealth",
+   "filePath": "packages/envd/internal/api/store.go",
+   "lineRange": [
+    79,
+    88
+   ],
+   "summary": "HTTP 处理函数:返回沙箱健康状态 JSON。",
+   "tags": [
+    "api-handler",
+    "health"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/store.go:GetMetrics",
+   "type": "function",
+   "name": "GetMetrics",
+   "filePath": "packages/envd/internal/api/store.go",
+   "lineRange": [
+    90,
+    110
+   ],
+   "summary": "HTTP 处理函数:返回沙箱运行时指标(JSON 格式)。",
+   "tags": [
+    "api-handler",
+    "metrics"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/api/upload.go:extractMetadataHeaders",
+   "type": "function",
+   "name": "extractMetadataHeaders",
+   "filePath": "packages/envd/internal/api/upload.go",
+   "lineRange": [
+    35,
+    52
+   ],
+   "summary": "从 multipart part header 中提取上传元数据(Content-Type、长度、哈希等)。",
+   "tags": [
+    "utility",
+    "metadata",
+    "multipart"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/upload.go:processFile",
+   "type": "function",
+   "name": "processFile",
+   "filePath": "packages/envd/internal/api/upload.go",
+   "lineRange": [
+    54,
+    157
+   ],
+   "summary": "处理单个文件 part:解析路径、写入文件、设置权限与所有权、处理元数据。",
+   "tags": [
+    "utility",
+    "file-upload",
+    "multipart",
+    "permissions"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/upload.go:resolvePath",
+   "type": "function",
+   "name": "resolvePath",
+   "filePath": "packages/envd/internal/api/upload.go",
+   "lineRange": [
+    159,
+    198
+   ],
+   "summary": "解析上传文件的最终目标路径,处理默认值与用户覆盖。",
+   "tags": [
+    "utility",
+    "path-resolver",
+    "upload"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/upload.go:handlePart",
+   "type": "function",
+   "name": "handlePart",
+   "filePath": "packages/envd/internal/api/upload.go",
+   "lineRange": [
+    200,
+    237
+   ],
+   "summary": "处理单个 multipart part,分派到 processFile 或专用处理器。",
+   "tags": [
+    "utility",
+    "multipart",
+    "upload"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/upload.go:PostFiles",
+   "type": "function",
+   "name": "PostFiles",
+   "filePath": "packages/envd/internal/api/upload.go",
+   "lineRange": [
+    239,
+    359
+   ],
+   "summary": "HTTP 处理函数:支持 multipart 与原始 body 两种上传方式,分派到对应处理函数。",
+   "tags": [
+    "api-handler",
+    "file-upload",
+    "multipart",
+    "raw-body"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/upload.go:handleMultipartUpload",
+   "type": "function",
+   "name": "handleMultipartUpload",
+   "filePath": "packages/envd/internal/api/upload.go",
+   "lineRange": [
+    361,
+    389
+   ],
+   "summary": "遍历 multipart 各 part 并依次写入文件。",
+   "tags": [
+    "utility",
+    "multipart",
+    "upload"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/upload.go:handleRawUpload",
+   "type": "function",
+   "name": "handleRawUpload",
+   "filePath": "packages/envd/internal/api/upload.go",
+   "lineRange": [
+    391,
+    426
+   ],
+   "summary": "将原始请求体直接写入目标文件,可选 gzip 解压。",
+   "tags": [
+    "utility",
+    "raw-body",
+    "upload"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "function:packages/envd/internal/api/upload_metadata_test.go:TestExtractMetadataHeaders",
+   "type": "function",
+   "name": "TestExtractMetadataHeaders",
+   "filePath": "packages/envd/internal/api/upload_metadata_test.go",
+   "lineRange": [
+    8,
+    73
+   ],
+   "summary": "测试 extractMetadataHeaders 对不同 part header 的解析。",
+   "tags": [
+    "test",
+    "metadata",
+    "multipart"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/upload_test.go:TestProcessFile",
+   "type": "function",
+   "name": "TestProcessFile",
+   "filePath": "packages/envd/internal/api/upload_test.go",
+   "lineRange": [
+    22,
+    281
+   ],
+   "summary": "对 processFile 的完整测试:覆盖路径、权限、目录创建、tmpfs 等场景。",
+   "tags": [
+    "test",
+    "file-upload"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/api/upload_test.go:createTmpfsMountWithInodes",
+   "type": "function",
+   "name": "createTmpfsMountWithInodes",
+   "filePath": "packages/envd/internal/api/upload_test.go",
+   "lineRange": [
+    289,
+    317
+   ],
+   "summary": "测试辅助函数:在指定大小与 inode 数下挂载 tmpfs。",
+   "tags": [
+    "test",
+    "helper",
+    "tmpfs"
+   ],
+   "complexity": "中等"
+  },
+  {
+   "id": "class:packages/envd/internal/execcontext/context.go:Defaults",
+   "type": "class",
+   "name": "Defaults",
+   "filePath": "packages/envd/internal/execcontext/context.go",
+   "lineRange": [
+    9,
+    13
+   ],
+   "summary": "沙箱默认值结构:包含环境变量、用户、工作目录。",
+   "tags": [
+    "struct",
+    "defaults"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/execcontext/context.go:ResolveDefaultWorkdir",
+   "type": "function",
+   "name": "ResolveDefaultWorkdir",
+   "filePath": "packages/envd/internal/execcontext/context.go",
+   "lineRange": [
+    15,
+    25
+   ],
+   "summary": "解析默认工作目录,当传入为空时返回默认值。",
+   "tags": [
+    "utility",
+    "resolver",
+    "defaults"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/execcontext/context.go:ResolveDefaultUsername",
+   "type": "function",
+   "name": "ResolveDefaultUsername",
+   "filePath": "packages/envd/internal/execcontext/context.go",
+   "lineRange": [
+    27,
+    37
+   ],
+   "summary": "解析默认用户名,当传入为空时返回默认值。",
+   "tags": [
+    "utility",
+    "resolver",
+    "defaults"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "class:packages/envd/internal/host/cacerts.go:CACertInstaller",
+   "type": "class",
+   "name": "CACertInstaller",
+   "filePath": "packages/envd/internal/host/cacerts.go",
+   "lineRange": [
+    33,
+    43
+   ],
+   "summary": "负责在沙箱内安装/移除 PEM CA 证书的幂等操作对象。",
+   "tags": [
+    "certificate",
+    "trust-store"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/host/cacerts.go:NewCACertInstaller",
+   "type": "function",
+   "name": "NewCACertInstaller",
+   "filePath": "packages/envd/internal/host/cacerts.go",
+   "lineRange": [
+    45,
+    50
+   ],
+   "summary": "构造 CACertInstaller 实例。",
+   "tags": [
+    "constructor"
+   ],
+   "complexity": "简单"
+  },
+  {
+   "id": "function:packages/envd/internal/host/cacerts.go:install",
+   "type": "function",
+   "name": "install",
+   "filePath": "packages/envd/internal/host/cacerts.go",
+   "lineRange": [
+    73,
+    156
+   ],
+   "summary": "将 PEM 证书追加到系统 trust bundle 与额外跟踪文件,使用互斥锁保证幂等。",
+   "tags": [
+    "certificate",
+    "trust-store",
+    "idempotent"
+   ],
+   "complexity": "复杂"
+  },
+  {
+   "id": "function:packages/envd/internal/host/cacerts.go:removeCertFromBundle",
+   "type": "function",
+   "name": "removeCertFromBundle",
+   "filePath": "packages/envd/internal/host/cacerts.go",
+   "lineRange": [
+    166,
+    212
+   ],
+   "summary": "从 bundle 中移除给定 PEM 证书的所有匹配项。",
+   "tags": [
+    "certificate",
+    "trust-store"
+   ],
+   "complexity": "复杂"
+  }
+ ],
+ "edges": [
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "function:packages/envd/internal/api/init_test.go:TestSimpleCases",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "function:packages/envd/internal/api/init_test.go:TestShouldSetSystemTime",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "function:packages/envd/internal/api/init_test.go:newTestAPI",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "function:packages/envd/internal/api/init_test.go:TestValidateInitAccessToken",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "function:packages/envd/internal/api/init_test.go:TestCheckMMDSHash",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "function:packages/envd/internal/api/init_test.go:TestSetData",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "function:packages/envd/internal/api/init_test.go:TestShouldRemountNFS",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "function:packages/envd/internal/api/init_test.go:TestPostFreeze",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "function:packages/envd/internal/api/init_test.go:TestPostUnfreeze",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "function:packages/envd/internal/api/init_test.go:TestPostInit_UnfreezeOnStaleTimestamp",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "function:packages/envd/internal/api/init_test.go:TestPostInit_UnauthorizedDoesNotUnfreeze",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "class:packages/envd/internal/api/init_test.go:mockMMDSClient",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "class:packages/envd/internal/api/init_test.go:fakeCgroupManager",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token.go",
+   "target": "class:packages/envd/internal/api/secure_token.go:SecureToken",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token.go",
+   "target": "function:packages/envd/internal/api/secure_token.go:Set",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token.go",
+   "target": "function:packages/envd/internal/api/secure_token.go:UnmarshalJSON",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token.go",
+   "target": "function:packages/envd/internal/api/secure_token.go:TakeFrom",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token.go",
+   "target": "function:packages/envd/internal/api/secure_token.go:Equals",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token.go",
+   "target": "function:packages/envd/internal/api/secure_token.go:EqualsSecure",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token.go",
+   "target": "function:packages/envd/internal/api/secure_token.go:Bytes",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token.go",
+   "target": "function:packages/envd/internal/api/secure_token.go:Destroy",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token_test.go",
+   "target": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenSetAndEquals",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token_test.go",
+   "target": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenReplace",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token_test.go",
+   "target": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenDestroy",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token_test.go",
+   "target": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenBytes",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token_test.go",
+   "target": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenConcurrentAccess",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token_test.go",
+   "target": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenUnmarshalJSON",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token_test.go",
+   "target": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenSetWipesInput",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token_test.go",
+   "target": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenTakeFrom",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token_test.go",
+   "target": "function:packages/envd/internal/api/secure_token_test.go:TestSecureTokenEqualsSecure",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "class:packages/envd/internal/api/store.go:API",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "class:packages/envd/internal/api/store.go:MMDSClient",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "function:packages/envd/internal/api/store.go:New",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "function:packages/envd/internal/api/store.go:GetHealth",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "function:packages/envd/internal/api/store.go:GetMetrics",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "function:packages/envd/internal/api/upload.go:extractMetadataHeaders",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "function:packages/envd/internal/api/upload.go:processFile",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "function:packages/envd/internal/api/upload.go:resolvePath",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "function:packages/envd/internal/api/upload.go:handlePart",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "function:packages/envd/internal/api/upload.go:PostFiles",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "function:packages/envd/internal/api/upload.go:handleMultipartUpload",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "function:packages/envd/internal/api/upload.go:handleRawUpload",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload_metadata_test.go",
+   "target": "function:packages/envd/internal/api/upload_metadata_test.go:TestExtractMetadataHeaders",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload_test.go",
+   "target": "function:packages/envd/internal/api/upload_test.go:TestProcessFile",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload_test.go",
+   "target": "function:packages/envd/internal/api/upload_test.go:createTmpfsMountWithInodes",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/execcontext/context.go",
+   "target": "class:packages/envd/internal/execcontext/context.go:Defaults",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/execcontext/context.go",
+   "target": "function:packages/envd/internal/execcontext/context.go:ResolveDefaultWorkdir",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/execcontext/context.go",
+   "target": "function:packages/envd/internal/execcontext/context.go:ResolveDefaultUsername",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/host/cacerts.go",
+   "target": "class:packages/envd/internal/host/cacerts.go:CACertInstaller",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/host/cacerts.go",
+   "target": "function:packages/envd/internal/host/cacerts.go:NewCACertInstaller",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/host/cacerts.go",
+   "target": "function:packages/envd/internal/host/cacerts.go:install",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/host/cacerts.go",
+   "target": "function:packages/envd/internal/host/cacerts.go:removeCertFromBundle",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "file:packages/envd/internal/execcontext/context.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2_stub.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/iface.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "file:packages/envd/internal/services/cgroups/noop.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "file:packages/envd/internal/utils/atomic_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "file:packages/envd/internal/utils/atomic.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "file:packages/envd/internal/utils/envvars_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "file:packages/envd/internal/utils/envvars.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "file:packages/envd/internal/utils/map.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "file:packages/envd/internal/utils/multipart.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/init_test.go",
+   "target": "file:packages/envd/internal/utils/rfsnotify.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/execcontext/context.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/host/cacerts_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/host/cacerts.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/host/metrics.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/host/mmds_route_linux.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/host/mmds_route_other.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/host/mmds.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2_stub.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/services/cgroups/cgroup2.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/services/cgroups/iface.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/services/cgroups/noop.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/services/fsfreeze/fsfreeze_linux.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/services/fsfreeze/fsfreeze_other.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/services/fsfreeze/fsfreeze.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/utils/atomic_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/utils/atomic.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/utils/envvars_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/utils/envvars.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/utils/map.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/utils/multipart.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/store.go",
+   "target": "file:packages/envd/internal/utils/rfsnotify.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "file:packages/envd/internal/execcontext/context.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "file:packages/envd/internal/logs/interceptor.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "file:packages/envd/internal/logs/logger.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "file:packages/envd/internal/permissions/authenticate.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "file:packages/envd/internal/permissions/keepalive.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "file:packages/envd/internal/permissions/path.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "file:packages/envd/internal/permissions/user.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "file:packages/envd/internal/utils/atomic_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "file:packages/envd/internal/utils/atomic.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "file:packages/envd/internal/utils/envvars_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "file:packages/envd/internal/utils/envvars.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "file:packages/envd/internal/utils/map.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "file:packages/envd/internal/utils/multipart.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "file:packages/envd/internal/utils/rfsnotify.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/execcontext/context.go",
+   "target": "file:packages/envd/internal/utils/atomic_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/execcontext/context.go",
+   "target": "file:packages/envd/internal/utils/atomic.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/execcontext/context.go",
+   "target": "file:packages/envd/internal/utils/envvars_test.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/execcontext/context.go",
+   "target": "file:packages/envd/internal/utils/envvars.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/execcontext/context.go",
+   "target": "file:packages/envd/internal/utils/map.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/execcontext/context.go",
+   "target": "file:packages/envd/internal/utils/multipart.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/execcontext/context.go",
+   "target": "file:packages/envd/internal/utils/rfsnotify.go",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:packages/envd/internal/api/secure_token.go",
+   "target": "file:packages/envd/internal/api/secure_token_test.go",
+   "type": "tested_by",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "file:packages/envd/internal/api/upload_test.go",
+   "type": "tested_by",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:packages/envd/internal/api/upload.go",
+   "target": "file:packages/envd/internal/api/upload_metadata_test.go",
+   "type": "tested_by",
+   "direction": "forward",
+   "weight": 0.5
+  }
+ ]
+}

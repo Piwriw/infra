@@ -1,0 +1,4770 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 10,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/orchestrator/cmd/clean-nfs-cache/cleaner/clean.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 471,
+      "nonEmptyLines": 407,
+      "functions": [
+        {
+          "name": "NewCleaner",
+          "startLine": 121,
+          "endLine": 127,
+          "params": [
+            "opts",
+            "log",
+            "metrics"
+          ]
+        },
+        {
+          "name": "validateOptions",
+          "startLine": 129,
+          "endLine": 163,
+          "params": []
+        },
+        {
+          "name": "Clean",
+          "startLine": 165,
+          "endLine": 197,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "list",
+          "startLine": 208,
+          "endLine": 265,
+          "params": [
+            "ctx",
+            "df"
+          ]
+        },
+        {
+          "name": "scan",
+          "startLine": 270,
+          "endLine": 312,
+          "params": [
+            "ctx",
+            "picks"
+          ]
+        },
+        {
+          "name": "deleteColdest",
+          "startLine": 317,
+          "endLine": 384,
+          "params": [
+            "ctx",
+            "builds"
+          ]
+        },
+        {
+          "name": "clampSample",
+          "startLine": 387,
+          "endLine": 394,
+          "params": [
+            "n",
+            "sampleMin",
+            "samplePct",
+            "sampleMax"
+          ]
+        },
+        {
+          "name": "chunkOnDiskBytes",
+          "startLine": 406,
+          "endLine": 428,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "GetDiskInfo",
+          "startLine": 434,
+          "endLine": 471,
+          "params": [
+            "ctx",
+            "path"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Cleaner",
+          "startLine": 30,
+          "endLine": 36,
+          "methods": [
+            "validateOptions",
+            "Clean",
+            "list",
+            "scan",
+            "deleteColdest"
+          ],
+          "properties": [
+            "metrics"
+          ]
+        },
+        {
+          "name": "statReq",
+          "startLine": 38,
+          "endLine": 44,
+          "methods": [],
+          "properties": [
+            "dirf",
+            "name",
+            "response",
+            "atime",
+            "err"
+          ]
+        },
+        {
+          "name": "Options",
+          "startLine": 46,
+          "endLine": 89,
+          "methods": [],
+          "properties": [
+            "Path",
+            "TargetBytesToDelete",
+            "TargetDiskUsagePercent",
+            "SampleMinFiles",
+            "SamplePercent",
+            "SampleMaxFiles",
+            "BuildSampleMin",
+            "BuildSamplePercent",
+            "BuildSampleMax",
+            "Grace",
+            "DryRun",
+            "MaxConcurrentScan",
+            "MaxConcurrentStat",
+            "MaxConcurrentDelete",
+            "Verify"
+          ]
+        },
+        {
+          "name": "Counters",
+          "startLine": 91,
+          "endLine": 99,
+          "methods": [],
+          "properties": [
+            "BuildsScanned",
+            "Deleted",
+            "BytesFreed",
+            "OpenC",
+            "ReadDirC",
+            "StatxC"
+          ]
+        },
+        {
+          "name": "build",
+          "startLine": 105,
+          "endLine": 109,
+          "methods": [],
+          "properties": [
+            "uuid",
+            "timestamp",
+            "size"
+          ]
+        },
+        {
+          "name": "Stat",
+          "startLine": 114,
+          "endLine": 117,
+          "methods": [],
+          "properties": [
+            "ATimeUnix",
+            "BTimeUnix"
+          ]
+        },
+        {
+          "name": "DiskInfo",
+          "startLine": 430,
+          "endLine": 432,
+          "methods": [],
+          "properties": [
+            "Total",
+            "Used"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Cleaner",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "Options",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "Counters",
+          "line": 91,
+          "isDefault": false
+        },
+        {
+          "name": "Stat",
+          "line": 114,
+          "isDefault": false
+        },
+        {
+          "name": "NewCleaner",
+          "line": 121,
+          "isDefault": false
+        },
+        {
+          "name": "Clean",
+          "line": 165,
+          "isDefault": false
+        },
+        {
+          "name": "DiskInfo",
+          "line": 430,
+          "isDefault": false
+        },
+        {
+          "name": "GetDiskInfo",
+          "line": 434,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewCleaner",
+          "callee": "NoopMetrics",
+          "lineNumber": 123
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "append",
+          "lineNumber": 135
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "errors.New",
+          "lineNumber": 135
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "append",
+          "lineNumber": 138
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "errors.New",
+          "lineNumber": 138
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "append",
+          "lineNumber": 141
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "errors.New",
+          "lineNumber": 141
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "append",
+          "lineNumber": 144
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "errors.New",
+          "lineNumber": 144
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "append",
+          "lineNumber": 147
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "errors.New",
+          "lineNumber": 147
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "append",
+          "lineNumber": 150
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "errors.New",
+          "lineNumber": 150
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "append",
+          "lineNumber": 153
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "errors.New",
+          "lineNumber": 153
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "append",
+          "lineNumber": 156
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "errors.New",
+          "lineNumber": 156
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "append",
+          "lineNumber": 159
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "errors.New",
+          "lineNumber": 159
+        },
+        {
+          "caller": "validateOptions",
+          "callee": "errors.Join",
+          "lineNumber": 162
+        },
+        {
+          "caller": "Clean",
+          "callee": "c.validateOptions",
+          "lineNumber": 166
+        },
+        {
+          "caller": "Clean",
+          "callee": "c.OpenC.Add",
+          "lineNumber": 170
+        },
+        {
+          "caller": "Clean",
+          "callee": "c.metrics.recordOpen",
+          "lineNumber": 171
+        },
+        {
+          "caller": "Clean",
+          "callee": "os.Open",
+          "lineNumber": 172
+        },
+        {
+          "caller": "Clean",
+          "callee": "fmt.Errorf",
+          "lineNumber": 174
+        },
+        {
+          "caller": "Clean",
+          "callee": "root.Close",
+          "lineNumber": 176
+        },
+        {
+          "caller": "Clean",
+          "callee": "time.Now",
+          "lineNumber": 178
+        },
+        {
+          "caller": "Clean",
+          "callee": "context.WithCancel",
+          "lineNumber": 179
+        },
+        {
+          "caller": "Clean",
+          "callee": "cancel",
+          "lineNumber": 180
+        },
+        {
+          "caller": "Clean",
+          "callee": "c.list",
+          "lineNumber": 182
+        },
+        {
+          "caller": "Clean",
+          "callee": "c.scan",
+          "lineNumber": 186
+        },
+        {
+          "caller": "Clean",
+          "callee": "c.deleteColdest",
+          "lineNumber": 187
+        },
+        {
+          "caller": "Clean",
+          "callee": "time.Since",
+          "lineNumber": 189
+        },
+        {
+          "caller": "Clean",
+          "callee": "c.metrics.recordLastRunDuration",
+          "lineNumber": 190
+        },
+        {
+          "caller": "Clean",
+          "callee": "c.Info",
+          "lineNumber": 191
+        },
+        {
+          "caller": "Clean",
+          "callee": "zap.Int64",
+          "lineNumber": 192
+        },
+        {
+          "caller": "Clean",
+          "callee": "c.Deleted.Load",
+          "lineNumber": 192
+        },
+        {
+          "caller": "Clean",
+          "callee": "zap.Uint64",
+          "lineNumber": 193
+        },
+        {
+          "caller": "Clean",
+          "callee": "c.BytesFreed.Load",
+          "lineNumber": 193
+        },
+        {
+          "caller": "Clean",
+          "callee": "zap.Duration",
+          "lineNumber": 194
+        },
+        {
+          "caller": "list",
+          "callee": "time.Now",
+          "lineNumber": 209
+        },
+        {
+          "caller": "list",
+          "callee": "make",
+          "lineNumber": 213
+        },
+        {
+          "caller": "list",
+          "callee": "ctx.Err",
+          "lineNumber": 216
+        },
+        {
+          "caller": "list",
+          "callee": "df.ReadDir",
+          "lineNumber": 217
+        },
+        {
+          "caller": "list",
+          "callee": "c.ReadDirC.Add",
+          "lineNumber": 218
+        },
+        {
+          "caller": "list",
+          "callee": "c.metrics.recordRead",
+          "lineNumber": 219
+        },
+        {
+          "caller": "list",
+          "callee": "len",
+          "lineNumber": 219
+        },
+        {
+          "caller": "list",
+          "callee": "e.IsDir",
+          "lineNumber": 221
+        },
+        {
+          "caller": "list",
+          "callee": "len",
+          "lineNumber": 225
+        },
+        {
+          "caller": "list",
+          "callee": "append",
+          "lineNumber": 226
+        },
+        {
+          "caller": "list",
+          "callee": "e.Name",
+          "lineNumber": 226
+        },
+        {
+          "caller": "list",
+          "callee": "rand.Intn",
+          "lineNumber": 227
+        },
+        {
+          "caller": "list",
+          "callee": "e.Name",
+          "lineNumber": 228
+        },
+        {
+          "caller": "list",
+          "callee": "c.metrics.recordError",
+          "lineNumber": 234
+        },
+        {
+          "caller": "list",
+          "callee": "fmt.Errorf",
+          "lineNumber": 236
+        },
+        {
+          "caller": "list",
+          "callee": "len",
+          "lineNumber": 237
+        },
+        {
+          "caller": "list",
+          "callee": "clampSample",
+          "lineNumber": 251
+        },
+        {
+          "caller": "list",
+          "callee": "len",
+          "lineNumber": 252
+        },
+        {
+          "caller": "list",
+          "callee": "rand.Shuffle",
+          "lineNumber": 253
+        },
+        {
+          "caller": "list",
+          "callee": "len",
+          "lineNumber": 253
+        },
+        {
+          "caller": "list",
+          "callee": "time.Since",
+          "lineNumber": 258
+        },
+        {
+          "caller": "list",
+          "callee": "c.metrics.recordPhase",
+          "lineNumber": 259
+        },
+        {
+          "caller": "list",
+          "callee": "c.metrics.recordLastListBuilds",
+          "lineNumber": 260
+        },
+        {
+          "caller": "list",
+          "callee": "c.Info",
+          "lineNumber": 261
+        },
+        {
+          "caller": "list",
+          "callee": "zap.Int",
+          "lineNumber": 262
+        },
+        {
+          "caller": "list",
+          "callee": "zap.Int",
+          "lineNumber": 262
+        },
+        {
+          "caller": "list",
+          "callee": "len",
+          "lineNumber": 262
+        },
+        {
+          "caller": "list",
+          "callee": "zap.Duration",
+          "lineNumber": 262
+        },
+        {
+          "caller": "scan",
+          "callee": "time.Now",
+          "lineNumber": 271
+        },
+        {
+          "caller": "scan",
+          "callee": "make",
+          "lineNumber": 275
+        },
+        {
+          "caller": "scan",
+          "callee": "statters.Add",
+          "lineNumber": 278
+        },
+        {
+          "caller": "scan",
+          "callee": "c.Statter",
+          "lineNumber": 279
+        },
+        {
+          "caller": "scan",
+          "callee": "make",
+          "lineNumber": 283
+        },
+        {
+          "caller": "scan",
+          "callee": "len",
+          "lineNumber": 286
+        },
+        {
+          "caller": "scan",
+          "callee": "len",
+          "lineNumber": 287
+        },
+        {
+          "caller": "scan",
+          "callee": "scanners.Add",
+          "lineNumber": 288
+        },
+        {
+          "caller": "scan",
+          "callee": "c.scanWorker",
+          "lineNumber": 289
+        },
+        {
+          "caller": "scan",
+          "callee": "scanners.Wait",
+          "lineNumber": 292
+        },
+        {
+          "caller": "scan",
+          "callee": "close",
+          "lineNumber": 293
+        },
+        {
+          "caller": "scan",
+          "callee": "statters.Wait",
+          "lineNumber": 294
+        },
+        {
+          "caller": "scan",
+          "callee": "append",
+          "lineNumber": 298
+        },
+        {
+          "caller": "scan",
+          "callee": "time.Since",
+          "lineNumber": 301
+        },
+        {
+          "caller": "scan",
+          "callee": "c.metrics.recordPhase",
+          "lineNumber": 302
+        },
+        {
+          "caller": "scan",
+          "callee": "c.Info",
+          "lineNumber": 303
+        },
+        {
+          "caller": "scan",
+          "callee": "zap.Int64",
+          "lineNumber": 304
+        },
+        {
+          "caller": "scan",
+          "callee": "c.BuildsScanned.Load",
+          "lineNumber": 304
+        },
+        {
+          "caller": "scan",
+          "callee": "zap.Int",
+          "lineNumber": 305
+        },
+        {
+          "caller": "scan",
+          "callee": "len",
+          "lineNumber": 305
+        },
+        {
+          "caller": "scan",
+          "callee": "zap.Int64",
+          "lineNumber": 306
+        },
+        {
+          "caller": "scan",
+          "callee": "c.OpenC.Load",
+          "lineNumber": 306
+        },
+        {
+          "caller": "scan",
+          "callee": "zap.Int64",
+          "lineNumber": 307
+        },
+        {
+          "caller": "scan",
+          "callee": "c.ReadDirC.Load",
+          "lineNumber": 307
+        },
+        {
+          "caller": "scan",
+          "callee": "zap.Int64",
+          "lineNumber": 308
+        },
+        {
+          "caller": "scan",
+          "callee": "c.StatxC.Load",
+          "lineNumber": 308
+        },
+        {
+          "caller": "scan",
+          "callee": "zap.Duration",
+          "lineNumber": 309
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "c.Info",
+          "lineNumber": 319
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "time.Now",
+          "lineNumber": 323
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "make",
+          "lineNumber": 325
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "deleters.Add",
+          "lineNumber": 328
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "c.deleteWorker",
+          "lineNumber": 329
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "slices.SortFunc",
+          "lineNumber": 333
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "cmp.Compare",
+          "lineNumber": 334
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "time.Now().Add(-c.Grace).Unix",
+          "lineNumber": 339
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "time.Now().Add",
+          "lineNumber": 339
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "time.Now",
+          "lineNumber": 339
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "c.Info",
+          "lineNumber": 352
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "zap.Uint64",
+          "lineNumber": 353
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "zap.Uint64",
+          "lineNumber": 354
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "ctx.Done",
+          "lineNumber": 362
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "close",
+          "lineNumber": 367
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "deleters.Wait",
+          "lineNumber": 368
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "c.metrics.recordUnderTarget",
+          "lineNumber": 376
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "c.metrics.recordPhase",
+          "lineNumber": 378
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "time.Since",
+          "lineNumber": 378
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "c.Info",
+          "lineNumber": 379
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "zap.Bool",
+          "lineNumber": 380
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "zap.Int",
+          "lineNumber": 381
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "zap.Uint64",
+          "lineNumber": 382
+        },
+        {
+          "caller": "deleteColdest",
+          "callee": "zap.Uint64",
+          "lineNumber": 383
+        },
+        {
+          "caller": "clampSample",
+          "callee": "max",
+          "lineNumber": 389
+        },
+        {
+          "caller": "clampSample",
+          "callee": "min",
+          "lineNumber": 390
+        },
+        {
+          "caller": "clampSample",
+          "callee": "min",
+          "lineNumber": 391
+        },
+        {
+          "caller": "chunkOnDiskBytes",
+          "callee": "strings.HasSuffix",
+          "lineNumber": 410
+        },
+        {
+          "caller": "chunkOnDiskBytes",
+          "callee": "strings.TrimSuffix",
+          "lineNumber": 411
+        },
+        {
+          "caller": "chunkOnDiskBytes",
+          "callee": "strings.HasSuffix",
+          "lineNumber": 412
+        },
+        {
+          "caller": "chunkOnDiskBytes",
+          "callee": "strings.TrimSuffix",
+          "lineNumber": 413
+        },
+        {
+          "caller": "chunkOnDiskBytes",
+          "callee": "strings.LastIndexByte",
+          "lineNumber": 418
+        },
+        {
+          "caller": "chunkOnDiskBytes",
+          "callee": "strconv.ParseUint",
+          "lineNumber": 422
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "exec.CommandContext",
+          "lineNumber": 435
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "cmd.CombinedOutput",
+          "lineNumber": 436
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "fmt.Errorf",
+          "lineNumber": 438
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 438
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "string",
+          "lineNumber": 438
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "strings.Split",
+          "lineNumber": 441
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 441
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "string",
+          "lineNumber": 441
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "len",
+          "lineNumber": 442
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "fmt.Errorf",
+          "lineNumber": 443
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 443
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "string",
+          "lineNumber": 443
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "len",
+          "lineNumber": 446
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 447
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "strings.Fields",
+          "lineNumber": 451
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "len",
+          "lineNumber": 452
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "strconv.ParseInt",
+          "lineNumber": 456
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "fmt.Errorf",
+          "lineNumber": 458
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "strconv.ParseInt",
+          "lineNumber": 461
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "fmt.Errorf",
+          "lineNumber": 463
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "fmt.Errorf",
+          "lineNumber": 470
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 470
+        },
+        {
+          "caller": "GetDiskInfo",
+          "callee": "string",
+          "lineNumber": 470
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 8,
+        "functionCount": 9,
+        "classCount": 7
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/clean-nfs-cache/cleaner/clean_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 105,
+      "nonEmptyLines": 90,
+      "functions": [
+        {
+          "name": "TestCleanDeletesColdestBuilds",
+          "startLine": 14,
+          "endLine": 60,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestDeleteColdestRespectsGraceFloor",
+          "startLine": 67,
+          "endLine": 85,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestClampSample",
+          "startLine": 87,
+          "endLine": 94,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestChunkOnDiskBytes",
+          "startLine": 96,
+          "endLine": 105,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestCleanDeletesColdestBuilds",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "TestDeleteColdestRespectsGraceFloor",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "TestClampSample",
+          "line": 87,
+          "isDefault": false
+        },
+        {
+          "name": "TestChunkOnDiskBytes",
+          "line": 96,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "t.Parallel",
+          "lineNumber": 15
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "t.TempDir",
+          "lineNumber": 17
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "time.Now",
+          "lineNumber": 18
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "writeChunk",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "now.Add",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "NewCleaner",
+          "lineNumber": 42
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "logger.NewNopLogger",
+          "lineNumber": 51
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "require.NoError",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "c.Clean",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "t.Context",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "require.NoDirExists",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "filepath.Join",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "require.NoDirExists",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "filepath.Join",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "require.DirExists",
+          "lineNumber": 57
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "filepath.Join",
+          "lineNumber": 57
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "require.DirExists",
+          "lineNumber": 58
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "filepath.Join",
+          "lineNumber": 58
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "require.Equal",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "int64",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestCleanDeletesColdestBuilds",
+          "callee": "c.Deleted.Load",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestDeleteColdestRespectsGraceFloor",
+          "callee": "t.Parallel",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestDeleteColdestRespectsGraceFloor",
+          "callee": "time.Now",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestDeleteColdestRespectsGraceFloor",
+          "callee": "NewCleaner",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestDeleteColdestRespectsGraceFloor",
+          "callee": "logger.NewNopLogger",
+          "lineNumber": 75
+        },
+        {
+          "caller": "TestDeleteColdestRespectsGraceFloor",
+          "callee": "now.Add(-30 * 24 * time.Hour).Unix",
+          "lineNumber": 78
+        },
+        {
+          "caller": "TestDeleteColdestRespectsGraceFloor",
+          "callee": "now.Add",
+          "lineNumber": 78
+        },
+        {
+          "caller": "TestDeleteColdestRespectsGraceFloor",
+          "callee": "now.Add(-1 * time.Hour).Unix",
+          "lineNumber": 79
+        },
+        {
+          "caller": "TestDeleteColdestRespectsGraceFloor",
+          "callee": "now.Add",
+          "lineNumber": 79
+        },
+        {
+          "caller": "TestDeleteColdestRespectsGraceFloor",
+          "callee": "c.deleteColdest",
+          "lineNumber": 82
+        },
+        {
+          "caller": "TestDeleteColdestRespectsGraceFloor",
+          "callee": "t.Context",
+          "lineNumber": 82
+        },
+        {
+          "caller": "TestDeleteColdestRespectsGraceFloor",
+          "callee": "require.Equal",
+          "lineNumber": 84
+        },
+        {
+          "caller": "TestDeleteColdestRespectsGraceFloor",
+          "callee": "int64",
+          "lineNumber": 84
+        },
+        {
+          "caller": "TestDeleteColdestRespectsGraceFloor",
+          "callee": "c.Deleted.Load",
+          "lineNumber": 84
+        },
+        {
+          "caller": "TestClampSample",
+          "callee": "t.Parallel",
+          "lineNumber": 88
+        },
+        {
+          "caller": "TestClampSample",
+          "callee": "require.Equal",
+          "lineNumber": 90
+        },
+        {
+          "caller": "TestClampSample",
+          "callee": "clampSample",
+          "lineNumber": 90
+        },
+        {
+          "caller": "TestClampSample",
+          "callee": "require.Equal",
+          "lineNumber": 91
+        },
+        {
+          "caller": "TestClampSample",
+          "callee": "clampSample",
+          "lineNumber": 91
+        },
+        {
+          "caller": "TestClampSample",
+          "callee": "require.Equal",
+          "lineNumber": 92
+        },
+        {
+          "caller": "TestClampSample",
+          "callee": "clampSample",
+          "lineNumber": 92
+        },
+        {
+          "caller": "TestClampSample",
+          "callee": "require.Equal",
+          "lineNumber": 93
+        },
+        {
+          "caller": "TestClampSample",
+          "callee": "clampSample",
+          "lineNumber": 93
+        },
+        {
+          "caller": "TestChunkOnDiskBytes",
+          "callee": "t.Parallel",
+          "lineNumber": 97
+        },
+        {
+          "caller": "TestChunkOnDiskBytes",
+          "callee": "require.Equal",
+          "lineNumber": 99
+        },
+        {
+          "caller": "TestChunkOnDiskBytes",
+          "callee": "uint64",
+          "lineNumber": 99
+        },
+        {
+          "caller": "TestChunkOnDiskBytes",
+          "callee": "chunkOnDiskBytes",
+          "lineNumber": 99
+        },
+        {
+          "caller": "TestChunkOnDiskBytes",
+          "callee": "require.Equal",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestChunkOnDiskBytes",
+          "callee": "uint64",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestChunkOnDiskBytes",
+          "callee": "chunkOnDiskBytes",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestChunkOnDiskBytes",
+          "callee": "require.Equal",
+          "lineNumber": 103
+        },
+        {
+          "caller": "TestChunkOnDiskBytes",
+          "callee": "uint64",
+          "lineNumber": 103
+        },
+        {
+          "caller": "TestChunkOnDiskBytes",
+          "callee": "chunkOnDiskBytes",
+          "lineNumber": 103
+        },
+        {
+          "caller": "TestChunkOnDiskBytes",
+          "callee": "require.Equal",
+          "lineNumber": 104
+        },
+        {
+          "caller": "TestChunkOnDiskBytes",
+          "callee": "uint64",
+          "lineNumber": 104
+        },
+        {
+          "caller": "TestChunkOnDiskBytes",
+          "callee": "chunkOnDiskBytes",
+          "lineNumber": 104
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/clean-nfs-cache/cleaner/delete.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 62,
+      "nonEmptyLines": 54,
+      "functions": [
+        {
+          "name": "deleteWorker",
+          "startLine": 15,
+          "endLine": 41,
+          "params": [
+            "ctx",
+            "deleteCh",
+            "done"
+          ]
+        },
+        {
+          "name": "deleteBuild",
+          "startLine": 45,
+          "endLine": 62,
+          "params": [
+            "ctx",
+            "buildID"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "deleteWorker",
+          "callee": "done.Done",
+          "lineNumber": 16
+        },
+        {
+          "caller": "deleteWorker",
+          "callee": "ctx.Done",
+          "lineNumber": 19
+        },
+        {
+          "caller": "deleteWorker",
+          "callee": "c.verifyBuild",
+          "lineNumber": 28
+        },
+        {
+          "caller": "deleteWorker",
+          "callee": "c.deleteBuild",
+          "lineNumber": 31
+        },
+        {
+          "caller": "deleteWorker",
+          "callee": "c.Deleted.Add",
+          "lineNumber": 33
+        },
+        {
+          "caller": "deleteWorker",
+          "callee": "c.BytesFreed.Add",
+          "lineNumber": 34
+        },
+        {
+          "caller": "deleteWorker",
+          "callee": "c.metrics.recordDelete",
+          "lineNumber": 35
+        },
+        {
+          "caller": "deleteWorker",
+          "callee": "c.metrics.recordError",
+          "lineNumber": 37
+        },
+        {
+          "caller": "deleteBuild",
+          "callee": "filepath.Join",
+          "lineNumber": 46
+        },
+        {
+          "caller": "deleteBuild",
+          "callee": "c.Info",
+          "lineNumber": 48
+        },
+        {
+          "caller": "deleteBuild",
+          "callee": "zap.String",
+          "lineNumber": 48
+        },
+        {
+          "caller": "deleteBuild",
+          "callee": "time.Now",
+          "lineNumber": 52
+        },
+        {
+          "caller": "deleteBuild",
+          "callee": "os.RemoveAll",
+          "lineNumber": 53
+        },
+        {
+          "caller": "deleteBuild",
+          "callee": "time.Since",
+          "lineNumber": 54
+        },
+        {
+          "caller": "deleteBuild",
+          "callee": "c.Info",
+          "lineNumber": 56
+        },
+        {
+          "caller": "deleteBuild",
+          "callee": "zap.String",
+          "lineNumber": 56
+        },
+        {
+          "caller": "deleteBuild",
+          "callee": "zap.Error",
+          "lineNumber": 56
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/clean-nfs-cache/cleaner/metrics.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 254,
+      "nonEmptyLines": 221,
+      "functions": [
+        {
+          "name": "NewMetrics",
+          "startLine": 77,
+          "endLine": 160,
+          "params": [
+            "meter"
+          ]
+        },
+        {
+          "name": "NoopMetrics",
+          "startLine": 165,
+          "endLine": 169,
+          "params": []
+        },
+        {
+          "name": "oneAttr",
+          "startLine": 173,
+          "endLine": 175,
+          "params": [
+            "key",
+            "value"
+          ]
+        },
+        {
+          "name": "ageSeconds",
+          "startLine": 178,
+          "endLine": 185,
+          "params": [
+            "atimeUnix"
+          ]
+        },
+        {
+          "name": "recordRead",
+          "startLine": 188,
+          "endLine": 191,
+          "params": [
+            "ctx",
+            "entries"
+          ]
+        },
+        {
+          "name": "recordOpen",
+          "startLine": 193,
+          "endLine": 193,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "recordStatx",
+          "startLine": 194,
+          "endLine": 194,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "recordGraced",
+          "startLine": 195,
+          "endLine": 195,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "recordError",
+          "startLine": 198,
+          "endLine": 200,
+          "params": [
+            "ctx",
+            "op"
+          ]
+        },
+        {
+          "name": "recordPhase",
+          "startLine": 204,
+          "endLine": 206,
+          "params": [
+            "ctx",
+            "phase",
+            "d"
+          ]
+        },
+        {
+          "name": "recordLastListBuilds",
+          "startLine": 209,
+          "endLine": 211,
+          "params": [
+            "ctx",
+            "n"
+          ]
+        },
+        {
+          "name": "recordScanBuild",
+          "startLine": 215,
+          "endLine": 220,
+          "params": [
+            "ctx",
+            "d",
+            "size"
+          ]
+        },
+        {
+          "name": "recordSample",
+          "startLine": 224,
+          "endLine": 227,
+          "params": [
+            "ctx",
+            "chunks",
+            "warmest"
+          ]
+        },
+        {
+          "name": "recordDelete",
+          "startLine": 231,
+          "endLine": 237,
+          "params": [
+            "ctx",
+            "d",
+            "size",
+            "warmest"
+          ]
+        },
+        {
+          "name": "recordVerified",
+          "startLine": 242,
+          "endLine": 245,
+          "params": [
+            "ctx",
+            "otherDelta",
+            "ageDelta"
+          ]
+        },
+        {
+          "name": "recordUnderTarget",
+          "startLine": 247,
+          "endLine": 249,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "recordLastRunDuration",
+          "startLine": 252,
+          "endLine": 254,
+          "params": [
+            "ctx",
+            "d"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Metrics",
+          "startLine": 35,
+          "endLine": 75,
+          "methods": [
+            "recordRead",
+            "recordOpen",
+            "recordStatx",
+            "recordGraced",
+            "recordError",
+            "recordPhase",
+            "recordLastListBuilds",
+            "recordScanBuild",
+            "recordSample",
+            "recordDelete",
+            "recordVerified",
+            "recordUnderTarget",
+            "recordLastRunDuration"
+          ],
+          "properties": [
+            "ScanMs",
+            "ScanBytes",
+            "ScanCount",
+            "DeleteMs",
+            "DeleteBytes",
+            "DeleteCount",
+            "ScanOpen",
+            "ScanRead",
+            "ScanStat",
+            "ScanGraced",
+            "RunUnderTarget",
+            "Errors",
+            "LastListBuilds",
+            "PhaseDuration",
+            "LastRunDuration",
+            "ScanSize",
+            "ScanAge",
+            "ScanChunks",
+            "ScanReadEntries",
+            "DeleteSize",
+            "DeleteAge",
+            "DeleteVerifySize",
+            "DeleteVerifyAge"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Metrics",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "NewMetrics",
+          "line": 77,
+          "isDefault": false
+        },
+        {
+          "name": "NoopMetrics",
+          "line": 165,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewMetrics",
+          "callee": "metric.WithDescription",
+          "lineNumber": 99
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "append",
+          "lineNumber": 101
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "metric.WithUnit",
+          "lineNumber": 101
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "meter.Int64Counter",
+          "lineNumber": 103
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 104
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "meter.Int64Gauge",
+          "lineNumber": 119
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "metric.WithDescription",
+          "lineNumber": 120
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "metric.WithUnit",
+          "lineNumber": 120
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 121
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "meter.Int64Histogram",
+          "lineNumber": 141
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "metric.WithDescription",
+          "lineNumber": 142
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "metric.WithUnit",
+          "lineNumber": 142
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 143
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "meter.Float64Histogram",
+          "lineNumber": 150
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "metric.WithDescription",
+          "lineNumber": 151
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "metric.WithUnit",
+          "lineNumber": 151
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 152
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "meter.Float64Histogram",
+          "lineNumber": 154
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "metric.WithDescription",
+          "lineNumber": 155
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "metric.WithUnit",
+          "lineNumber": 155
+        },
+        {
+          "caller": "NewMetrics",
+          "callee": "fmt.Errorf",
+          "lineNumber": 156
+        },
+        {
+          "caller": "NoopMetrics",
+          "callee": "NewMetrics",
+          "lineNumber": 166
+        },
+        {
+          "caller": "NoopMetrics",
+          "callee": "noop.NewMeterProvider().Meter",
+          "lineNumber": 166
+        },
+        {
+          "caller": "NoopMetrics",
+          "callee": "noop.NewMeterProvider",
+          "lineNumber": 166
+        },
+        {
+          "caller": "oneAttr",
+          "callee": "metric.WithAttributes",
+          "lineNumber": 174
+        },
+        {
+          "caller": "oneAttr",
+          "callee": "attribute.String",
+          "lineNumber": 174
+        },
+        {
+          "caller": "ageSeconds",
+          "callee": "time.Since(time.Unix(atimeUnix, 0)).Seconds",
+          "lineNumber": 179
+        },
+        {
+          "caller": "ageSeconds",
+          "callee": "time.Since",
+          "lineNumber": 179
+        },
+        {
+          "caller": "ageSeconds",
+          "callee": "time.Unix",
+          "lineNumber": 179
+        },
+        {
+          "caller": "ageSeconds",
+          "callee": "int64",
+          "lineNumber": 184
+        },
+        {
+          "caller": "recordRead",
+          "callee": "m.ScanRead.Add",
+          "lineNumber": 189
+        },
+        {
+          "caller": "recordRead",
+          "callee": "m.ScanReadEntries.Record",
+          "lineNumber": 190
+        },
+        {
+          "caller": "recordRead",
+          "callee": "int64",
+          "lineNumber": 190
+        },
+        {
+          "caller": "recordOpen",
+          "callee": "m.ScanOpen.Add",
+          "lineNumber": 193
+        },
+        {
+          "caller": "recordStatx",
+          "callee": "m.ScanStat.Add",
+          "lineNumber": 194
+        },
+        {
+          "caller": "recordGraced",
+          "callee": "m.ScanGraced.Add",
+          "lineNumber": 195
+        },
+        {
+          "caller": "recordError",
+          "callee": "m.Errors.Add",
+          "lineNumber": 199
+        },
+        {
+          "caller": "recordError",
+          "callee": "oneAttr",
+          "lineNumber": 199
+        },
+        {
+          "caller": "recordPhase",
+          "callee": "m.PhaseDuration.Record",
+          "lineNumber": 205
+        },
+        {
+          "caller": "recordPhase",
+          "callee": "d.Milliseconds",
+          "lineNumber": 205
+        },
+        {
+          "caller": "recordPhase",
+          "callee": "oneAttr",
+          "lineNumber": 205
+        },
+        {
+          "caller": "recordLastListBuilds",
+          "callee": "m.LastListBuilds.Record",
+          "lineNumber": 210
+        },
+        {
+          "caller": "recordLastListBuilds",
+          "callee": "int64",
+          "lineNumber": 210
+        },
+        {
+          "caller": "recordScanBuild",
+          "callee": "m.ScanMs.Record",
+          "lineNumber": 216
+        },
+        {
+          "caller": "recordScanBuild",
+          "callee": "float64",
+          "lineNumber": 216
+        },
+        {
+          "caller": "recordScanBuild",
+          "callee": "float64",
+          "lineNumber": 216
+        },
+        {
+          "caller": "recordScanBuild",
+          "callee": "m.ScanBytes.Add",
+          "lineNumber": 217
+        },
+        {
+          "caller": "recordScanBuild",
+          "callee": "int64",
+          "lineNumber": 217
+        },
+        {
+          "caller": "recordScanBuild",
+          "callee": "m.ScanCount.Add",
+          "lineNumber": 218
+        },
+        {
+          "caller": "recordScanBuild",
+          "callee": "m.ScanSize.Record",
+          "lineNumber": 219
+        },
+        {
+          "caller": "recordScanBuild",
+          "callee": "int64",
+          "lineNumber": 219
+        },
+        {
+          "caller": "recordSample",
+          "callee": "m.ScanChunks.Record",
+          "lineNumber": 225
+        },
+        {
+          "caller": "recordSample",
+          "callee": "int64",
+          "lineNumber": 225
+        },
+        {
+          "caller": "recordSample",
+          "callee": "m.ScanAge.Record",
+          "lineNumber": 226
+        },
+        {
+          "caller": "recordSample",
+          "callee": "ageSeconds",
+          "lineNumber": 226
+        },
+        {
+          "caller": "recordDelete",
+          "callee": "m.DeleteMs.Record",
+          "lineNumber": 232
+        },
+        {
+          "caller": "recordDelete",
+          "callee": "float64",
+          "lineNumber": 232
+        },
+        {
+          "caller": "recordDelete",
+          "callee": "float64",
+          "lineNumber": 232
+        },
+        {
+          "caller": "recordDelete",
+          "callee": "m.DeleteBytes.Add",
+          "lineNumber": 233
+        },
+        {
+          "caller": "recordDelete",
+          "callee": "int64",
+          "lineNumber": 233
+        },
+        {
+          "caller": "recordDelete",
+          "callee": "m.DeleteCount.Add",
+          "lineNumber": 234
+        },
+        {
+          "caller": "recordDelete",
+          "callee": "m.DeleteSize.Record",
+          "lineNumber": 235
+        },
+        {
+          "caller": "recordDelete",
+          "callee": "int64",
+          "lineNumber": 235
+        },
+        {
+          "caller": "recordDelete",
+          "callee": "m.DeleteAge.Record",
+          "lineNumber": 236
+        },
+        {
+          "caller": "recordDelete",
+          "callee": "ageSeconds",
+          "lineNumber": 236
+        },
+        {
+          "caller": "recordVerified",
+          "callee": "m.DeleteVerifySize.Record",
+          "lineNumber": 243
+        },
+        {
+          "caller": "recordVerified",
+          "callee": "m.DeleteVerifyAge.Record",
+          "lineNumber": 244
+        },
+        {
+          "caller": "recordUnderTarget",
+          "callee": "m.RunUnderTarget.Add",
+          "lineNumber": 248
+        },
+        {
+          "caller": "recordLastRunDuration",
+          "callee": "m.LastRunDuration.Record",
+          "lineNumber": 253
+        },
+        {
+          "caller": "recordLastRunDuration",
+          "callee": "int64",
+          "lineNumber": 253
+        },
+        {
+          "caller": "recordLastRunDuration",
+          "callee": "d.Seconds",
+          "lineNumber": 253
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 17,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/clean-nfs-cache/cleaner/scan.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 417,
+      "nonEmptyLines": 373,
+      "functions": [
+        {
+          "name": "dataDirCandidates",
+          "startLine": 33,
+          "endLine": 39,
+          "params": [
+            "base"
+          ]
+        },
+        {
+          "name": "openDataDir",
+          "startLine": 44,
+          "endLine": 54,
+          "params": [
+            "ctx",
+            "buildPath",
+            "base"
+          ]
+        },
+        {
+          "name": "scanWorker",
+          "startLine": 58,
+          "endLine": 72,
+          "params": [
+            "ctx",
+            "ids",
+            "out",
+            "done",
+            "reqs"
+          ]
+        },
+        {
+          "name": "scanBuild",
+          "startLine": 81,
+          "endLine": 94,
+          "params": [
+            "ctx",
+            "buildID",
+            "reqs"
+          ]
+        },
+        {
+          "name": "sampleChunks",
+          "startLine": 100,
+          "endLine": 138,
+          "params": [
+            "ctx",
+            "buildID",
+            "buildPath",
+            "reqs"
+          ]
+        },
+        {
+          "name": "sampleDataDir",
+          "startLine": 145,
+          "endLine": 212,
+          "params": [
+            "ctx",
+            "df",
+            "reqs"
+          ]
+        },
+        {
+          "name": "verifyBuild",
+          "startLine": 220,
+          "endLine": 308,
+          "params": [
+            "ctx",
+            "b"
+          ]
+        },
+        {
+          "name": "Statter",
+          "startLine": 313,
+          "endLine": 333,
+          "params": [
+            "ctx",
+            "done",
+            "reqs"
+          ]
+        },
+        {
+          "name": "buildAge",
+          "startLine": 339,
+          "endLine": 348,
+          "params": [
+            "buildPath"
+          ]
+        },
+        {
+          "name": "VerifyChunksCacheRoot",
+          "startLine": 356,
+          "endLine": 403,
+          "params": [
+            "path"
+          ]
+        },
+        {
+          "name": "hasDataDir",
+          "startLine": 407,
+          "endLine": 417,
+          "params": [
+            "buildPath"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Statter",
+          "line": 313,
+          "isDefault": false
+        },
+        {
+          "name": "VerifyChunksCacheRoot",
+          "line": 356,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "dataDirCandidates",
+          "callee": "storage.CompressionZstd.Suffix",
+          "lineNumber": 35
+        },
+        {
+          "caller": "dataDirCandidates",
+          "callee": "storage.CompressionLZ4.Suffix",
+          "lineNumber": 37
+        },
+        {
+          "caller": "openDataDir",
+          "callee": "dataDirCandidates",
+          "lineNumber": 45
+        },
+        {
+          "caller": "openDataDir",
+          "callee": "c.OpenC.Add",
+          "lineNumber": 46
+        },
+        {
+          "caller": "openDataDir",
+          "callee": "c.metrics.recordOpen",
+          "lineNumber": 47
+        },
+        {
+          "caller": "openDataDir",
+          "callee": "os.Open",
+          "lineNumber": 48
+        },
+        {
+          "caller": "openDataDir",
+          "callee": "filepath.Join",
+          "lineNumber": 48
+        },
+        {
+          "caller": "scanWorker",
+          "callee": "done.Done",
+          "lineNumber": 59
+        },
+        {
+          "caller": "scanWorker",
+          "callee": "ctx.Err",
+          "lineNumber": 61
+        },
+        {
+          "caller": "scanWorker",
+          "callee": "c.BuildsScanned.Add",
+          "lineNumber": 64
+        },
+        {
+          "caller": "scanWorker",
+          "callee": "time.Now",
+          "lineNumber": 65
+        },
+        {
+          "caller": "scanWorker",
+          "callee": "c.scanBuild",
+          "lineNumber": 66
+        },
+        {
+          "caller": "scanWorker",
+          "callee": "c.metrics.recordScanBuild",
+          "lineNumber": 68
+        },
+        {
+          "caller": "scanWorker",
+          "callee": "time.Since",
+          "lineNumber": 68
+        },
+        {
+          "caller": "scanWorker",
+          "callee": "append",
+          "lineNumber": 69
+        },
+        {
+          "caller": "scanBuild",
+          "callee": "filepath.Join",
+          "lineNumber": 82
+        },
+        {
+          "caller": "scanBuild",
+          "callee": "c.metrics.recordStatx",
+          "lineNumber": 85
+        },
+        {
+          "caller": "scanBuild",
+          "callee": "c.buildAge",
+          "lineNumber": 86
+        },
+        {
+          "caller": "scanBuild",
+          "callee": "c.metrics.recordGraced",
+          "lineNumber": 87
+        },
+        {
+          "caller": "scanBuild",
+          "callee": "c.sampleChunks",
+          "lineNumber": 93
+        },
+        {
+          "caller": "sampleChunks",
+          "callee": "c.openDataDir",
+          "lineNumber": 111
+        },
+        {
+          "caller": "sampleChunks",
+          "callee": "c.sampleDataDir",
+          "lineNumber": 115
+        },
+        {
+          "caller": "sampleChunks",
+          "callee": "df.Close",
+          "lineNumber": 116
+        },
+        {
+          "caller": "sampleChunks",
+          "callee": "c.metrics.recordSample",
+          "lineNumber": 129
+        },
+        {
+          "caller": "sampleChunks",
+          "callee": "c.Debug",
+          "lineNumber": 131
+        },
+        {
+          "caller": "sampleChunks",
+          "callee": "zap.String",
+          "lineNumber": 132
+        },
+        {
+          "caller": "sampleChunks",
+          "callee": "zap.Int",
+          "lineNumber": 133
+        },
+        {
+          "caller": "sampleChunks",
+          "callee": "zap.Uint64",
+          "lineNumber": 134
+        },
+        {
+          "caller": "sampleChunks",
+          "callee": "zap.Int64",
+          "lineNumber": 135
+        },
+        {
+          "caller": "sampleChunks",
+          "callee": "ageSeconds",
+          "lineNumber": 135
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "make",
+          "lineNumber": 146
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "df.ReadDir",
+          "lineNumber": 148
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "c.ReadDirC.Add",
+          "lineNumber": 149
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "c.metrics.recordRead",
+          "lineNumber": 150
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "len",
+          "lineNumber": 150
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "e.IsDir",
+          "lineNumber": 152
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "chunkOnDiskBytes",
+          "lineNumber": 155
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "e.Name",
+          "lineNumber": 155
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "len",
+          "lineNumber": 156
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "append",
+          "lineNumber": 157
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "e.Name",
+          "lineNumber": 157
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "rand.Intn",
+          "lineNumber": 158
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "e.Name",
+          "lineNumber": 159
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "c.metrics.recordError",
+          "lineNumber": 166
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "c.Info",
+          "lineNumber": 167
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "zap.String",
+          "lineNumber": 167
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "df.Name",
+          "lineNumber": 167
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "zap.Error",
+          "lineNumber": 167
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "len",
+          "lineNumber": 168
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "clampSample",
+          "lineNumber": 181
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "len",
+          "lineNumber": 184
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "rand.Shuffle",
+          "lineNumber": 185
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "len",
+          "lineNumber": 185
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "make",
+          "lineNumber": 187
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "ctx.Done",
+          "lineNumber": 192
+        },
+        {
+          "caller": "sampleDataDir",
+          "callee": "c.metrics.recordError",
+          "lineNumber": 202
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "filepath.Join",
+          "lineNumber": 221
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "os.Open",
+          "lineNumber": 223
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "bf.ReadDir",
+          "lineNumber": 227
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "bf.Close",
+          "lineNumber": 228
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "make",
+          "lineNumber": 231
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "len",
+          "lineNumber": 231
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "dataDirCandidates",
+          "lineNumber": 233
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "filepath.Join",
+          "lineNumber": 243
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "e.Name",
+          "lineNumber": 243
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "e.Name",
+          "lineNumber": 244
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "os.Open",
+          "lineNumber": 247
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "df.ReadDir",
+          "lineNumber": 252
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "ce.IsDir",
+          "lineNumber": 254
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "c.statInDir",
+          "lineNumber": 257
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "ce.Name",
+          "lineNumber": 257
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "len",
+          "lineNumber": 266
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "df.Close",
+          "lineNumber": 270
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "e.IsDir",
+          "lineNumber": 274
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "e.Info",
+          "lineNumber": 275
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "uint64",
+          "lineNumber": 276
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "info.Size",
+          "lineNumber": 276
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "os.Open",
+          "lineNumber": 282
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "sub.ReadDir",
+          "lineNumber": 286
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "sub.Close",
+          "lineNumber": 287
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "f.Info",
+          "lineNumber": 289
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "f.IsDir",
+          "lineNumber": 289
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "uint64",
+          "lineNumber": 290
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "info.Size",
+          "lineNumber": 290
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "int64",
+          "lineNumber": 296
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "ageSeconds",
+          "lineNumber": 297
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "ageSeconds",
+          "lineNumber": 297
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "c.metrics.recordVerified",
+          "lineNumber": 298
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "c.Debug",
+          "lineNumber": 299
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "zap.String",
+          "lineNumber": 300
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "zap.Int",
+          "lineNumber": 301
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "zap.Int",
+          "lineNumber": 302
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "zap.Uint64",
+          "lineNumber": 303
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "zap.Int64",
+          "lineNumber": 304
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "zap.Int64",
+          "lineNumber": 305
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "ageSeconds",
+          "lineNumber": 305
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "zap.Int64",
+          "lineNumber": 306
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "ageSeconds",
+          "lineNumber": 306
+        },
+        {
+          "caller": "verifyBuild",
+          "callee": "zap.Int64",
+          "lineNumber": 307
+        },
+        {
+          "caller": "Statter",
+          "callee": "done.Done",
+          "lineNumber": 314
+        },
+        {
+          "caller": "Statter",
+          "callee": "ctx.Done",
+          "lineNumber": 317
+        },
+        {
+          "caller": "Statter",
+          "callee": "c.metrics.recordStatx",
+          "lineNumber": 323
+        },
+        {
+          "caller": "Statter",
+          "callee": "c.statInDir",
+          "lineNumber": 324
+        },
+        {
+          "caller": "buildAge",
+          "callee": "c.stat",
+          "lineNumber": 340
+        },
+        {
+          "caller": "buildAge",
+          "callee": "time.Since",
+          "lineNumber": 341
+        },
+        {
+          "caller": "buildAge",
+          "callee": "time.Unix",
+          "lineNumber": 341
+        },
+        {
+          "caller": "buildAge",
+          "callee": "os.Stat",
+          "lineNumber": 343
+        },
+        {
+          "caller": "buildAge",
+          "callee": "time.Since",
+          "lineNumber": 344
+        },
+        {
+          "caller": "buildAge",
+          "callee": "info.ModTime",
+          "lineNumber": 344
+        },
+        {
+          "caller": "VerifyChunksCacheRoot",
+          "callee": "os.Open",
+          "lineNumber": 357
+        },
+        {
+          "caller": "VerifyChunksCacheRoot",
+          "callee": "fmt.Errorf",
+          "lineNumber": 359
+        },
+        {
+          "caller": "VerifyChunksCacheRoot",
+          "callee": "df.Close",
+          "lineNumber": 361
+        },
+        {
+          "caller": "VerifyChunksCacheRoot",
+          "callee": "df.ReadDir",
+          "lineNumber": 366
+        },
+        {
+          "caller": "VerifyChunksCacheRoot",
+          "callee": "e.IsDir",
+          "lineNumber": 368
+        },
+        {
+          "caller": "VerifyChunksCacheRoot",
+          "callee": "e.Name",
+          "lineNumber": 368
+        },
+        {
+          "caller": "VerifyChunksCacheRoot",
+          "callee": "uuid.Parse",
+          "lineNumber": 372
+        },
+        {
+          "caller": "VerifyChunksCacheRoot",
+          "callee": "e.Name",
+          "lineNumber": 372
+        },
+        {
+          "caller": "VerifyChunksCacheRoot",
+          "callee": "hasDataDir",
+          "lineNumber": 376
+        },
+        {
+          "caller": "VerifyChunksCacheRoot",
+          "callee": "filepath.Join",
+          "lineNumber": 376
+        },
+        {
+          "caller": "VerifyChunksCacheRoot",
+          "callee": "e.Name",
+          "lineNumber": 376
+        },
+        {
+          "caller": "VerifyChunksCacheRoot",
+          "callee": "fmt.Errorf",
+          "lineNumber": 383
+        },
+        {
+          "caller": "VerifyChunksCacheRoot",
+          "callee": "len",
+          "lineNumber": 384
+        },
+        {
+          "caller": "VerifyChunksCacheRoot",
+          "callee": "fmt.Errorf",
+          "lineNumber": 396
+        },
+        {
+          "caller": "VerifyChunksCacheRoot",
+          "callee": "fmt.Errorf",
+          "lineNumber": 402
+        },
+        {
+          "caller": "hasDataDir",
+          "callee": "dataDirCandidates",
+          "lineNumber": 409
+        },
+        {
+          "caller": "hasDataDir",
+          "callee": "os.Stat",
+          "lineNumber": 410
+        },
+        {
+          "caller": "hasDataDir",
+          "callee": "filepath.Join",
+          "lineNumber": 410
+        },
+        {
+          "caller": "hasDataDir",
+          "callee": "info.IsDir",
+          "lineNumber": 410
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 11,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/clean-nfs-cache/cleaner/scan_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 212,
+      "nonEmptyLines": 181,
+      "functions": [
+        {
+          "name": "newTestCleaner",
+          "startLine": 19,
+          "endLine": 36,
+          "params": [
+            "root",
+            "mutate"
+          ]
+        },
+        {
+          "name": "writeChunk",
+          "startLine": 40,
+          "endLine": 48,
+          "params": [
+            "t",
+            "root",
+            "build",
+            "dataDir",
+            "idx",
+            "size",
+            "atime"
+          ]
+        },
+        {
+          "name": "TestScanBuild_CompressionAware",
+          "startLine": 54,
+          "endLine": 79,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestGraceProtectsFreshBuilds",
+          "startLine": 84,
+          "endLine": 109,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestScanBuild_EmptyDirReaped",
+          "startLine": 113,
+          "endLine": 133,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestBuildSampleCapsScan",
+          "startLine": 137,
+          "endLine": 153,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestClean_SamplesAreCapped",
+          "startLine": 155,
+          "endLine": 166,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestVerifyChunksCacheRoot",
+          "startLine": 168,
+          "endLine": 212,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestScanBuild_CompressionAware",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "TestGraceProtectsFreshBuilds",
+          "line": 84,
+          "isDefault": false
+        },
+        {
+          "name": "TestScanBuild_EmptyDirReaped",
+          "line": 113,
+          "isDefault": false
+        },
+        {
+          "name": "TestBuildSampleCapsScan",
+          "line": 137,
+          "isDefault": false
+        },
+        {
+          "name": "TestClean_SamplesAreCapped",
+          "line": 155,
+          "isDefault": false
+        },
+        {
+          "name": "TestVerifyChunksCacheRoot",
+          "line": 168,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "newTestCleaner",
+          "callee": "mutate",
+          "lineNumber": 32
+        },
+        {
+          "caller": "newTestCleaner",
+          "callee": "NewCleaner",
+          "lineNumber": 35
+        },
+        {
+          "caller": "newTestCleaner",
+          "callee": "logger.NewNopLogger",
+          "lineNumber": 35
+        },
+        {
+          "caller": "writeChunk",
+          "callee": "t.Helper",
+          "lineNumber": 41
+        },
+        {
+          "caller": "writeChunk",
+          "callee": "filepath.Join",
+          "lineNumber": 42
+        },
+        {
+          "caller": "writeChunk",
+          "callee": "require.NoError",
+          "lineNumber": 43
+        },
+        {
+          "caller": "writeChunk",
+          "callee": "os.MkdirAll",
+          "lineNumber": 43
+        },
+        {
+          "caller": "writeChunk",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 44
+        },
+        {
+          "caller": "writeChunk",
+          "callee": "filepath.Join",
+          "lineNumber": 45
+        },
+        {
+          "caller": "writeChunk",
+          "callee": "require.NoError",
+          "lineNumber": 46
+        },
+        {
+          "caller": "writeChunk",
+          "callee": "os.WriteFile",
+          "lineNumber": 46
+        },
+        {
+          "caller": "writeChunk",
+          "callee": "make",
+          "lineNumber": 46
+        },
+        {
+          "caller": "writeChunk",
+          "callee": "require.NoError",
+          "lineNumber": 47
+        },
+        {
+          "caller": "writeChunk",
+          "callee": "os.Chtimes",
+          "lineNumber": 47
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "t.Parallel",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "t.TempDir",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "time.Now().Add",
+          "lineNumber": 58
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "time.Now",
+          "lineNumber": 58
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "filepath.Join",
+          "lineNumber": 60
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "require.NoError",
+          "lineNumber": 61
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "os.MkdirAll",
+          "lineNumber": 61
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "filepath.Join",
+          "lineNumber": 63
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "require.NoError",
+          "lineNumber": 64
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "os.WriteFile",
+          "lineNumber": 64
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "make",
+          "lineNumber": 64
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "require.NoError",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "os.Chtimes",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "newTestCleaner",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "require.NoError",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "c.Clean",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "t.Context",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "require.NoDirExists",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "filepath.Join",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "require.Equal",
+          "lineNumber": 72
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "int64",
+          "lineNumber": 72
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "c.Deleted.Load",
+          "lineNumber": 72
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "require.Equal",
+          "lineNumber": 75
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "uint64",
+          "lineNumber": 75
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "c.BytesFreed.Load",
+          "lineNumber": 75
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "require.Equal",
+          "lineNumber": 78
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "int64",
+          "lineNumber": 78
+        },
+        {
+          "caller": "TestScanBuild_CompressionAware",
+          "callee": "c.ReadDirC.Load",
+          "lineNumber": 78
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "t.Parallel",
+          "lineNumber": 85
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "t.Run",
+          "lineNumber": 87
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "t.Parallel",
+          "lineNumber": 88
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "t.TempDir",
+          "lineNumber": 89
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "writeChunk",
+          "lineNumber": 90
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "time.Now",
+          "lineNumber": 90
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "newTestCleaner",
+          "lineNumber": 92
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "require.NoError",
+          "lineNumber": 93
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "c.Clean",
+          "lineNumber": 93
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "t.Context",
+          "lineNumber": 93
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "require.DirExists",
+          "lineNumber": 94
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "filepath.Join",
+          "lineNumber": 94
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "require.Equal",
+          "lineNumber": 95
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "int64",
+          "lineNumber": 95
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "c.Deleted.Load",
+          "lineNumber": 95
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "t.Run",
+          "lineNumber": 98
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "t.Parallel",
+          "lineNumber": 99
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "t.TempDir",
+          "lineNumber": 100
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "require.NoError",
+          "lineNumber": 102
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "os.MkdirAll",
+          "lineNumber": 102
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "filepath.Join",
+          "lineNumber": 102
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "newTestCleaner",
+          "lineNumber": 104
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "require.NoError",
+          "lineNumber": 105
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "c.Clean",
+          "lineNumber": 105
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "t.Context",
+          "lineNumber": 105
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "require.DirExists",
+          "lineNumber": 106
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "filepath.Join",
+          "lineNumber": 106
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "require.Equal",
+          "lineNumber": 107
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "int64",
+          "lineNumber": 107
+        },
+        {
+          "caller": "TestGraceProtectsFreshBuilds",
+          "callee": "c.Deleted.Load",
+          "lineNumber": 107
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "t.Parallel",
+          "lineNumber": 114
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "t.Run",
+          "lineNumber": 116
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "t.Parallel",
+          "lineNumber": 117
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "t.TempDir",
+          "lineNumber": 118
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "require.NoError",
+          "lineNumber": 119
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "os.MkdirAll",
+          "lineNumber": 119
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "filepath.Join",
+          "lineNumber": 119
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "require.NoError",
+          "lineNumber": 121
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "newTestCleaner(root, nil).Clean",
+          "lineNumber": 121
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "newTestCleaner",
+          "lineNumber": 121
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "t.Context",
+          "lineNumber": 121
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "require.NoDirExists",
+          "lineNumber": 122
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "filepath.Join",
+          "lineNumber": 122
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "t.Run",
+          "lineNumber": 125
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "t.Parallel",
+          "lineNumber": 126
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "t.TempDir",
+          "lineNumber": 127
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "require.NoError",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "os.MkdirAll",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "filepath.Join",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "require.NoError",
+          "lineNumber": 130
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "newTestCleaner(root, func(o *Options) { o.DryRun = true }).Clean",
+          "lineNumber": 130
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "newTestCleaner",
+          "lineNumber": 130
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "t.Context",
+          "lineNumber": 130
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "require.DirExists",
+          "lineNumber": 131
+        },
+        {
+          "caller": "TestScanBuild_EmptyDirReaped",
+          "callee": "filepath.Join",
+          "lineNumber": 131
+        },
+        {
+          "caller": "TestBuildSampleCapsScan",
+          "callee": "t.Parallel",
+          "lineNumber": 138
+        },
+        {
+          "caller": "TestBuildSampleCapsScan",
+          "callee": "t.TempDir",
+          "lineNumber": 139
+        },
+        {
+          "caller": "TestBuildSampleCapsScan",
+          "callee": "writeChunk",
+          "lineNumber": 141
+        },
+        {
+          "caller": "TestBuildSampleCapsScan",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 141
+        },
+        {
+          "caller": "TestBuildSampleCapsScan",
+          "callee": "time.Now",
+          "lineNumber": 141
+        },
+        {
+          "caller": "TestBuildSampleCapsScan",
+          "callee": "newTestCleaner",
+          "lineNumber": 145
+        },
+        {
+          "caller": "TestBuildSampleCapsScan",
+          "callee": "require.NoError",
+          "lineNumber": 151
+        },
+        {
+          "caller": "TestBuildSampleCapsScan",
+          "callee": "c.Clean",
+          "lineNumber": 151
+        },
+        {
+          "caller": "TestBuildSampleCapsScan",
+          "callee": "t.Context",
+          "lineNumber": 151
+        },
+        {
+          "caller": "TestBuildSampleCapsScan",
+          "callee": "require.Equal",
+          "lineNumber": 152
+        },
+        {
+          "caller": "TestBuildSampleCapsScan",
+          "callee": "int64",
+          "lineNumber": 152
+        },
+        {
+          "caller": "TestBuildSampleCapsScan",
+          "callee": "c.BuildsScanned.Load",
+          "lineNumber": 152
+        },
+        {
+          "caller": "TestClean_SamplesAreCapped",
+          "callee": "t.Parallel",
+          "lineNumber": 156
+        },
+        {
+          "caller": "TestClean_SamplesAreCapped",
+          "callee": "t.TempDir",
+          "lineNumber": 157
+        },
+        {
+          "caller": "TestClean_SamplesAreCapped",
+          "callee": "writeChunk",
+          "lineNumber": 160
+        },
+        {
+          "caller": "TestClean_SamplesAreCapped",
+          "callee": "time.Now",
+          "lineNumber": 160
+        },
+        {
+          "caller": "TestClean_SamplesAreCapped",
+          "callee": "newTestCleaner",
+          "lineNumber": 163
+        },
+        {
+          "caller": "TestClean_SamplesAreCapped",
+          "callee": "require.NoError",
+          "lineNumber": 164
+        },
+        {
+          "caller": "TestClean_SamplesAreCapped",
+          "callee": "c.Clean",
+          "lineNumber": 164
+        },
+        {
+          "caller": "TestClean_SamplesAreCapped",
+          "callee": "t.Context",
+          "lineNumber": 164
+        },
+        {
+          "caller": "TestClean_SamplesAreCapped",
+          "callee": "require.Equal",
+          "lineNumber": 165
+        },
+        {
+          "caller": "TestClean_SamplesAreCapped",
+          "callee": "int64",
+          "lineNumber": 165
+        },
+        {
+          "caller": "TestClean_SamplesAreCapped",
+          "callee": "c.StatxC.Load",
+          "lineNumber": 165
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.Parallel",
+          "lineNumber": 169
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.Run",
+          "lineNumber": 171
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.Parallel",
+          "lineNumber": 172
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.TempDir",
+          "lineNumber": 173
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "require.NoError",
+          "lineNumber": 174
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "os.MkdirAll",
+          "lineNumber": 174
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "filepath.Join",
+          "lineNumber": 174
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "uuid.NewString",
+          "lineNumber": 174
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "require.NoError",
+          "lineNumber": 175
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "VerifyChunksCacheRoot",
+          "lineNumber": 175
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.Run",
+          "lineNumber": 178
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.Parallel",
+          "lineNumber": 179
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.TempDir",
+          "lineNumber": 180
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "require.NoError",
+          "lineNumber": 181
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "os.MkdirAll",
+          "lineNumber": 181
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "filepath.Join",
+          "lineNumber": 181
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "uuid.NewString",
+          "lineNumber": 181
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "require.NoError",
+          "lineNumber": 182
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "VerifyChunksCacheRoot",
+          "lineNumber": 182
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.Run",
+          "lineNumber": 185
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.Parallel",
+          "lineNumber": 186
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "require.NoError",
+          "lineNumber": 187
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "VerifyChunksCacheRoot",
+          "lineNumber": 187
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.TempDir",
+          "lineNumber": 187
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.Run",
+          "lineNumber": 190
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.Parallel",
+          "lineNumber": 191
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.TempDir",
+          "lineNumber": 192
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "require.NoError",
+          "lineNumber": 193
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "os.MkdirAll",
+          "lineNumber": 193
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "filepath.Join",
+          "lineNumber": 193
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "require.NoError",
+          "lineNumber": 194
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "VerifyChunksCacheRoot",
+          "lineNumber": 194
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.Run",
+          "lineNumber": 197
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.Parallel",
+          "lineNumber": 198
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.TempDir",
+          "lineNumber": 199
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "require.NoError",
+          "lineNumber": 201
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "os.MkdirAll",
+          "lineNumber": 201
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "filepath.Join",
+          "lineNumber": 201
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "uuid.NewString",
+          "lineNumber": 201
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "VerifyChunksCacheRoot",
+          "lineNumber": 203
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "require.Error",
+          "lineNumber": 204
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "require.Contains",
+          "lineNumber": 205
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "err.Error",
+          "lineNumber": 205
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.Run",
+          "lineNumber": 208
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.Parallel",
+          "lineNumber": 209
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "require.Error",
+          "lineNumber": 210
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "VerifyChunksCacheRoot",
+          "lineNumber": 210
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "filepath.Join",
+          "lineNumber": 210
+        },
+        {
+          "caller": "TestVerifyChunksCacheRoot",
+          "callee": "t.TempDir",
+          "lineNumber": 210
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 6,
+        "functionCount": 8,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/clean-nfs-cache/cleaner/stat_linux.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 54,
+      "nonEmptyLines": 47,
+      "functions": [
+        {
+          "name": "stat",
+          "startLine": 13,
+          "endLine": 29,
+          "params": [
+            "fullPath"
+          ]
+        },
+        {
+          "name": "statInDir",
+          "startLine": 39,
+          "endLine": 54,
+          "params": [
+            "df",
+            "filename"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "stat",
+          "callee": "c.StatxC.Add",
+          "lineNumber": 14
+        },
+        {
+          "caller": "stat",
+          "callee": "unix.Statx",
+          "lineNumber": 16
+        },
+        {
+          "caller": "stat",
+          "callee": "fmt.Errorf",
+          "lineNumber": 22
+        },
+        {
+          "caller": "statInDir",
+          "callee": "c.StatxC.Add",
+          "lineNumber": 40
+        },
+        {
+          "caller": "statInDir",
+          "callee": "unix.Statx",
+          "lineNumber": 42
+        },
+        {
+          "caller": "statInDir",
+          "callee": "int",
+          "lineNumber": 42
+        },
+        {
+          "caller": "statInDir",
+          "callee": "df.Fd",
+          "lineNumber": 42
+        },
+        {
+          "caller": "statInDir",
+          "callee": "fmt.Errorf",
+          "lineNumber": 48
+        },
+        {
+          "caller": "statInDir",
+          "callee": "filepath.Join",
+          "lineNumber": 48
+        },
+        {
+          "caller": "statInDir",
+          "callee": "df.Name",
+          "lineNumber": 48
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/clean-nfs-cache/cleaner/stat_osx.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 34,
+      "nonEmptyLines": 28,
+      "functions": [
+        {
+          "name": "stat",
+          "startLine": 12,
+          "endLine": 29,
+          "params": [
+            "path"
+          ]
+        },
+        {
+          "name": "statInDir",
+          "startLine": 31,
+          "endLine": 34,
+          "params": [
+            "df",
+            "filename"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "stat",
+          "callee": "c.StatxC.Add",
+          "lineNumber": 13
+        },
+        {
+          "caller": "stat",
+          "callee": "os.Stat",
+          "lineNumber": 14
+        },
+        {
+          "caller": "stat",
+          "callee": "fmt.Errorf",
+          "lineNumber": 16
+        },
+        {
+          "caller": "stat",
+          "callee": "stat.Sys",
+          "lineNumber": 19
+        },
+        {
+          "caller": "stat",
+          "callee": "fmt.Errorf",
+          "lineNumber": 21
+        },
+        {
+          "caller": "stat",
+          "callee": "stat.Name",
+          "lineNumber": 22
+        },
+        {
+          "caller": "stat",
+          "callee": "stat.Sys",
+          "lineNumber": 22
+        },
+        {
+          "caller": "statInDir",
+          "callee": "c.stat",
+          "lineNumber": 33
+        },
+        {
+          "caller": "statInDir",
+          "callee": "filepath.Join",
+          "lineNumber": 33
+        },
+        {
+          "caller": "statInDir",
+          "callee": "df.Name",
+          "lineNumber": 33
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/clean-nfs-cache/main.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 234,
+      "nonEmptyLines": 202,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 29,
+          "endLine": 59,
+          "params": []
+        },
+        {
+          "name": "run",
+          "startLine": 61,
+          "endLine": 84,
+          "params": [
+            "ctx",
+            "opts",
+            "log",
+            "metrics"
+          ]
+        },
+        {
+          "name": "configure",
+          "startLine": 86,
+          "endLine": 234,
+          "params": [
+            "ctx"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "context.Background",
+          "lineNumber": 30
+        },
+        {
+          "caller": "main",
+          "callee": "configure",
+          "lineNumber": 32
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Println",
+          "lineNumber": 34
+        },
+        {
+          "caller": "main",
+          "callee": "tel.Shutdown",
+          "lineNumber": 36
+        },
+        {
+          "caller": "main",
+          "callee": "os.Exit",
+          "lineNumber": 38
+        },
+        {
+          "caller": "main",
+          "callee": "run",
+          "lineNumber": 41
+        },
+        {
+          "caller": "main",
+          "callee": "log.Error",
+          "lineNumber": 43
+        },
+        {
+          "caller": "main",
+          "callee": "zap.Error",
+          "lineNumber": 43
+        },
+        {
+          "caller": "main",
+          "callee": "log.Sync",
+          "lineNumber": 48
+        },
+        {
+          "caller": "main",
+          "callee": "context.WithTimeout",
+          "lineNumber": 49
+        },
+        {
+          "caller": "main",
+          "callee": "meterProvider.Shutdown",
+          "lineNumber": 51
+        },
+        {
+          "caller": "main",
+          "callee": "tel.Shutdown",
+          "lineNumber": 53
+        },
+        {
+          "caller": "main",
+          "callee": "cancel",
+          "lineNumber": 54
+        },
+        {
+          "caller": "main",
+          "callee": "os.Exit",
+          "lineNumber": 57
+        },
+        {
+          "caller": "run",
+          "callee": "log.Info",
+          "lineNumber": 63
+        },
+        {
+          "caller": "run",
+          "callee": "zap.Float64",
+          "lineNumber": 64
+        },
+        {
+          "caller": "run",
+          "callee": "cleaner.VerifyChunksCacheRoot",
+          "lineNumber": 69
+        },
+        {
+          "caller": "run",
+          "callee": "cleaner.NewCleaner",
+          "lineNumber": 73
+        },
+        {
+          "caller": "run",
+          "callee": "c.Clean",
+          "lineNumber": 75
+        },
+        {
+          "caller": "run",
+          "callee": "c.Deleted.Load",
+          "lineNumber": 79
+        },
+        {
+          "caller": "run",
+          "callee": "log.Info",
+          "lineNumber": 80
+        },
+        {
+          "caller": "configure",
+          "callee": "flag.NewFlagSet",
+          "lineNumber": 90
+        },
+        {
+          "caller": "configure",
+          "callee": "flags.Uint64Var",
+          "lineNumber": 91
+        },
+        {
+          "caller": "configure",
+          "callee": "flags.Float64Var",
+          "lineNumber": 92
+        },
+        {
+          "caller": "configure",
+          "callee": "flags.BoolVar",
+          "lineNumber": 93
+        },
+        {
+          "caller": "configure",
+          "callee": "flags.IntVar",
+          "lineNumber": 94
+        },
+        {
+          "caller": "configure",
+          "callee": "flags.IntVar",
+          "lineNumber": 95
+        },
+        {
+          "caller": "configure",
+          "callee": "flags.IntVar",
+          "lineNumber": 96
+        },
+        {
+          "caller": "configure",
+          "callee": "flags.IntVar",
+          "lineNumber": 97
+        },
+        {
+          "caller": "configure",
+          "callee": "flags.IntVar",
+          "lineNumber": 98
+        },
+        {
+          "caller": "configure",
+          "callee": "flags.IntVar",
+          "lineNumber": 99
+        },
+        {
+          "caller": "configure",
+          "callee": "flags.IntVar",
+          "lineNumber": 100
+        },
+        {
+          "caller": "configure",
+          "callee": "flags.IntVar",
+          "lineNumber": 101
+        },
+        {
+          "caller": "configure",
+          "callee": "flags.IntVar",
+          "lineNumber": 102
+        },
+        {
+          "caller": "configure",
+          "callee": "flags.DurationVar",
+          "lineNumber": 103
+        },
+        {
+          "caller": "configure",
+          "callee": "flags.BoolVar",
+          "lineNumber": 104
+        },
+        {
+          "caller": "configure",
+          "callee": "flags.Parse",
+          "lineNumber": 107
+        },
+        {
+          "caller": "configure",
+          "callee": "fmt.Errorf",
+          "lineNumber": 108
+        },
+        {
+          "caller": "configure",
+          "callee": "flags.Args",
+          "lineNumber": 111
+        },
+        {
+          "caller": "configure",
+          "callee": "len",
+          "lineNumber": 112
+        },
+        {
+          "caller": "configure",
+          "callee": "featureflags.NewClient",
+          "lineNumber": 117
+        },
+        {
+          "caller": "configure",
+          "callee": "ffc.Close",
+          "lineNumber": 121
+        },
+        {
+          "caller": "configure",
+          "callee": "ffc.JSONFlag",
+          "lineNumber": 123
+        },
+        {
+          "caller": "configure",
+          "callee": "v.Type",
+          "lineNumber": 124
+        },
+        {
+          "caller": "configure",
+          "callee": "v.AsValueMap",
+          "lineNumber": 126
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"maxConcurrentDelete\").IsNumber",
+          "lineNumber": 127
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 127
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"maxConcurrentDelete\").IntValue",
+          "lineNumber": 128
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 128
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"maxConcurrentScan\").IsNumber",
+          "lineNumber": 130
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 130
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"maxConcurrentScan\").IntValue",
+          "lineNumber": 131
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 131
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"maxConcurrentStat\").IsNumber",
+          "lineNumber": 133
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 133
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"maxConcurrentStat\").IntValue",
+          "lineNumber": 134
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 134
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"sampleMin\").IsNumber",
+          "lineNumber": 136
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 136
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"sampleMin\").IntValue",
+          "lineNumber": 137
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 137
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"samplePct\").IsNumber",
+          "lineNumber": 139
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 139
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"samplePct\").IntValue",
+          "lineNumber": 140
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 140
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"sampleMax\").IsNumber",
+          "lineNumber": 142
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 142
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"sampleMax\").IntValue",
+          "lineNumber": 143
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 143
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"buildSampleMin\").IsNumber",
+          "lineNumber": 145
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 145
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"buildSampleMin\").IntValue",
+          "lineNumber": 146
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 146
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"buildSamplePct\").IsNumber",
+          "lineNumber": 148
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 148
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"buildSamplePct\").IntValue",
+          "lineNumber": 149
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 149
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"buildSampleMax\").IsNumber",
+          "lineNumber": 151
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 151
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"buildSampleMax\").IntValue",
+          "lineNumber": 152
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 152
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"graceSeconds\").IsNumber",
+          "lineNumber": 154
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 154
+        },
+        {
+          "caller": "configure",
+          "callee": "time.Duration",
+          "lineNumber": 155
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"graceSeconds\").IntValue",
+          "lineNumber": 155
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 155
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"targetBytesToDelete\").IsNumber",
+          "lineNumber": 157
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 157
+        },
+        {
+          "caller": "configure",
+          "callee": "uint64",
+          "lineNumber": 158
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"targetBytesToDelete\").Float64Value",
+          "lineNumber": 158
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 158
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"verify\").IsBool",
+          "lineNumber": 160
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 160
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get(\"verify\").BoolValue",
+          "lineNumber": 161
+        },
+        {
+          "caller": "configure",
+          "callee": "m.Get",
+          "lineNumber": 161
+        },
+        {
+          "caller": "configure",
+          "callee": "telemetry.New",
+          "lineNumber": 165
+        },
+        {
+          "caller": "configure",
+          "callee": "env.GetNodeID",
+          "lineNumber": 165
+        },
+        {
+          "caller": "configure",
+          "callee": "fmt.Errorf",
+          "lineNumber": 167
+        },
+        {
+          "caller": "configure",
+          "callee": "os.Getenv",
+          "lineNumber": 170
+        },
+        {
+          "caller": "configure",
+          "callee": "append",
+          "lineNumber": 173
+        },
+        {
+          "caller": "configure",
+          "callee": "logger.GetOTELCore",
+          "lineNumber": 173
+        },
+        {
+          "caller": "configure",
+          "callee": "cleaner.NoopMetrics",
+          "lineNumber": 179
+        },
+        {
+          "caller": "configure",
+          "callee": "newMeterProvider",
+          "lineNumber": 182
+        },
+        {
+          "caller": "configure",
+          "callee": "tel.Shutdown",
+          "lineNumber": 184
+        },
+        {
+          "caller": "configure",
+          "callee": "fmt.Errorf",
+          "lineNumber": 186
+        },
+        {
+          "caller": "configure",
+          "callee": "utils.Must",
+          "lineNumber": 191
+        },
+        {
+          "caller": "configure",
+          "callee": "logger.NewLogger",
+          "lineNumber": 191
+        },
+        {
+          "caller": "configure",
+          "callee": "env.IsDebug",
+          "lineNumber": 194
+        },
+        {
+          "caller": "configure",
+          "callee": "l.Info",
+          "lineNumber": 200
+        },
+        {
+          "caller": "configure",
+          "callee": "zap.String",
+          "lineNumber": 200
+        },
+        {
+          "caller": "configure",
+          "callee": "featureflags.CleanNFSCache.String",
+          "lineNumber": 200
+        },
+        {
+          "caller": "configure",
+          "callee": "cleaner.GetDiskInfo",
+          "lineNumber": 204
+        },
+        {
+          "caller": "configure",
+          "callee": "tel.Shutdown",
+          "lineNumber": 206
+        },
+        {
+          "caller": "configure",
+          "callee": "fmt.Errorf",
+          "lineNumber": 208
+        },
+        {
+          "caller": "configure",
+          "callee": "uint64",
+          "lineNumber": 210
+        },
+        {
+          "caller": "configure",
+          "callee": "float64",
+          "lineNumber": 210
+        },
+        {
+          "caller": "configure",
+          "callee": "uint64",
+          "lineNumber": 211
+        },
+        {
+          "caller": "configure",
+          "callee": "uint64",
+          "lineNumber": 212
+        },
+        {
+          "caller": "configure",
+          "callee": "l.Info",
+          "lineNumber": 216
+        },
+        {
+          "caller": "configure",
+          "callee": "zap.Bool",
+          "lineNumber": 217
+        },
+        {
+          "caller": "configure",
+          "callee": "zap.Uint64",
+          "lineNumber": 218
+        },
+        {
+          "caller": "configure",
+          "callee": "zap.Float64",
+          "lineNumber": 219
+        },
+        {
+          "caller": "configure",
+          "callee": "zap.Int",
+          "lineNumber": 220
+        },
+        {
+          "caller": "configure",
+          "callee": "zap.Int",
+          "lineNumber": 221
+        },
+        {
+          "caller": "configure",
+          "callee": "zap.Int",
+          "lineNumber": 222
+        },
+        {
+          "caller": "configure",
+          "callee": "zap.Int",
+          "lineNumber": 223
+        },
+        {
+          "caller": "configure",
+          "callee": "zap.Int",
+          "lineNumber": 224
+        },
+        {
+          "caller": "configure",
+          "callee": "zap.Int",
+          "lineNumber": 225
+        },
+        {
+          "caller": "configure",
+          "callee": "zap.Duration",
+          "lineNumber": 226
+        },
+        {
+          "caller": "configure",
+          "callee": "zap.String",
+          "lineNumber": 227
+        },
+        {
+          "caller": "configure",
+          "callee": "zap.Int",
+          "lineNumber": 228
+        },
+        {
+          "caller": "configure",
+          "callee": "zap.Int",
+          "lineNumber": 229
+        },
+        {
+          "caller": "configure",
+          "callee": "zap.Int",
+          "lineNumber": 230
+        }
+      ],
+      "metrics": {
+        "importCount": 8,
+        "exportCount": 0,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/clean-nfs-cache/metrics.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 61,
+      "nonEmptyLines": 50,
+      "functions": [
+        {
+          "name": "newMeterProvider",
+          "startLine": 22,
+          "endLine": 61,
+          "params": [
+            "ctx",
+            "endpoint"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "newMeterProvider",
+          "callee": "telemetry.GetResource",
+          "lineNumber": 25
+        },
+        {
+          "caller": "newMeterProvider",
+          "callee": "env.GetNodeID",
+          "lineNumber": 25
+        },
+        {
+          "caller": "newMeterProvider",
+          "callee": "fmt.Errorf",
+          "lineNumber": 27
+        },
+        {
+          "caller": "newMeterProvider",
+          "callee": "telemetry.NewMeterExporter",
+          "lineNumber": 30
+        },
+        {
+          "caller": "newMeterProvider",
+          "callee": "otlpmetricgrpc.WithEndpoint",
+          "lineNumber": 31
+        },
+        {
+          "caller": "newMeterProvider",
+          "callee": "otlpmetricgrpc.WithAggregationSelector",
+          "lineNumber": 32
+        },
+        {
+          "caller": "newMeterProvider",
+          "callee": "sdkmetric.DefaultAggregationSelector",
+          "lineNumber": 37
+        },
+        {
+          "caller": "newMeterProvider",
+          "callee": "fmt.Errorf",
+          "lineNumber": 41
+        },
+        {
+          "caller": "newMeterProvider",
+          "callee": "telemetry.NewMeterProvider",
+          "lineNumber": 44
+        },
+        {
+          "caller": "newMeterProvider",
+          "callee": "fmt.Errorf",
+          "lineNumber": 46
+        },
+        {
+          "caller": "newMeterProvider",
+          "callee": "fmt.Errorf",
+          "lineNumber": 50
+        },
+        {
+          "caller": "newMeterProvider",
+          "callee": "cleaner.NewMetrics",
+          "lineNumber": 53
+        },
+        {
+          "caller": "newMeterProvider",
+          "callee": "sdkmp.Meter",
+          "lineNumber": 53
+        },
+        {
+          "caller": "newMeterProvider",
+          "callee": "sdkmp.Shutdown",
+          "lineNumber": 55
+        },
+        {
+          "caller": "newMeterProvider",
+          "callee": "fmt.Errorf",
+          "lineNumber": 57
+        }
+      ],
+      "metrics": {
+        "importCount": 8,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    }
+  ]
+}

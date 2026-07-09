@@ -1,0 +1,69 @@
+{
+  "nodes": [
+    {
+      "id": "service:packages/orchestrator/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "packages/orchestrator/Dockerfile",
+      "summary": "Orchestrator 服务的多阶段 Docker 构建文件,在 builder 阶段使用 golang:1.26.3-bookworm 镜像编译 Go 二进制(orchestrator 和 clean-nfs-cache),最终阶段基于 scratch 产出最小化镜像。构建时使用 BuildKit 缓存加速 Go 编译,并通过 TARGETARCH 实现多架构支持。",
+      "tags": ["containerization", "infrastructure", "deployment", "multi-stage-build", "orchestrator"],
+      "complexity": "moderate",
+      "languageNotes": "使用多阶段构建:builder 阶段依赖 glibc(bookworm, 2.36)以保证与宿主机 Ubuntu 24.04 的向前兼容;最终阶段使用 scratch 镜像产出最小化体积。通过 --mount=type=cache 挂载 Go 编译缓存以加速构建。"
+    },
+    {
+      "id": "service:packages/orchestrator/Dockerfile:builder",
+      "type": "service",
+      "name": "builder",
+      "filePath": "packages/orchestrator/Dockerfile",
+      "summary": "builder 构建阶段,基于 golang:1.26.3-bookworm 镜像,分层缓存 shared、clickhouse、orchestrator 三个 Go 模块的依赖,然后 COPY 源码并执行 make build-local 生成 orchestrator 与 clean-nfs-cache 二进制。",
+      "tags": ["containerization", "build-stage", "golang", "go-workspace"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "service:packages/orchestrator/Dockerfile:scratch",
+      "type": "service",
+      "name": "scratch",
+      "filePath": "packages/orchestrator/Dockerfile",
+      "summary": "最终运行阶段,基于 scratch 空镜像,仅从 builder 阶段拷贝编译好的 clean-nfs-cache 和 orchestrator 二进制,产出极小体积的生产镜像。",
+      "tags": ["containerization", "runtime-stage", "minimal-image", "scratch"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:packages/orchestrator/Dockerfile",
+      "target": "service:packages/orchestrator/Dockerfile:builder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Dockerfile",
+      "target": "service:packages/orchestrator/Dockerfile:scratch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/orchestrator/Dockerfile:scratch",
+      "target": "service:packages/orchestrator/Dockerfile:builder",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/orchestrator/Dockerfile",
+      "target": "file:packages/orchestrator/main.go",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "service:packages/orchestrator/Dockerfile",
+      "target": "file:packages/orchestrator/Makefile",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

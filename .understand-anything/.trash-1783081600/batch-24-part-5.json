@@ -1,0 +1,1036 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "type": "file",
+      "name": "finish_template_build_test.go",
+      "filePath": "packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "summary": "集成测试：FinishTemplateBuild 的版本号写入与保留语义。",
+      "tags": [
+        "test",
+        "integration",
+        "database",
+        "template-build"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/finish_template_build_test.go:TestFinishTemplateBuild_OverwritesVersionsWhenProvided",
+      "type": "function",
+      "name": "TestFinishTemplateBuild_OverwritesVersionsWhenProvided",
+      "filePath": "packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "lineRange": [
+        45,
+        80
+      ],
+      "summary": "验证 FinishTemplateBuild 在提供新版本时覆盖旧版本。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/finish_template_build_test.go:TestFinishTemplateBuild_PreservesVersionsWhenEmpty",
+      "type": "function",
+      "name": "TestFinishTemplateBuild_PreservesVersionsWhenEmpty",
+      "filePath": "packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "lineRange": [
+        82,
+        113
+      ],
+      "summary": "验证传入空版本时保留已有版本号。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/finish_template_build_test.go:TestFinishTemplateBuild_PreservesSingleVersionWhenOnlyOneEmpty",
+      "type": "function",
+      "name": "TestFinishTemplateBuild_PreservesSingleVersionWhenOnlyOneEmpty",
+      "filePath": "packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "lineRange": [
+        115,
+        137
+      ],
+      "summary": "验证仅单个版本为空时仍保留原值。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/retry/wrapper_test.go",
+      "type": "file",
+      "name": "wrapper_test.go",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "summary": "测试重试包装器：成功路径、各类错误重试决策、退避增长与封顶。",
+      "tags": [
+        "test",
+        "retry",
+        "database"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/db/pkg/retry/wrapper_test.go:mockDBTX",
+      "type": "class",
+      "name": "mockDBTX",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        15,
+        19
+      ],
+      "summary": "单元测试用的 DBTX mock 实现。",
+      "tags": [
+        "test",
+        "mock"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:Exec",
+      "type": "function",
+      "name": "Exec",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        21,
+        27
+      ],
+      "summary": "mockDBTX.Exec：记录调用并返回设定结果。",
+      "tags": [
+        "test",
+        "mock"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:Query",
+      "type": "function",
+      "name": "Query",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        29,
+        35
+      ],
+      "summary": "mockDBTX.Query：记录调用并返回设定的行集合。",
+      "tags": [
+        "test",
+        "mock"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:QueryRow",
+      "type": "function",
+      "name": "QueryRow",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        37,
+        43
+      ],
+      "summary": "mockDBTX.QueryRow：记录调用并返回设定的 mock 行。",
+      "tags": [
+        "test",
+        "mock"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:Scan",
+      "type": "function",
+      "name": "Scan",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        50,
+        56
+      ],
+      "summary": "mockRow.Scan：记录调用并返回设定错误。",
+      "tags": [
+        "test",
+        "mock"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:testConfig",
+      "type": "function",
+      "name": "testConfig",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        59,
+        66
+      ],
+      "summary": "返回测试使用的快退避重试配置，缩短用例时长。",
+      "tags": [
+        "test",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:TestWrap_ReturnsOriginalForTransaction",
+      "type": "function",
+      "name": "TestWrap_ReturnsOriginalForTransaction",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        68,
+        78
+      ],
+      "summary": "测试 Wrap 在传入事务时原样返回。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_SuccessOnFirstAttempt",
+      "type": "function",
+      "name": "TestExec_SuccessOnFirstAttempt",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        80,
+        98
+      ],
+      "summary": "测试 Exec 首次成功时不重试。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_RetryOnConnectionError",
+      "type": "function",
+      "name": "TestExec_RetryOnConnectionError",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        100,
+        121
+      ],
+      "summary": "测试 Exec 在连接错误时重试并在后续成功。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_NoRetryOnDeadlock",
+      "type": "function",
+      "name": "TestExec_NoRetryOnDeadlock",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        123,
+        144
+      ],
+      "summary": "测试 Exec 在死锁（不可重试）时不重试。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_NoRetryOnConstraintViolation",
+      "type": "function",
+      "name": "TestExec_NoRetryOnConstraintViolation",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        146,
+        167
+      ],
+      "summary": "测试 Exec 在约束冲突时直接返回错误。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_MaxAttemptsExceeded",
+      "type": "function",
+      "name": "TestExec_MaxAttemptsExceeded",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        169,
+        188
+      ],
+      "summary": "测试 Exec 超过最大尝试次数后返回最后一次错误。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_ContextCancellation",
+      "type": "function",
+      "name": "TestExec_ContextCancellation",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        190,
+        216
+      ],
+      "summary": "测试 Exec 在上下文取消时立即停止重试。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:TestQuery_RetryOnConnectionError",
+      "type": "function",
+      "name": "TestQuery_RetryOnConnectionError",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        218,
+        241
+      ],
+      "summary": "测试 Query 在连接错误时重试。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:TestQueryRow_RetryOnConnectionError",
+      "type": "function",
+      "name": "TestQueryRow_RetryOnConnectionError",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        243,
+        275
+      ],
+      "summary": "测试 QueryRow 在 Scan 时连接错误时重试。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:TestQueryRow_NoRetryOnNoRows",
+      "type": "function",
+      "name": "TestQueryRow_NoRetryOnNoRows",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        277,
+        299
+      ],
+      "summary": "测试 QueryRow 在 pgx.ErrNoRows 时不重试。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:TestConfig_Options",
+      "type": "function",
+      "name": "TestConfig_Options",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        301,
+        316
+      ],
+      "summary": "测试 Config 链式 Option 构造器。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:TestBackoff_ExponentialGrowth",
+      "type": "function",
+      "name": "TestBackoff_ExponentialGrowth",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        318,
+        344
+      ],
+      "summary": "测试退避时长按指数增长。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper_test.go:TestBackoff_MaxBackoffCap",
+      "type": "function",
+      "name": "TestBackoff_MaxBackoffCap",
+      "filePath": "packages/db/pkg/retry/wrapper_test.go",
+      "lineRange": [
+        346,
+        359
+      ],
+      "summary": "测试退避时长达到 maxBackoff 后被封顶。",
+      "tags": [
+        "test",
+        "retry"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "function:packages/db/pkg/tests/builds/finish_template_build_test.go:TestFinishTemplateBuild_OverwritesVersionsWhenProvided",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "function:packages/db/pkg/tests/builds/finish_template_build_test.go:TestFinishTemplateBuild_PreservesVersionsWhenEmpty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "function:packages/db/pkg/tests/builds/finish_template_build_test.go:TestFinishTemplateBuild_PreservesSingleVersionWhenOnlyOneEmpty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "function:packages/db/pkg/tests/builds/finish_template_build_test.go:TestFinishTemplateBuild_OverwritesVersionsWhenProvided",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "function:packages/db/pkg/tests/builds/finish_template_build_test.go:TestFinishTemplateBuild_PreservesVersionsWhenEmpty",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "function:packages/db/pkg/tests/builds/finish_template_build_test.go:TestFinishTemplateBuild_PreservesSingleVersionWhenOnlyOneEmpty",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/pkg/testutils/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/pkg/testutils/queries.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/pkg/types/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/pkg/types/types_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/pkg/types/types.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/active_template_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/check_alias_exists.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/create_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/create_new_snapshot.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/create_snapshot_template_env.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/create_template_build_assignment.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/create_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/delete_old_aliases.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/delete_template_build_assignment.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/delete_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/exists_template_snapshots.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/finish_template_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_active_clusters.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_build_info.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_builds_paginated.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_builds_statuses.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_concurrent_template_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_exclusive_builds_for_template_deletion.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_inprogress_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_last_snapshot.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_sandbox_record.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_snapshot_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_snapshots_with_cursor.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_team_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_team_templates_with_cursor.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_team_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_template_aliases.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_template_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_template_by_id.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_template_with_build_by_tag.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_template_with_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/get_templatealias_by_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/list_team_snapshot_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/list_template_tags.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/models.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/resolve_team.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/team_members.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/update_snapshot_origin_node.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/update_template_build_status.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/update_template_spawns.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/update_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/upsert_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/validate_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/finish_template_build_test.go",
+      "target": "file:packages/db/queries/volumes.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "class:packages/db/pkg/retry/wrapper_test.go:mockDBTX",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:Exec",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:Query",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:QueryRow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:Scan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:testConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestWrap_ReturnsOriginalForTransaction",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_SuccessOnFirstAttempt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_RetryOnConnectionError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_NoRetryOnDeadlock",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_NoRetryOnConstraintViolation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_MaxAttemptsExceeded",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_ContextCancellation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestQuery_RetryOnConnectionError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestQueryRow_RetryOnConnectionError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestQueryRow_NoRetryOnNoRows",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestConfig_Options",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestBackoff_ExponentialGrowth",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestBackoff_MaxBackoffCap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:Exec",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:Query",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:QueryRow",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:Scan",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestWrap_ReturnsOriginalForTransaction",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_SuccessOnFirstAttempt",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_RetryOnConnectionError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_NoRetryOnDeadlock",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_NoRetryOnConstraintViolation",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_MaxAttemptsExceeded",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestExec_ContextCancellation",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestQuery_RetryOnConnectionError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestQueryRow_RetryOnConnectionError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestQueryRow_NoRetryOnNoRows",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestConfig_Options",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestBackoff_ExponentialGrowth",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper_test.go",
+      "target": "function:packages/db/pkg/retry/wrapper_test.go:TestBackoff_MaxBackoffCap",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

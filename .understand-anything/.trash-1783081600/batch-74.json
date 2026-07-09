@@ -1,0 +1,181 @@
+{
+  "nodes": [
+    {
+      "id": "resource:iac/provider-aws/modules/network/main.tf",
+      "type": "resource",
+      "name": "main.tf",
+      "filePath": "iac/provider-aws/modules/network/main.tf",
+      "summary": "AWS 网络模块的核心 Terraform 配置：在 VPC 中创建子网、VPC 终端节点（S3 Gateway、Secrets Manager 和 EC2 Interface 端点）、安全组，并按需启用 EC2 Instance Connect 端点。",
+      "tags": ["infrastructure", "aws", "terraform", "vpc", "networking"],
+      "complexity": "moderate",
+      "languageNotes": "使用 terraform-aws-modules/vpc/aws 5.5.3 作为基础模块，并通过 modules/vpc-endpoints 启用 S3、Secrets Manager 和 EC2 三类端点。"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/network/outputs.tf",
+      "type": "resource",
+      "name": "outputs.tf",
+      "filePath": "iac/provider-aws/modules/network/outputs.tf",
+      "summary": "网络模块的输出定义：导出 VPC ID、私有子网、公有子网 ID、ElastiCache 子网组名称以及条件启用的 Instance Connect 安全组 ID。",
+      "tags": ["infrastructure", "aws", "terraform", "outputs"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/network/variables.tf",
+      "type": "resource",
+      "name": "variables.tf",
+      "filePath": "iac/provider-aws/modules/network/variables.tf",
+      "summary": "网络模块的输入变量：包含 CIDR 块（VPC、public、private、elasticache 子网）、可用区列表、前缀、安全组 ID 列表以及是否启用 Instance Connect 的标志。",
+      "tags": ["infrastructure", "aws", "terraform", "configuration", "inputs"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/network/main.tf:module.vpc",
+      "type": "resource",
+      "name": "module.vpc",
+      "filePath": "iac/provider-aws/modules/network/main.tf",
+      "lineRange": [1, 32],
+      "summary": "调用 terraform-aws-modules/vpc/aws 创建带 public/private/elasticache 三层子网、单 NAT Gateway 的 VPC,并启用 DNS 支持与主机名解析。",
+      "tags": ["aws", "vpc", "module", "terraform"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/network/main.tf:module.vpc_endpoints",
+      "type": "resource",
+      "name": "module.vpc_endpoints",
+      "filePath": "iac/provider-aws/modules/network/main.tf",
+      "lineRange": [87, 132],
+      "summary": "部署三类 VPC 终端节点:S3 Gateway 端点(挂到私有路由表)、Secrets Manager 和 EC2 的 Interface 端点,均关联到 vpc_endpoint 安全组。",
+      "tags": ["aws", "vpc-endpoint", "s3", "secrets-manager", "ec2"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/network/main.tf:aws_security_group.vpc_endpoint",
+      "type": "resource",
+      "name": "aws_security_group.vpc_endpoint",
+      "filePath": "iac/provider-aws/modules/network/main.tf",
+      "lineRange": [62, 85],
+      "summary": "为 VPC 终端节点创建的安全组,允许 HTTPS(443/TCP)的入站流量,并放行所有出站流量。",
+      "tags": ["aws", "security-group", "vpc-endpoint", "network"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/network/main.tf:aws_ec2_instance_connect_endpoint.connect",
+      "type": "resource",
+      "name": "aws_ec2_instance_connect_endpoint.connect",
+      "filePath": "iac/provider-aws/modules/network/main.tf",
+      "lineRange": [134, 147],
+      "summary": "条件创建的 EC2 Instance Connect 端点,为私有子网中的 EC2 实例提供 SSH 访问能力,通过 connect_endpoint 安全组控制访问。",
+      "tags": ["aws", "instance-connect", "ssh", "vpc-endpoint"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/network/main.tf:aws_security_group.connect_endpoint",
+      "type": "resource",
+      "name": "aws_security_group.connect_endpoint",
+      "filePath": "iac/provider-aws/modules/network/main.tf",
+      "lineRange": [150, 170],
+      "summary": "为 Instance Connect 端点创建的安全组,仅在 use_instance_connect 为 true 时创建,允许 22/tcp 出站至 VPC CIDR。",
+      "tags": ["aws", "security-group", "instance-connect", "conditional"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/network/main.tf:data.aws_subnet.default_private",
+      "type": "resource",
+      "name": "data.aws_subnet.default_private",
+      "filePath": "iac/provider-aws/modules/network/main.tf",
+      "lineRange": [34, 41],
+      "summary": "通过 for_each 逐个 CIDR 查找 VPC 中对应的私有子网数据源,供 local 和 endpoints 引用子网 ID。",
+      "tags": ["aws", "data-source", "subnet", "vpc"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/network/main.tf:data.aws_subnet.default_public",
+      "type": "resource",
+      "name": "data.aws_subnet.default_public",
+      "filePath": "iac/provider-aws/modules/network/main.tf",
+      "lineRange": [43, 50],
+      "summary": "通过 for_each 逐个 CIDR 查找 VPC 中对应的公有子网数据源,用于在 outputs 中导出 public subnet ID 列表。",
+      "tags": ["aws", "data-source", "subnet", "vpc"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/provider-aws/modules/network/main.tf",
+      "target": "resource:iac/provider-aws/modules/network/main.tf:module.vpc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/network/main.tf",
+      "target": "resource:iac/provider-aws/modules/network/main.tf:module.vpc_endpoints",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/network/main.tf",
+      "target": "resource:iac/provider-aws/modules/network/main.tf:aws_security_group.vpc_endpoint",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/network/main.tf",
+      "target": "resource:iac/provider-aws/modules/network/main.tf:aws_security_group.connect_endpoint",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/network/main.tf",
+      "target": "resource:iac/provider-aws/modules/network/main.tf:aws_ec2_instance_connect_endpoint.connect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/network/main.tf",
+      "target": "resource:iac/provider-aws/modules/network/main.tf:data.aws_subnet.default_private",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/network/main.tf",
+      "target": "resource:iac/provider-aws/modules/network/main.tf:data.aws_subnet.default_public",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/network/main.tf:module.vpc_endpoints",
+      "target": "resource:iac/provider-aws/modules/network/main.tf:aws_security_group.vpc_endpoint",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/network/main.tf:aws_ec2_instance_connect_endpoint.connect",
+      "target": "resource:iac/provider-aws/modules/network/main.tf:aws_security_group.connect_endpoint",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/network/main.tf:data.aws_subnet.default_private",
+      "target": "resource:iac/provider-aws/modules/network/main.tf:module.vpc",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/network/main.tf:data.aws_subnet.default_public",
+      "target": "resource:iac/provider-aws/modules/network/main.tf:module.vpc",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

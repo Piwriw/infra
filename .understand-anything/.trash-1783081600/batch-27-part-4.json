@@ -1,0 +1,1230 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "type": "file",
+      "name": "devicehelper.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "summary": "分配 NBD 设备的辅助函数 GetNBDDevice：在 from-device 池中选择空闲块设备。 受 featureFlags 控制，默认 linux-内核 4.18+ 路径。",
+      "tags": [
+        "nbd",
+        "utility",
+        "kernel"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "type": "file",
+      "name": "path_direct.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "summary": "NBD 直连挂载 DirectPathMount：通过内核 NBD 直接连 block backend，跳过本地文件。 Open/Close 处理连接握手、socket pairs、disconnect NBD 与超时。",
+      "tags": [
+        "nbd",
+        "kernel",
+        "mount",
+        "direct-path"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Linux 内核 NBD ioctl 直接交互，需 root 权限。"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "file",
+      "name": "path_direct_slow_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "summary": "NBD slow backend 超时测试，验证 io/deadconn timeout 在读取慢时的语义。 通过 slowDevice 注入 readDelay 模拟网络/磁盘慢响应。",
+      "tags": [
+        "test",
+        "nbd",
+        "timeout"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "file",
+      "name": "path_direct_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "summary": "DirectPathMount 的读写、hole punch、discard/zero 测试。 通过 blkRangeIoctl 与 setupNBDDevice 与真实 NBD 内核模块交互。",
+      "tags": [
+        "test",
+        "nbd",
+        "ioctl"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "file",
+      "name": "build_device.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "summary": "测试用 BuildDevice： 用本地文件 + header 模拟一个简单的 block storage 给 DirectPathMount 测试。",
+      "tags": [
+        "test",
+        "utility",
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go:GetNBDDevice",
+      "type": "function",
+      "name": "GetNBDDevice",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "lineRange": [
+        19,
+        70
+      ],
+      "summary": "GetNBDDevice 是 devicehelper.go 中的关键函数，行 19-70。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/nbd/path_direct.go:DirectPathMount",
+      "type": "class",
+      "name": "DirectPathMount",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "lineRange": [
+        45,
+        61
+      ],
+      "summary": "block 子系统的 DirectPathMount 实现，定义在 packages/orchestrator/pkg/sandbox/nbd/path_direct.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Linux 内核 NBD ioctl 直接交互，需 root 权限。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct.go:NewDirectPathMount",
+      "type": "function",
+      "name": "NewDirectPathMount",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "lineRange": [
+        76,
+        94
+      ],
+      "summary": "NewDirectPathMount 是 path_direct.go 中的关键函数，行 76-94。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Linux 内核 NBD ioctl 直接交互，需 root 权限。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct.go:Open",
+      "type": "function",
+      "name": "Open",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "lineRange": [
+        96,
+        241
+      ],
+      "summary": "Open 是 path_direct.go 中的关键函数，行 96-241。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Linux 内核 NBD ioctl 直接交互，需 root 权限。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct.go:Close",
+      "type": "function",
+      "name": "Close",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "lineRange": [
+        243,
+        303
+      ],
+      "summary": "Close 是 path_direct.go 中的关键函数，行 243-303。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Linux 内核 NBD ioctl 直接交互，需 root 权限。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct.go:disconnectNBDWithTimeout",
+      "type": "function",
+      "name": "disconnectNBDWithTimeout",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "lineRange": [
+        305,
+        332
+      ],
+      "summary": "disconnectNBDWithTimeout 是 path_direct.go 中的关键函数，行 305-332。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Linux 内核 NBD ioctl 直接交互，需 root 权限。"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct.go:closeSocketPairs",
+      "type": "function",
+      "name": "closeSocketPairs",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "lineRange": [
+        338,
+        352
+      ],
+      "summary": "closeSocketPairs 是 path_direct.go 中的关键函数，行 338-352。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Linux 内核 NBD ioctl 直接交互，需 root 权限。"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go:slowDevice",
+      "type": "class",
+      "name": "slowDevice",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "lineRange": [
+        24,
+        27
+      ],
+      "summary": "block 子系统的 slowDevice 实现，定义在 packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go:TestSlowBackend_ShortTimeout",
+      "type": "function",
+      "name": "TestSlowBackend_ShortTimeout",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "lineRange": [
+        72,
+        121
+      ],
+      "summary": "TestSlowBackend_ShortTimeout 是 path_direct_slow_test.go 中的关键函数，行 72-121。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go:TestSlowBackend_SufficientTimeout",
+      "type": "function",
+      "name": "TestSlowBackend_SufficientTimeout",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "lineRange": [
+        125,
+        172
+      ],
+      "summary": "TestSlowBackend_SufficientTimeout 是 path_direct_slow_test.go 中的关键函数，行 125-172。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go:TestPathDirect_HolePunchOnDiscardAndZeroOut",
+      "type": "function",
+      "name": "TestPathDirect_HolePunchOnDiscardAndZeroOut",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "lineRange": [
+        177,
+        218
+      ],
+      "summary": "TestPathDirect_HolePunchOnDiscardAndZeroOut 是 path_direct_test.go 中的关键函数，行 177-218。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go:blkRangeIoctl",
+      "type": "function",
+      "name": "blkRangeIoctl",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "lineRange": [
+        221,
+        230
+      ],
+      "summary": "blkRangeIoctl 是 path_direct_test.go 中的关键函数，行 221-230。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go:setupNBDDevice",
+      "type": "function",
+      "name": "setupNBDDevice",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "lineRange": [
+        241,
+        286
+      ],
+      "summary": "setupNBDDevice 是 path_direct_test.go 中的关键函数，行 241-286。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go:BuildDevice",
+      "type": "class",
+      "name": "BuildDevice",
+      "filePath": "packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "lineRange": [
+        15,
+        20
+      ],
+      "summary": "block 子系统的 BuildDevice 实现，定义在 packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/iov.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/cleaner.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/logger_overlay.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/zero_device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/iov.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/iov.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/cleaner.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/logger_overlay.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/zero_device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/iov.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/cleaner.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/logger_overlay.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/template_rootfs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/zero_device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/iov.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go:GetNBDDevice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/nbd/path_direct.go:DirectPathMount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct.go:NewDirectPathMount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct.go:Open",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct.go:disconnectNBDWithTimeout",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct.go:closeSocketPairs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go:slowDevice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go:TestSlowBackend_ShortTimeout",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go:TestSlowBackend_SufficientTimeout",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go:TestPathDirect_HolePunchOnDiscardAndZeroOut",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go:blkRangeIoctl",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go:setupNBDDevice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go:BuildDevice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ]
+}

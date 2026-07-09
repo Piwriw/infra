@@ -1,0 +1,90 @@
+{
+  "nodes": [
+    {
+      "id": "service:packages/docker-reverse-proxy/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "packages/docker-reverse-proxy/Dockerfile",
+      "summary": "多阶段 Dockerfile，使用 golang:alpine 镜像编译 docker-reverse-proxy 服务二进制文件，最终产出基于 alpine 的精简运行镜像。",
+      "tags": ["containerization", "infrastructure", "multi-stage-build", "deployment", "go"],
+      "complexity": "moderate",
+      "languageNotes": "采用 Docker 多阶段构建：第一阶段为 builder 缓存 Go 模块并通过 make build 编译；第二阶段使用 alpine 作为最终运行镜像，仅复制编译产物以最小化镜像体积。"
+    },
+    {
+      "id": "service:packages/docker-reverse-proxy/Dockerfile:builder",
+      "type": "service",
+      "name": "builder",
+      "filePath": "packages/docker-reverse-proxy/Dockerfile",
+      "summary": "构建阶段，基于 golang:alpine 镜像安装 make、缓存下载 shared/db/docker-reverse-proxy 三个模块的 Go 依赖，并执行 make build 编译二进制。",
+      "tags": ["build-stage", "golang", "go-modules", "make", "containerization"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "service:packages/docker-reverse-proxy/Dockerfile:alpine",
+      "type": "service",
+      "name": "alpine",
+      "filePath": "packages/docker-reverse-proxy/Dockerfile",
+      "summary": "运行阶段，基于 alpine 镜像从 builder 阶段复制 docker-reverse-proxy 二进制，并以 ENTRYPOINT 启动服务。",
+      "tags": ["runtime-stage", "alpine", "minimal-image", "deployment", "containerization"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:packages/docker-reverse-proxy/Dockerfile",
+      "target": "service:packages/docker-reverse-proxy/Dockerfile:builder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/docker-reverse-proxy/Dockerfile",
+      "target": "service:packages/docker-reverse-proxy/Dockerfile:alpine",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/docker-reverse-proxy/Dockerfile",
+      "target": "file:packages/docker-reverse-proxy/main.go",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "service:packages/docker-reverse-proxy/Dockerfile",
+      "target": "file:packages/docker-reverse-proxy/Makefile",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/docker-reverse-proxy/Dockerfile",
+      "target": "file:packages/shared/go.mod",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/docker-reverse-proxy/Dockerfile",
+      "target": "file:packages/db/go.mod",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/docker-reverse-proxy/Dockerfile",
+      "target": "file:packages/docker-reverse-proxy/go.mod",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/docker-reverse-proxy/Dockerfile:alpine",
+      "target": "service:packages/docker-reverse-proxy/Dockerfile:builder",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

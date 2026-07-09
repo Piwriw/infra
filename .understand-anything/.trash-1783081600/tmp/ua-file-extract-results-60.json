@@ -1,0 +1,170 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/orchestrator/Dockerfile",
+      "language": "dockerfile",
+      "fileCategory": "infra",
+      "totalLines": 47,
+      "nonEmptyLines": 35,
+      "services": [
+        {
+          "name": "builder",
+          "image": "golang:${GOLANG_VERSION}-${DEBIAN_VERSION}",
+          "ports": [],
+          "startLine": 11,
+          "endLine": 43
+        },
+        {
+          "name": "scratch",
+          "image": "scratch",
+          "ports": [],
+          "startLine": 44,
+          "endLine": 48
+        }
+      ],
+      "steps": [
+        {
+          "name": "ARG GOLANG_VERSION=1.26.3",
+          "startLine": 1,
+          "endLine": 1
+        },
+        {
+          "name": "ARG DEBIAN_VERSION=bookworm",
+          "startLine": 9,
+          "endLine": 9
+        },
+        {
+          "name": "FROM golang:${GOLANG_VERSION}-${DEBIAN_VERSION} AS builder",
+          "startLine": 11,
+          "endLine": 11
+        },
+        {
+          "name": "ARG TARGETARCH",
+          "startLine": 12,
+          "endLine": 12
+        },
+        {
+          "name": "WORKDIR /build/shared",
+          "startLine": 15,
+          "endLine": 15
+        },
+        {
+          "name": "COPY ./shared/go.mod ./shared/go.sum ./",
+          "startLine": 16,
+          "endLine": 16
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 17,
+          "endLine": 17
+        },
+        {
+          "name": "WORKDIR /build/clickhouse",
+          "startLine": 19,
+          "endLine": 19
+        },
+        {
+          "name": "COPY ./clickhouse/go.mod ./clickhouse/go.sum ./",
+          "startLine": 20,
+          "endLine": 20
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 21,
+          "endLine": 21
+        },
+        {
+          "name": "WORKDIR /build/orchestrator",
+          "startLine": 23,
+          "endLine": 23
+        },
+        {
+          "name": "COPY ./orchestrator/go.mod ./orchestrator/go.sum ./",
+          "startLine": 24,
+          "endLine": 24
+        },
+        {
+          "name": "RUN go mod download",
+          "startLine": 25,
+          "endLine": 25
+        },
+        {
+          "name": "WORKDIR /build",
+          "startLine": 28,
+          "endLine": 28
+        },
+        {
+          "name": "COPY ./shared/pkg ./shared/pkg",
+          "startLine": 30,
+          "endLine": 30
+        },
+        {
+          "name": "COPY ./clickhouse/pkg ./clickhouse/pkg",
+          "startLine": 31,
+          "endLine": 31
+        },
+        {
+          "name": "COPY ./orchestrator/pkg ./orchestrator/pkg",
+          "startLine": 33,
+          "endLine": 33
+        },
+        {
+          "name": "COPY ./orchestrator/cmd ./orchestrator/cmd",
+          "startLine": 34,
+          "endLine": 34
+        },
+        {
+          "name": "COPY ./orchestrator/main.go ./orchestrator/main.go",
+          "startLine": 35,
+          "endLine": 35
+        },
+        {
+          "name": "COPY ./orchestrator/Makefile ./orchestrator/Makefile",
+          "startLine": 36,
+          "endLine": 36
+        },
+        {
+          "name": "WORKDIR /build/orchestrator",
+          "startLine": 38,
+          "endLine": 38
+        },
+        {
+          "name": "ARG COMMIT_SHA",
+          "startLine": 40,
+          "endLine": 40
+        },
+        {
+          "name": "RUN --mount=type=cache,target=/root/.cache/go-build make build-l",
+          "startLine": 42,
+          "endLine": 42
+        },
+        {
+          "name": "FROM scratch",
+          "startLine": 44,
+          "endLine": 44
+        },
+        {
+          "name": "COPY --from=builder /build/orchestrator/bin/clean-nfs-cache .",
+          "startLine": 46,
+          "endLine": 46
+        },
+        {
+          "name": "COPY --from=builder /build/orchestrator/bin/orchestrator .",
+          "startLine": 47,
+          "endLine": 47
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "serviceCount": 2,
+        "stepCount": 26
+      }
+    }
+  ]
+}

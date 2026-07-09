@@ -1,0 +1,1995 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "type": "file",
+      "name": "gcp_multipart.go",
+      "filePath": "packages/shared/pkg/storage/gcp_multipart.go",
+      "summary": "提供 GCP 兼容的多段上传器，支持并发上传分片、重试机制以及分片合并完成上传。该模块封装了 S3 兼容的多段上传协议，被存储层用于大文件的高吞吐上传。",
+      "tags": [
+        "storage",
+        "multipart-upload",
+        "s3",
+        "gcp",
+        "retry"
+      ],
+      "complexity": "complex",
+      "languageNotes": "采用 S3 兼容的多段上传协议(分片上传+合并)，可对接 GCS/MinIO/AWS S3。"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/gcp_multipart_test.go",
+      "type": "file",
+      "name": "gcp_multipart_test.go",
+      "filePath": "packages/shared/pkg/storage/gcp_multipart_test.go",
+      "summary": "对多段上传器进行全面的单元测试与压力测试，覆盖并发、混沌场景以及分片大小的边界条件。",
+      "tags": [
+        "test",
+        "multipart-upload",
+        "stress-test",
+        "chaos-test"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/header/header.go",
+      "type": "file",
+      "name": "header.go",
+      "filePath": "packages/shared/pkg/storage/header/header.go",
+      "summary": "定义存储头部的核心数据结构与构建逻辑。Header 保存沙箱内存/根文件系统快照的元数据，是沙箱模板持久化与差分构建的基础。",
+      "tags": [
+        "storage",
+        "header",
+        "sandbox",
+        "snapshot",
+        "build-data"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/header/metadata.go",
+      "type": "file",
+      "name": "metadata.go",
+      "filePath": "packages/shared/pkg/storage/header/metadata.go",
+      "summary": "提供沙箱模板元数据的构建器与差分链转换工具。支持 NextGeneration 生成下一代元数据并构建 DiffMetadata 用于增量构建。",
+      "tags": [
+        "storage",
+        "metadata",
+        "diff",
+        "builder"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/header/serialization.go",
+      "type": "file",
+      "name": "serialization.go",
+      "filePath": "packages/shared/pkg/storage/header/serialization.go",
+      "summary": "提供存储头部的序列化与反序列化通用入口。支持多版本(V3/V4/V5)编解码并根据版本号自动分发。",
+      "tags": [
+        "storage",
+        "serialization",
+        "header",
+        "version"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "type": "file",
+      "name": "serialization_test.go",
+      "filePath": "packages/shared/pkg/storage/header/serialization_test.go",
+      "summary": "覆盖头部序列化 V3/V4 路径的往返一致性测试，校验 oversize 拒绝、truncated 输入、稀疏 trim 等异常场景。",
+      "tags": [
+        "test",
+        "serialization",
+        "header",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "type": "file",
+      "name": "serialization_v4.go",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v4.go",
+      "summary": "实现 V4 头部序列化格式，使用 LZ4 压缩构建映射表与 FrameTable。这是当前生产主要的快照头格式。",
+      "tags": [
+        "storage",
+        "serialization",
+        "v4",
+        "lz4",
+        "compression"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/gcp_multipart.go:RetryConfig",
+      "type": "class",
+      "name": "RetryConfig",
+      "filePath": "packages/shared/pkg/storage/gcp_multipart.go",
+      "lineRange": [
+        10,
+        30
+      ],
+      "summary": "可配置的重试策略，包含最大重试次数、基础延迟与最大延迟。",
+      "tags": [
+        "retry",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/gcp_multipart.go:MultipartUploader",
+      "type": "class",
+      "name": "MultipartUploader",
+      "filePath": "packages/shared/pkg/storage/gcp_multipart.go",
+      "lineRange": [
+        200,
+        400
+      ],
+      "summary": "S3/GCS 兼容的多段上传器主对象，封装 InitiateMultipartUpload/UploadPart/Complete 流程。",
+      "tags": [
+        "multipart-upload",
+        "s3",
+        "gcs"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/gcp_multipart.go:InitiateMultipartUploadResult",
+      "type": "class",
+      "name": "InitiateMultipartUploadResult",
+      "filePath": "packages/shared/pkg/storage/gcp_multipart.go",
+      "lineRange": [
+        120,
+        150
+      ],
+      "summary": "InitiateMultipartUpload 调用结果，包含 upload-id。",
+      "tags": [
+        "multipart-upload",
+        "result"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/gcp_multipart.go:CompleteMultipartUpload",
+      "type": "class",
+      "name": "CompleteMultipartUpload",
+      "filePath": "packages/shared/pkg/storage/gcp_multipart.go",
+      "lineRange": [
+        155,
+        175
+      ],
+      "summary": "CompleteMultipartUpload 调用结果，汇总所有已上传分片。",
+      "tags": [
+        "multipart-upload",
+        "result"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/gcp_multipart.go:Part",
+      "type": "class",
+      "name": "Part",
+      "filePath": "packages/shared/pkg/storage/gcp_multipart.go",
+      "lineRange": [
+        180,
+        195
+      ],
+      "summary": "已上传分片的元数据(PartNumber/ETag)。",
+      "tags": [
+        "multipart-upload",
+        "part"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/gcp_multipart.go:UploadFileInParallel",
+      "type": "function",
+      "name": "UploadFileInParallel",
+      "filePath": "packages/shared/pkg/storage/gcp_multipart.go",
+      "lineRange": [
+        420,
+        530
+      ],
+      "summary": "将文件分片并行上传到对象存储，自动选择分片大小与并发度。",
+      "tags": [
+        "multipart-upload",
+        "parallel",
+        "pipeline"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/gcp_multipart.go:NewMultipartUploaderWithRetryConfig",
+      "type": "function",
+      "name": "NewMultipartUploaderWithRetryConfig",
+      "filePath": "packages/shared/pkg/storage/gcp_multipart.go",
+      "lineRange": [
+        80,
+        110
+      ],
+      "summary": "构造带自定义重试配置的多段上传器。",
+      "tags": [
+        "constructor",
+        "retry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/gcp_multipart.go:createRetryableClient",
+      "type": "function",
+      "name": "createRetryableClient",
+      "filePath": "packages/shared/pkg/storage/gcp_multipart.go",
+      "lineRange": [
+        30,
+        65
+      ],
+      "summary": "创建具备指数退避 + 抖动的 HTTP 客户端。",
+      "tags": [
+        "http-client",
+        "retry",
+        "backoff"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/header/header.go:Header",
+      "type": "class",
+      "name": "Header",
+      "filePath": "packages/shared/pkg/storage/header/header.go",
+      "lineRange": [
+        100,
+        280
+      ],
+      "summary": "沙箱模板头部的核心结构，包含 BuildData、Mappings、FrameTable 等字段，是持久化与差分构建的基础。",
+      "tags": [
+        "storage",
+        "header",
+        "data-model"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/header/header.go:BuildData",
+      "type": "class",
+      "name": "BuildData",
+      "filePath": "packages/shared/pkg/storage/header/header.go",
+      "lineRange": [
+        40,
+        90
+      ],
+      "summary": "构建数据：块大小、构建链映射及压缩元信息。",
+      "tags": [
+        "storage",
+        "build-data"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/header.go:NewHeader",
+      "type": "function",
+      "name": "NewHeader",
+      "filePath": "packages/shared/pkg/storage/header/header.go",
+      "lineRange": [
+        285,
+        310
+      ],
+      "summary": "根据 metadata 构造新的 Header 实例。",
+      "tags": [
+        "constructor",
+        "header"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/header.go:ValidateHeader",
+      "type": "function",
+      "name": "ValidateHeader",
+      "filePath": "packages/shared/pkg/storage/header/header.go",
+      "lineRange": [
+        310,
+        341
+      ],
+      "summary": "校验 Header 内部一致性(blockSize/mappings/frames)。",
+      "tags": [
+        "validation",
+        "header"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/header/metadata.go:Metadata",
+      "type": "class",
+      "name": "Metadata",
+      "filePath": "packages/shared/pkg/storage/header/metadata.go",
+      "lineRange": [
+        20,
+        80
+      ],
+      "summary": "模板元数据：版本号、块大小、压缩类型、构建链等。",
+      "tags": [
+        "storage",
+        "metadata"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/header/metadata.go:DiffMetadata",
+      "type": "class",
+      "name": "DiffMetadata",
+      "filePath": "packages/shared/pkg/storage/header/metadata.go",
+      "lineRange": [
+        85,
+        140
+      ],
+      "summary": "差分元数据，记录相对父模板的块映射变化。",
+      "tags": [
+        "storage",
+        "diff",
+        "metadata"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/header/metadata.go:DiffMetadataBuilder",
+      "type": "class",
+      "name": "DiffMetadataBuilder",
+      "filePath": "packages/shared/pkg/storage/header/metadata.go",
+      "lineRange": [
+        145,
+        234
+      ],
+      "summary": "差分元数据构建器，逐步累积 block-level 变化并最终产出 DiffMetadata。",
+      "tags": [
+        "storage",
+        "diff",
+        "builder"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/metadata.go:NewTemplateMetadata",
+      "type": "function",
+      "name": "NewTemplateMetadata",
+      "filePath": "packages/shared/pkg/storage/header/metadata.go",
+      "lineRange": [
+        60,
+        85
+      ],
+      "summary": "基于已有快照生成下一代模板元数据。",
+      "tags": [
+        "metadata",
+        "factory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/metadata.go:NewDiffMetadataBuilder",
+      "type": "function",
+      "name": "NewDiffMetadataBuilder",
+      "filePath": "packages/shared/pkg/storage/header/metadata.go",
+      "lineRange": [
+        150,
+        175
+      ],
+      "summary": "构造 DiffMetadataBuilder，传入目标/源 Header 与 diff header。",
+      "tags": [
+        "diff",
+        "builder",
+        "factory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/metadata.go:Process",
+      "type": "function",
+      "name": "Process",
+      "filePath": "packages/shared/pkg/storage/header/metadata.go",
+      "lineRange": [
+        180,
+        220
+      ],
+      "summary": "将一次写入/读取的块差异应用到 builder。",
+      "tags": [
+        "diff",
+        "process"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/serialization.go:SerializeHeader",
+      "type": "function",
+      "name": "SerializeHeader",
+      "filePath": "packages/shared/pkg/storage/header/serialization.go",
+      "lineRange": [
+        20,
+        55
+      ],
+      "summary": "将 Header 序列化为字节流，按 metadataFormatVersion 路由到 V4/V5 编解码器。",
+      "tags": [
+        "serialization",
+        "header"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/serialization.go:DeserializeBytes",
+      "type": "function",
+      "name": "DeserializeBytes",
+      "filePath": "packages/shared/pkg/storage/header/serialization.go",
+      "lineRange": [
+        60,
+        110
+      ],
+      "summary": "从字节流反序列化 Header，自动识别版本号并调度对应解析器。",
+      "tags": [
+        "serialization",
+        "header",
+        "version-detect"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/serialization.go:LoadHeader",
+      "type": "function",
+      "name": "LoadHeader",
+      "filePath": "packages/shared/pkg/storage/header/serialization.go",
+      "lineRange": [
+        120,
+        160
+      ],
+      "summary": "从对象存储中读取并反序列化 Header。",
+      "tags": [
+        "serialization",
+        "header",
+        "loader"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/serialization.go:StoreHeader",
+      "type": "function",
+      "name": "StoreHeader",
+      "filePath": "packages/shared/pkg/storage/header/serialization.go",
+      "lineRange": [
+        165,
+        190
+      ],
+      "summary": "将 Header 序列化后写入对象存储。",
+      "tags": [
+        "serialization",
+        "header",
+        "writer"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/header/serialization_v4.go:v4SerializableBuildMap",
+      "type": "class",
+      "name": "v4SerializableBuildMap",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v4.go",
+      "lineRange": [
+        40,
+        110
+      ],
+      "summary": "V4 格式可序列化的构建映射表结构。",
+      "tags": [
+        "serialization",
+        "v4"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/header/serialization_v4.go:v4SerializableBuildInfo",
+      "type": "class",
+      "name": "v4SerializableBuildInfo",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v4.go",
+      "lineRange": [
+        115,
+        160
+      ],
+      "summary": "V4 格式可序列化的单个构建信息。",
+      "tags": [
+        "serialization",
+        "v4"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/serialization_v4.go:serializeV4",
+      "type": "function",
+      "name": "serializeV4",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v4.go",
+      "lineRange": [
+        165,
+        220
+      ],
+      "summary": "将 Header 按 V4 格式输出字节流。",
+      "tags": [
+        "serialization",
+        "v4"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/serialization_v4.go:deserializeV4",
+      "type": "function",
+      "name": "deserializeV4",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v4.go",
+      "lineRange": [
+        225,
+        280
+      ],
+      "summary": "从字节流解析 V4 Header。",
+      "tags": [
+        "serialization",
+        "v4",
+        "parser"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/serialization_v4.go:compressLZ4",
+      "type": "function",
+      "name": "compressLZ4",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v4.go",
+      "lineRange": [
+        280,
+        295
+      ],
+      "summary": "对 V4 构建映射表执行 LZ4 压缩。",
+      "tags": [
+        "compression",
+        "lz4"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/serialization_v4.go:decompressLZ4",
+      "type": "function",
+      "name": "decompressLZ4",
+      "filePath": "packages/shared/pkg/storage/header/serialization_v4.go",
+      "lineRange": [
+        295,
+        301
+      ],
+      "summary": "解压 V4 LZ4 压缩块。",
+      "tags": [
+        "compression",
+        "lz4"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "target": "class:packages/shared/pkg/storage/gcp_multipart.go:RetryConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "target": "class:packages/shared/pkg/storage/gcp_multipart.go:MultipartUploader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "target": "class:packages/shared/pkg/storage/gcp_multipart.go:InitiateMultipartUploadResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "target": "class:packages/shared/pkg/storage/gcp_multipart.go:CompleteMultipartUpload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "target": "class:packages/shared/pkg/storage/gcp_multipart.go:Part",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "target": "function:packages/shared/pkg/storage/gcp_multipart.go:UploadFileInParallel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "target": "function:packages/shared/pkg/storage/gcp_multipart.go:NewMultipartUploaderWithRetryConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "target": "function:packages/shared/pkg/storage/gcp_multipart.go:createRetryableClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "class:packages/shared/pkg/storage/header/header.go:Header",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "class:packages/shared/pkg/storage/header/header.go:BuildData",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "function:packages/shared/pkg/storage/header/header.go:NewHeader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "function:packages/shared/pkg/storage/header/header.go:ValidateHeader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "class:packages/shared/pkg/storage/header/metadata.go:Metadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "class:packages/shared/pkg/storage/header/metadata.go:DiffMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "class:packages/shared/pkg/storage/header/metadata.go:DiffMetadataBuilder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "function:packages/shared/pkg/storage/header/metadata.go:NewTemplateMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "function:packages/shared/pkg/storage/header/metadata.go:NewDiffMetadataBuilder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "function:packages/shared/pkg/storage/header/metadata.go:Process",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "function:packages/shared/pkg/storage/header/serialization.go:SerializeHeader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "function:packages/shared/pkg/storage/header/serialization.go:DeserializeBytes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "function:packages/shared/pkg/storage/header/serialization.go:LoadHeader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "function:packages/shared/pkg/storage/header/serialization.go:StoreHeader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "class:packages/shared/pkg/storage/header/serialization_v4.go:v4SerializableBuildMap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "class:packages/shared/pkg/storage/header/serialization_v4.go:v4SerializableBuildInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "function:packages/shared/pkg/storage/header/serialization_v4.go:serializeV4",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "function:packages/shared/pkg/storage/header/serialization_v4.go:deserializeV4",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "function:packages/shared/pkg/storage/header/serialization_v4.go:compressLZ4",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "function:packages/shared/pkg/storage/header/serialization_v4.go:decompressLZ4",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "target": "file:packages/shared/pkg/logger/exporter_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "target": "file:packages/shared/pkg/logger/exporter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "target": "file:packages/shared/pkg/logger/fields.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "target": "file:packages/shared/pkg/logger/grpc.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "target": "file:packages/shared/pkg/logger/logger.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/logger/exporter_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/logger/exporter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/logger/fields.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/logger/grpc.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/logger/logger.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/buffer_pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/compress_config.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/compress_decode.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/compress_encode.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/compress_frame_table_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/compress_frame_table.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/compress_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/compress_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/gcp_multipart_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/io_wrappers.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/metrics_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/mock_blob.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/mock_featureflagsclient.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/mock_ioreader.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/mock_seekable.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/mock_storageprovider.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/paths_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/paths_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/paths.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/sandbox_reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/storage_aws.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_blob_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_compressed_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_seekable_compressed.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_seekable_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_seekable.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/storage_fs_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/storage_fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/storage_google.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/storage_localupload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/header.go",
+      "target": "file:packages/shared/pkg/storage/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/logger/exporter_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/logger/exporter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/logger/fields.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/logger/grpc.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/logger/logger.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/telemetry/cloud_trace_propagator_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/telemetry/cloud_trace_propagator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/telemetry/config.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/telemetry/fields.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/telemetry/logs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/telemetry/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/telemetry/meters.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/telemetry/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/telemetry/pprof_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/telemetry/pprof.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/telemetry/runtime.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/telemetry/traces.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/telemetry/tracing.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/metadata.go",
+      "target": "file:packages/shared/pkg/telemetry/writer.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/buffer_pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/compress_config.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/compress_decode.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/compress_encode.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/compress_frame_table_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/compress_frame_table.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/compress_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/compress_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/gcp_multipart_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/io_wrappers.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/metrics_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/mock_blob.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/mock_featureflagsclient.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/mock_ioreader.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/mock_seekable.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/mock_storageprovider.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/paths_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/paths_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/paths.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/sandbox_reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/storage_aws.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_blob_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_compressed_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_seekable_compressed.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_seekable_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_seekable.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/storage_fs_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/storage_fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/storage_google.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/storage_localupload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/buffer_pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/compress_config.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/compress_decode.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/compress_encode.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/compress_frame_table_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/compress_frame_table.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/compress_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/compress_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/gcp_multipart_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/io_wrappers.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/metrics_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/mock_blob.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/mock_featureflagsclient.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/mock_ioreader.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/mock_seekable.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/mock_storageprovider.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/paths_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/paths_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/paths.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/sandbox_reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_aws.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_blob_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_compressed_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_seekable_compressed.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_seekable_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_seekable.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_fs_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_google.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_localupload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/buffer_pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/compress_config.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/compress_decode.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/compress_encode.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/compress_frame_table_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/compress_frame_table.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/compress_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/compress_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/gcp_multipart_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/io_wrappers.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/metrics_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/mock_blob.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/mock_featureflagsclient.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/mock_ioreader.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/mock_seekable.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/mock_storageprovider.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/paths_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/paths_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/paths.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/sandbox_reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/storage_aws.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_blob_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_compressed_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_seekable_compressed.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_seekable_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_seekable.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/storage_fs_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/storage_fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/storage_google.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/storage_localupload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "target": "file:packages/shared/pkg/storage/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/gcp_multipart_test.go",
+      "target": "file:packages/shared/pkg/storage/gcp_multipart.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization_test.go",
+      "target": "file:packages/shared/pkg/storage/header/serialization.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/serialization.go",
+      "target": "file:packages/shared/pkg/storage/header/serialization_v4.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

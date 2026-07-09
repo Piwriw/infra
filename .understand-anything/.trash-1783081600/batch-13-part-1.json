@@ -1,0 +1,1568 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "type": "file",
+      "name": "proxy_test.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "summary": "NFS 代理的端到端往返测试，验证 chroot 卷路径下 NFS mount/lookup/read/write 的完整 RPC 流程。要求 root 权限，并使用真实的 chrooted 构建器与 sandbox map 进行集成测试。",
+      "tags": [
+        "test",
+        "nfs",
+        "integration",
+        "linux-only"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/proxy_test.go:TestRoundTrip",
+      "type": "function",
+      "name": "TestRoundTrip",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "lineRange": [
+        44,
+        264
+      ],
+      "summary": "对 NFS 代理执行 mount、lookup、read、write 的端到端往返测试，覆盖正反向 RPC 调用与 RPC error 转换路径。",
+      "tags": [
+        "test",
+        "nfs",
+        "integration"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/proxy_test.go:createVolumeDir",
+      "type": "function",
+      "name": "createVolumeDir",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "lineRange": [
+        33,
+        42
+      ],
+      "summary": "测试辅助函数，使用 chrooted Builder 创建 team/volume 组合对应的本地卷目录。",
+      "tags": [
+        "test-helper",
+        "filesystem"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/proxy_test.go:TestRoundTrip",
+      "type": "function",
+      "name": "TestRoundTrip",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "lineRange": [
+        44,
+        264
+      ],
+      "summary": "对 NFS 代理执行 mount、lookup、read、write 的端到端往返测试，覆盖正反向 RPC 调用与 RPC error 转换路径。",
+      "tags": [
+        "test",
+        "nfs",
+        "integration"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/proxy_test.go:createVolumeDir",
+      "type": "function",
+      "name": "createVolumeDir",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "lineRange": [
+        33,
+        42
+      ],
+      "summary": "测试辅助函数，使用 chrooted Builder 创建 team/volume 组合对应的本地卷目录。",
+      "tags": [
+        "test-helper",
+        "filesystem"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/recovery/change.go",
+      "type": "file",
+      "name": "change.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/recovery/change.go",
+      "summary": "为 go-billy billy.Change 接口提供 panic-recovery 装饰器层：将每个方法包装在 deferred recover 中，避免下游 NFS handler 的 panic 传播到整个 proxy。",
+      "tags": [
+        "middleware",
+        "recovery",
+        "nfs",
+        "panic-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/recovery/change.go:change",
+      "type": "class",
+      "name": "change",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/recovery/change.go",
+      "lineRange": [
+        11,
+        14
+      ],
+      "summary": "包装内层 billy.Change 并对 Chmod/Lchown/Chown/Chtimes 做 panic 恢复。",
+      "tags": [
+        "wrapper",
+        "billy",
+        "recovery"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/recovery/change.go:change",
+      "type": "class",
+      "name": "change",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/recovery/change.go",
+      "lineRange": [
+        11,
+        14
+      ],
+      "summary": "包装内层 billy.Change 并对 Chmod/Lchown/Chown/Chtimes 做 panic 恢复。",
+      "tags": [
+        "wrapper",
+        "billy",
+        "recovery"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/recovery/file.go",
+      "type": "file",
+      "name": "file.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/recovery/file.go",
+      "summary": "为 go-billy billy.File 接口提供 panic-recovery 装饰器，覆盖 Name/Write/Read/ReadAt/Seek/Close/Lock/Unlock/Truncate 等所有方法。",
+      "tags": [
+        "middleware",
+        "recovery",
+        "nfs",
+        "panic-handling",
+        "file-io"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/recovery/file.go:file",
+      "type": "class",
+      "name": "file",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/recovery/file.go",
+      "lineRange": [
+        9,
+        12
+      ],
+      "summary": "包装内层 billy.File 并对所有读写/锁操作做 panic 恢复。",
+      "tags": [
+        "wrapper",
+        "billy",
+        "recovery",
+        "file-io"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/recovery/file.go:file",
+      "type": "class",
+      "name": "file",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/recovery/file.go",
+      "lineRange": [
+        9,
+        12
+      ],
+      "summary": "包装内层 billy.File 并对所有读写/锁操作做 panic 恢复。",
+      "tags": [
+        "wrapper",
+        "billy",
+        "recovery",
+        "file-io"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/recovery/fs.go",
+      "type": "file",
+      "name": "fs.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/recovery/fs.go",
+      "summary": "为 go-billy billy.Filesystem 接口提供 panic-recovery 装饰器，覆盖 Create/Open/OpenFile/Stat/Rename/Remove 等全部文件系统操作，并递归包装返回的 billy.File。",
+      "tags": [
+        "middleware",
+        "recovery",
+        "nfs",
+        "panic-handling",
+        "filesystem"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/recovery/fs.go:filesystem",
+      "type": "class",
+      "name": "filesystem",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/recovery/fs.go",
+      "lineRange": [
+        10,
+        13
+      ],
+      "summary": "包装内层 billy.Filesystem，对每个调用做 panic 恢复并对外层 File/Change 实例做嵌套包装。",
+      "tags": [
+        "wrapper",
+        "billy",
+        "recovery",
+        "filesystem"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/recovery/fs.go:filesystem",
+      "type": "class",
+      "name": "filesystem",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/recovery/fs.go",
+      "lineRange": [
+        10,
+        13
+      ],
+      "summary": "包装内层 billy.Filesystem，对每个调用做 panic 恢复并对外层 File/Change 实例做嵌套包装。",
+      "tags": [
+        "wrapper",
+        "billy",
+        "recovery",
+        "filesystem"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/recovery/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/recovery/main.go",
+      "summary": "NFS Handler 的 panic-recovery 装饰器：拦截 NFS Handler 的 Mount/Change/FSStat/ToHandle/FromHandle/InvalidateHandle/HandleLimit 调用，在 panic 时记录错误日志而不是让进程崩溃。",
+      "tags": [
+        "middleware",
+        "recovery",
+        "nfs",
+        "panic-handling"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/recovery/main.go:Handler",
+      "type": "class",
+      "name": "Handler",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/recovery/main.go",
+      "lineRange": [
+        16,
+        19
+      ],
+      "summary": "实现 nfs.Handler 接口的 recovery 包装器，将每个方法调用都用 tryRecovery/deferErrRecovery 保护。",
+      "tags": [
+        "wrapper",
+        "nfs-handler",
+        "recovery"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/recovery/main.go:Handler",
+      "type": "class",
+      "name": "Handler",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/recovery/main.go",
+      "lineRange": [
+        16,
+        19
+      ],
+      "summary": "实现 nfs.Handler 接口的 recovery 包装器，将每个方法调用都用 tryRecovery/deferErrRecovery 保护。",
+      "tags": [
+        "wrapper",
+        "nfs-handler",
+        "recovery"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/spanconn.go",
+      "type": "file",
+      "name": "spanconn.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/spanconn.go",
+      "summary": "为 NFS 代理连接附加 OpenTelemetry span 生命周期：将 net.Conn 包装为 connWithSpan，在 onConnect 启动 span、onDisconnect 关闭 span，使每个 NFS 连接的 trace 与连接本身绑定。",
+      "tags": [
+        "telemetry",
+        "tracing",
+        "nfs",
+        "connection-lifecycle"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/spanconn.go:connWithSpan",
+      "type": "class",
+      "name": "connWithSpan",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/spanconn.go",
+      "lineRange": [
+        39,
+        43
+      ],
+      "summary": "嵌入 net.Conn 并附带 OTel span，用于在 NFS 代理 accept 后跟踪整个连接的 trace 生命周期。",
+      "tags": [
+        "wrapper",
+        "tracing",
+        "connection"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/spanconn.go:connWithSpan",
+      "type": "class",
+      "name": "connWithSpan",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/spanconn.go",
+      "lineRange": [
+        39,
+        43
+      ],
+      "summary": "嵌入 net.Conn 并附带 OTel span，用于在 NFS 代理 accept 后跟踪整个连接的 trace 生命周期。",
+      "tags": [
+        "wrapper",
+        "tracing",
+        "connection"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/tracing/change.go",
+      "type": "file",
+      "name": "change.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/change.go",
+      "summary": "为 billy.Change 接口提供 OpenTelemetry tracing 装饰器：在 Chmod/Lchown/Chown/Chtimes 调用前后启动/关闭 span。",
+      "tags": [
+        "middleware",
+        "tracing",
+        "nfs",
+        "telemetry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/tracing/change.go:tracingChange",
+      "type": "class",
+      "name": "tracingChange",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/change.go",
+      "lineRange": [
+        12,
+        15
+      ],
+      "summary": "包装 billy.Change，为每个 changelog 操作生成 OTel span。",
+      "tags": [
+        "wrapper",
+        "tracing",
+        "billy"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/tracing/change.go:tracingChange",
+      "type": "class",
+      "name": "tracingChange",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/change.go",
+      "lineRange": [
+        12,
+        15
+      ],
+      "summary": "包装 billy.Change，为每个 changelog 操作生成 OTel span。",
+      "tags": [
+        "wrapper",
+        "tracing",
+        "billy"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/tracing/file.go",
+      "type": "file",
+      "name": "file.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/file.go",
+      "summary": "为 billy.File 接口提供 OTel tracing 装饰器：在每次 Name/Write/Read/ReadAt/Seek/Close/Lock/Unlock/Truncate 上记录 span。",
+      "tags": [
+        "middleware",
+        "tracing",
+        "nfs",
+        "file-io",
+        "telemetry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/tracing/file.go:tracingFile",
+      "type": "class",
+      "name": "tracingFile",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/file.go",
+      "lineRange": [
+        10,
+        14
+      ],
+      "summary": "包装 billy.File，为每次文件操作生成 OTel span。",
+      "tags": [
+        "wrapper",
+        "tracing",
+        "file-io",
+        "billy"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/tracing/file.go:tracingFile",
+      "type": "class",
+      "name": "tracingFile",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/file.go",
+      "lineRange": [
+        10,
+        14
+      ],
+      "summary": "包装 billy.File，为每次文件操作生成 OTel span。",
+      "tags": [
+        "wrapper",
+        "tracing",
+        "file-io",
+        "billy"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/tracing/fs.go",
+      "type": "file",
+      "name": "fs.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/fs.go",
+      "summary": "为 billy.Filesystem 接口提供 OTel tracing 装饰器，覆盖全部文件系统方法并将返回的 File 自动包裹为 tracingFile。",
+      "tags": [
+        "middleware",
+        "tracing",
+        "nfs",
+        "filesystem",
+        "telemetry"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/tracing/fs.go:tracingFS",
+      "type": "class",
+      "name": "tracingFS",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/fs.go",
+      "lineRange": [
+        13,
+        18
+      ],
+      "summary": "包装 billy.Filesystem 并为每次调用生成 span。",
+      "tags": [
+        "wrapper",
+        "tracing",
+        "billy",
+        "filesystem"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/tracing/fs.go:tracingFS",
+      "type": "class",
+      "name": "tracingFS",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/fs.go",
+      "lineRange": [
+        13,
+        18
+      ],
+      "summary": "包装 billy.Filesystem 并为每次调用生成 span。",
+      "tags": [
+        "wrapper",
+        "tracing",
+        "billy",
+        "filesystem"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/tracing/handler.go",
+      "type": "file",
+      "name": "handler.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/handler.go",
+      "summary": "为 nfs.Handler 接口提供 OTel tracing 装饰器：在每个 NFS RPC 上启动 span、记录关键属性（远程地址、path 等），并对可配置 RecordHandleCalls 控制是否包装 handle 操作。",
+      "tags": [
+        "middleware",
+        "tracing",
+        "nfs-handler",
+        "telemetry"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/tracing/handler.go:tracingHandler",
+      "type": "class",
+      "name": "tracingHandler",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/handler.go",
+      "lineRange": [
+        15,
+        18
+      ],
+      "summary": "包装 nfs.Handler，为每次 Mount/Change/FSStat/ToHandle/FromHandle/InvalidateHandle/HandleLimit 调用生成 span，并自动包装返回的 billy.Filesystem。",
+      "tags": [
+        "wrapper",
+        "tracing",
+        "nfs-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/tracing/handler.go:tracingHandler",
+      "type": "class",
+      "name": "tracingHandler",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/handler.go",
+      "lineRange": [
+        15,
+        18
+      ],
+      "summary": "包装 nfs.Handler，为每次 Mount/Change/FSStat/ToHandle/FromHandle/InvalidateHandle/HandleLimit 调用生成 span，并自动包装返回的 billy.Filesystem。",
+      "tags": [
+        "wrapper",
+        "tracing",
+        "nfs-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/tracing/util.go",
+      "type": "file",
+      "name": "util.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/util.go",
+      "summary": "为 NFS tracing 层提供 span 启动与用户错误分类工具：startSpan 返回带结束回调 (finish) 的 context，isUserError 把 ErrNotExist/ErrExist 视为非失败状态。",
+      "tags": [
+        "utility",
+        "tracing",
+        "telemetry",
+        "error-classification"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/tracing/util.go:startSpan",
+      "type": "function",
+      "name": "startSpan",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/util.go",
+      "lineRange": [
+        18,
+        33
+      ],
+      "summary": "为 nfsproxy/tracing 包启动一个 OTel span，并返回 finish 回调用于在退出时记录错误/状态/附加属性。",
+      "tags": [
+        "tracing",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/tracing/util.go:isUserError",
+      "type": "function",
+      "name": "isUserError",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/util.go",
+      "lineRange": [
+        35,
+        45
+      ],
+      "summary": "判断一个错误是否为用户输入触发的预期错误（os.ErrNotExist、os.ErrExist），用于避免在 span 上标记为 Error。",
+      "tags": [
+        "error-classification",
+        "tracing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/tracing/util.go:startSpan",
+      "type": "function",
+      "name": "startSpan",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/util.go",
+      "lineRange": [
+        18,
+        33
+      ],
+      "summary": "为 nfsproxy/tracing 包启动一个 OTel span，并返回 finish 回调用于在退出时记录错误/状态/附加属性。",
+      "tags": [
+        "tracing",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/tracing/util.go:isUserError",
+      "type": "function",
+      "name": "isUserError",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/util.go",
+      "lineRange": [
+        35,
+        45
+      ],
+      "summary": "判断一个错误是否为用户输入触发的预期错误（os.ErrNotExist、os.ErrExist），用于避免在 span 上标记为 Error。",
+      "tags": [
+        "error-classification",
+        "tracing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/tracing/util_test.go",
+      "type": "file",
+      "name": "util_test.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/util_test.go",
+      "summary": "nfsproxy/tracing 包 isUserError 函数的单元测试，覆盖 ErrNotExist/ErrExist 与一般错误的分类。",
+      "tags": [
+        "test",
+        "error-classification"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/tracing/util_test.go:TestIsUserError",
+      "type": "function",
+      "name": "TestIsUserError",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/util_test.go",
+      "lineRange": [
+        12,
+        57
+      ],
+      "summary": "验证 isUserError 对 ErrNotExist、ErrExist 与一般 error 的判断结果。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/tracing/util_test.go:TestIsUserError",
+      "type": "function",
+      "name": "TestIsUserError",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/tracing/util_test.go",
+      "lineRange": [
+        12,
+        57
+      ],
+      "summary": "验证 isUserError 对 ErrNotExist、ErrExist 与一般 error 的判断结果。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/parsing.go",
+      "type": "file",
+      "name": "parsing.go",
+      "filePath": "packages/orchestrator/pkg/parsing.go",
+      "summary": "提供 TryParseUUID 工具函数：解析字符串为 uuid.UUID 并要求不等于 uuid.Nil 才视为成功，避免空 UUID 误用。",
+      "tags": [
+        "utility",
+        "uuid",
+        "parsing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/parsing.go:TryParseUUID",
+      "type": "function",
+      "name": "TryParseUUID",
+      "filePath": "packages/orchestrator/pkg/parsing.go",
+      "lineRange": [
+        5,
+        9
+      ],
+      "summary": "安全解析字符串为 uuid.UUID，仅在格式正确且非零 UUID 时返回 true。",
+      "tags": [
+        "uuid",
+        "parsing",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/parsing.go:TryParseUUID",
+      "type": "function",
+      "name": "TryParseUUID",
+      "filePath": "packages/orchestrator/pkg/parsing.go",
+      "lineRange": [
+        5,
+        9
+      ],
+      "summary": "安全解析字符串为 uuid.UUID，仅在格式正确且非零 UUID 时返回 true。",
+      "tags": [
+        "uuid",
+        "parsing",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/portmap/logging.go",
+      "type": "file",
+      "name": "logging.go",
+      "filePath": "packages/orchestrator/pkg/portmap/logging.go",
+      "summary": "为 PMAP_PROG RPC handler 添加结构化日志：记录每次 PMAPPROC_* 调用的入参与返回值（剥除/INSERT 等敏感路径不会被改写，仍返回原结果）。",
+      "tags": [
+        "middleware",
+        "logging",
+        "portmap",
+        "rpc"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/portmap/logging.go:loggable",
+      "type": "class",
+      "name": "loggable",
+      "filePath": "packages/orchestrator/pkg/portmap/logging.go",
+      "lineRange": [
+        12,
+        15
+      ],
+      "summary": "包装 PMAP handler，在每次 RPC 调用前后输出 begin/end 日志。",
+      "tags": [
+        "wrapper",
+        "logging",
+        "portmap"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/portmap/logging.go:loggable",
+      "type": "class",
+      "name": "loggable",
+      "filePath": "packages/orchestrator/pkg/portmap/logging.go",
+      "lineRange": [
+        12,
+        15
+      ],
+      "summary": "包装 PMAP handler，在每次 RPC 调用前后输出 begin/end 日志。",
+      "tags": [
+        "wrapper",
+        "logging",
+        "portmap"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/portmap/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/orchestrator/pkg/portmap/main.go",
+      "summary": "实现 PMAP（rpcbind）RPC handler：维护 Prog/Vers/Prot -> Port 注册表。仅支持 GETPORT/DUMP/GETPORT/CALLIT 读取路径，SET/UNSET 明确禁用以防止攻击者重定向 NFS 流量。",
+      "tags": [
+        "portmap",
+        "rpc",
+        "nfs",
+        "security"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/portmap/main.go:handlers",
+      "type": "class",
+      "name": "handlers",
+      "filePath": "packages/orchestrator/pkg/portmap/main.go",
+      "lineRange": [
+        13,
+        17
+      ],
+      "summary": "PMAP_PROG 实现：sync.RWMutex 保护的 mapping 表，SET/UNSET 为 no-op（仅记录），GETPORT/DUMP 实际查询。",
+      "tags": [
+        "portmap",
+        "rpc-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/portmap/main.go:handlers",
+      "type": "class",
+      "name": "handlers",
+      "filePath": "packages/orchestrator/pkg/portmap/main.go",
+      "lineRange": [
+        13,
+        17
+      ],
+      "summary": "PMAP_PROG 实现：sync.RWMutex 保护的 mapping 表，SET/UNSET 为 no-op（仅记录），GETPORT/DUMP 实际查询。",
+      "tags": [
+        "portmap",
+        "rpc-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/portmap/main_test.go",
+      "type": "file",
+      "name": "main_test.go",
+      "filePath": "packages/orchestrator/pkg/portmap/main_test.go",
+      "summary": "PMAP 处理函数的单元测试：验证 registerPort 与 getPortByKey 的注册/查询行为。",
+      "tags": [
+        "test",
+        "portmap"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/portmap/main_test.go:TestPortmapRetrieval",
+      "type": "function",
+      "name": "TestPortmapRetrieval",
+      "filePath": "packages/orchestrator/pkg/portmap/main_test.go",
+      "lineRange": [
+        10,
+        23
+      ],
+      "summary": "验证注册端口可通过 getPortByKey 正确查询到。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/portmap/main_test.go:TestPortmapRetrieval",
+      "type": "function",
+      "name": "TestPortmapRetrieval",
+      "filePath": "packages/orchestrator/pkg/portmap/main_test.go",
+      "lineRange": [
+        10,
+        23
+      ],
+      "summary": "验证注册端口可通过 getPortByKey 正确查询到。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/proxy_test.go:TestRoundTrip",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/proxy_test.go:createVolumeDir",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/recovery/change.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/recovery/change.go:change",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/nfsproxy/recovery/change.go:change",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/recovery/change.go:Chmod",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/recovery/file.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/recovery/file.go:file",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/nfsproxy/recovery/file.go:file",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/recovery/file.go:Name",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/nfsproxy/recovery/file.go:file",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/recovery/file.go:Read",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/nfsproxy/recovery/file.go:file",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/recovery/file.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/recovery/fs.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/recovery/fs.go:filesystem",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/nfsproxy/recovery/fs.go:filesystem",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/recovery/fs.go:Create",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/nfsproxy/recovery/fs.go:filesystem",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/recovery/fs.go:Open",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/nfsproxy/recovery/fs.go:filesystem",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/recovery/fs.go:Stat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/recovery/main.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/recovery/main.go:Handler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/nfsproxy/recovery/main.go:Handler",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/recovery/main.go:WrapWithRecovery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/nfsproxy/recovery/main.go:Handler",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/recovery/main.go:Mount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/spanconn.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/spanconn.go:connWithSpan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/tracing/change.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/tracing/change.go:tracingChange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/nfsproxy/tracing/change.go:tracingChange",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/tracing/change.go:Chmod",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/tracing/file.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/tracing/file.go:tracingFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/nfsproxy/tracing/file.go:tracingFile",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/tracing/file.go:Write",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/nfsproxy/tracing/file.go:tracingFile",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/tracing/file.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/tracing/fs.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/tracing/fs.go:tracingFS",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/nfsproxy/tracing/fs.go:tracingFS",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/tracing/fs.go:Create",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/nfsproxy/tracing/fs.go:tracingFS",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/tracing/fs.go:Open",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/tracing/handler.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/tracing/handler.go:tracingHandler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/nfsproxy/tracing/handler.go:tracingHandler",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/tracing/handler.go:WrapWithTracing",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/nfsproxy/tracing/handler.go:tracingHandler",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/tracing/handler.go:Mount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/tracing/util.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/tracing/util.go:startSpan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/tracing/util.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/tracing/util.go:isUserError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/tracing/util_test.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/tracing/util_test.go:TestIsUserError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/parsing.go",
+      "target": "function:packages/orchestrator/pkg/parsing.go:TryParseUUID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/portmap/logging.go",
+      "target": "class:packages/orchestrator/pkg/portmap/logging.go:loggable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/portmap/logging.go:loggable",
+      "target": "function:packages/orchestrator/pkg/portmap/logging.go:PMAPPROC_NULL",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/portmap/main.go",
+      "target": "class:packages/orchestrator/pkg/portmap/main.go:handlers",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/portmap/main.go:handlers",
+      "target": "function:packages/orchestrator/pkg/portmap/main.go:registerPort",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/pkg/portmap/main.go:handlers",
+      "target": "function:packages/orchestrator/pkg/portmap/main.go:PMAPPROC_GETPORT",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/portmap/main_test.go",
+      "target": "function:packages/orchestrator/pkg/portmap/main_test.go:TestPortmapRetrieval",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/builder.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/change.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/chroot_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/chroot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/mountns.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/portmap/logging.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/portmap/main_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/portmap/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/portmap/recover.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/portmap/server_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/portmap/server.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/dscp_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/host.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/slot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_kv.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_memory.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/tracing/fs.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/tracing/handler.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/portmap/main.go",
+      "target": "file:packages/orchestrator/pkg/portmap/main_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/tracing/util.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/tracing/util_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

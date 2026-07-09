@@ -1,0 +1,169 @@
+{
+  "nodes": [
+    {
+      "id": "resource:iac/provider-gcp/modules/nodepool-api/main.tf",
+      "type": "resource",
+      "name": "nodepool-api/main.tf",
+      "filePath": "iac/provider-gcp/modules/nodepool-api/main.tf",
+      "summary": "Terraform 模块,为 E2B API 节点池提供 GCE 资源:健康检查、区域实例组管理器以及虚拟机实例模板,负责启动 Consul/Nomad 并定义负载均衡命名端口。",
+      "tags": ["infrastructure", "terraform", "compute", "gce", "module", "deployment"],
+      "complexity": "complex",
+      "languageNotes": "使用 templatefile() 渲染启动脚本,结合 depends_on 和 lifecycle.create_before_destroy 安全地轮换实例模板。"
+    },
+    {
+      "id": "resource:iac/provider-gcp/modules/nodepool-api/variables.tf",
+      "type": "resource",
+      "name": "nodepool-api/variables.tf",
+      "filePath": "iac/provider-gcp/modules/nodepool-api/variables.tf",
+      "summary": "声明 API 节点池模块的输入变量,包括 GCP 区域/可用区、网络/集群元数据、镜像族、机器类型、端口对象、Consul/Nomad 密钥(标记为 sensitive)以及环境/标签元数据。",
+      "tags": ["infrastructure", "terraform", "configuration", "module-input", "secrets"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/modules/nodepool-api/outputs.tf",
+      "type": "resource",
+      "name": "nodepool-api/outputs.tf",
+      "filePath": "iac/provider-gcp/modules/nodepool-api/outputs.tf",
+      "summary": "导出区域实例组管理器 self-link 作为 instance_group 输出,供负载均衡后端复用。",
+      "tags": ["infrastructure", "terraform", "module-output", "load-balancer"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:google_compute_health_check.nomad_check",
+      "type": "resource",
+      "name": "google_compute_health_check.nomad_check",
+      "filePath": "iac/provider-gcp/modules/nodepool-api/main.tf",
+      "lineRange": [16, 31],
+      "summary": "针对 Nomad 代理 /v1/agent/health 端点的 HTTP 健康检查,15 秒间隔,10 个不健康阈值(约 50 秒)以容忍 Nomad 重启。",
+      "tags": ["health-check", "nomad", "infrastructure", "gce"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:google_compute_region_instance_group_manager.pool",
+      "type": "resource",
+      "name": "google_compute_region_instance_group_manager.pool",
+      "filePath": "iac/provider-gcp/modules/nodepool-api/main.tf",
+      "lineRange": [37, 100],
+      "summary": "API 集群的托管区域实例组,绑定 5 个命名端口(client-proxy/API/ingress/docker-reverse-proxy),配置基于 Nomad 健康检查的自动修复策略,并按环境采用 PROACTIVE/OPPORTUNISTIC 滚动更新。",
+      "tags": ["instance-group", "auto-healing", "rolling-update", "load-balancer", "gce"],
+      "complexity": "complex",
+      "languageNotes": "update_policy 中 max_surge_fixed 等于区域内可用区数,以保证跨可用区分布均衡。"
+    },
+    {
+      "id": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:google_compute_instance_template.template",
+      "type": "resource",
+      "name": "google_compute_instance_template.template",
+      "filePath": "iac/provider-gcp/modules/nodepool-api/main.tf",
+      "lineRange": [106, 171],
+      "summary": "API 实例模板:200GB 启动盘、通过 templatefile 渲染的启动脚本(注册 Consul/Nomad)、网络标签、Ops Agent 策略标签(非 dev 环境)以及完整 OAuth 2.0 监控/日志范围;启用 create_before_destroy 以便 MIG 安全轮换。",
+      "tags": ["instance-template", "startup-script", "consul", "nomad", "gce", "service-account"],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:data.google_compute_zones.region_zones",
+      "type": "resource",
+      "name": "data.google_compute_zones.region_zones",
+      "filePath": "iac/provider-gcp/modules/nodepool-api/main.tf",
+      "lineRange": [33, 35],
+      "summary": "数据源,查询所在 GCP 区域内的可用区列表,用于在 MIG 更新策略中按可用区数设置 max_surge_fixed。",
+      "tags": ["data-source", "gce", "zone-discovery"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:data.google_compute_image.source_image",
+      "type": "resource",
+      "name": "data.google_compute_image.source_image",
+      "filePath": "iac/provider-gcp/modules/nodepool-api/main.tf",
+      "lineRange": [102, 104],
+      "summary": "数据源,根据 image_family 解析最新的 GCE 镜像作为 API 实例模板的启动盘基础镜像。",
+      "tags": ["data-source", "gce", "image", "boot-disk"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/provider-gcp/modules/nodepool-api/main.tf",
+      "target": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:google_compute_health_check.nomad_check",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/modules/nodepool-api/main.tf",
+      "target": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:google_compute_region_instance_group_manager.pool",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/modules/nodepool-api/main.tf",
+      "target": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:google_compute_instance_template.template",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/modules/nodepool-api/main.tf",
+      "target": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:data.google_compute_zones.region_zones",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/modules/nodepool-api/main.tf",
+      "target": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:data.google_compute_image.source_image",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:google_compute_region_instance_group_manager.pool",
+      "target": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:google_compute_instance_template.template",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:google_compute_region_instance_group_manager.pool",
+      "target": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:google_compute_health_check.nomad_check",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:google_compute_region_instance_group_manager.pool",
+      "target": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:data.google_compute_zones.region_zones",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:google_compute_instance_template.template",
+      "target": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:data.google_compute_image.source_image",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/modules/nodepool-api/main.tf",
+      "target": "resource:iac/provider-gcp/modules/nodepool-api/variables.tf",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/modules/nodepool-api/outputs.tf",
+      "target": "resource:iac/provider-gcp/modules/nodepool-api/main.tf:google_compute_region_instance_group_manager.pool",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/modules/nodepool-api/main.tf",
+      "target": "resource:iac/provider-gcp/modules/nodepool-api/outputs.tf",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

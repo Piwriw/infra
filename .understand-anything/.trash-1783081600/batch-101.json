@@ -1,0 +1,157 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/db/queries/get_active_clusters.sql",
+      "type": "file",
+      "name": "get_active_clusters.sql",
+      "filePath": "packages/db/queries/get_active_clusters.sql",
+      "summary": "sqlc 查询定义,检索所有团队当前关联的唯一集群列表,通过 DISTINCT + JOIN teams 消除重复。",
+      "tags": ["sqlc", "query", "cluster", "database", "data"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/queries/get_snapshots_with_cursor.sql",
+      "type": "file",
+      "name": "get_snapshots_with_cursor.sql",
+      "filePath": "packages/db/queries/get_snapshots_with_cursor.sql",
+      "summary": "sqlc 游标分页查询,按 team_id 和 metadata 过滤快照,关联构建版本和别名信息,使用 (sandbox_started_at, sandbox_id) 复合游标进行分页。",
+      "tags": ["sqlc", "query", "snapshot", "cursor-pagination", "database"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/queries/get_team_template.sql",
+      "type": "file",
+      "name": "get_team_template.sql",
+      "filePath": "packages/db/queries/get_team_template.sql",
+      "summary": "sqlc 查询定义,根据环境 ID 和团队 ID 获取单个模板详情,包含 latest_build、ready 状态构建、别名(短名/全名)等关联信息。",
+      "tags": ["sqlc", "query", "template", "database", "data"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/queries/get_team_templates.sql",
+      "type": "file",
+      "name": "get_team_templates.sql",
+      "filePath": "packages/db/queries/get_team_templates.sql",
+      "summary": "sqlc 查询定义,列出某团队的所有模板(按 created_at 升序),包含最新构建状态、就绪构建的硬件配置(vcpu、ram、disk)、envd 版本和别名集合。",
+      "tags": ["sqlc", "query", "template", "database", "data"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/db/queries/get_team_templates_with_cursor.sql",
+      "type": "file",
+      "name": "get_team_templates_with_cursor.sql",
+      "filePath": "packages/db/queries/get_team_templates_with_cursor.sql",
+      "summary": "CLI 使用的 v2 模板游标分页查询,与 GetTeamTemplates 投影一致,新增 (created_at, id) keyset 分页和 limit 边界,适合大模板集合的高效分页。",
+      "tags": ["sqlc", "query", "template", "cursor-pagination", "v2-api"],
+      "complexity": "moderate",
+      "languageNotes": "使用 sqlc.arg 命名参数 + keyset 游标分页模式,(created_at, id) 元组比较实现稳定分页。"
+    },
+    {
+      "id": "file:packages/db/queries/get_templatealias_by_alias.sql",
+      "type": "file",
+      "name": "get_templatealias_by_alias.sql",
+      "filePath": "packages/db/queries/get_templatealias_by_alias.sql",
+      "summary": "sqlc 查询定义,通过别名(alias)查找环境别名记录,联接 envs 表获取 team_id 和 public 标志,用于模板别名解析。",
+      "tags": ["sqlc", "query", "alias", "database", "data"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/db/queries/get_active_clusters.sql:GetActiveClusters",
+      "type": "endpoint",
+      "name": "GetActiveClusters",
+      "filePath": "packages/db/queries/get_active_clusters.sql",
+      "summary": "检索所有正在使用的集群(去重),用于 API 集群选择列表。",
+      "tags": ["sqlc", "query", "cluster", "many"],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:packages/db/queries/get_snapshots_with_cursor.sql:GetSnapshotsWithCursor",
+      "type": "endpoint",
+      "name": "GetSnapshotsWithCursor",
+      "filePath": "packages/db/queries/get_snapshots_with_cursor.sql",
+      "summary": "按团队和元数据过滤的快照游标分页查询,返回快照及其默认构建版本与别名信息。",
+      "tags": ["sqlc", "query", "snapshot", "cursor", "many"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:packages/db/queries/get_team_template.sql:GetTeamTemplate",
+      "type": "endpoint",
+      "name": "GetTeamTemplate",
+      "filePath": "packages/db/queries/get_team_template.sql",
+      "summary": "获取团队下的单个模板详情,包含 latest build、ready build 的硬件参数与别名集合。",
+      "tags": ["sqlc", "query", "template", "one"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:packages/db/queries/get_team_templates.sql:GetTeamTemplates",
+      "type": "endpoint",
+      "name": "GetTeamTemplates",
+      "filePath": "packages/db/queries/get_team_templates.sql",
+      "summary": "列出团队下所有模板(按 created_at 升序),包含每个模板的构建状态与硬件信息。",
+      "tags": ["sqlc", "query", "template", "many"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:packages/db/queries/get_team_templates_with_cursor.sql:GetTeamTemplatesWithCursor",
+      "type": "endpoint",
+      "name": "GetTeamTemplatesWithCursor",
+      "filePath": "packages/db/queries/get_team_templates_with_cursor.sql",
+      "summary": "CLI v2 API 模板游标分页查询,使用 (created_at, id) keyset 分页,支持 limit 控制。",
+      "tags": ["sqlc", "query", "template", "cursor", "v2", "many"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:packages/db/queries/get_templatealias_by_alias.sql:GetTemplateAliasByAlias",
+      "type": "endpoint",
+      "name": "GetTemplateAliasByAlias",
+      "filePath": "packages/db/queries/get_templatealias_by_alias.sql",
+      "summary": "通过 alias 查找 env_aliases 记录,返回别名信息和所属环境的 team_id、public 标志。",
+      "tags": ["sqlc", "query", "alias", "one"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/db/queries/get_active_clusters.sql",
+      "target": "endpoint:packages/db/queries/get_active_clusters.sql:GetActiveClusters",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/queries/get_snapshots_with_cursor.sql",
+      "target": "endpoint:packages/db/queries/get_snapshots_with_cursor.sql:GetSnapshotsWithCursor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/queries/get_team_template.sql",
+      "target": "endpoint:packages/db/queries/get_team_template.sql:GetTeamTemplate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/queries/get_team_templates.sql",
+      "target": "endpoint:packages/db/queries/get_team_templates.sql:GetTeamTemplates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/queries/get_team_templates_with_cursor.sql",
+      "target": "endpoint:packages/db/queries/get_team_templates_with_cursor.sql:GetTeamTemplatesWithCursor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/queries/get_templatealias_by_alias.sql",
+      "target": "endpoint:packages/db/queries/get_templatealias_by_alias.sql:GetTemplateAliasByAlias",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ]
+}

@@ -1,0 +1,4864 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 25,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/orchestrator/cmd/simulate-gcs-traffic/files.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 115,
+      "nonEmptyLines": 92,
+      "functions": [
+        {
+          "name": "findFiles",
+          "startLine": 15,
+          "endLine": 58,
+          "params": []
+        },
+        {
+          "name": "removeAtIndex",
+          "startLine": 60,
+          "endLine": 62,
+          "params": [
+            "items",
+            "idx"
+          ]
+        },
+        {
+          "name": "newFiles",
+          "startLine": 72,
+          "endLine": 81,
+          "params": [
+            "paths",
+            "chunkSize",
+            "allowRepeatReads"
+          ]
+        },
+        {
+          "name": "nextRead",
+          "startLine": 83,
+          "endLine": 115,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "files",
+          "startLine": 64,
+          "endLine": 70,
+          "methods": [
+            "nextRead"
+          ],
+          "properties": [
+            "rand",
+            "allowRepeatReads",
+            "paths",
+            "chunkSize",
+            "usedRanges"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "findFiles",
+          "callee": "context.Background",
+          "lineNumber": 16
+        },
+        {
+          "caller": "findFiles",
+          "callee": "storage.NewClient",
+          "lineNumber": 17
+        },
+        {
+          "caller": "findFiles",
+          "callee": "fmt.Errorf",
+          "lineNumber": 19
+        },
+        {
+          "caller": "findFiles",
+          "callee": "client.Close",
+          "lineNumber": 21
+        },
+        {
+          "caller": "findFiles",
+          "callee": "client.Bucket(p.bucket).Objects",
+          "lineNumber": 32
+        },
+        {
+          "caller": "findFiles",
+          "callee": "client.Bucket",
+          "lineNumber": 32
+        },
+        {
+          "caller": "findFiles",
+          "callee": "it.Next",
+          "lineNumber": 34
+        },
+        {
+          "caller": "findFiles",
+          "callee": "errors.Is",
+          "lineNumber": 35
+        },
+        {
+          "caller": "findFiles",
+          "callee": "fmt.Errorf",
+          "lineNumber": 39
+        },
+        {
+          "caller": "findFiles",
+          "callee": "append",
+          "lineNumber": 46
+        },
+        {
+          "caller": "findFiles",
+          "callee": "len",
+          "lineNumber": 48
+        },
+        {
+          "caller": "findFiles",
+          "callee": "fmt.Printf",
+          "lineNumber": 55
+        },
+        {
+          "caller": "findFiles",
+          "callee": "len",
+          "lineNumber": 55
+        },
+        {
+          "caller": "removeAtIndex",
+          "callee": "slices.Delete",
+          "lineNumber": 61
+        },
+        {
+          "caller": "newFiles",
+          "callee": "rand.New",
+          "lineNumber": 78
+        },
+        {
+          "caller": "newFiles",
+          "callee": "rand.NewSource",
+          "lineNumber": 78
+        },
+        {
+          "caller": "newFiles",
+          "callee": "time.Now().UnixNano",
+          "lineNumber": 78
+        },
+        {
+          "caller": "newFiles",
+          "callee": "time.Now",
+          "lineNumber": 78
+        },
+        {
+          "caller": "newFiles",
+          "callee": "make",
+          "lineNumber": 79
+        },
+        {
+          "caller": "nextRead",
+          "callee": "len",
+          "lineNumber": 84
+        },
+        {
+          "caller": "nextRead",
+          "callee": "errors.New",
+          "lineNumber": 85
+        },
+        {
+          "caller": "nextRead",
+          "callee": "f.rand.Intn",
+          "lineNumber": 88
+        },
+        {
+          "caller": "nextRead",
+          "callee": "len",
+          "lineNumber": 88
+        },
+        {
+          "caller": "nextRead",
+          "callee": "f.rand.Int63n",
+          "lineNumber": 94
+        },
+        {
+          "caller": "nextRead",
+          "callee": "fmt.Errorf",
+          "lineNumber": 114
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 254,
+      "nonEmptyLines": 209,
+      "functions": [
+        {
+          "name": "apply",
+          "startLine": 19,
+          "endLine": 19,
+          "params": [
+            "_",
+            "_"
+          ]
+        },
+        {
+          "name": "TestGenerateScenarios",
+          "startLine": 21,
+          "endLine": 68,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestDumpResultsToCSV",
+          "startLine": 70,
+          "endLine": 132,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestSummarizeDurations",
+          "startLine": 134,
+          "endLine": 182,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestRemoveAtIndex",
+          "startLine": 184,
+          "endLine": 243,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestGetEnvironmentMetadata",
+          "startLine": 245,
+          "endLine": 254,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "mockExperiment",
+          "startLine": 15,
+          "endLine": 17,
+          "methods": [
+            "apply"
+          ],
+          "properties": [
+            "id"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestGenerateScenarios",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "TestDumpResultsToCSV",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "TestSummarizeDurations",
+          "line": 134,
+          "isDefault": false
+        },
+        {
+          "name": "TestRemoveAtIndex",
+          "line": 184,
+          "isDefault": false
+        },
+        {
+          "name": "TestGetEnvironmentMetadata",
+          "line": 245,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestGenerateScenarios",
+          "callee": "t.Parallel",
+          "lineNumber": 22
+        },
+        {
+          "caller": "TestGenerateScenarios",
+          "callee": "generateScenarios",
+          "lineNumber": 44
+        },
+        {
+          "caller": "TestGenerateScenarios",
+          "callee": "append",
+          "lineNumber": 45
+        },
+        {
+          "caller": "TestGenerateScenarios",
+          "callee": "assert.Len",
+          "lineNumber": 64
+        },
+        {
+          "caller": "TestGenerateScenarios",
+          "callee": "len",
+          "lineNumber": 64
+        },
+        {
+          "caller": "TestGenerateScenarios",
+          "callee": "assert.ElementsMatch",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestGenerateScenarios",
+          "callee": "assert.Equal",
+          "lineNumber": 67
+        },
+        {
+          "caller": "TestGenerateScenarios",
+          "callee": "expected[0].Name",
+          "lineNumber": 67
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "t.Parallel",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "t.TempDir",
+          "lineNumber": 117
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "filepath.Join",
+          "lineNumber": 118
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "os.Remove",
+          "lineNumber": 119
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "dumpResultsToCSV",
+          "lineNumber": 121
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "require.NoError",
+          "lineNumber": 122
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "os.ReadFile",
+          "lineNumber": 124
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "require.NoError",
+          "lineNumber": 125
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "strings.Split",
+          "lineNumber": 127
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 127
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "string",
+          "lineNumber": 127
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "assert.Len",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "assert.Equal",
+          "lineNumber": 129
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "assert.Equal",
+          "lineNumber": 130
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "assert.Equal",
+          "lineNumber": 131
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Parallel",
+          "lineNumber": 135
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Run",
+          "lineNumber": 137
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Parallel",
+          "lineNumber": 138
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "summarizeDurations",
+          "lineNumber": 140
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "assert.Equal",
+          "lineNumber": 141
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Run",
+          "lineNumber": 144
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Parallel",
+          "lineNumber": 145
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "summarizeDurations",
+          "lineNumber": 148
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "assert.Equal",
+          "lineNumber": 149
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "assert.Equal",
+          "lineNumber": 150
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "assert.Equal",
+          "lineNumber": 151
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Run",
+          "lineNumber": 154
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Parallel",
+          "lineNumber": 155
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "make",
+          "lineNumber": 157
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "time.Duration",
+          "lineNumber": 159
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "summarizeDurations",
+          "lineNumber": 161
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "assert.Equal",
+          "lineNumber": 162
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "assert.Equal",
+          "lineNumber": 163
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "assert.Equal",
+          "lineNumber": 164
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Run",
+          "lineNumber": 167
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Parallel",
+          "lineNumber": 168
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "make",
+          "lineNumber": 175
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "summarizeDurations",
+          "lineNumber": 179
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "assert.Equal",
+          "lineNumber": 180
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Parallel",
+          "lineNumber": 185
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Run",
+          "lineNumber": 187
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Parallel",
+          "lineNumber": 188
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "removeAtIndex",
+          "lineNumber": 191
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "assert.Equal",
+          "lineNumber": 192
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Run",
+          "lineNumber": 195
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Parallel",
+          "lineNumber": 196
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "removeAtIndex",
+          "lineNumber": 199
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "assert.Equal",
+          "lineNumber": 200
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Run",
+          "lineNumber": 203
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Parallel",
+          "lineNumber": 204
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "removeAtIndex",
+          "lineNumber": 207
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "assert.Equal",
+          "lineNumber": 208
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Run",
+          "lineNumber": 211
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Parallel",
+          "lineNumber": 212
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "removeAtIndex",
+          "lineNumber": 215
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "assert.Equal",
+          "lineNumber": 217
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Run",
+          "lineNumber": 220
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Parallel",
+          "lineNumber": 221
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "removeAtIndex",
+          "lineNumber": 224
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "assert.Equal",
+          "lineNumber": 225
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Run",
+          "lineNumber": 228
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Parallel",
+          "lineNumber": 229
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "assert.Panics",
+          "lineNumber": 231
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "removeAtIndex",
+          "lineNumber": 232
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Run",
+          "lineNumber": 236
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Parallel",
+          "lineNumber": 237
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "assert.Panics",
+          "lineNumber": 239
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "removeAtIndex",
+          "lineNumber": 240
+        },
+        {
+          "caller": "TestGetEnvironmentMetadata",
+          "callee": "t.Parallel",
+          "lineNumber": 246
+        },
+        {
+          "caller": "TestGetEnvironmentMetadata",
+          "callee": "getEnvironmentMetadata",
+          "lineNumber": 248
+        },
+        {
+          "caller": "TestGetEnvironmentMetadata",
+          "callee": "t.Context",
+          "lineNumber": 248
+        },
+        {
+          "caller": "TestGetEnvironmentMetadata",
+          "callee": "t.Skip",
+          "lineNumber": 250
+        },
+        {
+          "caller": "TestGetEnvironmentMetadata",
+          "callee": "assert.NotEmpty",
+          "lineNumber": 253
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 5,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 352,
+      "nonEmptyLines": 286,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 35,
+          "endLine": 129,
+          "params": []
+        },
+        {
+          "name": "generateScenarios",
+          "startLine": 158,
+          "endLine": 201,
+          "params": [
+            "experiments"
+          ]
+        },
+        {
+          "name": "run",
+          "startLine": 203,
+          "endLine": 280,
+          "params": [
+            "ctx",
+            "scenario"
+          ]
+        },
+        {
+          "name": "safeClose",
+          "startLine": 291,
+          "endLine": 295,
+          "params": [
+            "fp"
+          ]
+        },
+        {
+          "name": "summarizeDurations",
+          "startLine": 302,
+          "endLine": 352,
+          "params": [
+            "reads"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "fileInfo",
+          "startLine": 131,
+          "endLine": 134,
+          "methods": [],
+          "properties": [
+            "path",
+            "size"
+          ]
+        },
+        {
+          "name": "readInfo",
+          "startLine": 136,
+          "endLine": 140,
+          "methods": [],
+          "properties": [
+            "path",
+            "offset",
+            "buffer"
+          ]
+        },
+        {
+          "name": "processor",
+          "startLine": 147,
+          "endLine": 156,
+          "methods": [
+            "run"
+          ],
+          "properties": [
+            "minFileSize",
+            "bucket",
+            "bucketPrefix",
+            "limitFileCount",
+            "allFiles"
+          ]
+        },
+        {
+          "name": "result",
+          "startLine": 282,
+          "endLine": 289,
+          "methods": [],
+          "properties": [
+            "scenario",
+            "summary",
+            "concurrency",
+            "totalSuccessfulReads",
+            "testDuration"
+          ]
+        },
+        {
+          "name": "durationSummary",
+          "startLine": 297,
+          "endLine": 300,
+          "methods": [],
+          "properties": [
+            "minTime",
+            "mean",
+            "p50",
+            "p95",
+            "p99",
+            "maxTime",
+            "stddev",
+            "histogram"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "context.Background",
+          "lineNumber": 36
+        },
+        {
+          "caller": "main",
+          "callee": "flag.NewFlagSet",
+          "lineNumber": 45
+        },
+        {
+          "caller": "main",
+          "callee": "f.BoolVar",
+          "lineNumber": 46
+        },
+        {
+          "caller": "main",
+          "callee": "f.BoolVar",
+          "lineNumber": 47
+        },
+        {
+          "caller": "main",
+          "callee": "f.IntVar",
+          "lineNumber": 48
+        },
+        {
+          "caller": "main",
+          "callee": "f.IntVar",
+          "lineNumber": 49
+        },
+        {
+          "caller": "main",
+          "callee": "f.Int64Var",
+          "lineNumber": 50
+        },
+        {
+          "caller": "main",
+          "callee": "f.StringVar",
+          "lineNumber": 51
+        },
+        {
+          "caller": "main",
+          "callee": "f.StringVar",
+          "lineNumber": 52
+        },
+        {
+          "caller": "main",
+          "callee": "f.StringVar",
+          "lineNumber": 53
+        },
+        {
+          "caller": "main",
+          "callee": "f.Parse",
+          "lineNumber": 55
+        },
+        {
+          "caller": "main",
+          "callee": "func() {\n\t\t\tlog.Printf(\"starting pprof on %s\", pprofAddr)\n\t\t\tif err := http.ListenAndServe(pprofAddr, nil); err != nil {\n\t\t\t\tlog.Printf(\"failed to start pprof: %s\", err)\n\t\t\t}\n\t\t}",
+          "lineNumber": 58
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 59
+        },
+        {
+          "caller": "main",
+          "callee": "http.ListenAndServe",
+          "lineNumber": 60
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 61
+        },
+        {
+          "caller": "main",
+          "callee": "f.Args",
+          "lineNumber": 66
+        },
+        {
+          "caller": "main",
+          "callee": "len",
+          "lineNumber": 66
+        },
+        {
+          "caller": "main",
+          "callee": "log.Fatal",
+          "lineNumber": 68
+        },
+        {
+          "caller": "main",
+          "callee": "log.Fatal",
+          "lineNumber": 72
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Println",
+          "lineNumber": 80
+        },
+        {
+          "caller": "main",
+          "callee": "getEnvironmentMetadata",
+          "lineNumber": 81
+        },
+        {
+          "caller": "main",
+          "callee": "log.Fatalf",
+          "lineNumber": 83
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Println",
+          "lineNumber": 93
+        },
+        {
+          "caller": "main",
+          "callee": "p.findFiles",
+          "lineNumber": 94
+        },
+        {
+          "caller": "main",
+          "callee": "log.Fatalf",
+          "lineNumber": 95
+        },
+        {
+          "caller": "main",
+          "callee": "len",
+          "lineNumber": 100
+        },
+        {
+          "caller": "main",
+          "callee": "generateScenarios",
+          "lineNumber": 105
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Printf",
+          "lineNumber": 110
+        },
+        {
+          "caller": "main",
+          "callee": "scenario.Name",
+          "lineNumber": 110
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Printf",
+          "lineNumber": 112
+        },
+        {
+          "caller": "main",
+          "callee": "scenario.Name",
+          "lineNumber": 112
+        },
+        {
+          "caller": "main",
+          "callee": "p.run",
+          "lineNumber": 115
+        },
+        {
+          "caller": "main",
+          "callee": "log.Fatalf",
+          "lineNumber": 117
+        },
+        {
+          "caller": "main",
+          "callee": "err.Error",
+          "lineNumber": 117
+        },
+        {
+          "caller": "main",
+          "callee": "append",
+          "lineNumber": 120
+        },
+        {
+          "caller": "main",
+          "callee": "dumpResultsToCSV",
+          "lineNumber": 125
+        },
+        {
+          "caller": "main",
+          "callee": "log.Fatalf",
+          "lineNumber": 126
+        },
+        {
+          "caller": "main",
+          "callee": "err.Error",
+          "lineNumber": 126
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "make",
+          "lineNumber": 160
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "len",
+          "lineNumber": 160
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "append",
+          "lineNumber": 162
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "slices.Sort",
+          "lineNumber": 165
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "len",
+          "lineNumber": 169
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "make",
+          "lineNumber": 172
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "len",
+          "lineNumber": 172
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "maps.Copy",
+          "lineNumber": 173
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "yield",
+          "lineNumber": 175
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "make",
+          "lineNumber": 181
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "len",
+          "lineNumber": 181
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "append",
+          "lineNumber": 183
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "slices.Sort",
+          "lineNumber": 185
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "generate",
+          "lineNumber": 189
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "make",
+          "lineNumber": 198
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "len",
+          "lineNumber": 198
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "generate",
+          "lineNumber": 199
+        },
+        {
+          "caller": "run",
+          "callee": "log.New",
+          "lineNumber": 204
+        },
+        {
+          "caller": "run",
+          "callee": "scenario.setup",
+          "lineNumber": 207
+        },
+        {
+          "caller": "run",
+          "callee": "fmt.Errorf",
+          "lineNumber": 209
+        },
+        {
+          "caller": "run",
+          "callee": "make",
+          "lineNumber": 218
+        },
+        {
+          "caller": "run",
+          "callee": "time.Now",
+          "lineNumber": 220
+        },
+        {
+          "caller": "run",
+          "callee": "newFiles",
+          "lineNumber": 222
+        },
+        {
+          "caller": "run",
+          "callee": "slices.Clone",
+          "lineNumber": 222
+        },
+        {
+          "caller": "run",
+          "callee": "allFiles.nextRead",
+          "lineNumber": 225
+        },
+        {
+          "caller": "run",
+          "callee": "logger.Printf",
+          "lineNumber": 227
+        },
+        {
+          "caller": "run",
+          "callee": "wg.Go",
+          "lineNumber": 234
+        },
+        {
+          "caller": "run",
+          "callee": "func() { <-semaphore }",
+          "lineNumber": 235
+        },
+        {
+          "caller": "run",
+          "callee": "opts.makeBuffer",
+          "lineNumber": 240
+        },
+        {
+          "caller": "run",
+          "callee": "opts.readMethod",
+          "lineNumber": 242
+        },
+        {
+          "caller": "run",
+          "callee": "logger.Println",
+          "lineNumber": 244
+        },
+        {
+          "caller": "run",
+          "callee": "mu.Lock",
+          "lineNumber": 253
+        },
+        {
+          "caller": "run",
+          "callee": "mu.Unlock",
+          "lineNumber": 254
+        },
+        {
+          "caller": "run",
+          "callee": "append",
+          "lineNumber": 256
+        },
+        {
+          "caller": "run",
+          "callee": "fmt.Printf",
+          "lineNumber": 259
+        },
+        {
+          "caller": "run",
+          "callee": "duration.Round",
+          "lineNumber": 259
+        },
+        {
+          "caller": "run",
+          "callee": "wg.Wait",
+          "lineNumber": 264
+        },
+        {
+          "caller": "run",
+          "callee": "scenario.teardown",
+          "lineNumber": 266
+        },
+        {
+          "caller": "run",
+          "callee": "fmt.Errorf",
+          "lineNumber": 267
+        },
+        {
+          "caller": "run",
+          "callee": "summarizeDurations",
+          "lineNumber": 271
+        },
+        {
+          "caller": "run",
+          "callee": "len",
+          "lineNumber": 277
+        },
+        {
+          "caller": "run",
+          "callee": "time.Since",
+          "lineNumber": 278
+        },
+        {
+          "caller": "safeClose",
+          "callee": "fp.Close",
+          "lineNumber": 292
+        },
+        {
+          "caller": "safeClose",
+          "callee": "log.Println",
+          "lineNumber": 293
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "len",
+          "lineNumber": 303
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "slices.Sort",
+          "lineNumber": 308
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "len",
+          "lineNumber": 310
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "max",
+          "lineNumber": 314
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "int",
+          "lineNumber": 314
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "math.Ceil",
+          "lineNumber": 314
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "float64",
+          "lineNumber": 314
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "make",
+          "lineNumber": 321
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "len",
+          "lineNumber": 321
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "float64",
+          "lineNumber": 323
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "float64",
+          "lineNumber": 332
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "float64",
+          "lineNumber": 337
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "math.Sqrt",
+          "lineNumber": 340
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "float64",
+          "lineNumber": 340
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "time.Duration",
+          "lineNumber": 345
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "percentile",
+          "lineNumber": 346
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "percentile",
+          "lineNumber": 347
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "percentile",
+          "lineNumber": 348
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "time.Duration",
+          "lineNumber": 349
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 5,
+        "classCount": 5
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 55,
+      "nonEmptyLines": 44,
+      "functions": [
+        {
+          "name": "getEnvironmentMetadata",
+          "startLine": 15,
+          "endLine": 24,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "getMetadata",
+          "startLine": 28,
+          "endLine": 55,
+          "params": [
+            "ctx",
+            "path"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "environmentMetadata",
+          "startLine": 11,
+          "endLine": 13,
+          "methods": [],
+          "properties": [
+            "ClientMachineType"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getEnvironmentMetadata",
+          "callee": "getMetadata",
+          "lineNumber": 16
+        },
+        {
+          "caller": "getEnvironmentMetadata",
+          "callee": "fmt.Errorf",
+          "lineNumber": 18
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "strings.TrimPrefix",
+          "lineNumber": 29
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "http.NewRequestWithContext",
+          "lineNumber": 30
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 30
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "fmt.Errorf",
+          "lineNumber": 32
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "client.Do",
+          "lineNumber": 36
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "fmt.Errorf",
+          "lineNumber": 38
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "resp.Body.Close",
+          "lineNumber": 40
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "fmt.Errorf",
+          "lineNumber": 43
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "io.ReadAll",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "fmt.Errorf",
+          "lineNumber": 48
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 51
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "string",
+          "lineNumber": 51
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "strings.Split",
+          "lineNumber": 52
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "len",
+          "lineNumber": 54
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/simulate-gcs-traffic/readme.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 3,
+      "nonEmptyLines": 2,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/simulate-nfs-traffic/csv.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 94,
+      "nonEmptyLines": 80,
+      "functions": [
+        {
+          "name": "dumpResultsToCSV",
+          "startLine": 12,
+          "endLine": 86,
+          "params": [
+            "path",
+            "metadata",
+            "results"
+          ]
+        },
+        {
+          "name": "toMillis",
+          "startLine": 88,
+          "endLine": 90,
+          "params": [
+            "minTime"
+          ]
+        },
+        {
+          "name": "toIntString",
+          "startLine": 92,
+          "endLine": 94,
+          "params": [
+            "i"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "make",
+          "lineNumber": 14
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "make",
+          "lineNumber": 20
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "len",
+          "lineNumber": 20
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "append",
+          "lineNumber": 22
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "slices.Sort",
+          "lineNumber": 24
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "os.Create",
+          "lineNumber": 30
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "fmt.Errorf",
+          "lineNumber": 32
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "safeClose",
+          "lineNumber": 34
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "append",
+          "lineNumber": 38
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "append",
+          "lineNumber": 39
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "fmt.Fprintln",
+          "lineNumber": 40
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "strings.Join",
+          "lineNumber": 40
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "fmt.Errorf",
+          "lineNumber": 41
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "make",
+          "lineNumber": 46
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "len",
+          "lineNumber": 46
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "append",
+          "lineNumber": 49
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "toIntString",
+          "lineNumber": 51
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "toIntString",
+          "lineNumber": 52
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "toIntString",
+          "lineNumber": 53
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "append",
+          "lineNumber": 62
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "append",
+          "lineNumber": 67
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "toIntString",
+          "lineNumber": 68
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "int",
+          "lineNumber": 68
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "float64",
+          "lineNumber": 68
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "res.testDuration.Seconds",
+          "lineNumber": 68
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "toMillis",
+          "lineNumber": 69
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "toMillis",
+          "lineNumber": 70
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "toMillis",
+          "lineNumber": 71
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "toMillis",
+          "lineNumber": 72
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "toMillis",
+          "lineNumber": 73
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "toMillis",
+          "lineNumber": 74
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "toMillis",
+          "lineNumber": 75
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "fmt.Fprintln",
+          "lineNumber": 78
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "strings.Join",
+          "lineNumber": 78
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "fmt.Errorf",
+          "lineNumber": 79
+        },
+        {
+          "caller": "dumpResultsToCSV",
+          "callee": "fmt.Println",
+          "lineNumber": 83
+        },
+        {
+          "caller": "toMillis",
+          "callee": "strconv.FormatInt",
+          "lineNumber": 89
+        },
+        {
+          "caller": "toMillis",
+          "callee": "minTime.Milliseconds",
+          "lineNumber": 89
+        },
+        {
+          "caller": "toIntString",
+          "callee": "strconv.Itoa",
+          "lineNumber": 93
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 291,
+      "nonEmptyLines": 234,
+      "functions": [
+        {
+          "name": "setup",
+          "startLine": 102,
+          "endLine": 114,
+          "params": [
+            "ctx",
+            "p"
+          ]
+        },
+        {
+          "name": "teardown",
+          "startLine": 116,
+          "endLine": 128,
+          "params": [
+            "ctx",
+            "p"
+          ]
+        },
+        {
+          "name": "Name",
+          "startLine": 130,
+          "endLine": 143,
+          "params": []
+        },
+        {
+          "name": "setup",
+          "startLine": 152,
+          "endLine": 181,
+          "params": [
+            "ctx",
+            "p"
+          ]
+        },
+        {
+          "name": "teardown",
+          "startLine": 183,
+          "endLine": 186,
+          "params": [
+            "_",
+            "_"
+          ]
+        },
+        {
+          "name": "setup",
+          "startLine": 194,
+          "endLine": 198,
+          "params": [
+            "_",
+            "p"
+          ]
+        },
+        {
+          "name": "teardown",
+          "startLine": 200,
+          "endLine": 200,
+          "params": [
+            "_",
+            "_"
+          ]
+        },
+        {
+          "name": "setup",
+          "startLine": 210,
+          "endLine": 224,
+          "params": [
+            "ctx",
+            "_"
+          ]
+        },
+        {
+          "name": "teardown",
+          "startLine": 226,
+          "endLine": 233,
+          "params": [
+            "ctx",
+            "_"
+          ]
+        },
+        {
+          "name": "setup",
+          "startLine": 239,
+          "endLine": 243,
+          "params": [
+            "_",
+            "p"
+          ]
+        },
+        {
+          "name": "teardown",
+          "startLine": 245,
+          "endLine": 247,
+          "params": [
+            "_",
+            "_"
+          ]
+        },
+        {
+          "name": "setup",
+          "startLine": 255,
+          "endLine": 259,
+          "params": [
+            "_",
+            "p"
+          ]
+        },
+        {
+          "name": "teardown",
+          "startLine": 261,
+          "endLine": 261,
+          "params": [
+            "_",
+            "_"
+          ]
+        },
+        {
+          "name": "setup",
+          "startLine": 269,
+          "endLine": 273,
+          "params": [
+            "_",
+            "p"
+          ]
+        },
+        {
+          "name": "teardown",
+          "startLine": 275,
+          "endLine": 275,
+          "params": [
+            "_",
+            "_"
+          ]
+        },
+        {
+          "name": "setup",
+          "startLine": 283,
+          "endLine": 287,
+          "params": [
+            "_",
+            "p"
+          ]
+        },
+        {
+          "name": "teardown",
+          "startLine": 289,
+          "endLine": 289,
+          "params": [
+            "_",
+            "_"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "experiment",
+          "startLine": 88,
+          "endLine": 91,
+          "methods": [
+            "setup",
+            "teardown"
+          ],
+          "properties": []
+        },
+        {
+          "name": "element",
+          "startLine": 93,
+          "endLine": 96,
+          "methods": [],
+          "properties": [
+            "name",
+            "exp"
+          ]
+        },
+        {
+          "name": "scenario",
+          "startLine": 98,
+          "endLine": 100,
+          "methods": [
+            "setup",
+            "teardown",
+            "Name"
+          ],
+          "properties": [
+            "elements"
+          ]
+        },
+        {
+          "name": "setReadAhead",
+          "startLine": 145,
+          "endLine": 150,
+          "methods": [
+            "setup",
+            "teardown"
+          ],
+          "properties": [
+            "readAhead",
+            "readAheadPath",
+            "oldReadAhead"
+          ]
+        },
+        {
+          "name": "setConcurrentRequests",
+          "startLine": 190,
+          "endLine": 192,
+          "methods": [
+            "setup",
+            "teardown"
+          ],
+          "properties": [
+            "concurrentRequests"
+          ]
+        },
+        {
+          "name": "setSysFs",
+          "startLine": 202,
+          "endLine": 206,
+          "methods": [
+            "setup",
+            "teardown"
+          ],
+          "properties": [
+            "path",
+            "newValue",
+            "oldValue"
+          ]
+        },
+        {
+          "name": "readMethodExperiment",
+          "startLine": 235,
+          "endLine": 237,
+          "methods": [
+            "setup",
+            "teardown"
+          ],
+          "properties": [
+            "readMethod"
+          ]
+        },
+        {
+          "name": "setReadCount",
+          "startLine": 251,
+          "endLine": 253,
+          "methods": [
+            "setup",
+            "teardown"
+          ],
+          "properties": [
+            "readCount"
+          ]
+        },
+        {
+          "name": "setSkipCount",
+          "startLine": 265,
+          "endLine": 267,
+          "methods": [
+            "setup",
+            "teardown"
+          ],
+          "properties": [
+            "skipCount"
+          ]
+        },
+        {
+          "name": "setAllowRepeatReads",
+          "startLine": 279,
+          "endLine": 281,
+          "methods": [
+            "setup",
+            "teardown"
+          ],
+          "properties": [
+            "allowRepeatReads"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Name",
+          "line": 130,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "setup",
+          "callee": "e.exp.setup",
+          "lineNumber": 107
+        },
+        {
+          "caller": "setup",
+          "callee": "append",
+          "lineNumber": 108
+        },
+        {
+          "caller": "setup",
+          "callee": "fmt.Errorf",
+          "lineNumber": 108
+        },
+        {
+          "caller": "setup",
+          "callee": "errors.Join",
+          "lineNumber": 113
+        },
+        {
+          "caller": "teardown",
+          "callee": "e.exp.teardown",
+          "lineNumber": 121
+        },
+        {
+          "caller": "teardown",
+          "callee": "append",
+          "lineNumber": 122
+        },
+        {
+          "caller": "teardown",
+          "callee": "fmt.Errorf",
+          "lineNumber": 122
+        },
+        {
+          "caller": "teardown",
+          "callee": "errors.Join",
+          "lineNumber": 127
+        },
+        {
+          "caller": "Name",
+          "callee": "append",
+          "lineNumber": 133
+        },
+        {
+          "caller": "Name",
+          "callee": "slices.Sort",
+          "lineNumber": 135
+        },
+        {
+          "caller": "Name",
+          "callee": "append",
+          "lineNumber": 139
+        },
+        {
+          "caller": "Name",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 139
+        },
+        {
+          "caller": "Name",
+          "callee": "strings.Join",
+          "lineNumber": 142
+        },
+        {
+          "caller": "setup",
+          "callee": "exec.CommandContext(ctx, \"findmnt\", \"--noheadings\", \"--output\", \"target\", \"--target\", p.path).Output",
+          "lineNumber": 154
+        },
+        {
+          "caller": "setup",
+          "callee": "exec.CommandContext",
+          "lineNumber": 154
+        },
+        {
+          "caller": "setup",
+          "callee": "fmt.Errorf",
+          "lineNumber": 156
+        },
+        {
+          "caller": "setup",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 158
+        },
+        {
+          "caller": "setup",
+          "callee": "string",
+          "lineNumber": 158
+        },
+        {
+          "caller": "setup",
+          "callee": "exec.CommandContext(ctx, \"mountpoint\", \"--fs-devno\", nfsMountPoint).Output",
+          "lineNumber": 161
+        },
+        {
+          "caller": "setup",
+          "callee": "exec.CommandContext",
+          "lineNumber": 161
+        },
+        {
+          "caller": "setup",
+          "callee": "fmt.Errorf",
+          "lineNumber": 163
+        },
+        {
+          "caller": "setup",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 165
+        },
+        {
+          "caller": "setup",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 165
+        },
+        {
+          "caller": "setup",
+          "callee": "string",
+          "lineNumber": 165
+        },
+        {
+          "caller": "setup",
+          "callee": "os.ReadFile",
+          "lineNumber": 168
+        },
+        {
+          "caller": "setup",
+          "callee": "fmt.Errorf",
+          "lineNumber": 170
+        },
+        {
+          "caller": "setup",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 173
+        },
+        {
+          "caller": "setup",
+          "callee": "string",
+          "lineNumber": 173
+        },
+        {
+          "caller": "setup",
+          "callee": "os.WriteFile",
+          "lineNumber": 176
+        },
+        {
+          "caller": "setup",
+          "callee": "fmt.Errorf",
+          "lineNumber": 177
+        },
+        {
+          "caller": "teardown",
+          "callee": "os.WriteFile",
+          "lineNumber": 185
+        },
+        {
+          "caller": "setup",
+          "callee": "exec.CommandContext(ctx, \"sysctl\", \"-n\", d.path).Output",
+          "lineNumber": 212
+        },
+        {
+          "caller": "setup",
+          "callee": "exec.CommandContext",
+          "lineNumber": 212
+        },
+        {
+          "caller": "setup",
+          "callee": "fmt.Errorf",
+          "lineNumber": 214
+        },
+        {
+          "caller": "setup",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 216
+        },
+        {
+          "caller": "setup",
+          "callee": "string",
+          "lineNumber": 216
+        },
+        {
+          "caller": "setup",
+          "callee": "exec.CommandContext(ctx, \"sysctl\", \"-w\", fmt.Sprintf(\"%s=%s\", d.path, d.newValue)).Run",
+          "lineNumber": 219
+        },
+        {
+          "caller": "setup",
+          "callee": "exec.CommandContext",
+          "lineNumber": 219
+        },
+        {
+          "caller": "setup",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 219
+        },
+        {
+          "caller": "setup",
+          "callee": "fmt.Errorf",
+          "lineNumber": 220
+        },
+        {
+          "caller": "teardown",
+          "callee": "exec.CommandContext(ctx, \"sysctl\", \"-w\", fmt.Sprintf(\"%s=%s\", d.path, d.oldValue)).Run",
+          "lineNumber": 228
+        },
+        {
+          "caller": "teardown",
+          "callee": "exec.CommandContext",
+          "lineNumber": 228
+        },
+        {
+          "caller": "teardown",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 228
+        },
+        {
+          "caller": "teardown",
+          "callee": "fmt.Errorf",
+          "lineNumber": 229
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 17,
+        "classCount": 10
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/simulate-nfs-traffic/files.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 77,
+      "nonEmptyLines": 60,
+      "functions": [
+        {
+          "name": "findFiles",
+          "startLine": 12,
+          "endLine": 51,
+          "params": []
+        },
+        {
+          "name": "removeAtIndex",
+          "startLine": 53,
+          "endLine": 55,
+          "params": [
+            "items",
+            "idx"
+          ]
+        },
+        {
+          "name": "selectFile",
+          "startLine": 63,
+          "endLine": 77,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "files",
+          "startLine": 57,
+          "endLine": 61,
+          "methods": [
+            "selectFile"
+          ],
+          "properties": [
+            "rand",
+            "paths",
+            "allowRepeatReads"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "findFiles",
+          "callee": "filepath.WalkDir",
+          "lineNumber": 15
+        },
+        {
+          "caller": "findFiles",
+          "callee": "d.IsDir",
+          "lineNumber": 21
+        },
+        {
+          "caller": "findFiles",
+          "callee": "d.Info",
+          "lineNumber": 26
+        },
+        {
+          "caller": "findFiles",
+          "callee": "info.Size",
+          "lineNumber": 30
+        },
+        {
+          "caller": "findFiles",
+          "callee": "append",
+          "lineNumber": 34
+        },
+        {
+          "caller": "findFiles",
+          "callee": "len",
+          "lineNumber": 36
+        },
+        {
+          "caller": "findFiles",
+          "callee": "fmt.Errorf",
+          "lineNumber": 43
+        },
+        {
+          "caller": "findFiles",
+          "callee": "fmt.Printf",
+          "lineNumber": 48
+        },
+        {
+          "caller": "findFiles",
+          "callee": "len",
+          "lineNumber": 48
+        },
+        {
+          "caller": "removeAtIndex",
+          "callee": "slices.Delete",
+          "lineNumber": 54
+        },
+        {
+          "caller": "selectFile",
+          "callee": "len",
+          "lineNumber": 64
+        },
+        {
+          "caller": "selectFile",
+          "callee": "errors.New",
+          "lineNumber": 65
+        },
+        {
+          "caller": "selectFile",
+          "callee": "f.rand.Intn",
+          "lineNumber": 68
+        },
+        {
+          "caller": "selectFile",
+          "callee": "len",
+          "lineNumber": 68
+        },
+        {
+          "caller": "selectFile",
+          "callee": "removeAtIndex",
+          "lineNumber": 73
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 283,
+      "nonEmptyLines": 235,
+      "functions": [
+        {
+          "name": "TestNfsstatParse",
+          "startLine": 15,
+          "endLine": 46,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "setup",
+          "startLine": 52,
+          "endLine": 52,
+          "params": [
+            "_",
+            "_"
+          ]
+        },
+        {
+          "name": "teardown",
+          "startLine": 53,
+          "endLine": 53,
+          "params": [
+            "_",
+            "_"
+          ]
+        },
+        {
+          "name": "TestGenerateScenarios",
+          "startLine": 55,
+          "endLine": 102,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestDumpResultsToCSV",
+          "startLine": 104,
+          "endLine": 161,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestSummarizeDurations",
+          "startLine": 163,
+          "endLine": 211,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestRemoveAtIndex",
+          "startLine": 213,
+          "endLine": 272,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestGetFilestoreMetadata",
+          "startLine": 274,
+          "endLine": 283,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "mockExperiment",
+          "startLine": 48,
+          "endLine": 50,
+          "methods": [
+            "setup",
+            "teardown"
+          ],
+          "properties": [
+            "id"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestNfsstatParse",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "TestGenerateScenarios",
+          "line": 55,
+          "isDefault": false
+        },
+        {
+          "name": "TestDumpResultsToCSV",
+          "line": 104,
+          "isDefault": false
+        },
+        {
+          "name": "TestSummarizeDurations",
+          "line": 163,
+          "isDefault": false
+        },
+        {
+          "name": "TestRemoveAtIndex",
+          "line": 213,
+          "isDefault": false
+        },
+        {
+          "name": "TestGetFilestoreMetadata",
+          "line": 274,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestNfsstatParse",
+          "callee": "t.Parallel",
+          "lineNumber": 16
+        },
+        {
+          "caller": "TestNfsstatParse",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 18
+        },
+        {
+          "caller": "TestNfsstatParse",
+          "callee": "nfsstatParse",
+          "lineNumber": 31
+        },
+        {
+          "caller": "TestNfsstatParse",
+          "callee": "require.NoError",
+          "lineNumber": 32
+        },
+        {
+          "caller": "TestNfsstatParse",
+          "callee": "assert.Equal",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestGenerateScenarios",
+          "callee": "t.Parallel",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TestGenerateScenarios",
+          "callee": "generateScenarios",
+          "lineNumber": 78
+        },
+        {
+          "caller": "TestGenerateScenarios",
+          "callee": "append",
+          "lineNumber": 79
+        },
+        {
+          "caller": "TestGenerateScenarios",
+          "callee": "assert.Len",
+          "lineNumber": 98
+        },
+        {
+          "caller": "TestGenerateScenarios",
+          "callee": "len",
+          "lineNumber": 98
+        },
+        {
+          "caller": "TestGenerateScenarios",
+          "callee": "assert.ElementsMatch",
+          "lineNumber": 99
+        },
+        {
+          "caller": "TestGenerateScenarios",
+          "callee": "assert.Equal",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestGenerateScenarios",
+          "callee": "expected[0].Name",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "t.Parallel",
+          "lineNumber": 105
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "t.TempDir",
+          "lineNumber": 146
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "filepath.Join",
+          "lineNumber": 147
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "os.Remove",
+          "lineNumber": 148
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "dumpResultsToCSV",
+          "lineNumber": 150
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "require.NoError",
+          "lineNumber": 151
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "os.ReadFile",
+          "lineNumber": 153
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "require.NoError",
+          "lineNumber": 154
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "strings.Split",
+          "lineNumber": 156
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 156
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "string",
+          "lineNumber": 156
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "assert.Len",
+          "lineNumber": 157
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "assert.Equal",
+          "lineNumber": 158
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "assert.Equal",
+          "lineNumber": 159
+        },
+        {
+          "caller": "TestDumpResultsToCSV",
+          "callee": "assert.Equal",
+          "lineNumber": 160
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Parallel",
+          "lineNumber": 164
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Run",
+          "lineNumber": 166
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Parallel",
+          "lineNumber": 167
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "summarizeDurations",
+          "lineNumber": 169
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "assert.Equal",
+          "lineNumber": 170
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Run",
+          "lineNumber": 173
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Parallel",
+          "lineNumber": 174
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "summarizeDurations",
+          "lineNumber": 177
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "assert.Equal",
+          "lineNumber": 178
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "assert.Equal",
+          "lineNumber": 179
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "assert.Equal",
+          "lineNumber": 180
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Run",
+          "lineNumber": 183
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Parallel",
+          "lineNumber": 184
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "make",
+          "lineNumber": 186
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "time.Duration",
+          "lineNumber": 188
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "summarizeDurations",
+          "lineNumber": 190
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "assert.Equal",
+          "lineNumber": 191
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "assert.Equal",
+          "lineNumber": 192
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "assert.Equal",
+          "lineNumber": 193
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Run",
+          "lineNumber": 196
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "t.Parallel",
+          "lineNumber": 197
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "make",
+          "lineNumber": 204
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "summarizeDurations",
+          "lineNumber": 208
+        },
+        {
+          "caller": "TestSummarizeDurations",
+          "callee": "assert.Equal",
+          "lineNumber": 209
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Parallel",
+          "lineNumber": 214
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Run",
+          "lineNumber": 216
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Parallel",
+          "lineNumber": 217
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "removeAtIndex",
+          "lineNumber": 220
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "assert.Equal",
+          "lineNumber": 221
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Run",
+          "lineNumber": 224
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Parallel",
+          "lineNumber": 225
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "removeAtIndex",
+          "lineNumber": 228
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "assert.Equal",
+          "lineNumber": 229
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Run",
+          "lineNumber": 232
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Parallel",
+          "lineNumber": 233
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "removeAtIndex",
+          "lineNumber": 236
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "assert.Equal",
+          "lineNumber": 237
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Run",
+          "lineNumber": 240
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Parallel",
+          "lineNumber": 241
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "removeAtIndex",
+          "lineNumber": 244
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "assert.Equal",
+          "lineNumber": 246
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Run",
+          "lineNumber": 249
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Parallel",
+          "lineNumber": 250
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "removeAtIndex",
+          "lineNumber": 253
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "assert.Equal",
+          "lineNumber": 254
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Run",
+          "lineNumber": 257
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Parallel",
+          "lineNumber": 258
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "assert.Panics",
+          "lineNumber": 260
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "removeAtIndex",
+          "lineNumber": 261
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Run",
+          "lineNumber": 265
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "t.Parallel",
+          "lineNumber": 266
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "assert.Panics",
+          "lineNumber": 268
+        },
+        {
+          "caller": "TestRemoveAtIndex",
+          "callee": "removeAtIndex",
+          "lineNumber": 269
+        },
+        {
+          "caller": "TestGetFilestoreMetadata",
+          "callee": "t.Parallel",
+          "lineNumber": 275
+        },
+        {
+          "caller": "TestGetFilestoreMetadata",
+          "callee": "getEnvironmentMetadata",
+          "lineNumber": 277
+        },
+        {
+          "caller": "TestGetFilestoreMetadata",
+          "callee": "t.Context",
+          "lineNumber": 277
+        },
+        {
+          "caller": "TestGetFilestoreMetadata",
+          "callee": "t.Skip",
+          "lineNumber": 279
+        },
+        {
+          "caller": "TestGetFilestoreMetadata",
+          "callee": "assert.NotEqual",
+          "lineNumber": 282
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 6,
+        "functionCount": 8,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 355,
+      "nonEmptyLines": 284,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 25,
+          "endLine": 114,
+          "params": []
+        },
+        {
+          "name": "mustParseInt",
+          "startLine": 116,
+          "endLine": 123,
+          "params": [
+            "s"
+          ]
+        },
+        {
+          "name": "generateScenarios",
+          "startLine": 134,
+          "endLine": 177,
+          "params": [
+            "experiments"
+          ]
+        },
+        {
+          "name": "run",
+          "startLine": 194,
+          "endLine": 302,
+          "params": [
+            "ctx",
+            "scenario"
+          ]
+        },
+        {
+          "name": "safeClose",
+          "startLine": 304,
+          "endLine": 308,
+          "params": [
+            "fp"
+          ]
+        },
+        {
+          "name": "summarizeDurations",
+          "startLine": 314,
+          "endLine": 355,
+          "params": [
+            "reads"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "result",
+          "startLine": 125,
+          "endLine": 132,
+          "methods": [],
+          "properties": [
+            "scenario",
+            "summary",
+            "concurrency",
+            "totalSuccessfulReads",
+            "testDuration"
+          ]
+        },
+        {
+          "name": "processor",
+          "startLine": 179,
+          "endLine": 192,
+          "methods": [
+            "run"
+          ],
+          "properties": [
+            "path",
+            "dropNfsCache",
+            "nfsStat",
+            "readMethod",
+            "concurrentRequests",
+            "readCount",
+            "skipCount",
+            "allowRepeatReads",
+            "limitFileCount",
+            "allFiles",
+            "nfsStatFile"
+          ]
+        },
+        {
+          "name": "durationSummary",
+          "startLine": 310,
+          "endLine": 312,
+          "methods": [],
+          "properties": [
+            "minTime",
+            "mean",
+            "p50",
+            "p95",
+            "p99",
+            "maxTime",
+            "stddev"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "context.Background",
+          "lineNumber": 26
+        },
+        {
+          "caller": "main",
+          "callee": "flag.NewFlagSet",
+          "lineNumber": 34
+        },
+        {
+          "caller": "main",
+          "callee": "f.BoolVar",
+          "lineNumber": 35
+        },
+        {
+          "caller": "main",
+          "callee": "f.BoolVar",
+          "lineNumber": 36
+        },
+        {
+          "caller": "main",
+          "callee": "f.IntVar",
+          "lineNumber": 37
+        },
+        {
+          "caller": "main",
+          "callee": "f.StringVar",
+          "lineNumber": 38
+        },
+        {
+          "caller": "main",
+          "callee": "f.StringVar",
+          "lineNumber": 39
+        },
+        {
+          "caller": "main",
+          "callee": "f.StringVar",
+          "lineNumber": 40
+        },
+        {
+          "caller": "main",
+          "callee": "f.StringVar",
+          "lineNumber": 41
+        },
+        {
+          "caller": "main",
+          "callee": "f.IntVar",
+          "lineNumber": 42
+        },
+        {
+          "caller": "main",
+          "callee": "f.StringVar",
+          "lineNumber": 43
+        },
+        {
+          "caller": "main",
+          "callee": "f.Parse",
+          "lineNumber": 45
+        },
+        {
+          "caller": "main",
+          "callee": "func() {\n\t\t\tlog.Printf(\"starting pprof on %s\", pprofAddr)\n\t\t\tif err := http.ListenAndServe(pprofAddr, nil); err != nil {\n\t\t\t\tlog.Printf(\"failed to start pprof: %s\", err)\n\t\t\t}\n\t\t}",
+          "lineNumber": 48
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 49
+        },
+        {
+          "caller": "main",
+          "callee": "http.ListenAndServe",
+          "lineNumber": 50
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 51
+        },
+        {
+          "caller": "main",
+          "callee": "f.Args",
+          "lineNumber": 56
+        },
+        {
+          "caller": "main",
+          "callee": "len",
+          "lineNumber": 56
+        },
+        {
+          "caller": "main",
+          "callee": "log.Fatal",
+          "lineNumber": 62
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Println",
+          "lineNumber": 67
+        },
+        {
+          "caller": "main",
+          "callee": "getEnvironmentMetadata",
+          "lineNumber": 68
+        },
+        {
+          "caller": "main",
+          "callee": "log.Fatalf",
+          "lineNumber": 70
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Println",
+          "lineNumber": 77
+        },
+        {
+          "caller": "main",
+          "callee": "p.findFiles",
+          "lineNumber": 78
+        },
+        {
+          "caller": "main",
+          "callee": "log.Fatalf",
+          "lineNumber": 79
+        },
+        {
+          "caller": "main",
+          "callee": "len",
+          "lineNumber": 84
+        },
+        {
+          "caller": "main",
+          "callee": "generateScenarios",
+          "lineNumber": 89
+        },
+        {
+          "caller": "main",
+          "callee": "p.run",
+          "lineNumber": 93
+        },
+        {
+          "caller": "main",
+          "callee": "log.Fatalf",
+          "lineNumber": 95
+        },
+        {
+          "caller": "main",
+          "callee": "err.Error",
+          "lineNumber": 95
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 98
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Printf",
+          "lineNumber": 100
+        },
+        {
+          "caller": "main",
+          "callee": "scenario.Name",
+          "lineNumber": 100
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Printf",
+          "lineNumber": 102
+        },
+        {
+          "caller": "main",
+          "callee": "scenario.Name",
+          "lineNumber": 102
+        },
+        {
+          "caller": "main",
+          "callee": "append",
+          "lineNumber": 105
+        },
+        {
+          "caller": "main",
+          "callee": "dumpResultsToCSV",
+          "lineNumber": 110
+        },
+        {
+          "caller": "main",
+          "callee": "log.Fatalf",
+          "lineNumber": 111
+        },
+        {
+          "caller": "main",
+          "callee": "err.Error",
+          "lineNumber": 111
+        },
+        {
+          "caller": "mustParseInt",
+          "callee": "strconv.Atoi",
+          "lineNumber": 117
+        },
+        {
+          "caller": "mustParseInt",
+          "callee": "panic",
+          "lineNumber": 119
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "make",
+          "lineNumber": 136
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "len",
+          "lineNumber": 136
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "append",
+          "lineNumber": 138
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "slices.Sort",
+          "lineNumber": 141
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "len",
+          "lineNumber": 145
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "make",
+          "lineNumber": 148
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "len",
+          "lineNumber": 148
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "maps.Copy",
+          "lineNumber": 149
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "yield",
+          "lineNumber": 151
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "make",
+          "lineNumber": 157
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "len",
+          "lineNumber": 157
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "append",
+          "lineNumber": 159
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "slices.Sort",
+          "lineNumber": 161
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "generate",
+          "lineNumber": 165
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "make",
+          "lineNumber": 174
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "len",
+          "lineNumber": 174
+        },
+        {
+          "caller": "generateScenarios",
+          "callee": "generate",
+          "lineNumber": 175
+        },
+        {
+          "caller": "run",
+          "callee": "log.New",
+          "lineNumber": 195
+        },
+        {
+          "caller": "run",
+          "callee": "os.WriteFile",
+          "lineNumber": 198
+        },
+        {
+          "caller": "run",
+          "callee": "fmt.Errorf",
+          "lineNumber": 199
+        },
+        {
+          "caller": "run",
+          "callee": "p.storeNfsStat",
+          "lineNumber": 204
+        },
+        {
+          "caller": "run",
+          "callee": "fmt.Errorf",
+          "lineNumber": 205
+        },
+        {
+          "caller": "run",
+          "callee": "scenario.setup",
+          "lineNumber": 210
+        },
+        {
+          "caller": "run",
+          "callee": "fmt.Errorf",
+          "lineNumber": 211
+        },
+        {
+          "caller": "run",
+          "callee": "make",
+          "lineNumber": 221
+        },
+        {
+          "caller": "run",
+          "callee": "time.Now",
+          "lineNumber": 223
+        },
+        {
+          "caller": "run",
+          "callee": "context.WithCancel",
+          "lineNumber": 224
+        },
+        {
+          "caller": "run",
+          "callee": "cancel",
+          "lineNumber": 225
+        },
+        {
+          "caller": "run",
+          "callee": "rand.New",
+          "lineNumber": 228
+        },
+        {
+          "caller": "run",
+          "callee": "rand.NewSource",
+          "lineNumber": 228
+        },
+        {
+          "caller": "run",
+          "callee": "time.Now().UnixNano",
+          "lineNumber": 228
+        },
+        {
+          "caller": "run",
+          "callee": "time.Now",
+          "lineNumber": 228
+        },
+        {
+          "caller": "run",
+          "callee": "slices.Clone",
+          "lineNumber": 229
+        },
+        {
+          "caller": "run",
+          "callee": "testCtx.Err",
+          "lineNumber": 233
+        },
+        {
+          "caller": "run",
+          "callee": "allFiles.selectFile",
+          "lineNumber": 234
+        },
+        {
+          "caller": "run",
+          "callee": "logger.Println",
+          "lineNumber": 236
+        },
+        {
+          "caller": "run",
+          "callee": "wg.Add",
+          "lineNumber": 244
+        },
+        {
+          "caller": "run",
+          "callee": "func() {\n\t\t\tdefer func() { <-semaphore }()\n\t\t\tdefer wg.Done()\n\n\t\t\tstart := time.Now()\n\n\t\t\tsize, err := p.readMethod(f)\n\t\t\tif err != nil {\n\t\t\t\tlogger.Println(\"failed to time file read\", \"error\", err)\n\n\t\t\t\treturn\n\t\t\t}\n\n\t\t\tduration := time.Since(start)\n\n\t\t\tif testCtx.Err() != nil {\n\t\t\t\treturn\n\t\t\t}\n\n\t\t\tif iteration < p.skipCount {\n\t\t\t\treturn\n\t\t\t}\n\n\t\t\tmu.Lock()\n\t\t\tdefer mu.Unlock()\n\n\t\t\tsizes = append(sizes, size)\n\t\t\treads = append(reads, duration)\n\n\t\t\tif duration < implausibleTime {\n\t\t\t\tfmt.Printf(\"!! read %d bytes from %s in %s\\n\", size, f, duration.Round(time.Millisecond))\n\t\t\t}\n\t\t}",
+          "lineNumber": 245
+        },
+        {
+          "caller": "run",
+          "callee": "func() { <-semaphore }",
+          "lineNumber": 246
+        },
+        {
+          "caller": "run",
+          "callee": "wg.Done",
+          "lineNumber": 247
+        },
+        {
+          "caller": "run",
+          "callee": "time.Now",
+          "lineNumber": 249
+        },
+        {
+          "caller": "run",
+          "callee": "p.readMethod",
+          "lineNumber": 251
+        },
+        {
+          "caller": "run",
+          "callee": "logger.Println",
+          "lineNumber": 253
+        },
+        {
+          "caller": "run",
+          "callee": "time.Since",
+          "lineNumber": 258
+        },
+        {
+          "caller": "run",
+          "callee": "testCtx.Err",
+          "lineNumber": 260
+        },
+        {
+          "caller": "run",
+          "callee": "mu.Lock",
+          "lineNumber": 268
+        },
+        {
+          "caller": "run",
+          "callee": "mu.Unlock",
+          "lineNumber": 269
+        },
+        {
+          "caller": "run",
+          "callee": "append",
+          "lineNumber": 271
+        },
+        {
+          "caller": "run",
+          "callee": "append",
+          "lineNumber": 272
+        },
+        {
+          "caller": "run",
+          "callee": "fmt.Printf",
+          "lineNumber": 275
+        },
+        {
+          "caller": "run",
+          "callee": "duration.Round",
+          "lineNumber": 275
+        },
+        {
+          "caller": "run",
+          "callee": "wg.Wait",
+          "lineNumber": 280
+        },
+        {
+          "caller": "run",
+          "callee": "scenario.teardown",
+          "lineNumber": 282
+        },
+        {
+          "caller": "run",
+          "callee": "fmt.Errorf",
+          "lineNumber": 283
+        },
+        {
+          "caller": "run",
+          "callee": "summarizeDurations",
+          "lineNumber": 287
+        },
+        {
+          "caller": "run",
+          "callee": "p.compareNfsStat",
+          "lineNumber": 290
+        },
+        {
+          "caller": "run",
+          "callee": "fmt.Errorf",
+          "lineNumber": 291
+        },
+        {
+          "caller": "run",
+          "callee": "len",
+          "lineNumber": 299
+        },
+        {
+          "caller": "run",
+          "callee": "time.Since",
+          "lineNumber": 300
+        },
+        {
+          "caller": "safeClose",
+          "callee": "fp.Close",
+          "lineNumber": 305
+        },
+        {
+          "caller": "safeClose",
+          "callee": "log.Println",
+          "lineNumber": 306
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "len",
+          "lineNumber": 315
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "slices.Sort",
+          "lineNumber": 320
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "len",
+          "lineNumber": 322
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "max",
+          "lineNumber": 326
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "int",
+          "lineNumber": 326
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "math.Ceil",
+          "lineNumber": 326
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "float64",
+          "lineNumber": 326
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "float64",
+          "lineNumber": 334
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "float64",
+          "lineNumber": 336
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "float64",
+          "lineNumber": 341
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "math.Sqrt",
+          "lineNumber": 344
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "float64",
+          "lineNumber": 344
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "time.Duration",
+          "lineNumber": 349
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "percentile",
+          "lineNumber": 350
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "percentile",
+          "lineNumber": 351
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "percentile",
+          "lineNumber": 352
+        },
+        {
+          "caller": "summarizeDurations",
+          "callee": "time.Duration",
+          "lineNumber": 353
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 6,
+        "classCount": 3
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 88,
+      "nonEmptyLines": 73,
+      "functions": [
+        {
+          "name": "getEnvironmentMetadata",
+          "startLine": 30,
+          "endLine": 57,
+          "params": [
+            "ctx",
+            "name",
+            "zone"
+          ]
+        },
+        {
+          "name": "getMetadata",
+          "startLine": 61,
+          "endLine": 88,
+          "params": [
+            "ctx",
+            "path"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "environmentMetadata",
+          "startLine": 13,
+          "endLine": 18,
+          "methods": [],
+          "properties": [
+            "FilestoreCapacityGB",
+            "FilestoreReadIOPS",
+            "FilestoreMaxReadMBps",
+            "ClientMachineType"
+          ]
+        },
+        {
+          "name": "filestoreInstance",
+          "startLine": 20,
+          "endLine": 28,
+          "methods": [],
+          "properties": [
+            "FileShares",
+            "PerformanceLimits"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getEnvironmentMetadata",
+          "callee": "exec.CommandContext(ctx, \"gcloud\", \"filestore\", \"instances\", \"describe\", name, \"--zone\", zone, \"--format=json\").CombinedOutput",
+          "lineNumber": 36
+        },
+        {
+          "caller": "getEnvironmentMetadata",
+          "callee": "exec.CommandContext",
+          "lineNumber": 36
+        },
+        {
+          "caller": "getEnvironmentMetadata",
+          "callee": "fmt.Errorf",
+          "lineNumber": 38
+        },
+        {
+          "caller": "getEnvironmentMetadata",
+          "callee": "json.Unmarshal",
+          "lineNumber": 42
+        },
+        {
+          "caller": "getEnvironmentMetadata",
+          "callee": "fmt.Errorf",
+          "lineNumber": 43
+        },
+        {
+          "caller": "getEnvironmentMetadata",
+          "callee": "getMetadata",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getEnvironmentMetadata",
+          "callee": "fmt.Errorf",
+          "lineNumber": 48
+        },
+        {
+          "caller": "getEnvironmentMetadata",
+          "callee": "mustParseInt",
+          "lineNumber": 52
+        },
+        {
+          "caller": "getEnvironmentMetadata",
+          "callee": "mustParseInt",
+          "lineNumber": 53
+        },
+        {
+          "caller": "getEnvironmentMetadata",
+          "callee": "mustParseInt",
+          "lineNumber": 54
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "strings.TrimPrefix",
+          "lineNumber": 62
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "http.NewRequestWithContext",
+          "lineNumber": 63
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 63
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "fmt.Errorf",
+          "lineNumber": 65
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "client.Do",
+          "lineNumber": 69
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "fmt.Errorf",
+          "lineNumber": 71
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "resp.Body.Close",
+          "lineNumber": 73
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "fmt.Errorf",
+          "lineNumber": 76
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "io.ReadAll",
+          "lineNumber": 79
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "fmt.Errorf",
+          "lineNumber": 81
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 84
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "string",
+          "lineNumber": 84
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "strings.Split",
+          "lineNumber": 85
+        },
+        {
+          "caller": "getMetadata",
+          "callee": "len",
+          "lineNumber": 87
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 2,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 106,
+      "nonEmptyLines": 84,
+      "functions": [
+        {
+          "name": "storeNfsStat",
+          "startLine": 12,
+          "endLine": 31,
+          "params": []
+        },
+        {
+          "name": "compareNfsStat",
+          "startLine": 33,
+          "endLine": 49,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "summarizeNfsstat",
+          "startLine": 51,
+          "endLine": 55,
+          "params": [
+            "stats"
+          ]
+        },
+        {
+          "name": "nfsstatParse",
+          "startLine": 62,
+          "endLine": 100,
+          "params": [
+            "s"
+          ]
+        },
+        {
+          "name": "safeRemove",
+          "startLine": 102,
+          "endLine": 106,
+          "params": [
+            "file"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "nfsstat",
+          "startLine": 57,
+          "endLine": 60,
+          "methods": [],
+          "properties": [
+            "category",
+            "function",
+            "count"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "storeNfsStat",
+          "callee": "os.ReadFile",
+          "lineNumber": 13
+        },
+        {
+          "caller": "storeNfsStat",
+          "callee": "fmt.Errorf",
+          "lineNumber": 15
+        },
+        {
+          "caller": "storeNfsStat",
+          "callee": "os.CreateTemp",
+          "lineNumber": 18
+        },
+        {
+          "caller": "storeNfsStat",
+          "callee": "fmt.Errorf",
+          "lineNumber": 20
+        },
+        {
+          "caller": "storeNfsStat",
+          "callee": "safeClose",
+          "lineNumber": 22
+        },
+        {
+          "caller": "storeNfsStat",
+          "callee": "fname.Write",
+          "lineNumber": 24
+        },
+        {
+          "caller": "storeNfsStat",
+          "callee": "fmt.Errorf",
+          "lineNumber": 25
+        },
+        {
+          "caller": "storeNfsStat",
+          "callee": "fname.Name",
+          "lineNumber": 28
+        },
+        {
+          "caller": "compareNfsStat",
+          "callee": "safeRemove",
+          "lineNumber": 34
+        },
+        {
+          "caller": "compareNfsStat",
+          "callee": "exec.CommandContext(ctx, \"nfsstat\", \"--list\", \"--since\", p.nfsStatFile, \"/proc/net/rpc/nfs\").Output",
+          "lineNumber": 36
+        },
+        {
+          "caller": "compareNfsStat",
+          "callee": "exec.CommandContext",
+          "lineNumber": 36
+        },
+        {
+          "caller": "compareNfsStat",
+          "callee": "fmt.Errorf",
+          "lineNumber": 38
+        },
+        {
+          "caller": "compareNfsStat",
+          "callee": "nfsstatParse",
+          "lineNumber": 41
+        },
+        {
+          "caller": "compareNfsStat",
+          "callee": "string",
+          "lineNumber": 41
+        },
+        {
+          "caller": "compareNfsStat",
+          "callee": "fmt.Errorf",
+          "lineNumber": 43
+        },
+        {
+          "caller": "compareNfsStat",
+          "callee": "summarizeNfsstat",
+          "lineNumber": 46
+        },
+        {
+          "caller": "summarizeNfsstat",
+          "callee": "fmt.Printf",
+          "lineNumber": 53
+        },
+        {
+          "caller": "nfsstatParse",
+          "callee": "strings.SplitSeq",
+          "lineNumber": 64
+        },
+        {
+          "caller": "nfsstatParse",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 66
+        },
+        {
+          "caller": "nfsstatParse",
+          "callee": "strings.HasPrefix",
+          "lineNumber": 67
+        },
+        {
+          "caller": "nfsstatParse",
+          "callee": "strings.Split",
+          "lineNumber": 71
+        },
+        {
+          "caller": "nfsstatParse",
+          "callee": "len",
+          "lineNumber": 72
+        },
+        {
+          "caller": "nfsstatParse",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 76
+        },
+        {
+          "caller": "nfsstatParse",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 77
+        },
+        {
+          "caller": "nfsstatParse",
+          "callee": "strings.LastIndex",
+          "lineNumber": 79
+        },
+        {
+          "caller": "nfsstatParse",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 84
+        },
+        {
+          "caller": "nfsstatParse",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 85
+        },
+        {
+          "caller": "nfsstatParse",
+          "callee": "fmt.Sscanf",
+          "lineNumber": 88
+        },
+        {
+          "caller": "nfsstatParse",
+          "callee": "fmt.Errorf",
+          "lineNumber": 89
+        },
+        {
+          "caller": "nfsstatParse",
+          "callee": "append",
+          "lineNumber": 92
+        },
+        {
+          "caller": "safeRemove",
+          "callee": "os.Remove",
+          "lineNumber": 103
+        },
+        {
+          "caller": "safeRemove",
+          "callee": "log.Println",
+          "lineNumber": 104
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 5,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/generate.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 8,
+      "nonEmptyLines": 7,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/hyperloopserver/contracts/cfg.yaml",
+      "language": "yaml",
+      "fileCategory": "config",
+      "totalLines": 8,
+      "nonEmptyLines": 7,
+      "sections": [
+        {
+          "heading": "package",
+          "level": 1,
+          "line": 3
+        },
+        {
+          "heading": "output",
+          "level": 1,
+          "line": 4
+        },
+        {
+          "heading": "generate",
+          "level": 1,
+          "line": 5
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 3
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/nfsproxy/e2e_start.sh",
+      "language": "shell",
+      "fileCategory": "script",
+      "totalLines": 37,
+      "nonEmptyLines": 28,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/nfsproxy/e2e_test.sh",
+      "language": "shell",
+      "fileCategory": "script",
+      "totalLines": 112,
+      "nonEmptyLines": 93,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/nfsproxy/oschange/main.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 33,
+      "nonEmptyLines": 24,
+      "functions": [
+        {
+          "name": "NewChange",
+          "startLine": 13,
+          "endLine": 15,
+          "params": [
+            "base"
+          ]
+        },
+        {
+          "name": "Chmod",
+          "startLine": 17,
+          "endLine": 19,
+          "params": [
+            "name",
+            "mode"
+          ]
+        },
+        {
+          "name": "Lchown",
+          "startLine": 21,
+          "endLine": 23,
+          "params": [
+            "name",
+            "uid",
+            "gid"
+          ]
+        },
+        {
+          "name": "Chown",
+          "startLine": 25,
+          "endLine": 27,
+          "params": [
+            "name",
+            "uid",
+            "gid"
+          ]
+        },
+        {
+          "name": "Chtimes",
+          "startLine": 29,
+          "endLine": 31,
+          "params": [
+            "name",
+            "atime",
+            "mtime"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Change",
+          "startLine": 11,
+          "endLine": 11,
+          "methods": [
+            "Chmod",
+            "Lchown",
+            "Chown",
+            "Chtimes"
+          ],
+          "properties": [
+            "base"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Change",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "NewChange",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "Chmod",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "Lchown",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "Chown",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "Chtimes",
+          "line": 29,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Chmod",
+          "callee": "os.Chmod",
+          "lineNumber": 18
+        },
+        {
+          "caller": "Chmod",
+          "callee": "filepath.Join",
+          "lineNumber": 18
+        },
+        {
+          "caller": "Lchown",
+          "callee": "os.Lchown",
+          "lineNumber": 22
+        },
+        {
+          "caller": "Lchown",
+          "callee": "filepath.Join",
+          "lineNumber": 22
+        },
+        {
+          "caller": "Chown",
+          "callee": "os.Chown",
+          "lineNumber": 26
+        },
+        {
+          "caller": "Chown",
+          "callee": "filepath.Join",
+          "lineNumber": 26
+        },
+        {
+          "caller": "Chtimes",
+          "callee": "os.Chtimes",
+          "lineNumber": 30
+        },
+        {
+          "caller": "Chtimes",
+          "callee": "filepath.Join",
+          "lineNumber": 30
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 6,
+        "functionCount": 5,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/sandbox/envd/cfg.yaml",
+      "language": "yaml",
+      "fileCategory": "config",
+      "totalLines": 11,
+      "nonEmptyLines": 10,
+      "sections": [
+        {
+          "heading": "package",
+          "level": 1,
+          "line": 3
+        },
+        {
+          "heading": "output",
+          "level": 1,
+          "line": 4
+        },
+        {
+          "heading": "generate",
+          "level": 1,
+          "line": 5
+        },
+        {
+          "heading": "output-options",
+          "level": 1,
+          "line": 9
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 4
+      }
+    },
+    {
+      "path": "packages/orchestrator/scripts/benchmark-to-markdown.awk",
+      "language": "awk",
+      "fileCategory": "code",
+      "totalLines": 50,
+      "nonEmptyLines": 43,
+      "metrics": {}
+    },
+    {
+      "path": "packages/orchestrator/test.Dockerfile",
+      "language": "dockerfile",
+      "fileCategory": "code",
+      "totalLines": 44,
+      "nonEmptyLines": 31,
+      "metrics": {}
+    },
+    {
+      "path": "packages/otel-collector/Makefile",
+      "language": "makefile",
+      "fileCategory": "infra",
+      "totalLines": 24,
+      "nonEmptyLines": 21,
+      "steps": [
+        {
+          "name": "run",
+          "startLine": 8,
+          "endLine": 25
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "stepCount": 1
+      }
+    },
+    {
+      "path": "packages/otel-collector/tests/otel-collector.yaml",
+      "language": "yaml",
+      "fileCategory": "config",
+      "totalLines": 69,
+      "nonEmptyLines": 66,
+      "sections": [
+        {
+          "heading": "receivers",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "processors",
+          "level": 1,
+          "line": 11
+        },
+        {
+          "heading": "extensions",
+          "level": 1,
+          "line": 25
+        },
+        {
+          "heading": "exporters",
+          "level": 1,
+          "line": 28
+        },
+        {
+          "heading": "service",
+          "level": 1,
+          "line": 43
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 5
+      }
+    },
+    {
+      "path": "packages/shared/pkg/apierrors/apierrors.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 29,
+      "nonEmptyLines": 23,
+      "functions": [
+        {
+          "name": "Error",
+          "startLine": 18,
+          "endLine": 20,
+          "params": []
+        },
+        {
+          "name": "SendAPIStoreError",
+          "startLine": 23,
+          "endLine": 29,
+          "params": [
+            "c",
+            "code",
+            "message"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "APIError",
+          "startLine": 12,
+          "endLine": 16,
+          "methods": [
+            "Error"
+          ],
+          "properties": [
+            "Err",
+            "ClientMsg",
+            "Code"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "APIError",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "Error",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "SendAPIStoreError",
+          "line": 23,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Error",
+          "callee": "e.Err.Error",
+          "lineNumber": 19
+        },
+        {
+          "caller": "SendAPIStoreError",
+          "callee": "c.Error",
+          "lineNumber": 24
+        },
+        {
+          "caller": "SendAPIStoreError",
+          "callee": "errors.New",
+          "lineNumber": 24
+        },
+        {
+          "caller": "SendAPIStoreError",
+          "callee": "c.JSON",
+          "lineNumber": 25
+        },
+        {
+          "caller": "SendAPIStoreError",
+          "callee": "int32",
+          "lineNumber": 26
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/shared/pkg/artifacts-registry/registry_aws.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 136,
+      "nonEmptyLines": 109,
+      "functions": [
+        {
+          "name": "NewAWSArtifactsRegistry",
+          "startLine": 30,
+          "endLine": 46,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "Delete",
+          "startLine": 48,
+          "endLine": 68,
+          "params": [
+            "ctx",
+            "_",
+            "buildId"
+          ]
+        },
+        {
+          "name": "GetTag",
+          "startLine": 70,
+          "endLine": 81,
+          "params": [
+            "ctx",
+            "_",
+            "buildId"
+          ]
+        },
+        {
+          "name": "GetImage",
+          "startLine": 83,
+          "endLine": 105,
+          "params": [
+            "ctx",
+            "templateId",
+            "buildId",
+            "platform"
+          ]
+        },
+        {
+          "name": "getAuthToken",
+          "startLine": 107,
+          "endLine": 136,
+          "params": [
+            "ctx"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AWSArtifactsRegistry",
+          "startLine": 20,
+          "endLine": 23,
+          "methods": [
+            "Delete",
+            "GetTag",
+            "GetImage",
+            "getAuthToken"
+          ],
+          "properties": [
+            "repositoryName",
+            "client"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "AWSArtifactsRegistry",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "NewAWSArtifactsRegistry",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "Delete",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "GetTag",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "GetImage",
+          "line": 83,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewAWSArtifactsRegistry",
+          "callee": "config.LoadDefaultConfig",
+          "lineNumber": 31
+        },
+        {
+          "caller": "NewAWSArtifactsRegistry",
+          "callee": "fmt.Errorf",
+          "lineNumber": 37
+        },
+        {
+          "caller": "NewAWSArtifactsRegistry",
+          "callee": "ecr.NewFromConfig",
+          "lineNumber": 40
+        },
+        {
+          "caller": "Delete",
+          "callee": "g.client.BatchDeleteImage",
+          "lineNumber": 54
+        },
+        {
+          "caller": "Delete",
+          "callee": "fmt.Errorf",
+          "lineNumber": 56
+        },
+        {
+          "caller": "Delete",
+          "callee": "len",
+          "lineNumber": 59
+        },
+        {
+          "caller": "Delete",
+          "callee": "errors.New",
+          "lineNumber": 64
+        },
+        {
+          "caller": "GetTag",
+          "callee": "g.client.DescribeRepositories",
+          "lineNumber": 71
+        },
+        {
+          "caller": "GetTag",
+          "callee": "fmt.Errorf",
+          "lineNumber": 73
+        },
+        {
+          "caller": "GetTag",
+          "callee": "len",
+          "lineNumber": 76
+        },
+        {
+          "caller": "GetTag",
+          "callee": "fmt.Errorf",
+          "lineNumber": 77
+        },
+        {
+          "caller": "GetTag",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 80
+        },
+        {
+          "caller": "GetImage",
+          "callee": "g.GetTag",
+          "lineNumber": 84
+        },
+        {
+          "caller": "GetImage",
+          "callee": "fmt.Errorf",
+          "lineNumber": 86
+        },
+        {
+          "caller": "GetImage",
+          "callee": "name.ParseReference",
+          "lineNumber": 89
+        },
+        {
+          "caller": "GetImage",
+          "callee": "fmt.Errorf",
+          "lineNumber": 91
+        },
+        {
+          "caller": "GetImage",
+          "callee": "g.getAuthToken",
+          "lineNumber": 94
+        },
+        {
+          "caller": "GetImage",
+          "callee": "fmt.Errorf",
+          "lineNumber": 96
+        },
+        {
+          "caller": "GetImage",
+          "callee": "remote.Image",
+          "lineNumber": 99
+        },
+        {
+          "caller": "GetImage",
+          "callee": "remote.WithAuth",
+          "lineNumber": 99
+        },
+        {
+          "caller": "GetImage",
+          "callee": "remote.WithPlatform",
+          "lineNumber": 99
+        },
+        {
+          "caller": "GetImage",
+          "callee": "remote.WithContext",
+          "lineNumber": 99
+        },
+        {
+          "caller": "GetImage",
+          "callee": "fmt.Errorf",
+          "lineNumber": 101
+        },
+        {
+          "caller": "getAuthToken",
+          "callee": "g.client.GetAuthorizationToken",
+          "lineNumber": 108
+        },
+        {
+          "caller": "getAuthToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 110
+        },
+        {
+          "caller": "getAuthToken",
+          "callee": "len",
+          "lineNumber": 113
+        },
+        {
+          "caller": "getAuthToken",
+          "callee": "errors.New",
+          "lineNumber": 114
+        },
+        {
+          "caller": "getAuthToken",
+          "callee": "base64.StdEncoding.DecodeString",
+          "lineNumber": 118
+        },
+        {
+          "caller": "getAuthToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 120
+        },
+        {
+          "caller": "getAuthToken",
+          "callee": "strings.SplitN",
+          "lineNumber": 124
+        },
+        {
+          "caller": "getAuthToken",
+          "callee": "string",
+          "lineNumber": 124
+        },
+        {
+          "caller": "getAuthToken",
+          "callee": "len",
+          "lineNumber": 125
+        },
+        {
+          "caller": "getAuthToken",
+          "callee": "errors.New",
+          "lineNumber": 126
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 5,
+        "functionCount": 5,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/shared/pkg/artifacts-registry/registry_local.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 44,
+      "nonEmptyLines": 34,
+      "functions": [
+        {
+          "name": "NewLocalArtifactsRegistry",
+          "startLine": 14,
+          "endLine": 16,
+          "params": []
+        },
+        {
+          "name": "Delete",
+          "startLine": 18,
+          "endLine": 21,
+          "params": []
+        },
+        {
+          "name": "GetTag",
+          "startLine": 23,
+          "endLine": 25,
+          "params": [
+            "_",
+            "templateId",
+            "buildId"
+          ]
+        },
+        {
+          "name": "GetImage",
+          "startLine": 27,
+          "endLine": 44,
+          "params": [
+            "ctx",
+            "templateId",
+            "buildId",
+            "_"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "LocalArtifactsRegistry",
+          "startLine": 12,
+          "endLine": 12,
+          "methods": [
+            "Delete",
+            "GetTag",
+            "GetImage"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "LocalArtifactsRegistry",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "NewLocalArtifactsRegistry",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "Delete",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "GetTag",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "GetImage",
+          "line": 27,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTag",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 24
+        },
+        {
+          "caller": "GetImage",
+          "callee": "g.GetTag",
+          "lineNumber": 28
+        },
+        {
+          "caller": "GetImage",
+          "callee": "fmt.Errorf",
+          "lineNumber": 30
+        },
+        {
+          "caller": "GetImage",
+          "callee": "name.ParseReference",
+          "lineNumber": 33
+        },
+        {
+          "caller": "GetImage",
+          "callee": "fmt.Errorf",
+          "lineNumber": 35
+        },
+        {
+          "caller": "GetImage",
+          "callee": "daemon.Image",
+          "lineNumber": 38
+        },
+        {
+          "caller": "GetImage",
+          "callee": "daemon.WithContext",
+          "lineNumber": 38
+        },
+        {
+          "caller": "GetImage",
+          "callee": "fmt.Errorf",
+          "lineNumber": 40
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    }
+  ]
+}

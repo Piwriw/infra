@@ -1,0 +1,1119 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/shared/pkg/utils/errorcollector_test.go",
+      "type": "file",
+      "name": "errorcollector_test.go",
+      "filePath": "packages/shared/pkg/utils/errorcollector_test.go",
+      "summary": "ErrorCollector 的单元测试，验证其在并发 goroutine 中聚合 error 与 panic 的能力以及线程安全行为。",
+      "tags": ["test", "error-handling", "concurrency", "validation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/filter.go",
+      "type": "file",
+      "name": "filter.go",
+      "filePath": "packages/shared/pkg/utils/filter.go",
+      "summary": "提供泛型 Filter 函数，按断言从切片中筛选满足条件的元素并返回新切片。",
+      "tags": ["utility", "generics", "slice", "filter"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/grpc_codes.go",
+      "type": "file",
+      "name": "grpc_codes.go",
+      "filePath": "packages/shared/pkg/utils/grpc_codes.go",
+      "summary": "提供 GRPCCodeFromHTTPStatus 函数，将 HTTP 状态码映射到语义最接近的 gRPC codes.Code，用于 HTTP/gRPC 边界保持错误语义一致。",
+      "tags": ["utility", "grpc", "http", "error-mapping"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/iter.go",
+      "type": "file",
+      "name": "iter.go",
+      "filePath": "packages/shared/pkg/utils/iter.go",
+      "summary": "提供泛型 TransformTo 函数，将一种迭代器类型转换为另一种迭代器，并对每个元素应用映射函数。",
+      "tags": ["utility", "generics", "iterator", "transformation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/lazy.go",
+      "type": "file",
+      "name": "lazy.go",
+      "filePath": "packages/shared/pkg/utils/lazy.go",
+      "summary": "提供基于 sync.Once 的泛型 Lazy 结构与 GetOrInit 函数，实现首次访问时才执行初始化的延迟求值模式。",
+      "tags": ["utility", "concurrency", "lazy-init", "singleton"],
+      "complexity": "simple",
+      "languageNotes": "使用 Go 泛型与 sync.Once 组合实现类型安全的延迟初始化。"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/logging.go",
+      "type": "file",
+      "name": "logging.go",
+      "filePath": "packages/shared/pkg/utils/logging.go",
+      "summary": "提供 Cleanup 与 CleanupCtx 工具函数，在 defer 阶段执行清理逻辑的同时通过 logger 记录消息，简化带日志的资源清理代码。",
+      "tags": ["utility", "logging", "cleanup", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/map.go",
+      "type": "file",
+      "name": "map.go",
+      "filePath": "packages/shared/pkg/utils/map.go",
+      "summary": "提供泛型 Map 函数，对切片中每个元素应用转换函数并返回结果切片。",
+      "tags": ["utility", "generics", "slice", "map"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/map_values.go",
+      "type": "file",
+      "name": "map_values.go",
+      "filePath": "packages/shared/pkg/utils/map_values.go",
+      "summary": "提供泛型 MapValues 函数，提取 map 中的所有值并以切片形式返回。",
+      "tags": ["utility", "generics", "map", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/mocks_test.go",
+      "type": "file",
+      "name": "mocks_test.go",
+      "filePath": "packages/shared/pkg/utils/mocks_test.go",
+      "summary": "为 move.go 的 fileOps 接口手工编写的测试 mock，提供类 mockery 的 EXPECT 链式 API（Run/Return/RunAndReturn），用于在不使用代码生成时模拟文件系统操作。",
+      "tags": ["test", "mock", "file-ops", "testing"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/move.go",
+      "type": "file",
+      "name": "move.go",
+      "filePath": "packages/shared/pkg/utils/move.go",
+      "summary": "提供 RenameOrDeleteFile 函数，在不支持原子 rename 的存储后端上通过 Link+Remove 组合实现文件移动，链接失败时回退为仅删除源文件。",
+      "tags": ["utility", "filesystem", "atomic", "storage"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/move_test.go",
+      "type": "file",
+      "name": "move_test.go",
+      "filePath": "packages/shared/pkg/utils/move_test.go",
+      "summary": "测试 RenameOrDeleteFile 在目标文件不存在等场景下成功完成原子移动的行为，使用 mockfileOps 注入文件操作。",
+      "tags": ["test", "atomic-move", "filesystem", "validation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/must.go",
+      "type": "file",
+      "name": "must.go",
+      "filePath": "packages/shared/pkg/utils/must.go",
+      "summary": "提供泛型 Must 函数：err 非 nil 时 panic 并返回对象，用于必须成功的初始化路径以简化错误处理。",
+      "tags": ["utility", "generics", "error-handling", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/promise.go",
+      "type": "file",
+      "name": "promise.go",
+      "filePath": "packages/shared/pkg/utils/promise.go",
+      "summary": "实现泛型 Promise 结构，封装异步计算结果与 Done channel，支持上下文取消等待与结果获取。",
+      "tags": ["concurrency", "async", "promise", "generics"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/promise_test.go",
+      "type": "file",
+      "name": "promise_test.go",
+      "filePath": "packages/shared/pkg/utils/promise_test.go",
+      "summary": "覆盖 Promise 的成功、失败、延迟结果、上下文取消、多等待者、Done 与 Result 访问器等场景的单元测试。",
+      "tags": ["test", "concurrency", "promise", "validation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/ptr.go",
+      "type": "file",
+      "name": "ptr.go",
+      "filePath": "packages/shared/pkg/utils/ptr.go",
+      "summary": "提供指针操作工具函数集合：FromPtr 解引用、Sprintp 安全格式化、DerefOrDefault 解引用或默认值、CastPtr 安全类型转换。",
+      "tags": ["utility", "pointer", "generics", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/resizable_semaphore.go",
+      "type": "file",
+      "name": "resizable_semaphore.go",
+      "filePath": "packages/shared/pkg/utils/resizable_semaphore.go",
+      "summary": "实现 AdjustableSemaphore，基于 sync.Cond 提供可在运行时动态调整容量上限的信号量，支持上下文取消的 Acquire/TryAcquire。",
+      "tags": ["concurrency", "semaphore", "rate-limiting", "synchronization"],
+      "complexity": "moderate",
+      "languageNotes": "使用 sync.Cond 而非 channel 实现可在运行时调整大小的信号量。"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/resizable_semaphore_test.go",
+      "type": "file",
+      "name": "resizable_semaphore_test.go",
+      "filePath": "packages/shared/pkg/utils/resizable_semaphore_test.go",
+      "summary": "AdjustableSemaphore 的完整测试，覆盖基础获取/释放、容量增减、参数校验、阻塞与解除阻塞、上下文取消以及并发无死锁/无竞争压力测试。",
+      "tags": ["test", "concurrency", "semaphore", "validation"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/set_once.go",
+      "type": "file",
+      "name": "set_once.go",
+      "filePath": "packages/shared/pkg/utils/set_once.go",
+      "summary": "实现 SetOnce 泛型一次性写入容器，封装 value/err 结果与 Done channel，提供线程安全的 Set 与阻塞 Wait/Result 接口。",
+      "tags": ["concurrency", "one-shot", "generics", "synchronization"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/set_once_test.go",
+      "type": "file",
+      "name": "set_once_test.go",
+      "filePath": "packages/shared/pkg/utils/set_once_test.go",
+      "summary": "SetOnce 的并发测试套件，覆盖单次设置、错误传播、并发读写竞争、上下文取消以及多次 Done channel 触发等场景。",
+      "tags": ["test", "concurrency", "one-shot", "validation"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/strings.go",
+      "type": "file",
+      "name": "strings.go",
+      "filePath": "packages/shared/pkg/utils/strings.go",
+      "summary": "提供字符串工具函数：FirstNonEmpty 返回变长参数中第一个非空字符串，Truncate 按 UTF-8 rune 长度安全截断并以省略号替换超出部分。",
+      "tags": ["utility", "strings", "helper", "formatting"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/switching/switching.go",
+      "type": "file",
+      "name": "switching.go",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "summary": "通用资源切换器：基于 LaunchDarkly 字符串 feature flag 在一个默认客户端和多个备用客户端间路由请求，无效值自动回退到默认并发出限速去重告警，无需重启服务即可热切换后端。",
+      "tags": ["feature-flags", "routing", "concurrency", "resilience", "observability"],
+      "complexity": "complex",
+      "languageNotes": "使用 Go 泛型约束 Resource 接口，结合 atomic/sync/otel 实现高性能、低分配的热路径。"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/switching/switching_test.go",
+      "type": "file",
+      "name": "switching_test.go",
+      "filePath": "packages/shared/pkg/utils/switching/switching_test.go",
+      "summary": "Switcher 的完整测试，覆盖参数校验、备用工厂失败、DSN 不变量、Resolve 边界条件、告警去重上限、日志脱敏、Close 幂等、并发 live-update 等场景。",
+      "tags": ["test", "feature-flags", "routing", "validation"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/symlink.go",
+      "type": "file",
+      "name": "symlink.go",
+      "filePath": "packages/shared/pkg/utils/symlink.go",
+      "summary": "提供 SymlinkForce 函数，先删除已存在的目标路径再创建新符号链接，实现强制覆盖式 symlink。",
+      "tags": ["utility", "filesystem", "symlink", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/version.go",
+      "type": "file",
+      "name": "version.go",
+      "filePath": "packages/shared/pkg/utils/version.go",
+      "summary": "基于 golang.org/x/mod/semver 的语义化版本比较工具，定义 envd 各功能（snapshot、cgroup freeze、heap collapse、fs freeze）所需的最低版本常量并提供 IsGTEVersion/IsSmallerVersion/IsVersion 比较。",
+      "tags": ["utility", "semver", "versioning", "envd"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/version_test.go",
+      "type": "file",
+      "name": "version_test.go",
+      "filePath": "packages/shared/pkg/utils/version_test.go",
+      "summary": "TestIsGTEVersion 表驱动测试，验证版本比较在各种合法/非法 semver 输入下的正确性与错误处理。",
+      "tags": ["test", "semver", "table-driven", "validation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/waitgroup.go",
+      "type": "file",
+      "name": "waitgroup.go",
+      "filePath": "packages/shared/pkg/utils/waitgroup.go",
+      "summary": "提供 WaitGroupWait 函数，使用 goroutine 同时监听 sync.WaitGroup 的 Done channel 与 context.Done，使 context 取消能够立即打断 WaitGroup 的阻塞等待。",
+      "tags": ["concurrency", "waitgroup", "context", "synchronization"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/utils/waitgroup_test.go",
+      "type": "file",
+      "name": "waitgroup_test.go",
+      "filePath": "packages/shared/pkg/utils/waitgroup_test.go",
+      "summary": "覆盖 WaitGroupWait 在已完成、延后完成、上下文取消优先级以及 done-or-context 辅助函数等场景下的单元测试。",
+      "tags": ["test", "concurrency", "waitgroup", "validation"],
+      "complexity": "moderate"
+    },
+
+    {
+      "id": "function:packages/shared/pkg/utils/grpc_codes.go:GRPCCodeFromHTTPStatus",
+      "type": "function",
+      "name": "GRPCCodeFromHTTPStatus",
+      "filePath": "packages/shared/pkg/utils/grpc_codes.go",
+      "lineRange": [11, 46],
+      "summary": "将 HTTP 状态码映射到语义最接近的 gRPC codes.Code，用于在 HTTP→gRPC 错误转换时保留错误语义。",
+      "tags": ["grpc", "http", "error-mapping", "utility"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/logging.go:CleanupCtx",
+      "type": "function",
+      "name": "CleanupCtx",
+      "filePath": "packages/shared/pkg/utils/logging.go",
+      "lineRange": [11, 15],
+      "summary": "返回可在 defer 阶段运行的清理闭包：执行 fn 的同时通过 context 中的 logger 记录消息，便于在清理路径保留可观测性。",
+      "tags": ["logging", "cleanup", "helper", "context"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/logging.go:Cleanup",
+      "type": "function",
+      "name": "Cleanup",
+      "filePath": "packages/shared/pkg/utils/logging.go",
+      "lineRange": [17, 21],
+      "summary": "无 context 版本的清理包装：在 defer 阶段运行 fn 并使用全局 logger 记录消息。",
+      "tags": ["logging", "cleanup", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/lazy.go:GetOrInit",
+      "type": "function",
+      "name": "GetOrInit",
+      "filePath": "packages/shared/pkg/utils/lazy.go",
+      "lineRange": [21, 27],
+      "summary": "返回 Lazy 容器中已初始化的值；若尚未初始化则调用提供的工厂函数执行首次初始化。",
+      "tags": ["lazy-init", "concurrency", "generics", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/move.go:RenameOrDeleteFile",
+      "type": "function",
+      "name": "RenameOrDeleteFile",
+      "filePath": "packages/shared/pkg/utils/move.go",
+      "lineRange": [15, 17],
+      "summary": "对外暴露的原子重命名入口：在不支持 rename 的存储后端上通过 Link+Remove 实现移动，链接失败时回退为删除源文件。",
+      "tags": ["filesystem", "atomic", "storage", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/move.go:removeOrDeleteFile",
+      "type": "function",
+      "name": "removeOrDeleteFile",
+      "filePath": "packages/shared/pkg/utils/move.go",
+      "lineRange": [19, 34],
+      "summary": "尝试 Link 目标路径并 Remove 源路径，链接失败时回退为仅删除源文件，封装原子移动的回退策略。",
+      "tags": ["filesystem", "atomic", "storage"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/move.go:Link",
+      "type": "function",
+      "name": "Link",
+      "filePath": "packages/shared/pkg/utils/move.go",
+      "lineRange": [38, 40],
+      "summary": "osFns 上的 Link 方法，委托给 os.Link 创建硬链接。",
+      "tags": ["filesystem", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/move.go:Remove",
+      "type": "function",
+      "name": "Remove",
+      "filePath": "packages/shared/pkg/utils/move.go",
+      "lineRange": [42, 44],
+      "summary": "osFns 上的 Remove 方法，委托给 os.Remove 删除路径。",
+      "tags": ["filesystem", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/promise.go:NewPromise",
+      "type": "function",
+      "name": "NewPromise",
+      "filePath": "packages/shared/pkg/utils/promise.go",
+      "lineRange": [14, 25],
+      "summary": "创建一个新的 Promise，在独立 goroutine 中执行传入函数并将其 (value, err) 结果通过内部 channel 传出。",
+      "tags": ["concurrency", "async", "factory"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/promise.go:Wait",
+      "type": "function",
+      "name": "Wait",
+      "filePath": "packages/shared/pkg/utils/promise.go",
+      "lineRange": [30, 32],
+      "summary": "阻塞等待 Promise 完成，支持 context 取消；返回最终值与错误。",
+      "tags": ["concurrency", "async", "synchronization"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/ptr.go:FromPtr",
+      "type": "function",
+      "name": "FromPtr",
+      "filePath": "packages/shared/pkg/utils/ptr.go",
+      "lineRange": [5, 13],
+      "summary": "泛型解引用函数：nil 指针返回类型零值，非 nil 返回其指向的值。",
+      "tags": ["pointer", "generics", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/ptr.go:Sprintp",
+      "type": "function",
+      "name": "Sprintp",
+      "filePath": "packages/shared/pkg/utils/ptr.go",
+      "lineRange": [15, 21],
+      "summary": "将指针安全地格式化为字符串，nil 指针返回空字符串。",
+      "tags": ["pointer", "formatting", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/ptr.go:DerefOrDefault",
+      "type": "function",
+      "name": "DerefOrDefault",
+      "filePath": "packages/shared/pkg/utils/ptr.go",
+      "lineRange": [23, 29],
+      "summary": "解引用指针，nil 时返回调用方提供的默认值。",
+      "tags": ["pointer", "generics", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/ptr.go:CastPtr",
+      "type": "function",
+      "name": "CastPtr",
+      "filePath": "packages/shared/pkg/utils/ptr.go",
+      "lineRange": [31, 39],
+      "summary": "通过类型转换函数将一种指针类型安全地转换为另一种指针类型。",
+      "tags": ["pointer", "generics", "type-cast"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/resizable_semaphore.go:NewAdjustableSemaphore",
+      "type": "function",
+      "name": "NewAdjustableSemaphore",
+      "filePath": "packages/shared/pkg/utils/resizable_semaphore.go",
+      "lineRange": [23, 32],
+      "summary": "构造一个初始容量上限为 limit 的可调信号量，校验 limit 必须为正数。",
+      "tags": ["concurrency", "semaphore", "factory"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/resizable_semaphore.go:Acquire",
+      "type": "function",
+      "name": "Acquire",
+      "filePath": "packages/shared/pkg/utils/resizable_semaphore.go",
+      "lineRange": [34, 58],
+      "summary": "阻塞式获取 n 个许可，支持 context 取消；容量不足时通过 cond.Wait 等待，SetLimit 或 Release 会唤醒等待者。",
+      "tags": ["concurrency", "semaphore", "synchronization"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/resizable_semaphore.go:TryAcquire",
+      "type": "function",
+      "name": "TryAcquire",
+      "filePath": "packages/shared/pkg/utils/resizable_semaphore.go",
+      "lineRange": [60, 75],
+      "summary": "非阻塞式尝试获取 n 个许可，容量足够立即成功并返回 true，否则返回 false。",
+      "tags": ["concurrency", "semaphore", "non-blocking"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/resizable_semaphore.go:SetLimit",
+      "type": "function",
+      "name": "SetLimit",
+      "filePath": "packages/shared/pkg/utils/resizable_semaphore.go",
+      "lineRange": [77, 93],
+      "summary": "动态调整信号量容量上限，扩容或缩容都会唤醒因容量不足而阻塞的 Acquire。",
+      "tags": ["concurrency", "semaphore", "dynamic"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/resizable_semaphore.go:Release",
+      "type": "function",
+      "name": "Release",
+      "filePath": "packages/shared/pkg/utils/resizable_semaphore.go",
+      "lineRange": [95, 109],
+      "summary": "释放 n 个许可并唤醒一个等待 Acquire 的 goroutine。",
+      "tags": ["concurrency", "semaphore", "synchronization"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/set_once.go:NewSetOnce",
+      "type": "function",
+      "name": "NewSetOnce",
+      "filePath": "packages/shared/pkg/utils/set_once.go",
+      "lineRange": [28, 37],
+      "summary": "构造一个新的 SetOnce 容器，初始化内部 mutex 与 close-once 的 Done channel。",
+      "tags": ["concurrency", "factory", "one-shot"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/set_once.go:SetResult",
+      "type": "function",
+      "name": "SetResult",
+      "filePath": "packages/shared/pkg/utils/set_once.go",
+      "lineRange": [47, 53],
+      "summary": "一次性写入 value 与 err 结果，并关闭 Done channel 通知所有等待者。",
+      "tags": ["concurrency", "one-shot", "synchronization"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/set_once.go:setResult",
+      "type": "function",
+      "name": "setResult",
+      "filePath": "packages/shared/pkg/utils/set_once.go",
+      "lineRange": [58, 78],
+      "summary": "SetOnce 内部实现：加锁存储结果、关闭 Done channel，保证仅第一次写入生效。",
+      "tags": ["concurrency", "one-shot", "synchronization"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/set_once.go:Wait",
+      "type": "function",
+      "name": "Wait",
+      "filePath": "packages/shared/pkg/utils/set_once.go",
+      "lineRange": [82, 86],
+      "summary": "阻塞等待 SetOnce 被设置完成，无返回值，用于不关心结果的同步点。",
+      "tags": ["concurrency", "one-shot", "synchronization"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/set_once.go:Result",
+      "type": "function",
+      "name": "Result",
+      "filePath": "packages/shared/pkg/utils/set_once.go",
+      "lineRange": [91, 102],
+      "summary": "阻塞等待并返回 (value, err)；若 SetOnce 从未被设置则返回 NotSetError。",
+      "tags": ["concurrency", "one-shot", "synchronization"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/set_once.go:WaitWithContext",
+      "type": "function",
+      "name": "WaitWithContext",
+      "filePath": "packages/shared/pkg/utils/set_once.go",
+      "lineRange": [105, 114],
+      "summary": "支持 context 取消的 Wait，超时或取消时立即返回 ctx.Err()。",
+      "tags": ["concurrency", "one-shot", "context"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/set_once.go:Error",
+      "type": "function",
+      "name": "Error",
+      "filePath": "packages/shared/pkg/utils/set_once.go",
+      "lineRange": [11, 13],
+      "summary": "NotSetError 类型的 Error 方法，返回固定的 not set 提示文本。",
+      "tags": ["error-handling", "one-shot"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/strings.go:FirstNonEmpty",
+      "type": "function",
+      "name": "FirstNonEmpty",
+      "filePath": "packages/shared/pkg/utils/strings.go",
+      "lineRange": [9, 17],
+      "summary": "返回变长参数列表中第一个非空字符串，全部为空时返回空串。",
+      "tags": ["strings", "utility", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/strings.go:Truncate",
+      "type": "function",
+      "name": "Truncate",
+      "filePath": "packages/shared/pkg/utils/strings.go",
+      "lineRange": [19, 29],
+      "summary": "按 UTF-8 rune 计数安全截断字符串，超出 maxLen 部分以省略号替换，避免在多字节字符中间截断。",
+      "tags": ["strings", "formatting", "unicode"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/switching/switching.go:New",
+      "type": "function",
+      "name": "New",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [123, 260],
+      "summary": "构造 Switcher：基于 defaultDSN 与 alternateDSNs 通过 factory 预创建所有客户端，应用可选配置项，校验 noop/默认客户端策略，并为告警与可观测性初始化计数器。",
+      "tags": ["feature-flags", "factory", "routing", "construction"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/switching/switching.go:Resolve",
+      "type": "function",
+      "name": "Resolve",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [262, 283],
+      "summary": "读取 feature flag 字符串值并路由到默认或对应索引的备用客户端，无效值回退到默认；为热路径，反射结果已预缓存以减少分配。",
+      "tags": ["feature-flags", "routing", "hot-path"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/switching/switching.go:recordMetric",
+      "type": "function",
+      "name": "recordMetric",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [285, 292],
+      "summary": "向 OTel 计数器添加一次路由解析记录，附带 flag key 与目标索引属性。",
+      "tags": ["observability", "metrics", "telemetry"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/switching/switching.go:warnInvalid",
+      "type": "function",
+      "name": "warnInvalid",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [294, 325],
+      "summary": "对无效 flag 值发出限速、去重的告警日志，超过 warnCap 后停止记录，避免日志风暴。",
+      "tags": ["logging", "rate-limiting", "resilience"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/switching/switching.go:Close",
+      "type": "function",
+      "name": "Close",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [327, 343],
+      "summary": "通过 atomic 标记一次性关闭默认客户端与所有备用客户端，重复调用安全返回 nil。",
+      "tags": ["lifecycle", "idempotent", "cleanup"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/switching/switching.go:isNil",
+      "type": "function",
+      "name": "isNil",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [345, 356],
+      "summary": "使用反射判断 interface 值是否为 nil，正确处理 typed-nil 的情况。",
+      "tags": ["reflection", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/switching/switching.go:hashFlagValue",
+      "type": "function",
+      "name": "hashFlagValue",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [358, 362],
+      "summary": "对 flag 值做 SHA-256 哈希，用于在不暴露原始值的前提下记录告警去重键。",
+      "tags": ["hashing", "privacy", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/switching/switching.go:sanitizeHost",
+      "type": "function",
+      "name": "sanitizeHost",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [364, 384],
+      "summary": "从 DSN 中提取并清洗 host 信息（移除凭据、端口、路径），用于日志脱敏。",
+      "tags": ["sanitization", "logging", "security"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/switching/switching.go:sanitizeDriverErr",
+      "type": "function",
+      "name": "sanitizeDriverErr",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [392, 409],
+      "summary": "从驱动错误字符串中提取并脱敏 host，移除凭据等敏感信息后再写入日志。",
+      "tags": ["sanitization", "logging", "security"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/switching/switching.go:WithAllowNoopDefault",
+      "type": "function",
+      "name": "WithAllowNoopDefault",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [59, 63],
+      "summary": "选项函数：允许在默认 DSN 为空时回退到 noop 客户端（需配合 WithNoopFactory 使用）。",
+      "tags": ["option", "feature-flags", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/switching/switching.go:WithNoopFactory",
+      "type": "function",
+      "name": "WithNoopFactory",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [67, 71],
+      "summary": "选项函数：提供 noop 客户端的构造器，供默认 DSN 为空时使用。",
+      "tags": ["option", "feature-flags", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/switching/switching.go:WithDefaultClient",
+      "type": "function",
+      "name": "WithDefaultClient",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [76, 81],
+      "summary": "选项函数：传入已构造好的默认客户端，所有权转移给 Switcher，由其在 Close 时关闭。",
+      "tags": ["option", "feature-flags", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/switching/switching.go:WithWarnCap",
+      "type": "function",
+      "name": "WithWarnCap",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [85, 89],
+      "summary": "选项函数：设置无效 flag 值告警的最大去重数量上限，默认 16。",
+      "tags": ["option", "logging", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/switching/switching.go:WithMeter",
+      "type": "function",
+      "name": "WithMeter",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [92, 96],
+      "summary": "选项函数：注入 OTel Meter 以启用 Switcher 的可观测性指标。",
+      "tags": ["option", "observability", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/version.go:CheckEnvdVersionForSnapshot",
+      "type": "function",
+      "name": "CheckEnvdVersionForSnapshot",
+      "filePath": "packages/shared/pkg/utils/version.go",
+      "lineRange": [38, 49],
+      "summary": "校验 envd 版本是否不低于创建快照所需的最低版本，不满足则返回格式化错误。",
+      "tags": ["semver", "envd", "validation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/version.go:IsGTEVersion",
+      "type": "function",
+      "name": "IsGTEVersion",
+      "filePath": "packages/shared/pkg/utils/version.go",
+      "lineRange": [51, 64],
+      "summary": "比较当前版本是否大于等于最低版本，返回 (bool, error)；非法 semver 返回错误。",
+      "tags": ["semver", "comparison", "validation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/version.go:IsSmallerVersion",
+      "type": "function",
+      "name": "IsSmallerVersion",
+      "filePath": "packages/shared/pkg/utils/version.go",
+      "lineRange": [66, 79],
+      "summary": "比较当前版本是否严格小于（排除）上界版本，返回 (bool, error)。",
+      "tags": ["semver", "comparison", "validation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/version.go:IsVersion",
+      "type": "function",
+      "name": "IsVersion",
+      "filePath": "packages/shared/pkg/utils/version.go",
+      "lineRange": [81, 86],
+      "summary": "判断当前版本是否等于指定版本，返回布尔结果。",
+      "tags": ["semver", "comparison", "validation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/version.go:sanitizeVersion",
+      "type": "function",
+      "name": "sanitizeVersion",
+      "filePath": "packages/shared/pkg/utils/version.go",
+      "lineRange": [30, 36],
+      "summary": "在版本字符串前补 v 前缀（若缺失），使其符合 semver 库的解析要求。",
+      "tags": ["semver", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/waitgroup.go:WaitGroupWait",
+      "type": "function",
+      "name": "WaitGroupWait",
+      "filePath": "packages/shared/pkg/utils/waitgroup.go",
+      "lineRange": [9, 17],
+      "summary": "封装 sync.WaitGroup.Wait，使其在 context 取消时立即返回 ctx.Err()，而非继续阻塞直到 WaitGroup 完成。",
+      "tags": ["concurrency", "waitgroup", "context"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/waitgroup.go:waitDoneOrContext",
+      "type": "function",
+      "name": "waitDoneOrContext",
+      "filePath": "packages/shared/pkg/utils/waitgroup.go",
+      "lineRange": [24, 36],
+      "summary": "内部辅助函数：select 监听 done channel 与 ctx.Done()，优先返回最先就绪的信号。",
+      "tags": ["concurrency", "waitgroup", "context"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/symlink.go:SymlinkForce",
+      "type": "function",
+      "name": "SymlinkForce",
+      "filePath": "packages/shared/pkg/utils/symlink.go",
+      "lineRange": [7, 12],
+      "summary": "强制创建符号链接：先 Remove 已存在的目标路径再 os.Symlink，实现覆盖式 symlink。",
+      "tags": ["filesystem", "symlink", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/filter.go:Filter",
+      "type": "function",
+      "name": "Filter",
+      "filePath": "packages/shared/pkg/utils/filter.go",
+      "lineRange": [6, 15],
+      "summary": "泛型切片过滤函数：保留断言返回 true 的元素并返回新切片。",
+      "tags": ["generics", "slice", "filter", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/iter.go:TransformTo",
+      "type": "function",
+      "name": "TransformTo",
+      "filePath": "packages/shared/pkg/utils/iter.go",
+      "lineRange": [5, 13],
+      "summary": "泛型迭代器转换函数：消费 input 迭代器，对每个元素应用映射函数并构造目标迭代器。",
+      "tags": ["generics", "iterator", "transformation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/map.go:Map",
+      "type": "function",
+      "name": "Map",
+      "filePath": "packages/shared/pkg/utils/map.go",
+      "lineRange": [5, 12],
+      "summary": "泛型切片映射函数：对每个元素应用转换函数并返回结果切片。",
+      "tags": ["generics", "slice", "map", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/map_values.go:MapValues",
+      "type": "function",
+      "name": "MapValues",
+      "filePath": "packages/shared/pkg/utils/map_values.go",
+      "lineRange": [4, 11],
+      "summary": "泛型函数：返回 map 中所有 value 组成的切片。",
+      "tags": ["generics", "map", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/utils/must.go:Must",
+      "type": "function",
+      "name": "Must",
+      "filePath": "packages/shared/pkg/utils/must.go",
+      "lineRange": [3, 9],
+      "summary": "泛型 helper：err 非 nil 时 panic，否则返回 obj，用于必须成功的初始化路径。",
+      "tags": ["generics", "error-handling", "utility"],
+      "complexity": "simple"
+    },
+
+    {
+      "id": "class:packages/shared/pkg/utils/lazy.go:Lazy",
+      "type": "class",
+      "name": "Lazy",
+      "filePath": "packages/shared/pkg/utils/lazy.go",
+      "lineRange": [13, 16],
+      "summary": "泛型延迟初始化容器，封装 sync.Once 与存储值，保证工厂函数仅执行一次。",
+      "tags": ["concurrency", "lazy-init", "generics"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/utils/move.go:osFns",
+      "type": "class",
+      "name": "osFns",
+      "filePath": "packages/shared/pkg/utils/move.go",
+      "lineRange": [36, 36],
+      "summary": "实现 fileOps 接口的具体类型，将 Link/Remove 方法委托给 os 标准库函数。",
+      "tags": ["filesystem", "implementation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/utils/move.go:fileOps",
+      "type": "class",
+      "name": "fileOps",
+      "filePath": "packages/shared/pkg/utils/move.go",
+      "lineRange": [48, 51],
+      "summary": "抽象文件操作接口，定义 Link 与 Remove 方法，便于在测试中通过 mockfileOps 替换实现。",
+      "tags": ["interface", "filesystem", "abstraction"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/utils/promise.go:Promise",
+      "type": "class",
+      "name": "Promise",
+      "filePath": "packages/shared/pkg/utils/promise.go",
+      "lineRange": [8, 10],
+      "summary": "泛型 Promise 结构，持有结果 channel 与 Done channel，提供异步计算结果的同步访问。",
+      "tags": ["concurrency", "async", "generics"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/utils/resizable_semaphore.go:Semaphore",
+      "type": "class",
+      "name": "Semaphore",
+      "filePath": "packages/shared/pkg/utils/resizable_semaphore.go",
+      "lineRange": [9, 13],
+      "summary": "只读信号量接口，定义 Acquire、TryAcquire、Release 三个核心方法。",
+      "tags": ["interface", "semaphore", "concurrency"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/utils/resizable_semaphore.go:AdjustableSemaphore",
+      "type": "class",
+      "name": "AdjustableSemaphore",
+      "filePath": "packages/shared/pkg/utils/resizable_semaphore.go",
+      "lineRange": [15, 21],
+      "summary": "可调信号量实现：基于 mutex + cond 管理已用/上限计数，支持运行时动态调整容量并唤醒等待者。",
+      "tags": ["concurrency", "semaphore", "synchronization"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/utils/set_once.go:NotSetError",
+      "type": "class",
+      "name": "NotSetError",
+      "filePath": "packages/shared/pkg/utils/set_once.go",
+      "lineRange": [9, 9],
+      "summary": "SetOnce 从未被设置时 Result 返回的错误类型。",
+      "tags": ["error-handling", "one-shot"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/utils/set_once.go:result",
+      "type": "class",
+      "name": "result",
+      "filePath": "packages/shared/pkg/utils/set_once.go",
+      "lineRange": [15, 18],
+      "summary": "SetOnce 内部存储的值与错误对，作为一次写入的不可变载体。",
+      "tags": ["one-shot", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/utils/set_once.go:SetOnce",
+      "type": "class",
+      "name": "SetOnce",
+      "filePath": "packages/shared/pkg/utils/set_once.go",
+      "lineRange": [20, 26],
+      "summary": "泛型一次性写入容器：持有 mutex、setDone 标志、Done channel 与结果，提供线程安全的 Set/Wait/Result 接口。",
+      "tags": ["concurrency", "one-shot", "generics"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/utils/switching/switching.go:Resource",
+      "type": "class",
+      "name": "Resource",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [38, 40],
+      "summary": "可被 Switcher 管理的资源接口，仅需实现 Close(ctx) 方法以支持优雅关闭。",
+      "tags": ["interface", "lifecycle", "abstraction"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/utils/switching/switching.go:options",
+      "type": "class",
+      "name": "options",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [47, 55],
+      "summary": "Switcher 的可配置选项集合，通过函数式 Option 模式填充：noop 工厂、默认客户端、告警上限、OTel Meter 等。",
+      "tags": ["configuration", "options-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/utils/switching/switching.go:Switcher",
+      "type": "class",
+      "name": "Switcher",
+      "filePath": "packages/shared/pkg/utils/switching/switching.go",
+      "lineRange": [98, 114],
+      "summary": "LaunchDarkly 门控的资源切换器：持有默认客户端与备用客户端列表，根据字符串 flag 在它们之间路由请求，预缓存反射结果以优化热路径。",
+      "tags": ["feature-flags", "routing", "concurrency"],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {"source": "file:packages/shared/pkg/utils/logging.go", "target": "file:packages/shared/pkg/logger/exporter_test.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/logging.go", "target": "file:packages/shared/pkg/logger/exporter.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/logging.go", "target": "file:packages/shared/pkg/logger/fields.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/logging.go", "target": "file:packages/shared/pkg/logger/grpc.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/logging.go", "target": "file:packages/shared/pkg/logger/logger.go", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:packages/shared/pkg/utils/move.go", "target": "file:packages/shared/pkg/logger/exporter_test.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/move.go", "target": "file:packages/shared/pkg/logger/exporter.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/move.go", "target": "file:packages/shared/pkg/logger/fields.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/move.go", "target": "file:packages/shared/pkg/logger/grpc.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/move.go", "target": "file:packages/shared/pkg/logger/logger.go", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "file:packages/shared/pkg/featureflags/client_test.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "file:packages/shared/pkg/featureflags/client.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "file:packages/shared/pkg/featureflags/context_test.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "file:packages/shared/pkg/featureflags/context.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "file:packages/shared/pkg/featureflags/flags.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "file:packages/shared/pkg/logger/exporter_test.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "file:packages/shared/pkg/logger/exporter.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "file:packages/shared/pkg/logger/fields.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "file:packages/shared/pkg/logger/grpc.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "file:packages/shared/pkg/logger/logger.go", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:packages/shared/pkg/utils/switching/switching_test.go", "target": "file:packages/shared/pkg/featureflags/client_test.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/switching/switching_test.go", "target": "file:packages/shared/pkg/featureflags/client.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/switching/switching_test.go", "target": "file:packages/shared/pkg/featureflags/context_test.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/switching/switching_test.go", "target": "file:packages/shared/pkg/featureflags/context.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/utils/switching/switching_test.go", "target": "file:packages/shared/pkg/featureflags/flags.go", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:packages/shared/pkg/utils/grpc_codes.go", "target": "function:packages/shared/pkg/utils/grpc_codes.go:GRPCCodeFromHTTPStatus", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/grpc_codes.go", "target": "function:packages/shared/pkg/utils/grpc_codes.go:GRPCCodeFromHTTPStatus", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/utils/logging.go", "target": "function:packages/shared/pkg/utils/logging.go:CleanupCtx", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/logging.go", "target": "function:packages/shared/pkg/utils/logging.go:Cleanup", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/logging.go", "target": "function:packages/shared/pkg/utils/logging.go:CleanupCtx", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/logging.go", "target": "function:packages/shared/pkg/utils/logging.go:Cleanup", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/utils/lazy.go", "target": "class:packages/shared/pkg/utils/lazy.go:Lazy", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/lazy.go", "target": "function:packages/shared/pkg/utils/lazy.go:GetOrInit", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/lazy.go", "target": "class:packages/shared/pkg/utils/lazy.go:Lazy", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/lazy.go", "target": "function:packages/shared/pkg/utils/lazy.go:GetOrInit", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/utils/move.go", "target": "function:packages/shared/pkg/utils/move.go:RenameOrDeleteFile", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/move.go", "target": "function:packages/shared/pkg/utils/move.go:removeOrDeleteFile", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/move.go", "target": "function:packages/shared/pkg/utils/move.go:Link", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/move.go", "target": "function:packages/shared/pkg/utils/move.go:Remove", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/move.go", "target": "class:packages/shared/pkg/utils/move.go:osFns", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/move.go", "target": "class:packages/shared/pkg/utils/move.go:fileOps", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/move.go", "target": "function:packages/shared/pkg/utils/move.go:RenameOrDeleteFile", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/move.go", "target": "function:packages/shared/pkg/utils/move.go:Link", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/move.go", "target": "function:packages/shared/pkg/utils/move.go:Remove", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/shared/pkg/utils/move.go:RenameOrDeleteFile", "target": "function:packages/shared/pkg/utils/move.go:removeOrDeleteFile", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/shared/pkg/utils/move.go:removeOrDeleteFile", "target": "function:packages/shared/pkg/utils/move.go:Link", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/shared/pkg/utils/move.go:removeOrDeleteFile", "target": "function:packages/shared/pkg/utils/move.go:Remove", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "class:packages/shared/pkg/utils/move.go:osFns", "target": "class:packages/shared/pkg/utils/move.go:fileOps", "type": "implements", "direction": "forward", "weight": 0.9},
+
+    {"source": "file:packages/shared/pkg/utils/move.go", "target": "file:packages/shared/pkg/utils/move_test.go", "type": "tested_by", "direction": "forward", "weight": 0.5},
+
+    {"source": "file:packages/shared/pkg/utils/promise.go", "target": "class:packages/shared/pkg/utils/promise.go:Promise", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/promise.go", "target": "function:packages/shared/pkg/utils/promise.go:NewPromise", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/promise.go", "target": "function:packages/shared/pkg/utils/promise.go:Wait", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/promise.go", "target": "class:packages/shared/pkg/utils/promise.go:Promise", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/promise.go", "target": "function:packages/shared/pkg/utils/promise.go:NewPromise", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/promise.go", "target": "function:packages/shared/pkg/utils/promise.go:Wait", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/utils/promise.go", "target": "file:packages/shared/pkg/utils/promise_test.go", "type": "tested_by", "direction": "forward", "weight": 0.5},
+
+    {"source": "file:packages/shared/pkg/utils/ptr.go", "target": "function:packages/shared/pkg/utils/ptr.go:FromPtr", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/ptr.go", "target": "function:packages/shared/pkg/utils/ptr.go:Sprintp", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/ptr.go", "target": "function:packages/shared/pkg/utils/ptr.go:DerefOrDefault", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/ptr.go", "target": "function:packages/shared/pkg/utils/ptr.go:CastPtr", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/ptr.go", "target": "function:packages/shared/pkg/utils/ptr.go:FromPtr", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/ptr.go", "target": "function:packages/shared/pkg/utils/ptr.go:Sprintp", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/ptr.go", "target": "function:packages/shared/pkg/utils/ptr.go:DerefOrDefault", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/ptr.go", "target": "function:packages/shared/pkg/utils/ptr.go:CastPtr", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/utils/resizable_semaphore.go", "target": "class:packages/shared/pkg/utils/resizable_semaphore.go:Semaphore", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/resizable_semaphore.go", "target": "class:packages/shared/pkg/utils/resizable_semaphore.go:AdjustableSemaphore", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/resizable_semaphore.go", "target": "function:packages/shared/pkg/utils/resizable_semaphore.go:NewAdjustableSemaphore", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/resizable_semaphore.go", "target": "function:packages/shared/pkg/utils/resizable_semaphore.go:Acquire", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/resizable_semaphore.go", "target": "function:packages/shared/pkg/utils/resizable_semaphore.go:TryAcquire", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/resizable_semaphore.go", "target": "function:packages/shared/pkg/utils/resizable_semaphore.go:SetLimit", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/resizable_semaphore.go", "target": "function:packages/shared/pkg/utils/resizable_semaphore.go:Release", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/resizable_semaphore.go", "target": "class:packages/shared/pkg/utils/resizable_semaphore.go:Semaphore", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/resizable_semaphore.go", "target": "class:packages/shared/pkg/utils/resizable_semaphore.go:AdjustableSemaphore", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/resizable_semaphore.go", "target": "function:packages/shared/pkg/utils/resizable_semaphore.go:NewAdjustableSemaphore", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/resizable_semaphore.go", "target": "function:packages/shared/pkg/utils/resizable_semaphore.go:Acquire", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/resizable_semaphore.go", "target": "function:packages/shared/pkg/utils/resizable_semaphore.go:TryAcquire", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/resizable_semaphore.go", "target": "function:packages/shared/pkg/utils/resizable_semaphore.go:SetLimit", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/resizable_semaphore.go", "target": "function:packages/shared/pkg/utils/resizable_semaphore.go:Release", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "class:packages/shared/pkg/utils/resizable_semaphore.go:AdjustableSemaphore", "target": "class:packages/shared/pkg/utils/resizable_semaphore.go:Semaphore", "type": "implements", "direction": "forward", "weight": 0.9},
+
+    {"source": "file:packages/shared/pkg/utils/resizable_semaphore.go", "target": "file:packages/shared/pkg/utils/resizable_semaphore_test.go", "type": "tested_by", "direction": "forward", "weight": 0.5},
+
+    {"source": "file:packages/shared/pkg/utils/set_once.go", "target": "class:packages/shared/pkg/utils/set_once.go:NotSetError", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/set_once.go", "target": "class:packages/shared/pkg/utils/set_once.go:result", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/set_once.go", "target": "class:packages/shared/pkg/utils/set_once.go:SetOnce", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/set_once.go", "target": "function:packages/shared/pkg/utils/set_once.go:NewSetOnce", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/set_once.go", "target": "function:packages/shared/pkg/utils/set_once.go:SetResult", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/set_once.go", "target": "function:packages/shared/pkg/utils/set_once.go:setResult", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/set_once.go", "target": "function:packages/shared/pkg/utils/set_once.go:Wait", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/set_once.go", "target": "function:packages/shared/pkg/utils/set_once.go:Result", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/set_once.go", "target": "function:packages/shared/pkg/utils/set_once.go:WaitWithContext", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/set_once.go", "target": "function:packages/shared/pkg/utils/set_once.go:Error", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/set_once.go", "target": "class:packages/shared/pkg/utils/set_once.go:SetOnce", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/set_once.go", "target": "function:packages/shared/pkg/utils/set_once.go:NewSetOnce", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/set_once.go", "target": "function:packages/shared/pkg/utils/set_once.go:Wait", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/set_once.go", "target": "function:packages/shared/pkg/utils/set_once.go:Result", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/set_once.go", "target": "function:packages/shared/pkg/utils/set_once.go:WaitWithContext", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/shared/pkg/utils/set_once.go:SetResult", "target": "function:packages/shared/pkg/utils/set_once.go:setResult", "type": "calls", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/utils/set_once.go", "target": "file:packages/shared/pkg/utils/set_once_test.go", "type": "tested_by", "direction": "forward", "weight": 0.5},
+
+    {"source": "file:packages/shared/pkg/utils/strings.go", "target": "function:packages/shared/pkg/utils/strings.go:FirstNonEmpty", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/strings.go", "target": "function:packages/shared/pkg/utils/strings.go:Truncate", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/strings.go", "target": "function:packages/shared/pkg/utils/strings.go:FirstNonEmpty", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/strings.go", "target": "function:packages/shared/pkg/utils/strings.go:Truncate", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "class:packages/shared/pkg/utils/switching/switching.go:Resource", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "class:packages/shared/pkg/utils/switching/switching.go:options", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "class:packages/shared/pkg/utils/switching/switching.go:Switcher", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:New", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:Resolve", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:recordMetric", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:warnInvalid", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:Close", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:isNil", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:hashFlagValue", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:sanitizeHost", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:sanitizeDriverErr", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:WithAllowNoopDefault", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:WithNoopFactory", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:WithDefaultClient", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:WithWarnCap", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:WithMeter", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "class:packages/shared/pkg/utils/switching/switching.go:Resource", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "class:packages/shared/pkg/utils/switching/switching.go:Switcher", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:New", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:Resolve", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:Close", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:WithAllowNoopDefault", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:WithNoopFactory", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:WithDefaultClient", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:WithWarnCap", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "function:packages/shared/pkg/utils/switching/switching.go:WithMeter", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/shared/pkg/utils/switching/switching.go:Resolve", "target": "function:packages/shared/pkg/utils/switching/switching.go:warnInvalid", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/shared/pkg/utils/switching/switching.go:Resolve", "target": "function:packages/shared/pkg/utils/switching/switching.go:recordMetric", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/shared/pkg/utils/switching/switching.go:warnInvalid", "target": "function:packages/shared/pkg/utils/switching/switching.go:hashFlagValue", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/shared/pkg/utils/switching/switching.go:sanitizeDriverErr", "target": "function:packages/shared/pkg/utils/switching/switching.go:sanitizeHost", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/shared/pkg/utils/switching/switching.go:New", "target": "function:packages/shared/pkg/utils/switching/switching.go:isNil", "type": "calls", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/utils/switching/switching.go", "target": "file:packages/shared/pkg/utils/switching/switching_test.go", "type": "tested_by", "direction": "forward", "weight": 0.5},
+
+    {"source": "file:packages/shared/pkg/utils/version.go", "target": "function:packages/shared/pkg/utils/version.go:CheckEnvdVersionForSnapshot", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/version.go", "target": "function:packages/shared/pkg/utils/version.go:IsGTEVersion", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/version.go", "target": "function:packages/shared/pkg/utils/version.go:IsSmallerVersion", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/version.go", "target": "function:packages/shared/pkg/utils/version.go:IsVersion", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/version.go", "target": "function:packages/shared/pkg/utils/version.go:sanitizeVersion", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/version.go", "target": "function:packages/shared/pkg/utils/version.go:CheckEnvdVersionForSnapshot", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/version.go", "target": "function:packages/shared/pkg/utils/version.go:IsGTEVersion", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/version.go", "target": "function:packages/shared/pkg/utils/version.go:IsSmallerVersion", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/utils/version.go", "target": "function:packages/shared/pkg/utils/version.go:IsVersion", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/shared/pkg/utils/version.go:CheckEnvdVersionForSnapshot", "target": "function:packages/shared/pkg/utils/version.go:IsGTEVersion", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/shared/pkg/utils/version.go:IsGTEVersion", "target": "function:packages/shared/pkg/utils/version.go:sanitizeVersion", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/shared/pkg/utils/version.go:IsSmallerVersion", "target": "function:packages/shared/pkg/utils/version.go:sanitizeVersion", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/shared/pkg/utils/version.go:IsVersion", "target": "function:packages/shared/pkg/utils/version.go:sanitizeVersion", "type": "calls", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/utils/version.go", "target": "file:packages/shared/pkg/utils/version_test.go", "type": "tested_by", "direction": "forward", "weight": 0.5},
+
+    {"source": "file:packages/shared/pkg/utils/waitgroup.go", "target": "function:packages/shared/pkg/utils/waitgroup.go:WaitGroupWait", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/waitgroup.go", "target": "function:packages/shared/pkg/utils/waitgroup.go:waitDoneOrContext", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/waitgroup.go", "target": "function:packages/shared/pkg/utils/waitgroup.go:WaitGroupWait", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "function:packages/shared/pkg/utils/waitgroup.go:WaitGroupWait", "target": "function:packages/shared/pkg/utils/waitgroup.go:waitDoneOrContext", "type": "calls", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/utils/waitgroup.go", "target": "file:packages/shared/pkg/utils/waitgroup_test.go", "type": "tested_by", "direction": "forward", "weight": 0.5},
+
+    {"source": "file:packages/shared/pkg/utils/symlink.go", "target": "function:packages/shared/pkg/utils/symlink.go:SymlinkForce", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/symlink.go", "target": "function:packages/shared/pkg/utils/symlink.go:SymlinkForce", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/utils/filter.go", "target": "function:packages/shared/pkg/utils/filter.go:Filter", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/filter.go", "target": "function:packages/shared/pkg/utils/filter.go:Filter", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/utils/iter.go", "target": "function:packages/shared/pkg/utils/iter.go:TransformTo", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/iter.go", "target": "function:packages/shared/pkg/utils/iter.go:TransformTo", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/utils/map.go", "target": "function:packages/shared/pkg/utils/map.go:Map", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/map.go", "target": "function:packages/shared/pkg/utils/map.go:Map", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/utils/map_values.go", "target": "function:packages/shared/pkg/utils/map_values.go:MapValues", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/map_values.go", "target": "function:packages/shared/pkg/utils/map_values.go:MapValues", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/utils/must.go", "target": "function:packages/shared/pkg/utils/must.go:Must", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/utils/must.go", "target": "function:packages/shared/pkg/utils/must.go:Must", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/utils/move.go", "target": "file:packages/shared/pkg/utils/mocks_test.go", "type": "tested_by", "direction": "forward", "weight": 0.5}
+  ]
+}

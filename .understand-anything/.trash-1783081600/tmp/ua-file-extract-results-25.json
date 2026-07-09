@@ -1,0 +1,5628 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 30,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/db/pkg/tests/templates/get_team_templates_with_cursor_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 71,
+      "nonEmptyLines": 61,
+      "functions": [
+        {
+          "name": "firstPageCursor",
+          "startLine": 15,
+          "endLine": 17,
+          "params": []
+        },
+        {
+          "name": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "startLine": 19,
+          "endLine": 71,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "line": 19,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "firstPageCursor",
+          "callee": "time.Now().Add",
+          "lineNumber": 16
+        },
+        {
+          "caller": "firstPageCursor",
+          "callee": "time.Now",
+          "lineNumber": 16
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "t.Parallel",
+          "lineNumber": 20
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "testutils.SetupDatabase",
+          "lineNumber": 21
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "t.Context",
+          "lineNumber": 22
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "testutils.CreateTestTeam",
+          "lineNumber": 24
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "make",
+          "lineNumber": 27
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "testutils.CreateTestTemplate",
+          "lineNumber": 29
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "db.SqlcClient.TestsRawSQL",
+          "lineNumber": 30
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "require.NoError",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "firstPageCursor",
+          "lineNumber": 37
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "db.SqlcClient.GetTeamTemplatesWithCursor",
+          "lineNumber": 38
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "require.NoError",
+          "lineNumber": 44
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "require.Len",
+          "lineNumber": 45
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "require.Equal",
+          "lineNumber": 47
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "db.SqlcClient.GetTeamTemplatesWithCursor",
+          "lineNumber": 52
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "require.NoError",
+          "lineNumber": 58
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "require.Len",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "db.SqlcClient.GetTeamTemplatesWithCursor",
+          "lineNumber": 62
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "require.NoError",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "require.Len",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestGetTeamTemplatesWithCursor_OrdersDescAndPaginates",
+          "callee": "require.Equal",
+          "lineNumber": 70
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/pkg/tests/templates/list_team_templates_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 204,
+      "nonEmptyLines": 172,
+      "functions": [
+        {
+          "name": "setupDashboardSchema",
+          "startLine": 19,
+          "endLine": 29,
+          "params": [
+            "t",
+            "ctx",
+            "db"
+          ]
+        },
+        {
+          "name": "createReadyBuildWithAssignment",
+          "startLine": 33,
+          "endLine": 53,
+          "params": [
+            "t",
+            "ctx",
+            "db",
+            "templateID",
+            "vcpu",
+            "ramMb",
+            "assignmentAge"
+          ]
+        },
+        {
+          "name": "TestListTeamTemplates_AllVariantsExecute",
+          "startLine": 58,
+          "endLine": 112,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "listCreatedAtAscParams",
+          "startLine": 114,
+          "endLine": 124,
+          "params": [
+            "teamID",
+            "limitPlusOne"
+          ]
+        },
+        {
+          "name": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "startLine": 126,
+          "endLine": 174,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestListTeamTemplates_BuildDisplayFields",
+          "startLine": 176,
+          "endLine": 204,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestListTeamTemplates_AllVariantsExecute",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "line": 126,
+          "isDefault": false
+        },
+        {
+          "name": "TestListTeamTemplates_BuildDisplayFields",
+          "line": 176,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "setupDashboardSchema",
+          "callee": "t.Helper",
+          "lineNumber": 20
+        },
+        {
+          "caller": "setupDashboardSchema",
+          "callee": "db.SqlcClient.TestsRawSQL",
+          "lineNumber": 22
+        },
+        {
+          "caller": "setupDashboardSchema",
+          "callee": "require.NoError",
+          "lineNumber": 28
+        },
+        {
+          "caller": "createReadyBuildWithAssignment",
+          "callee": "t.Helper",
+          "lineNumber": 34
+        },
+        {
+          "caller": "createReadyBuildWithAssignment",
+          "callee": "uuid.New",
+          "lineNumber": 35
+        },
+        {
+          "caller": "createReadyBuildWithAssignment",
+          "callee": "db.SqlcClient.TestsRawSQL",
+          "lineNumber": 37
+        },
+        {
+          "caller": "createReadyBuildWithAssignment",
+          "callee": "require.NoError",
+          "lineNumber": 43
+        },
+        {
+          "caller": "createReadyBuildWithAssignment",
+          "callee": "db.SqlcClient.TestsRawSQL",
+          "lineNumber": 45
+        },
+        {
+          "caller": "createReadyBuildWithAssignment",
+          "callee": "assignmentAge.String",
+          "lineNumber": 48
+        },
+        {
+          "caller": "createReadyBuildWithAssignment",
+          "callee": "require.NoError",
+          "lineNumber": 50
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "t.Parallel",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "testutils.SetupDatabase",
+          "lineNumber": 60
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "t.Context",
+          "lineNumber": 61
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "setupDashboardSchema",
+          "lineNumber": 62
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "testutils.CreateTestTeam",
+          "lineNumber": 64
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "testutils.CreateTestTemplate",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "testutils.CreateTestTemplateAlias",
+          "lineNumber": 66
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "createReadyBuildWithAssignment",
+          "lineNumber": 67
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "time.Now().Add",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "time.Now",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "d.ListTeamTemplatesByCreatedAtAsc",
+          "lineNumber": 74
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "len",
+          "lineNumber": 79
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "d.ListTeamTemplatesByCreatedAtDesc",
+          "lineNumber": 82
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "len",
+          "lineNumber": 87
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "d.ListTeamTemplatesByUpdatedAtAsc",
+          "lineNumber": 90
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "len",
+          "lineNumber": 95
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "d.ListTeamTemplatesByUpdatedAtDesc",
+          "lineNumber": 98
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "len",
+          "lineNumber": 103
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "run",
+          "lineNumber": 108
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "require.NoError",
+          "lineNumber": 109
+        },
+        {
+          "caller": "TestListTeamTemplates_AllVariantsExecute",
+          "callee": "require.Equal",
+          "lineNumber": 110
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "t.Parallel",
+          "lineNumber": 127
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "testutils.SetupDatabase",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "t.Context",
+          "lineNumber": 129
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "setupDashboardSchema",
+          "lineNumber": 130
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "testutils.CreateTestTeam",
+          "lineNumber": 132
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "make",
+          "lineNumber": 134
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "testutils.CreateTestTemplate",
+          "lineNumber": 136
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "db.SqlcClient.TestsRawSQL",
+          "lineNumber": 138
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "require.NoError",
+          "lineNumber": 142
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "db.SqlcClient.Dashboard.ListTeamTemplatesByCreatedAtAsc",
+          "lineNumber": 145
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "listCreatedAtAscParams",
+          "lineNumber": 145
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "require.NoError",
+          "lineNumber": 146
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "require.Len",
+          "lineNumber": 147
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "require.Equal",
+          "lineNumber": 148
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "db.SqlcClient.Dashboard.ListTeamTemplatesByCreatedAtDesc",
+          "lineNumber": 150
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "time.Now().Add",
+          "lineNumber": 154
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "time.Now",
+          "lineNumber": 154
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "require.NoError",
+          "lineNumber": 158
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "require.Len",
+          "lineNumber": 159
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "require.Equal",
+          "lineNumber": 160
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "db.SqlcClient.Dashboard.ListTeamTemplatesByCreatedAtAsc",
+          "lineNumber": 163
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "listCreatedAtAscParams",
+          "lineNumber": 163
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "require.NoError",
+          "lineNumber": 164
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "require.Len",
+          "lineNumber": 165
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "listCreatedAtAscParams",
+          "lineNumber": 167
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "db.SqlcClient.Dashboard.ListTeamTemplatesByCreatedAtAsc",
+          "lineNumber": 170
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "require.NoError",
+          "lineNumber": 171
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "require.Len",
+          "lineNumber": 172
+        },
+        {
+          "caller": "TestListTeamTemplatesByCreatedAt_SortsAndPaginates",
+          "callee": "require.Equal",
+          "lineNumber": 173
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "t.Parallel",
+          "lineNumber": 177
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "testutils.SetupDatabase",
+          "lineNumber": 178
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "t.Context",
+          "lineNumber": 179
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "setupDashboardSchema",
+          "lineNumber": 180
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "testutils.CreateTestTeam",
+          "lineNumber": 182
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "testutils.CreateTestTemplate",
+          "lineNumber": 184
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "testutils.CreateTestTemplate",
+          "lineNumber": 185
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "db.SqlcClient.TestsRawSQL",
+          "lineNumber": 186
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "require.NoError",
+          "lineNumber": 188
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "createReadyBuildWithAssignment",
+          "lineNumber": 189
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "db.SqlcClient.Dashboard.ListTeamTemplatesByCreatedAtAsc",
+          "lineNumber": 191
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "listCreatedAtAscParams",
+          "lineNumber": 191
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "require.NoError",
+          "lineNumber": 192
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "require.Len",
+          "lineNumber": 193
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "require.Equal",
+          "lineNumber": 195
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "require.Equal",
+          "lineNumber": 196
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "require.Zero",
+          "lineNumber": 197
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "require.Zero",
+          "lineNumber": 198
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "require.Equal",
+          "lineNumber": 200
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "require.Equal",
+          "lineNumber": 201
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "require.Equal",
+          "lineNumber": 202
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "int64",
+          "lineNumber": 202
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "require.Equal",
+          "lineNumber": 203
+        },
+        {
+          "caller": "TestListTeamTemplates_BuildDisplayFields",
+          "callee": "int64",
+          "lineNumber": 203
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 6,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/pkg/tests/templates/template_assignment_ordering_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 172,
+      "nonEmptyLines": 136,
+      "functions": [
+        {
+          "name": "TestGetTemplateWithBuildByTag_AssignmentOrderDifferentFromBuildOrder",
+          "startLine": 17,
+          "endLine": 46,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestGetTemplateWithBuildByTag_AssignmentOrderSameAsBuildOrder",
+          "startLine": 50,
+          "endLine": 78,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestGetTemplateWithBuildByTag_OnlyReturnsUploadedBuilds",
+          "startLine": 82,
+          "endLine": 110,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestGetTemplateWithBuildByTag_SpecificTag",
+          "startLine": 114,
+          "endLine": 142,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "startLine": 146,
+          "endLine": 172,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestGetTemplateWithBuildByTag_AssignmentOrderDifferentFromBuildOrder",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "TestGetTemplateWithBuildByTag_AssignmentOrderSameAsBuildOrder",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "TestGetTemplateWithBuildByTag_OnlyReturnsUploadedBuilds",
+          "line": 82,
+          "isDefault": false
+        },
+        {
+          "name": "TestGetTemplateWithBuildByTag_SpecificTag",
+          "line": 114,
+          "isDefault": false
+        },
+        {
+          "name": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "line": 146,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "t.Parallel",
+          "lineNumber": 18
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "testutils.SetupDatabase",
+          "lineNumber": 19
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "t.Context",
+          "lineNumber": 20
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "testutils.CreateTestTeam",
+          "lineNumber": 23
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "testutils.CreateTestTemplate",
+          "lineNumber": 24
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "testutils.CreateTestBuild",
+          "lineNumber": 27
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "time.Sleep",
+          "lineNumber": 28
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "testutils.CreateTestBuild",
+          "lineNumber": 29
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "testutils.CreateTestBuildAssignment",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "time.Sleep",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "testutils.CreateTestBuildAssignment",
+          "lineNumber": 35
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "db.SqlcClient.GetTemplateWithBuildByTag",
+          "lineNumber": 38
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "require.NoError",
+          "lineNumber": 42
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "assert.Equal",
+          "lineNumber": 44
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderSameAsBuildOrder",
+          "callee": "t.Parallel",
+          "lineNumber": 51
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderSameAsBuildOrder",
+          "callee": "testutils.SetupDatabase",
+          "lineNumber": 52
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderSameAsBuildOrder",
+          "callee": "t.Context",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderSameAsBuildOrder",
+          "callee": "testutils.CreateTestTeam",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderSameAsBuildOrder",
+          "callee": "testutils.CreateTestTemplate",
+          "lineNumber": 57
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderSameAsBuildOrder",
+          "callee": "testutils.CreateTestBuild",
+          "lineNumber": 60
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderSameAsBuildOrder",
+          "callee": "testutils.CreateTestBuild",
+          "lineNumber": 61
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderSameAsBuildOrder",
+          "callee": "testutils.CreateTestBuildAssignment",
+          "lineNumber": 64
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderSameAsBuildOrder",
+          "callee": "time.Sleep",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderSameAsBuildOrder",
+          "callee": "testutils.CreateTestBuildAssignment",
+          "lineNumber": 66
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderSameAsBuildOrder",
+          "callee": "db.SqlcClient.GetTemplateWithBuildByTag",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderSameAsBuildOrder",
+          "callee": "require.NoError",
+          "lineNumber": 74
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_AssignmentOrderSameAsBuildOrder",
+          "callee": "assert.Equal",
+          "lineNumber": 76
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_OnlyReturnsUploadedBuilds",
+          "callee": "t.Parallel",
+          "lineNumber": 83
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_OnlyReturnsUploadedBuilds",
+          "callee": "testutils.SetupDatabase",
+          "lineNumber": 84
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_OnlyReturnsUploadedBuilds",
+          "callee": "t.Context",
+          "lineNumber": 85
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_OnlyReturnsUploadedBuilds",
+          "callee": "testutils.CreateTestTeam",
+          "lineNumber": 88
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_OnlyReturnsUploadedBuilds",
+          "callee": "testutils.CreateTestTemplate",
+          "lineNumber": 89
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_OnlyReturnsUploadedBuilds",
+          "callee": "testutils.CreateTestBuild",
+          "lineNumber": 92
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_OnlyReturnsUploadedBuilds",
+          "callee": "testutils.CreateTestBuild",
+          "lineNumber": 93
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_OnlyReturnsUploadedBuilds",
+          "callee": "testutils.CreateTestBuildAssignment",
+          "lineNumber": 96
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_OnlyReturnsUploadedBuilds",
+          "callee": "time.Sleep",
+          "lineNumber": 97
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_OnlyReturnsUploadedBuilds",
+          "callee": "testutils.CreateTestBuildAssignment",
+          "lineNumber": 98
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_OnlyReturnsUploadedBuilds",
+          "callee": "db.SqlcClient.GetTemplateWithBuildByTag",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_OnlyReturnsUploadedBuilds",
+          "callee": "require.NoError",
+          "lineNumber": 106
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_OnlyReturnsUploadedBuilds",
+          "callee": "assert.Equal",
+          "lineNumber": 108
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_SpecificTag",
+          "callee": "t.Parallel",
+          "lineNumber": 115
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_SpecificTag",
+          "callee": "testutils.SetupDatabase",
+          "lineNumber": 116
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_SpecificTag",
+          "callee": "t.Context",
+          "lineNumber": 117
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_SpecificTag",
+          "callee": "testutils.CreateTestTeam",
+          "lineNumber": 120
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_SpecificTag",
+          "callee": "testutils.CreateTestTemplate",
+          "lineNumber": 121
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_SpecificTag",
+          "callee": "testutils.CreateTestBuild",
+          "lineNumber": 124
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_SpecificTag",
+          "callee": "testutils.CreateTestBuild",
+          "lineNumber": 125
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_SpecificTag",
+          "callee": "testutils.CreateTestBuildAssignment",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_SpecificTag",
+          "callee": "testutils.CreateTestBuildAssignment",
+          "lineNumber": 129
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_SpecificTag",
+          "callee": "db.SqlcClient.GetTemplateWithBuildByTag",
+          "lineNumber": 133
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_SpecificTag",
+          "callee": "require.NoError",
+          "lineNumber": 138
+        },
+        {
+          "caller": "TestGetTemplateWithBuildByTag_SpecificTag",
+          "callee": "assert.Equal",
+          "lineNumber": 140
+        },
+        {
+          "caller": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "t.Parallel",
+          "lineNumber": 147
+        },
+        {
+          "caller": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "testutils.SetupDatabase",
+          "lineNumber": 148
+        },
+        {
+          "caller": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "t.Context",
+          "lineNumber": 149
+        },
+        {
+          "caller": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "testutils.CreateTestTeam",
+          "lineNumber": 152
+        },
+        {
+          "caller": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "testutils.CreateTestTemplate",
+          "lineNumber": 153
+        },
+        {
+          "caller": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "testutils.CreateTestBuild",
+          "lineNumber": 156
+        },
+        {
+          "caller": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "time.Sleep",
+          "lineNumber": 157
+        },
+        {
+          "caller": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "testutils.CreateTestBuild",
+          "lineNumber": 158
+        },
+        {
+          "caller": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "testutils.CreateTestBuildAssignment",
+          "lineNumber": 161
+        },
+        {
+          "caller": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "time.Sleep",
+          "lineNumber": 162
+        },
+        {
+          "caller": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "testutils.CreateTestBuildAssignment",
+          "lineNumber": 163
+        },
+        {
+          "caller": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "db.SqlcClient.GetTeamTemplates",
+          "lineNumber": 166
+        },
+        {
+          "caller": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "require.NoError",
+          "lineNumber": 167
+        },
+        {
+          "caller": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "require.Len",
+          "lineNumber": 168
+        },
+        {
+          "caller": "TestGetTeamTemplates_AssignmentOrderDifferentFromBuildOrder",
+          "callee": "assert.Equal",
+          "lineNumber": 170
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 5,
+        "functionCount": 5,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/pkg/tests/volumes/db_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 72,
+      "nonEmptyLines": 59,
+      "functions": [
+        {
+          "name": "TestQueries_Volumes",
+          "startLine": 14,
+          "endLine": 72,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestQueries_Volumes",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "t.Parallel",
+          "lineNumber": 15
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "t.Run",
+          "lineNumber": 17
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "t.Parallel",
+          "lineNumber": 18
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "t.Context",
+          "lineNumber": 20
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "testutils.SetupDatabase",
+          "lineNumber": 23
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "testutils.CreateTestTeam",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "db.CreateVolume",
+          "lineNumber": 29
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "require.NoError",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "assert.Equal",
+          "lineNumber": 35
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "assert.NotEmpty",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "assert.Equal",
+          "lineNumber": 37
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "assert.Equal",
+          "lineNumber": 38
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "db.CreateVolume",
+          "lineNumber": 41
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "require.Error",
+          "lineNumber": 46
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "assert.True",
+          "lineNumber": 47
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "dberrors.IsUniqueConstraintViolation",
+          "lineNumber": 47
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "db.GetVolume",
+          "lineNumber": 50
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "require.NoError",
+          "lineNumber": 54
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "assert.Equal",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "db.FindVolumesByTeamID",
+          "lineNumber": 58
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "require.NoError",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "assert.Len",
+          "lineNumber": 60
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "assert.Contains",
+          "lineNumber": 61
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "db.GetVolumesByName",
+          "lineNumber": 64
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "require.NoError",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "assert.Len",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestQueries_Volumes",
+          "callee": "assert.Contains",
+          "lineNumber": 70
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/pkg/testutils/db.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 167,
+      "nonEmptyLines": 140,
+      "functions": [
+        {
+          "name": "init",
+          "startLine": 33,
+          "endLine": 35,
+          "params": []
+        },
+        {
+          "name": "SetupDatabase",
+          "startLine": 53,
+          "endLine": 118,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "ApplyMigrations",
+          "startLine": 120,
+          "endLine": 124,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "ConnStr",
+          "startLine": 126,
+          "endLine": 128,
+          "params": []
+        },
+        {
+          "name": "applyGooseMigrations",
+          "startLine": 130,
+          "endLine": 159,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "runDatabaseMigrations",
+          "startLine": 162,
+          "endLine": 167,
+          "params": [
+            "t",
+            "connStr"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Database",
+          "startLine": 38,
+          "endLine": 44,
+          "methods": [
+            "ApplyMigrations",
+            "ConnStr",
+            "applyGooseMigrations"
+          ],
+          "properties": [
+            "SqlcClient",
+            "AuthDb",
+            "AuthDB",
+            "TestQueries",
+            "connStr"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Database",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "SetupDatabase",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "ApplyMigrations",
+          "line": 120,
+          "isDefault": false
+        },
+        {
+          "name": "ConnStr",
+          "line": 126,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "init",
+          "callee": "goose.SetTableName",
+          "lineNumber": 34
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "t.Helper",
+          "lineNumber": 54
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "testing.Short",
+          "lineNumber": 56
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "t.Skip",
+          "lineNumber": 57
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "postgres.Run",
+          "lineNumber": 61
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "t.Context",
+          "lineNumber": 62
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "postgres.WithDatabase",
+          "lineNumber": 64
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "postgres.WithUsername",
+          "lineNumber": 65
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "postgres.WithPassword",
+          "lineNumber": 66
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "testcontainers.WithWaitStrategy",
+          "lineNumber": 67
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "wait.ForLog(\"database system is ready to accept connections\").\n\t\t\t\tWithOccurrence(2).\n\t\t\t\tWithStartupTimeout",
+          "lineNumber": 68
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "wait.ForLog(\"database system is ready to accept connections\").\n\t\t\t\tWithOccurrence",
+          "lineNumber": 68
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "wait.ForLog",
+          "lineNumber": 68
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "require.NoError",
+          "lineNumber": 73
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "t.Cleanup",
+          "lineNumber": 74
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "t.Context",
+          "lineNumber": 75
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "context.WithoutCancel",
+          "lineNumber": 76
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "container.Terminate",
+          "lineNumber": 77
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "assert.NoError",
+          "lineNumber": 78
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "container.ConnectionString",
+          "lineNumber": 81
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "t.Context",
+          "lineNumber": 81
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "require.NoError",
+          "lineNumber": 82
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "runDatabaseMigrations",
+          "lineNumber": 85
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "pool.New",
+          "lineNumber": 88
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "t.Context",
+          "lineNumber": 88
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "require.NoError",
+          "lineNumber": 89
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "t.Cleanup",
+          "lineNumber": 90
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "connPool.Close",
+          "lineNumber": 91
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "queries.New",
+          "lineNumber": 93
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "db.NewClient",
+          "lineNumber": 96
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "t.Context",
+          "lineNumber": 96
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "require.NoError",
+          "lineNumber": 97
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "t.Cleanup",
+          "lineNumber": 98
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "sqlcClient.Close",
+          "lineNumber": 99
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "assert.NoError",
+          "lineNumber": 100
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "authdb.NewClient",
+          "lineNumber": 104
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "t.Context",
+          "lineNumber": 104
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "require.NoError",
+          "lineNumber": 105
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "t.Cleanup",
+          "lineNumber": 106
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "authDB.Close",
+          "lineNumber": 107
+        },
+        {
+          "caller": "SetupDatabase",
+          "callee": "assert.NoError",
+          "lineNumber": 108
+        },
+        {
+          "caller": "ApplyMigrations",
+          "callee": "t.Helper",
+          "lineNumber": 121
+        },
+        {
+          "caller": "ApplyMigrations",
+          "callee": "db.applyGooseMigrations",
+          "lineNumber": 123
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "t.Helper",
+          "lineNumber": 131
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "exec.CommandContext",
+          "lineNumber": 133
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "t.Context",
+          "lineNumber": 133
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "cmd.Output",
+          "lineNumber": 134
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "require.NoError",
+          "lineNumber": 135
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 136
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "string",
+          "lineNumber": 136
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "gooseMu.Lock",
+          "lineNumber": 138
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "gooseMu.Unlock",
+          "lineNumber": 139
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "goose.OpenDBWithDriver",
+          "lineNumber": 141
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "require.NoError",
+          "lineNumber": 142
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "t.Cleanup",
+          "lineNumber": 143
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "sqlDB.Close",
+          "lineNumber": 144
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "assert.NoError",
+          "lineNumber": 145
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "goose.RunWithOptionsContext",
+          "lineNumber": 149
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "t.Context",
+          "lineNumber": 150
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "filepath.Join",
+          "lineNumber": 153
+        },
+        {
+          "caller": "applyGooseMigrations",
+          "callee": "require.NoError",
+          "lineNumber": 157
+        },
+        {
+          "caller": "runDatabaseMigrations",
+          "callee": "t.Helper",
+          "lineNumber": 163
+        },
+        {
+          "caller": "runDatabaseMigrations",
+          "callee": "db.ApplyMigrations",
+          "lineNumber": 166
+        },
+        {
+          "caller": "runDatabaseMigrations",
+          "callee": "filepath.Join",
+          "lineNumber": 166
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/pkg/testutils/queries.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 356,
+      "nonEmptyLines": 291,
+      "functions": [
+        {
+          "name": "CreateTestTeam",
+          "startLine": 20,
+          "endLine": 36,
+          "params": [
+            "t",
+            "db"
+          ]
+        },
+        {
+          "name": "CreateTestTemplate",
+          "startLine": 40,
+          "endLine": 53,
+          "params": [
+            "t",
+            "db",
+            "teamID"
+          ]
+        },
+        {
+          "name": "CreateTestTemplateAlias",
+          "startLine": 55,
+          "endLine": 67,
+          "params": [
+            "t",
+            "db",
+            "templateID"
+          ]
+        },
+        {
+          "name": "CreateTestTemplateAliasWithNamespace",
+          "startLine": 70,
+          "endLine": 81,
+          "params": [
+            "t",
+            "db",
+            "templateID",
+            "namespace"
+          ]
+        },
+        {
+          "name": "CreateTestTemplateAliasWithName",
+          "startLine": 84,
+          "endLine": 92,
+          "params": [
+            "t",
+            "db",
+            "templateID",
+            "aliasName",
+            "namespace"
+          ]
+        },
+        {
+          "name": "GetTeamSlug",
+          "startLine": 95,
+          "endLine": 113,
+          "params": [
+            "t",
+            "ctx",
+            "db",
+            "teamID"
+          ]
+        },
+        {
+          "name": "CreateTestTemplateWithAlias",
+          "startLine": 115,
+          "endLine": 122,
+          "params": [
+            "t",
+            "db",
+            "teamID"
+          ]
+        },
+        {
+          "name": "CreateTestBuild",
+          "startLine": 125,
+          "endLine": 138,
+          "params": [
+            "t",
+            "ctx",
+            "db",
+            "templateID",
+            "status"
+          ]
+        },
+        {
+          "name": "CreateTestBuildAssignment",
+          "startLine": 141,
+          "endLine": 150,
+          "params": [
+            "t",
+            "ctx",
+            "db",
+            "templateID",
+            "buildID",
+            "tag"
+          ]
+        },
+        {
+          "name": "GetBuildStatus",
+          "startLine": 153,
+          "endLine": 171,
+          "params": [
+            "t",
+            "ctx",
+            "db",
+            "buildID"
+          ]
+        },
+        {
+          "name": "DeleteTriggerBuildAssignment",
+          "startLine": 175,
+          "endLine": 184,
+          "params": [
+            "t",
+            "ctx",
+            "db",
+            "templateID",
+            "buildID",
+            "tag"
+          ]
+        },
+        {
+          "name": "CreateSnapshotRecord",
+          "startLine": 187,
+          "endLine": 197,
+          "params": [
+            "t",
+            "ctx",
+            "db",
+            "templateID",
+            "sandboxID",
+            "teamID",
+            "baseTemplateID"
+          ]
+        },
+        {
+          "name": "UpsertTestSnapshot",
+          "startLine": 200,
+          "endLine": 204,
+          "params": [
+            "t",
+            "ctx",
+            "db",
+            "templateID",
+            "sandboxID",
+            "teamID",
+            "baseTemplateID"
+          ]
+        },
+        {
+          "name": "UpsertTestSnapshotWithStatus",
+          "startLine": 207,
+          "endLine": 236,
+          "params": [
+            "t",
+            "ctx",
+            "db",
+            "templateID",
+            "sandboxID",
+            "teamID",
+            "baseTemplateID",
+            "status"
+          ]
+        },
+        {
+          "name": "GetSnapshotMetadata",
+          "startLine": 239,
+          "endLine": 257,
+          "params": [
+            "t",
+            "ctx",
+            "db",
+            "sandboxID"
+          ]
+        },
+        {
+          "name": "GetBuildAssignments",
+          "startLine": 269,
+          "endLine": 291,
+          "params": [
+            "t",
+            "ctx",
+            "db",
+            "envID"
+          ]
+        },
+        {
+          "name": "GetBuildAssignmentByBuildID",
+          "startLine": 294,
+          "endLine": 314,
+          "params": [
+            "t",
+            "ctx",
+            "db",
+            "buildID"
+          ]
+        },
+        {
+          "name": "GetEnvByID",
+          "startLine": 317,
+          "endLine": 335,
+          "params": [
+            "t",
+            "ctx",
+            "db",
+            "envID"
+          ]
+        },
+        {
+          "name": "GetEnvBuildByID",
+          "startLine": 338,
+          "endLine": 356,
+          "params": [
+            "t",
+            "ctx",
+            "db",
+            "buildID"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "BuildAssignment",
+          "startLine": 260,
+          "endLine": 266,
+          "methods": [],
+          "properties": [
+            "ID",
+            "EnvID",
+            "BuildID",
+            "Tag",
+            "Source"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreateTestTeam",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "CreateTestTemplate",
+          "line": 40,
+          "isDefault": false
+        },
+        {
+          "name": "CreateTestTemplateAlias",
+          "line": 55,
+          "isDefault": false
+        },
+        {
+          "name": "CreateTestTemplateAliasWithNamespace",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "CreateTestTemplateAliasWithName",
+          "line": 84,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamSlug",
+          "line": 95,
+          "isDefault": false
+        },
+        {
+          "name": "CreateTestTemplateWithAlias",
+          "line": 115,
+          "isDefault": false
+        },
+        {
+          "name": "CreateTestBuild",
+          "line": 125,
+          "isDefault": false
+        },
+        {
+          "name": "CreateTestBuildAssignment",
+          "line": 141,
+          "isDefault": false
+        },
+        {
+          "name": "GetBuildStatus",
+          "line": 153,
+          "isDefault": false
+        },
+        {
+          "name": "DeleteTriggerBuildAssignment",
+          "line": 175,
+          "isDefault": false
+        },
+        {
+          "name": "CreateSnapshotRecord",
+          "line": 187,
+          "isDefault": false
+        },
+        {
+          "name": "UpsertTestSnapshot",
+          "line": 200,
+          "isDefault": false
+        },
+        {
+          "name": "UpsertTestSnapshotWithStatus",
+          "line": 207,
+          "isDefault": false
+        },
+        {
+          "name": "GetSnapshotMetadata",
+          "line": 239,
+          "isDefault": false
+        },
+        {
+          "name": "BuildAssignment",
+          "line": 260,
+          "isDefault": false
+        },
+        {
+          "name": "GetBuildAssignments",
+          "line": 269,
+          "isDefault": false
+        },
+        {
+          "name": "GetBuildAssignmentByBuildID",
+          "line": 294,
+          "isDefault": false
+        },
+        {
+          "name": "GetEnvByID",
+          "line": 317,
+          "isDefault": false
+        },
+        {
+          "name": "GetEnvBuildByID",
+          "line": 338,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CreateTestTeam",
+          "callee": "t.Helper",
+          "lineNumber": 21
+        },
+        {
+          "caller": "CreateTestTeam",
+          "callee": "uuid.New",
+          "lineNumber": 22
+        },
+        {
+          "caller": "CreateTestTeam",
+          "callee": "teamID.String",
+          "lineNumber": 24
+        },
+        {
+          "caller": "CreateTestTeam",
+          "callee": "db.TestQueries.InsertTestTeam",
+          "lineNumber": 26
+        },
+        {
+          "caller": "CreateTestTeam",
+          "callee": "t.Context",
+          "lineNumber": 26
+        },
+        {
+          "caller": "CreateTestTeam",
+          "callee": "teamID.String",
+          "lineNumber": 28
+        },
+        {
+          "caller": "CreateTestTeam",
+          "callee": "teamID.String",
+          "lineNumber": 30
+        },
+        {
+          "caller": "CreateTestTeam",
+          "callee": "require.NoError",
+          "lineNumber": 33
+        },
+        {
+          "caller": "CreateTestTemplate",
+          "callee": "t.Helper",
+          "lineNumber": 41
+        },
+        {
+          "caller": "CreateTestTemplate",
+          "callee": "uuid.New().String",
+          "lineNumber": 42
+        },
+        {
+          "caller": "CreateTestTemplate",
+          "callee": "uuid.New",
+          "lineNumber": 42
+        },
+        {
+          "caller": "CreateTestTemplate",
+          "callee": "db.TestQueries.InsertTestEnv",
+          "lineNumber": 44
+        },
+        {
+          "caller": "CreateTestTemplate",
+          "callee": "t.Context",
+          "lineNumber": 44
+        },
+        {
+          "caller": "CreateTestTemplate",
+          "callee": "require.NoError",
+          "lineNumber": 50
+        },
+        {
+          "caller": "CreateTestTemplateAlias",
+          "callee": "t.Helper",
+          "lineNumber": 56
+        },
+        {
+          "caller": "CreateTestTemplateAlias",
+          "callee": "uuid.New().String",
+          "lineNumber": 57
+        },
+        {
+          "caller": "CreateTestTemplateAlias",
+          "callee": "uuid.New",
+          "lineNumber": 57
+        },
+        {
+          "caller": "CreateTestTemplateAlias",
+          "callee": "db.SqlcClient.TestsRawSQL",
+          "lineNumber": 60
+        },
+        {
+          "caller": "CreateTestTemplateAlias",
+          "callee": "t.Context",
+          "lineNumber": 60
+        },
+        {
+          "caller": "CreateTestTemplateAlias",
+          "callee": "require.NoError",
+          "lineNumber": 64
+        },
+        {
+          "caller": "CreateTestTemplateAliasWithNamespace",
+          "callee": "t.Helper",
+          "lineNumber": 71
+        },
+        {
+          "caller": "CreateTestTemplateAliasWithNamespace",
+          "callee": "uuid.New().String",
+          "lineNumber": 72
+        },
+        {
+          "caller": "CreateTestTemplateAliasWithNamespace",
+          "callee": "uuid.New",
+          "lineNumber": 72
+        },
+        {
+          "caller": "CreateTestTemplateAliasWithNamespace",
+          "callee": "db.SqlcClient.TestsRawSQL",
+          "lineNumber": 74
+        },
+        {
+          "caller": "CreateTestTemplateAliasWithNamespace",
+          "callee": "t.Context",
+          "lineNumber": 74
+        },
+        {
+          "caller": "CreateTestTemplateAliasWithNamespace",
+          "callee": "require.NoError",
+          "lineNumber": 78
+        },
+        {
+          "caller": "CreateTestTemplateAliasWithName",
+          "callee": "t.Helper",
+          "lineNumber": 85
+        },
+        {
+          "caller": "CreateTestTemplateAliasWithName",
+          "callee": "db.SqlcClient.TestsRawSQL",
+          "lineNumber": 87
+        },
+        {
+          "caller": "CreateTestTemplateAliasWithName",
+          "callee": "t.Context",
+          "lineNumber": 87
+        },
+        {
+          "caller": "CreateTestTemplateAliasWithName",
+          "callee": "require.NoError",
+          "lineNumber": 91
+        },
+        {
+          "caller": "GetTeamSlug",
+          "callee": "t.Helper",
+          "lineNumber": 96
+        },
+        {
+          "caller": "GetTeamSlug",
+          "callee": "db.AuthDb.TestsRawSQLQuery",
+          "lineNumber": 99
+        },
+        {
+          "caller": "GetTeamSlug",
+          "callee": "rows.Next",
+          "lineNumber": 102
+        },
+        {
+          "caller": "GetTeamSlug",
+          "callee": "rows.Scan",
+          "lineNumber": 103
+        },
+        {
+          "caller": "GetTeamSlug",
+          "callee": "require.NoError",
+          "lineNumber": 110
+        },
+        {
+          "caller": "CreateTestTemplateWithAlias",
+          "callee": "t.Helper",
+          "lineNumber": 116
+        },
+        {
+          "caller": "CreateTestTemplateWithAlias",
+          "callee": "CreateTestTemplate",
+          "lineNumber": 118
+        },
+        {
+          "caller": "CreateTestTemplateWithAlias",
+          "callee": "CreateTestTemplateAlias",
+          "lineNumber": 119
+        },
+        {
+          "caller": "CreateTestBuild",
+          "callee": "t.Helper",
+          "lineNumber": 126
+        },
+        {
+          "caller": "CreateTestBuild",
+          "callee": "uuid.New",
+          "lineNumber": 127
+        },
+        {
+          "caller": "CreateTestBuild",
+          "callee": "db.SqlcClient.TestsRawSQL",
+          "lineNumber": 129
+        },
+        {
+          "caller": "CreateTestBuild",
+          "callee": "require.NoError",
+          "lineNumber": 135
+        },
+        {
+          "caller": "CreateTestBuildAssignment",
+          "callee": "t.Helper",
+          "lineNumber": 142
+        },
+        {
+          "caller": "CreateTestBuildAssignment",
+          "callee": "db.SqlcClient.TestsRawSQL",
+          "lineNumber": 144
+        },
+        {
+          "caller": "CreateTestBuildAssignment",
+          "callee": "require.NoError",
+          "lineNumber": 149
+        },
+        {
+          "caller": "GetBuildStatus",
+          "callee": "t.Helper",
+          "lineNumber": 154
+        },
+        {
+          "caller": "GetBuildStatus",
+          "callee": "db.SqlcClient.TestsRawSQLQuery",
+          "lineNumber": 157
+        },
+        {
+          "caller": "GetBuildStatus",
+          "callee": "rows.Next",
+          "lineNumber": 160
+        },
+        {
+          "caller": "GetBuildStatus",
+          "callee": "rows.Scan",
+          "lineNumber": 161
+        },
+        {
+          "caller": "GetBuildStatus",
+          "callee": "require.NoError",
+          "lineNumber": 168
+        },
+        {
+          "caller": "DeleteTriggerBuildAssignment",
+          "callee": "t.Helper",
+          "lineNumber": 176
+        },
+        {
+          "caller": "DeleteTriggerBuildAssignment",
+          "callee": "db.SqlcClient.TestsRawSQL",
+          "lineNumber": 178
+        },
+        {
+          "caller": "DeleteTriggerBuildAssignment",
+          "callee": "require.NoError",
+          "lineNumber": 183
+        },
+        {
+          "caller": "CreateSnapshotRecord",
+          "callee": "t.Helper",
+          "lineNumber": 188
+        },
+        {
+          "caller": "CreateSnapshotRecord",
+          "callee": "db.SqlcClient.TestsRawSQL",
+          "lineNumber": 190
+        },
+        {
+          "caller": "CreateSnapshotRecord",
+          "callee": "require.NoError",
+          "lineNumber": 196
+        },
+        {
+          "caller": "UpsertTestSnapshot",
+          "callee": "t.Helper",
+          "lineNumber": 201
+        },
+        {
+          "caller": "UpsertTestSnapshot",
+          "callee": "UpsertTestSnapshotWithStatus",
+          "lineNumber": 203
+        },
+        {
+          "caller": "UpsertTestSnapshotWithStatus",
+          "callee": "t.Helper",
+          "lineNumber": 208
+        },
+        {
+          "caller": "UpsertTestSnapshotWithStatus",
+          "callee": "int64",
+          "lineNumber": 210
+        },
+        {
+          "caller": "UpsertTestSnapshotWithStatus",
+          "callee": "db.SqlcClient.UpsertSnapshot",
+          "lineNumber": 214
+        },
+        {
+          "caller": "UpsertTestSnapshotWithStatus",
+          "callee": "time.Now",
+          "lineNumber": 219
+        },
+        {
+          "caller": "UpsertTestSnapshotWithStatus",
+          "callee": "require.NoError",
+          "lineNumber": 233
+        },
+        {
+          "caller": "GetSnapshotMetadata",
+          "callee": "t.Helper",
+          "lineNumber": 240
+        },
+        {
+          "caller": "GetSnapshotMetadata",
+          "callee": "db.SqlcClient.TestsRawSQLQuery",
+          "lineNumber": 243
+        },
+        {
+          "caller": "GetSnapshotMetadata",
+          "callee": "rows.Next",
+          "lineNumber": 246
+        },
+        {
+          "caller": "GetSnapshotMetadata",
+          "callee": "rows.Scan",
+          "lineNumber": 250
+        },
+        {
+          "caller": "GetSnapshotMetadata",
+          "callee": "require.NoError",
+          "lineNumber": 254
+        },
+        {
+          "caller": "GetBuildAssignments",
+          "callee": "t.Helper",
+          "lineNumber": 270
+        },
+        {
+          "caller": "GetBuildAssignments",
+          "callee": "db.SqlcClient.TestsRawSQLQuery",
+          "lineNumber": 273
+        },
+        {
+          "caller": "GetBuildAssignments",
+          "callee": "rows.Next",
+          "lineNumber": 276
+        },
+        {
+          "caller": "GetBuildAssignments",
+          "callee": "rows.Scan",
+          "lineNumber": 278
+        },
+        {
+          "caller": "GetBuildAssignments",
+          "callee": "append",
+          "lineNumber": 281
+        },
+        {
+          "caller": "GetBuildAssignments",
+          "callee": "require.NoError",
+          "lineNumber": 288
+        },
+        {
+          "caller": "GetBuildAssignmentByBuildID",
+          "callee": "t.Helper",
+          "lineNumber": 295
+        },
+        {
+          "caller": "GetBuildAssignmentByBuildID",
+          "callee": "db.SqlcClient.TestsRawSQLQuery",
+          "lineNumber": 298
+        },
+        {
+          "caller": "GetBuildAssignmentByBuildID",
+          "callee": "rows.Next",
+          "lineNumber": 301
+        },
+        {
+          "caller": "GetBuildAssignmentByBuildID",
+          "callee": "rows.Scan",
+          "lineNumber": 304
+        },
+        {
+          "caller": "GetBuildAssignmentByBuildID",
+          "callee": "require.NoError",
+          "lineNumber": 311
+        },
+        {
+          "caller": "GetEnvByID",
+          "callee": "t.Helper",
+          "lineNumber": 318
+        },
+        {
+          "caller": "GetEnvByID",
+          "callee": "db.SqlcClient.TestsRawSQLQuery",
+          "lineNumber": 321
+        },
+        {
+          "caller": "GetEnvByID",
+          "callee": "rows.Next",
+          "lineNumber": 324
+        },
+        {
+          "caller": "GetEnvByID",
+          "callee": "rows.Scan",
+          "lineNumber": 325
+        },
+        {
+          "caller": "GetEnvByID",
+          "callee": "require.NoError",
+          "lineNumber": 332
+        },
+        {
+          "caller": "GetEnvBuildByID",
+          "callee": "t.Helper",
+          "lineNumber": 339
+        },
+        {
+          "caller": "GetEnvBuildByID",
+          "callee": "db.SqlcClient.TestsRawSQLQuery",
+          "lineNumber": 342
+        },
+        {
+          "caller": "GetEnvBuildByID",
+          "callee": "rows.Next",
+          "lineNumber": 345
+        },
+        {
+          "caller": "GetEnvBuildByID",
+          "callee": "rows.Scan",
+          "lineNumber": 346
+        },
+        {
+          "caller": "GetEnvBuildByID",
+          "callee": "require.NoError",
+          "lineNumber": 353
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 20,
+        "functionCount": 19,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/pkg/testutils/queries/db.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 32,
+      "nonEmptyLines": 25,
+      "functions": [
+        {
+          "name": "New",
+          "startLine": 20,
+          "endLine": 22,
+          "params": [
+            "db"
+          ]
+        },
+        {
+          "name": "WithTx",
+          "startLine": 28,
+          "endLine": 32,
+          "params": [
+            "tx"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "DBTX",
+          "startLine": 14,
+          "endLine": 18,
+          "methods": [
+            "Exec",
+            "Query",
+            "QueryRow"
+          ],
+          "properties": []
+        },
+        {
+          "name": "Queries",
+          "startLine": 24,
+          "endLine": 26,
+          "methods": [
+            "WithTx"
+          ],
+          "properties": [
+            "db"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DBTX",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "New",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "Queries",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "WithTx",
+          "line": 28,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 2,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/pkg/testutils/queries/models.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 265,
+      "nonEmptyLines": 241,
+      "classes": [
+        {
+          "name": "AccessToken",
+          "startLine": 14,
+          "endLine": 25,
+          "methods": [],
+          "properties": [
+            "UserID",
+            "CreatedAt",
+            "ID",
+            "AccessTokenHash",
+            "Name",
+            "AccessTokenPrefix",
+            "AccessTokenLength",
+            "AccessTokenMaskPrefix",
+            "AccessTokenMaskSuffix"
+          ]
+        },
+        {
+          "name": "ActiveEnv",
+          "startLine": 27,
+          "endLine": 39,
+          "methods": [],
+          "properties": [
+            "ID",
+            "CreatedAt",
+            "UpdatedAt",
+            "Public",
+            "BuildCount",
+            "SpawnCount",
+            "LastSpawnedAt",
+            "TeamID",
+            "CreatedBy",
+            "ClusterID",
+            "Source"
+          ]
+        },
+        {
+          "name": "ActiveTemplateBuild",
+          "startLine": 41,
+          "endLine": 47,
+          "methods": [],
+          "properties": [
+            "BuildID",
+            "TeamID",
+            "TemplateID",
+            "Tags",
+            "CreatedAt"
+          ]
+        },
+        {
+          "name": "Addon",
+          "startLine": 49,
+          "endLine": 63,
+          "methods": [],
+          "properties": [
+            "ID",
+            "TeamID",
+            "Name",
+            "Description",
+            "ExtraConcurrentSandboxes",
+            "ExtraConcurrentTemplateBuilds",
+            "ExtraMaxVcpu",
+            "ExtraMaxRamMb",
+            "ExtraDiskMb",
+            "ValidFrom",
+            "ValidTo",
+            "AddedBy",
+            "IdempotencyKey"
+          ]
+        },
+        {
+          "name": "AuthUser",
+          "startLine": 65,
+          "endLine": 71,
+          "methods": [],
+          "properties": [
+            "ID",
+            "Email",
+            "CreatedAt",
+            "RawAppMetaData",
+            "RawUserMetaData"
+          ]
+        },
+        {
+          "name": "BillingSandboxLog",
+          "startLine": 73,
+          "endLine": 83,
+          "methods": [],
+          "properties": [
+            "SandboxID",
+            "EnvID",
+            "Vcpu",
+            "RamMb",
+            "TotalDiskSizeMb",
+            "StartedAt",
+            "StoppedAt",
+            "CreatedAt",
+            "TeamID"
+          ]
+        },
+        {
+          "name": "Cluster",
+          "startLine": 85,
+          "endLine": 93,
+          "methods": [],
+          "properties": [
+            "ID",
+            "Endpoint",
+            "EndpointTls",
+            "Token",
+            "SandboxProxyDomain",
+            "AuthOrgID",
+            "Name"
+          ]
+        },
+        {
+          "name": "Env",
+          "startLine": 95,
+          "endLine": 110,
+          "methods": [],
+          "properties": [
+            "ID",
+            "CreatedAt",
+            "UpdatedAt",
+            "Public",
+            "BuildCount",
+            "SpawnCount",
+            "LastSpawnedAt",
+            "TeamID",
+            "CreatedBy",
+            "ClusterID",
+            "Source",
+            "DeletedAt"
+          ]
+        },
+        {
+          "name": "EnvAlias",
+          "startLine": 112,
+          "endLine": 118,
+          "methods": [],
+          "properties": [
+            "Alias",
+            "IsRenamable",
+            "EnvID",
+            "Namespace",
+            "ID"
+          ]
+        },
+        {
+          "name": "EnvBuild",
+          "startLine": 120,
+          "endLine": 147,
+          "methods": [],
+          "properties": [
+            "ID",
+            "CreatedAt",
+            "UpdatedAt",
+            "FinishedAt",
+            "Status",
+            "Dockerfile",
+            "StartCmd",
+            "Vcpu",
+            "RamMb",
+            "FreeDiskSizeMb",
+            "TotalDiskSizeMb",
+            "KernelVersion",
+            "FirecrackerVersion",
+            "EnvID",
+            "EnvdVersion",
+            "ReadyCmd",
+            "ClusterNodeID",
+            "Reason",
+            "Version",
+            "CpuArchitecture",
+            "CpuFamily",
+            "CpuModel",
+            "CpuModelName",
+            "CpuFlags",
+            "StatusGroup",
+            "TeamID"
+          ]
+        },
+        {
+          "name": "EnvBuildAssignment",
+          "startLine": 149,
+          "endLine": 156,
+          "methods": [],
+          "properties": [
+            "ID",
+            "EnvID",
+            "BuildID",
+            "Tag",
+            "Source",
+            "CreatedAt"
+          ]
+        },
+        {
+          "name": "Snapshot",
+          "startLine": 158,
+          "endLine": 172,
+          "methods": [],
+          "properties": [
+            "CreatedAt",
+            "EnvID",
+            "SandboxID",
+            "ID",
+            "Metadata",
+            "BaseEnvID",
+            "SandboxStartedAt",
+            "EnvSecure",
+            "OriginNodeID",
+            "AllowInternetAccess",
+            "AutoPause",
+            "TeamID",
+            "Config"
+          ]
+        },
+        {
+          "name": "SnapshotTemplate",
+          "startLine": 174,
+          "endLine": 180,
+          "methods": [],
+          "properties": [
+            "EnvID",
+            "SandboxID",
+            "CreatedAt",
+            "OriginNodeID",
+            "BuildID"
+          ]
+        },
+        {
+          "name": "Team",
+          "startLine": 182,
+          "endLine": 194,
+          "methods": [],
+          "properties": [
+            "ID",
+            "CreatedAt",
+            "IsBlocked",
+            "Name",
+            "Tier",
+            "Email",
+            "IsBanned",
+            "BlockedReason",
+            "ClusterID",
+            "SandboxSchedulingLabels",
+            "Slug"
+          ]
+        },
+        {
+          "name": "TeamApiKey",
+          "startLine": 196,
+          "endLine": 210,
+          "methods": [],
+          "properties": [
+            "CreatedAt",
+            "TeamID",
+            "UpdatedAt",
+            "Name",
+            "LastUsed",
+            "CreatedBy",
+            "ID",
+            "ApiKeyHash",
+            "ApiKeyPrefix",
+            "ApiKeyLength",
+            "ApiKeyMaskPrefix",
+            "ApiKeyMaskSuffix"
+          ]
+        },
+        {
+          "name": "TeamLimit",
+          "startLine": 212,
+          "endLine": 220,
+          "methods": [],
+          "properties": [
+            "ID",
+            "MaxLengthHours",
+            "ConcurrentSandboxes",
+            "ConcurrentTemplateBuilds",
+            "MaxVcpu",
+            "MaxRamMb",
+            "DiskMb"
+          ]
+        },
+        {
+          "name": "Tier",
+          "startLine": 222,
+          "endLine": 233,
+          "methods": [],
+          "properties": [
+            "ID",
+            "Name",
+            "DiskMb",
+            "ConcurrentInstances",
+            "MaxLengthHours",
+            "MaxVcpu",
+            "MaxRamMb",
+            "ConcurrentTemplateBuilds"
+          ]
+        },
+        {
+          "name": "User",
+          "startLine": 235,
+          "endLine": 239,
+          "methods": [],
+          "properties": [
+            "CreatedAt",
+            "UpdatedAt",
+            "ID"
+          ]
+        },
+        {
+          "name": "UserIdentity",
+          "startLine": 241,
+          "endLine": 247,
+          "methods": [],
+          "properties": [
+            "CreatedAt",
+            "UpdatedAt",
+            "OidcIss",
+            "OidcSub",
+            "UserID"
+          ]
+        },
+        {
+          "name": "UsersTeam",
+          "startLine": 249,
+          "endLine": 257,
+          "methods": [],
+          "properties": [
+            "ID",
+            "UserID",
+            "TeamID",
+            "IsDefault",
+            "AddedBy",
+            "CreatedAt",
+            "UuidID"
+          ]
+        },
+        {
+          "name": "Volume",
+          "startLine": 259,
+          "endLine": 265,
+          "methods": [],
+          "properties": [
+            "ID",
+            "TeamID",
+            "Name",
+            "VolumeType",
+            "CreatedAt"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "AccessToken",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "ActiveEnv",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "ActiveTemplateBuild",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "Addon",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "AuthUser",
+          "line": 65,
+          "isDefault": false
+        },
+        {
+          "name": "BillingSandboxLog",
+          "line": 73,
+          "isDefault": false
+        },
+        {
+          "name": "Cluster",
+          "line": 85,
+          "isDefault": false
+        },
+        {
+          "name": "Env",
+          "line": 95,
+          "isDefault": false
+        },
+        {
+          "name": "EnvAlias",
+          "line": 112,
+          "isDefault": false
+        },
+        {
+          "name": "EnvBuild",
+          "line": 120,
+          "isDefault": false
+        },
+        {
+          "name": "EnvBuildAssignment",
+          "line": 149,
+          "isDefault": false
+        },
+        {
+          "name": "Snapshot",
+          "line": 158,
+          "isDefault": false
+        },
+        {
+          "name": "SnapshotTemplate",
+          "line": 174,
+          "isDefault": false
+        },
+        {
+          "name": "Team",
+          "line": 182,
+          "isDefault": false
+        },
+        {
+          "name": "TeamApiKey",
+          "line": 196,
+          "isDefault": false
+        },
+        {
+          "name": "TeamLimit",
+          "line": 212,
+          "isDefault": false
+        },
+        {
+          "name": "Tier",
+          "line": 222,
+          "isDefault": false
+        },
+        {
+          "name": "User",
+          "line": 235,
+          "isDefault": false
+        },
+        {
+          "name": "UserIdentity",
+          "line": 241,
+          "isDefault": false
+        },
+        {
+          "name": "UsersTeam",
+          "line": 249,
+          "isDefault": false
+        },
+        {
+          "name": "Volume",
+          "line": 259,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 21,
+        "functionCount": 0,
+        "classCount": 21
+      }
+    },
+    {
+      "path": "packages/db/pkg/testutils/queries/tests.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 125,
+      "nonEmptyLines": 113,
+      "functions": [
+        {
+          "name": "GetRowLevelSecurity",
+          "startLine": 38,
+          "endLine": 62,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "InsertTestEnv",
+          "startLine": 85,
+          "endLine": 93,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "InsertTestTeam",
+          "startLine": 116,
+          "endLine": 125,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetRowLevelSecurityRow",
+          "startLine": 30,
+          "endLine": 36,
+          "methods": [],
+          "properties": [
+            "Kind",
+            "NamespaceName",
+            "TableName",
+            "RowLevelSecurity",
+            "Options"
+          ]
+        },
+        {
+          "name": "InsertTestEnvParams",
+          "startLine": 75,
+          "endLine": 80,
+          "methods": [],
+          "properties": [
+            "ID",
+            "TeamID",
+            "Public",
+            "Source"
+          ]
+        },
+        {
+          "name": "InsertTestTeamParams",
+          "startLine": 106,
+          "endLine": 112,
+          "methods": [],
+          "properties": [
+            "ID",
+            "Name",
+            "Tier",
+            "Email",
+            "Slug"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetRowLevelSecurityRow",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "GetRowLevelSecurity",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "InsertTestEnvParams",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "InsertTestEnv",
+          "line": 85,
+          "isDefault": false
+        },
+        {
+          "name": "InsertTestTeamParams",
+          "line": 106,
+          "isDefault": false
+        },
+        {
+          "name": "InsertTestTeam",
+          "line": 116,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetRowLevelSecurity",
+          "callee": "q.db.Query",
+          "lineNumber": 39
+        },
+        {
+          "caller": "GetRowLevelSecurity",
+          "callee": "rows.Close",
+          "lineNumber": 43
+        },
+        {
+          "caller": "GetRowLevelSecurity",
+          "callee": "rows.Next",
+          "lineNumber": 45
+        },
+        {
+          "caller": "GetRowLevelSecurity",
+          "callee": "rows.Scan",
+          "lineNumber": 47
+        },
+        {
+          "caller": "GetRowLevelSecurity",
+          "callee": "append",
+          "lineNumber": 56
+        },
+        {
+          "caller": "GetRowLevelSecurity",
+          "callee": "rows.Err",
+          "lineNumber": 58
+        },
+        {
+          "caller": "InsertTestEnv",
+          "callee": "q.db.Exec",
+          "lineNumber": 86
+        },
+        {
+          "caller": "InsertTestTeam",
+          "callee": "q.db.Exec",
+          "lineNumber": 117
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 6,
+        "functionCount": 3,
+        "classCount": 3
+      }
+    },
+    {
+      "path": "packages/db/pkg/types/db.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 15,
+      "nonEmptyLines": 12,
+      "classes": [
+        {
+          "name": "DBTX",
+          "startLine": 11,
+          "endLine": 15,
+          "methods": [
+            "Exec",
+            "Query",
+            "QueryRow"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "DBTX",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/pkg/types/types.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 168,
+      "nonEmptyLines": 132,
+      "functions": [
+        {
+          "name": "jsonbValue",
+          "startLine": 8,
+          "endLine": 15,
+          "params": [
+            "v"
+          ]
+        },
+        {
+          "name": "MarshalJSON",
+          "startLine": 22,
+          "endLine": 28,
+          "params": []
+        },
+        {
+          "name": "Value",
+          "startLine": 30,
+          "endLine": 32,
+          "params": []
+        },
+        {
+          "name": "UnmarshalJSON",
+          "startLine": 35,
+          "endLine": 50,
+          "params": [
+            "data"
+          ]
+        },
+        {
+          "name": "Value",
+          "startLine": 60,
+          "endLine": 62,
+          "params": []
+        },
+        {
+          "name": "Value",
+          "startLine": 137,
+          "endLine": 139,
+          "params": []
+        },
+        {
+          "name": "IsTerminal",
+          "startLine": 166,
+          "endLine": 168,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "BuildReason",
+          "startLine": 52,
+          "endLine": 58,
+          "methods": [
+            "Value"
+          ],
+          "properties": [
+            "Message",
+            "Step"
+          ]
+        },
+        {
+          "name": "SandboxNetworkTransform",
+          "startLine": 66,
+          "endLine": 68,
+          "methods": [],
+          "properties": [
+            "Headers"
+          ]
+        },
+        {
+          "name": "SandboxNetworkRule",
+          "startLine": 70,
+          "endLine": 72,
+          "methods": [],
+          "properties": [
+            "Transform"
+          ]
+        },
+        {
+          "name": "SandboxNetworkEgressConfig",
+          "startLine": 74,
+          "endLine": 83,
+          "methods": [],
+          "properties": [
+            "AllowedAddresses",
+            "DeniedAddresses",
+            "Rules",
+            "EgressProxyAddress",
+            "EgressProxyUsername",
+            "EgressProxyPassword"
+          ]
+        },
+        {
+          "name": "SandboxNetworkIngressConfig",
+          "startLine": 87,
+          "endLine": 90,
+          "methods": [],
+          "properties": [
+            "AllowPublicAccess",
+            "MaskRequestHost"
+          ]
+        },
+        {
+          "name": "SandboxNetworkConfig",
+          "startLine": 92,
+          "endLine": 95,
+          "methods": [],
+          "properties": [
+            "Egress",
+            "Ingress"
+          ]
+        },
+        {
+          "name": "SandboxVolumeMountConfig",
+          "startLine": 97,
+          "endLine": 102,
+          "methods": [],
+          "properties": [
+            "ID",
+            "Type",
+            "Name",
+            "Path"
+          ]
+        },
+        {
+          "name": "SandboxAutoResumeConfig",
+          "startLine": 111,
+          "endLine": 114,
+          "methods": [],
+          "properties": [
+            "Policy",
+            "Timeout"
+          ]
+        },
+        {
+          "name": "PausedSandboxConfig",
+          "startLine": 116,
+          "endLine": 135,
+          "methods": [
+            "Value"
+          ],
+          "properties": [
+            "Version",
+            "Network",
+            "AutoResume",
+            "VolumeMounts",
+            "FilesystemOnly",
+            "AutoPauseFilesystemOnly"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "MarshalJSON",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "Value",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "UnmarshalJSON",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "BuildReason",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "Value",
+          "line": 60,
+          "isDefault": false
+        },
+        {
+          "name": "SandboxNetworkTransform",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "SandboxNetworkRule",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "SandboxNetworkEgressConfig",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "SandboxNetworkIngressConfig",
+          "line": 87,
+          "isDefault": false
+        },
+        {
+          "name": "SandboxNetworkConfig",
+          "line": 92,
+          "isDefault": false
+        },
+        {
+          "name": "SandboxVolumeMountConfig",
+          "line": 97,
+          "isDefault": false
+        },
+        {
+          "name": "SandboxAutoResumeConfig",
+          "line": 111,
+          "isDefault": false
+        },
+        {
+          "name": "PausedSandboxConfig",
+          "line": 116,
+          "isDefault": false
+        },
+        {
+          "name": "Value",
+          "line": 137,
+          "isDefault": false
+        },
+        {
+          "name": "IsTerminal",
+          "line": 166,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "jsonbValue",
+          "callee": "json.Marshal",
+          "lineNumber": 9
+        },
+        {
+          "caller": "jsonbValue",
+          "callee": "string",
+          "lineNumber": 14
+        },
+        {
+          "caller": "MarshalJSON",
+          "callee": "json.Marshal",
+          "lineNumber": 27
+        },
+        {
+          "caller": "Value",
+          "callee": "jsonbValue",
+          "lineNumber": 31
+        },
+        {
+          "caller": "UnmarshalJSON",
+          "callee": "string",
+          "lineNumber": 36
+        },
+        {
+          "caller": "UnmarshalJSON",
+          "callee": "json.Unmarshal",
+          "lineNumber": 43
+        },
+        {
+          "caller": "UnmarshalJSON",
+          "callee": "JSONBStringMap",
+          "lineNumber": 47
+        },
+        {
+          "caller": "Value",
+          "callee": "jsonbValue",
+          "lineNumber": 61
+        },
+        {
+          "caller": "Value",
+          "callee": "jsonbValue",
+          "lineNumber": 138
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 15,
+        "functionCount": 7,
+        "classCount": 9
+      }
+    },
+    {
+      "path": "packages/db/pkg/types/types_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 126,
+      "nonEmptyLines": 99,
+      "functions": [
+        {
+          "name": "TestJSONBStringMap_MarshalJSON_Nil",
+          "startLine": 11,
+          "endLine": 18,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestJSONBStringMap_MarshalJSON_Empty",
+          "startLine": 20,
+          "endLine": 27,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestJSONBStringMap_MarshalJSON_WithValues",
+          "startLine": 29,
+          "endLine": 36,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestJSONBStringMap_UnmarshalJSON_Null",
+          "startLine": 38,
+          "endLine": 46,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestJSONBStringMap_UnmarshalJSON_EmptyObject",
+          "startLine": 48,
+          "endLine": 56,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestJSONBStringMap_UnmarshalJSON_WithValues",
+          "startLine": 58,
+          "endLine": 65,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestJSONBStringMap_RoundTrip",
+          "startLine": 67,
+          "endLine": 78,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestJSONBStringMap_NilRoundTrip",
+          "startLine": 80,
+          "endLine": 93,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestPausedSandboxConfig_AutoPauseFilesystemOnlyRoundTrip",
+          "startLine": 95,
+          "endLine": 114,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestPausedSandboxConfig_LegacyRowDefaultsToMemoryAutoPause",
+          "startLine": 116,
+          "endLine": 126,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestJSONBStringMap_MarshalJSON_Nil",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "TestJSONBStringMap_MarshalJSON_Empty",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "TestJSONBStringMap_MarshalJSON_WithValues",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "TestJSONBStringMap_UnmarshalJSON_Null",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "TestJSONBStringMap_UnmarshalJSON_EmptyObject",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "TestJSONBStringMap_UnmarshalJSON_WithValues",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "TestJSONBStringMap_RoundTrip",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "TestJSONBStringMap_NilRoundTrip",
+          "line": 80,
+          "isDefault": false
+        },
+        {
+          "name": "TestPausedSandboxConfig_AutoPauseFilesystemOnlyRoundTrip",
+          "line": 95,
+          "isDefault": false
+        },
+        {
+          "name": "TestPausedSandboxConfig_LegacyRowDefaultsToMemoryAutoPause",
+          "line": 116,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestJSONBStringMap_MarshalJSON_Nil",
+          "callee": "t.Parallel",
+          "lineNumber": 12
+        },
+        {
+          "caller": "TestJSONBStringMap_MarshalJSON_Nil",
+          "callee": "json.Marshal",
+          "lineNumber": 15
+        },
+        {
+          "caller": "TestJSONBStringMap_MarshalJSON_Nil",
+          "callee": "require.NoError",
+          "lineNumber": 16
+        },
+        {
+          "caller": "TestJSONBStringMap_MarshalJSON_Nil",
+          "callee": "assert.Equal",
+          "lineNumber": 17
+        },
+        {
+          "caller": "TestJSONBStringMap_MarshalJSON_Nil",
+          "callee": "string",
+          "lineNumber": 17
+        },
+        {
+          "caller": "TestJSONBStringMap_MarshalJSON_Empty",
+          "callee": "t.Parallel",
+          "lineNumber": 21
+        },
+        {
+          "caller": "TestJSONBStringMap_MarshalJSON_Empty",
+          "callee": "json.Marshal",
+          "lineNumber": 24
+        },
+        {
+          "caller": "TestJSONBStringMap_MarshalJSON_Empty",
+          "callee": "require.NoError",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TestJSONBStringMap_MarshalJSON_Empty",
+          "callee": "assert.Equal",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestJSONBStringMap_MarshalJSON_Empty",
+          "callee": "string",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestJSONBStringMap_MarshalJSON_WithValues",
+          "callee": "t.Parallel",
+          "lineNumber": 30
+        },
+        {
+          "caller": "TestJSONBStringMap_MarshalJSON_WithValues",
+          "callee": "json.Marshal",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestJSONBStringMap_MarshalJSON_WithValues",
+          "callee": "require.NoError",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestJSONBStringMap_MarshalJSON_WithValues",
+          "callee": "assert.JSONEq",
+          "lineNumber": 35
+        },
+        {
+          "caller": "TestJSONBStringMap_MarshalJSON_WithValues",
+          "callee": "string",
+          "lineNumber": 35
+        },
+        {
+          "caller": "TestJSONBStringMap_UnmarshalJSON_Null",
+          "callee": "t.Parallel",
+          "lineNumber": 39
+        },
+        {
+          "caller": "TestJSONBStringMap_UnmarshalJSON_Null",
+          "callee": "json.Unmarshal",
+          "lineNumber": 42
+        },
+        {
+          "caller": "TestJSONBStringMap_UnmarshalJSON_Null",
+          "callee": "require.NoError",
+          "lineNumber": 43
+        },
+        {
+          "caller": "TestJSONBStringMap_UnmarshalJSON_Null",
+          "callee": "assert.NotNil",
+          "lineNumber": 44
+        },
+        {
+          "caller": "TestJSONBStringMap_UnmarshalJSON_Null",
+          "callee": "assert.Empty",
+          "lineNumber": 45
+        },
+        {
+          "caller": "TestJSONBStringMap_UnmarshalJSON_EmptyObject",
+          "callee": "t.Parallel",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestJSONBStringMap_UnmarshalJSON_EmptyObject",
+          "callee": "json.Unmarshal",
+          "lineNumber": 52
+        },
+        {
+          "caller": "TestJSONBStringMap_UnmarshalJSON_EmptyObject",
+          "callee": "require.NoError",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TestJSONBStringMap_UnmarshalJSON_EmptyObject",
+          "callee": "assert.NotNil",
+          "lineNumber": 54
+        },
+        {
+          "caller": "TestJSONBStringMap_UnmarshalJSON_EmptyObject",
+          "callee": "assert.Empty",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestJSONBStringMap_UnmarshalJSON_WithValues",
+          "callee": "t.Parallel",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestJSONBStringMap_UnmarshalJSON_WithValues",
+          "callee": "json.Unmarshal",
+          "lineNumber": 62
+        },
+        {
+          "caller": "TestJSONBStringMap_UnmarshalJSON_WithValues",
+          "callee": "require.NoError",
+          "lineNumber": 63
+        },
+        {
+          "caller": "TestJSONBStringMap_UnmarshalJSON_WithValues",
+          "callee": "assert.Equal",
+          "lineNumber": 64
+        },
+        {
+          "caller": "TestJSONBStringMap_RoundTrip",
+          "callee": "t.Parallel",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestJSONBStringMap_RoundTrip",
+          "callee": "json.Marshal",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TestJSONBStringMap_RoundTrip",
+          "callee": "require.NoError",
+          "lineNumber": 72
+        },
+        {
+          "caller": "TestJSONBStringMap_RoundTrip",
+          "callee": "json.Unmarshal",
+          "lineNumber": 75
+        },
+        {
+          "caller": "TestJSONBStringMap_RoundTrip",
+          "callee": "require.NoError",
+          "lineNumber": 76
+        },
+        {
+          "caller": "TestJSONBStringMap_RoundTrip",
+          "callee": "assert.Equal",
+          "lineNumber": 77
+        },
+        {
+          "caller": "TestJSONBStringMap_NilRoundTrip",
+          "callee": "t.Parallel",
+          "lineNumber": 81
+        },
+        {
+          "caller": "TestJSONBStringMap_NilRoundTrip",
+          "callee": "json.Marshal",
+          "lineNumber": 84
+        },
+        {
+          "caller": "TestJSONBStringMap_NilRoundTrip",
+          "callee": "require.NoError",
+          "lineNumber": 85
+        },
+        {
+          "caller": "TestJSONBStringMap_NilRoundTrip",
+          "callee": "assert.Equal",
+          "lineNumber": 86
+        },
+        {
+          "caller": "TestJSONBStringMap_NilRoundTrip",
+          "callee": "string",
+          "lineNumber": 86
+        },
+        {
+          "caller": "TestJSONBStringMap_NilRoundTrip",
+          "callee": "json.Unmarshal",
+          "lineNumber": 89
+        },
+        {
+          "caller": "TestJSONBStringMap_NilRoundTrip",
+          "callee": "require.NoError",
+          "lineNumber": 90
+        },
+        {
+          "caller": "TestJSONBStringMap_NilRoundTrip",
+          "callee": "assert.NotNil",
+          "lineNumber": 91
+        },
+        {
+          "caller": "TestJSONBStringMap_NilRoundTrip",
+          "callee": "assert.Empty",
+          "lineNumber": 92
+        },
+        {
+          "caller": "TestPausedSandboxConfig_AutoPauseFilesystemOnlyRoundTrip",
+          "callee": "t.Parallel",
+          "lineNumber": 96
+        },
+        {
+          "caller": "TestPausedSandboxConfig_AutoPauseFilesystemOnlyRoundTrip",
+          "callee": "PausedSandboxConfig{\n\t\t\tVersion:                 PausedSandboxConfigVersion,\n\t\t\tAutoPauseFilesystemOnly: want,\n\t\t}.Value",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestPausedSandboxConfig_AutoPauseFilesystemOnlyRoundTrip",
+          "callee": "require.NoError",
+          "lineNumber": 105
+        },
+        {
+          "caller": "TestPausedSandboxConfig_AutoPauseFilesystemOnlyRoundTrip",
+          "callee": "require.True",
+          "lineNumber": 108
+        },
+        {
+          "caller": "TestPausedSandboxConfig_AutoPauseFilesystemOnlyRoundTrip",
+          "callee": "require.NoError",
+          "lineNumber": 111
+        },
+        {
+          "caller": "TestPausedSandboxConfig_AutoPauseFilesystemOnlyRoundTrip",
+          "callee": "json.Unmarshal",
+          "lineNumber": 111
+        },
+        {
+          "caller": "TestPausedSandboxConfig_AutoPauseFilesystemOnlyRoundTrip",
+          "callee": "assert.Equal",
+          "lineNumber": 112
+        },
+        {
+          "caller": "TestPausedSandboxConfig_LegacyRowDefaultsToMemoryAutoPause",
+          "callee": "t.Parallel",
+          "lineNumber": 117
+        },
+        {
+          "caller": "TestPausedSandboxConfig_LegacyRowDefaultsToMemoryAutoPause",
+          "callee": "require.NoError",
+          "lineNumber": 122
+        },
+        {
+          "caller": "TestPausedSandboxConfig_LegacyRowDefaultsToMemoryAutoPause",
+          "callee": "json.Unmarshal",
+          "lineNumber": 122
+        },
+        {
+          "caller": "TestPausedSandboxConfig_LegacyRowDefaultsToMemoryAutoPause",
+          "callee": "assert.False",
+          "lineNumber": 124
+        },
+        {
+          "caller": "TestPausedSandboxConfig_LegacyRowDefaultsToMemoryAutoPause",
+          "callee": "assert.True",
+          "lineNumber": 125
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 10,
+        "functionCount": 10,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/queries/active_template_builds.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 53,
+      "nonEmptyLines": 45,
+      "functions": [
+        {
+          "name": "CreateActiveTemplateBuild",
+          "startLine": 35,
+          "endLine": 43,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "DeleteActiveTemplateBuild",
+          "startLine": 50,
+          "endLine": 53,
+          "params": [
+            "ctx",
+            "buildID"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CreateActiveTemplateBuildParams",
+          "startLine": 28,
+          "endLine": 33,
+          "methods": [],
+          "properties": [
+            "BuildID",
+            "TeamID",
+            "TemplateID",
+            "Tags"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreateActiveTemplateBuildParams",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "CreateActiveTemplateBuild",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "DeleteActiveTemplateBuild",
+          "line": 50,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CreateActiveTemplateBuild",
+          "callee": "q.db.Exec",
+          "lineNumber": 36
+        },
+        {
+          "caller": "DeleteActiveTemplateBuild",
+          "callee": "q.db.Exec",
+          "lineNumber": 51
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/check_alias_exists.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 54,
+      "nonEmptyLines": 47,
+      "functions": [
+        {
+          "name": "CheckAliasConflictsWithTemplateID",
+          "startLine": 22,
+          "endLine": 27,
+          "params": [
+            "ctx",
+            "alias"
+          ]
+        },
+        {
+          "name": "CheckAliasExistsInNamespace",
+          "startLine": 43,
+          "endLine": 54,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CheckAliasExistsInNamespaceParams",
+          "startLine": 36,
+          "endLine": 39,
+          "methods": [],
+          "properties": [
+            "Alias",
+            "Namespace"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CheckAliasConflictsWithTemplateID",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "CheckAliasExistsInNamespaceParams",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "CheckAliasExistsInNamespace",
+          "line": 43,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CheckAliasConflictsWithTemplateID",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 23
+        },
+        {
+          "caller": "CheckAliasConflictsWithTemplateID",
+          "callee": "row.Scan",
+          "lineNumber": 25
+        },
+        {
+          "caller": "CheckAliasExistsInNamespace",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 44
+        },
+        {
+          "caller": "CheckAliasExistsInNamespace",
+          "callee": "row.Scan",
+          "lineNumber": 46
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/create_alias.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 26,
+      "nonEmptyLines": 21,
+      "functions": [
+        {
+          "name": "CreateTemplateAlias",
+          "startLine": 23,
+          "endLine": 26,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CreateTemplateAliasParams",
+          "startLine": 17,
+          "endLine": 21,
+          "methods": [],
+          "properties": [
+            "Alias",
+            "TemplateID",
+            "Namespace"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreateTemplateAliasParams",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "CreateTemplateAlias",
+          "line": 23,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CreateTemplateAlias",
+          "callee": "q.db.Exec",
+          "lineNumber": 24
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/create_new_snapshot.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 180,
+      "nonEmptyLines": 169,
+      "functions": [
+        {
+          "name": "UpsertSnapshot",
+          "startLine": 153,
+          "endLine": 180,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "UpsertSnapshotParams",
+          "startLine": 118,
+          "endLine": 140,
+          "methods": [],
+          "properties": [
+            "TemplateID",
+            "TeamID",
+            "ClusterID",
+            "SandboxID",
+            "BaseTemplateID",
+            "Metadata",
+            "StartedAt",
+            "Secure",
+            "AllowInternetAccess",
+            "OriginNodeID",
+            "AutoPause",
+            "Config",
+            "Vcpu",
+            "RamMb",
+            "FreeDiskSizeMb",
+            "KernelVersion",
+            "FirecrackerVersion",
+            "EnvdVersion",
+            "Status",
+            "TotalDiskSizeMb",
+            "SourceBuildID"
+          ]
+        },
+        {
+          "name": "UpsertSnapshotRow",
+          "startLine": 142,
+          "endLine": 145,
+          "methods": [],
+          "properties": [
+            "BuildID",
+            "TemplateID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UpsertSnapshotParams",
+          "line": 118,
+          "isDefault": false
+        },
+        {
+          "name": "UpsertSnapshotRow",
+          "line": 142,
+          "isDefault": false
+        },
+        {
+          "name": "UpsertSnapshot",
+          "line": 153,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "UpsertSnapshot",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 154
+        },
+        {
+          "caller": "UpsertSnapshot",
+          "callee": "row.Scan",
+          "lineNumber": 178
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/queries/create_snapshot_template_env.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 69,
+      "nonEmptyLines": 60,
+      "functions": [
+        {
+          "name": "CreateSnapshotTemplateEnv",
+          "startLine": 56,
+          "endLine": 69,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CreateSnapshotTemplateEnvParams",
+          "startLine": 44,
+          "endLine": 52,
+          "methods": [],
+          "properties": [
+            "SnapshotID",
+            "TeamID",
+            "ClusterID",
+            "SandboxID",
+            "OriginNodeID",
+            "BuildID",
+            "Tag"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreateSnapshotTemplateEnvParams",
+          "line": 44,
+          "isDefault": false
+        },
+        {
+          "name": "CreateSnapshotTemplateEnv",
+          "line": 56,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CreateSnapshotTemplateEnv",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 57
+        },
+        {
+          "caller": "CreateSnapshotTemplateEnv",
+          "callee": "row.Scan",
+          "lineNumber": 67
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/create_template.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 139,
+      "nonEmptyLines": 127,
+      "functions": [
+        {
+          "name": "CreateOrUpdateTemplate",
+          "startLine": 34,
+          "endLine": 44,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "CreateTemplateBuild",
+          "startLine": 95,
+          "endLine": 110,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "InvalidateUnstartedTemplateBuilds",
+          "startLine": 136,
+          "endLine": 139,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CreateOrUpdateTemplateParams",
+          "startLine": 25,
+          "endLine": 30,
+          "methods": [],
+          "properties": [
+            "TemplateID",
+            "TeamID",
+            "CreatedBy",
+            "ClusterID"
+          ]
+        },
+        {
+          "name": "CreateTemplateBuildParams",
+          "startLine": 76,
+          "endLine": 88,
+          "methods": [],
+          "properties": [
+            "BuildID",
+            "Status",
+            "RamMb",
+            "Vcpu",
+            "KernelVersion",
+            "FirecrackerVersion",
+            "FreeDiskSizeMb",
+            "StartCmd",
+            "ReadyCmd",
+            "Dockerfile",
+            "Version"
+          ]
+        },
+        {
+          "name": "InvalidateUnstartedTemplateBuildsParams",
+          "startLine": 130,
+          "endLine": 134,
+          "methods": [],
+          "properties": [
+            "Reason",
+            "TemplateID",
+            "Tags"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreateOrUpdateTemplateParams",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "CreateOrUpdateTemplate",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "CreateTemplateBuildParams",
+          "line": 76,
+          "isDefault": false
+        },
+        {
+          "name": "CreateTemplateBuild",
+          "line": 95,
+          "isDefault": false
+        },
+        {
+          "name": "InvalidateUnstartedTemplateBuildsParams",
+          "line": 130,
+          "isDefault": false
+        },
+        {
+          "name": "InvalidateUnstartedTemplateBuilds",
+          "line": 136,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CreateOrUpdateTemplate",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 35
+        },
+        {
+          "caller": "CreateOrUpdateTemplate",
+          "callee": "row.Scan",
+          "lineNumber": 42
+        },
+        {
+          "caller": "CreateTemplateBuild",
+          "callee": "q.db.Exec",
+          "lineNumber": 96
+        },
+        {
+          "caller": "InvalidateUnstartedTemplateBuilds",
+          "callee": "q.db.Exec",
+          "lineNumber": 137
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 6,
+        "functionCount": 3,
+        "classCount": 3
+      }
+    },
+    {
+      "path": "packages/db/queries/create_template_build_assignment.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 40,
+      "nonEmptyLines": 34,
+      "functions": [
+        {
+          "name": "CreateTemplateBuildAssignment",
+          "startLine": 34,
+          "endLine": 40,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CreateTemplateBuildAssignmentParams",
+          "startLine": 26,
+          "endLine": 30,
+          "methods": [],
+          "properties": [
+            "TemplateID",
+            "BuildID",
+            "Tag"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreateTemplateBuildAssignmentParams",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "CreateTemplateBuildAssignment",
+          "line": 34,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CreateTemplateBuildAssignment",
+          "callee": "q.db.Exec",
+          "lineNumber": 35
+        },
+        {
+          "caller": "CreateTemplateBuildAssignment",
+          "callee": "result.RowsAffected",
+          "lineNumber": 39
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/db.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 32,
+      "nonEmptyLines": 25,
+      "functions": [
+        {
+          "name": "New",
+          "startLine": 20,
+          "endLine": 22,
+          "params": [
+            "db"
+          ]
+        },
+        {
+          "name": "WithTx",
+          "startLine": 28,
+          "endLine": 32,
+          "params": [
+            "tx"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "DBTX",
+          "startLine": 14,
+          "endLine": 18,
+          "methods": [
+            "Exec",
+            "Query",
+            "QueryRow"
+          ],
+          "properties": []
+        },
+        {
+          "name": "Queries",
+          "startLine": 24,
+          "endLine": 26,
+          "methods": [
+            "WithTx"
+          ],
+          "properties": [
+            "db"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DBTX",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "New",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "Queries",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "WithTx",
+          "line": 28,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 2,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/queries/delete_old_aliases.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 40,
+      "nonEmptyLines": 36,
+      "functions": [
+        {
+          "name": "DeleteOtherTemplateAliases",
+          "startLine": 22,
+          "endLine": 40,
+          "params": [
+            "ctx",
+            "envID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DeleteOtherTemplateAliases",
+          "line": 22,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "DeleteOtherTemplateAliases",
+          "callee": "q.db.Query",
+          "lineNumber": 23
+        },
+        {
+          "caller": "DeleteOtherTemplateAliases",
+          "callee": "rows.Close",
+          "lineNumber": 27
+        },
+        {
+          "caller": "DeleteOtherTemplateAliases",
+          "callee": "rows.Next",
+          "lineNumber": 29
+        },
+        {
+          "caller": "DeleteOtherTemplateAliases",
+          "callee": "rows.Scan",
+          "lineNumber": 31
+        },
+        {
+          "caller": "DeleteOtherTemplateAliases",
+          "callee": "append",
+          "lineNumber": 34
+        },
+        {
+          "caller": "DeleteOtherTemplateAliases",
+          "callee": "rows.Err",
+          "lineNumber": 36
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/queries/delete_template.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 75,
+      "nonEmptyLines": 65,
+      "functions": [
+        {
+          "name": "DeleteActiveTemplateBuilds",
+          "startLine": 21,
+          "endLine": 24,
+          "params": [
+            "ctx",
+            "templateID"
+          ]
+        },
+        {
+          "name": "ReleaseTemplateAliases",
+          "startLine": 33,
+          "endLine": 51,
+          "params": [
+            "ctx",
+            "templateID"
+          ]
+        },
+        {
+          "name": "SoftDeleteTemplate",
+          "startLine": 70,
+          "endLine": 75,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SoftDeleteTemplateParams",
+          "startLine": 60,
+          "endLine": 63,
+          "methods": [],
+          "properties": [
+            "TemplateID",
+            "TeamID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DeleteActiveTemplateBuilds",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "ReleaseTemplateAliases",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "SoftDeleteTemplateParams",
+          "line": 60,
+          "isDefault": false
+        },
+        {
+          "name": "SoftDeleteTemplate",
+          "line": 70,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "DeleteActiveTemplateBuilds",
+          "callee": "q.db.Exec",
+          "lineNumber": 22
+        },
+        {
+          "caller": "ReleaseTemplateAliases",
+          "callee": "q.db.Query",
+          "lineNumber": 34
+        },
+        {
+          "caller": "ReleaseTemplateAliases",
+          "callee": "rows.Close",
+          "lineNumber": 38
+        },
+        {
+          "caller": "ReleaseTemplateAliases",
+          "callee": "rows.Next",
+          "lineNumber": 40
+        },
+        {
+          "caller": "ReleaseTemplateAliases",
+          "callee": "rows.Scan",
+          "lineNumber": 42
+        },
+        {
+          "caller": "ReleaseTemplateAliases",
+          "callee": "append",
+          "lineNumber": 45
+        },
+        {
+          "caller": "ReleaseTemplateAliases",
+          "callee": "rows.Err",
+          "lineNumber": 47
+        },
+        {
+          "caller": "SoftDeleteTemplate",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 71
+        },
+        {
+          "caller": "SoftDeleteTemplate",
+          "callee": "row.Scan",
+          "lineNumber": 73
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/delete_template_build_assignment.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 26,
+      "nonEmptyLines": 21,
+      "functions": [
+        {
+          "name": "DeleteTemplateTags",
+          "startLine": 23,
+          "endLine": 26,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "DeleteTemplateTagsParams",
+          "startLine": 17,
+          "endLine": 20,
+          "methods": [],
+          "properties": [
+            "TemplateID",
+            "Tags"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DeleteTemplateTagsParams",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "DeleteTemplateTags",
+          "line": 23,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "DeleteTemplateTags",
+          "callee": "q.db.Exec",
+          "lineNumber": 24
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/exists_template_snapshots.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 26,
+      "nonEmptyLines": 22,
+      "functions": [
+        {
+          "name": "ExistsTemplateSnapshots",
+          "startLine": 21,
+          "endLine": 26,
+          "params": [
+            "ctx",
+            "envID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ExistsTemplateSnapshots",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "ExistsTemplateSnapshots",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 22
+        },
+        {
+          "caller": "ExistsTemplateSnapshots",
+          "callee": "row.Scan",
+          "lineNumber": 24
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/queries/finish_template_build.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 55,
+      "nonEmptyLines": 49,
+      "functions": [
+        {
+          "name": "FinishTemplateBuild",
+          "startLine": 45,
+          "endLine": 55,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "FinishTemplateBuildParams",
+          "startLine": 31,
+          "endLine": 38,
+          "methods": [],
+          "properties": [
+            "TotalDiskSizeMb",
+            "Status",
+            "EnvdVersion",
+            "KernelVersion",
+            "FirecrackerVersion",
+            "BuildID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "FinishTemplateBuildParams",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "FinishTemplateBuild",
+          "line": 45,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "FinishTemplateBuild",
+          "callee": "q.db.Exec",
+          "lineNumber": 46
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/get_active_clusters.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 48,
+      "nonEmptyLines": 43,
+      "functions": [
+        {
+          "name": "GetActiveClusters",
+          "startLine": 22,
+          "endLine": 48,
+          "params": [
+            "ctx"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetActiveClustersRow",
+          "startLine": 18,
+          "endLine": 20,
+          "methods": [],
+          "properties": [
+            "Cluster"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetActiveClustersRow",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "GetActiveClusters",
+          "line": 22,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetActiveClusters",
+          "callee": "q.db.Query",
+          "lineNumber": 23
+        },
+        {
+          "caller": "GetActiveClusters",
+          "callee": "rows.Close",
+          "lineNumber": 27
+        },
+        {
+          "caller": "GetActiveClusters",
+          "callee": "rows.Next",
+          "lineNumber": 29
+        },
+        {
+          "caller": "GetActiveClusters",
+          "callee": "rows.Scan",
+          "lineNumber": 31
+        },
+        {
+          "caller": "GetActiveClusters",
+          "callee": "append",
+          "lineNumber": 42
+        },
+        {
+          "caller": "GetActiveClusters",
+          "callee": "rows.Err",
+          "lineNumber": 44
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/queries/get_build_info.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 72,
+      "nonEmptyLines": 65,
+      "functions": [
+        {
+          "name": "GetBuildInfoByTeamAndBuildID",
+          "startLine": 61,
+          "endLine": 72,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetBuildInfoByTeamAndBuildIDParams",
+          "startLine": 48,
+          "endLine": 51,
+          "methods": [],
+          "properties": [
+            "TeamID",
+            "BuildID"
+          ]
+        },
+        {
+          "name": "GetBuildInfoByTeamAndBuildIDRow",
+          "startLine": 53,
+          "endLine": 59,
+          "methods": [],
+          "properties": [
+            "CreatedAt",
+            "FinishedAt",
+            "Status",
+            "Reason",
+            "Names"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetBuildInfoByTeamAndBuildIDParams",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "GetBuildInfoByTeamAndBuildIDRow",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "GetBuildInfoByTeamAndBuildID",
+          "line": 61,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetBuildInfoByTeamAndBuildID",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 62
+        },
+        {
+          "caller": "GetBuildInfoByTeamAndBuildID",
+          "callee": "row.Scan",
+          "lineNumber": 64
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/queries/get_builds_paginated.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 428,
+      "nonEmptyLines": 409,
+      "functions": [
+        {
+          "name": "GetTeamBuildsPage",
+          "startLine": 78,
+          "endLine": 114,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "GetTeamBuildsPageByBuildID",
+          "startLine": 180,
+          "endLine": 217,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "GetTeamBuildsPageByTemplateAlias",
+          "startLine": 288,
+          "endLine": 325,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "GetTeamBuildsPageByTemplateID",
+          "startLine": 391,
+          "endLine": 428,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetTeamBuildsPageParams",
+          "startLine": 56,
+          "endLine": 62,
+          "methods": [],
+          "properties": [
+            "TeamID",
+            "CursorCreatedAt",
+            "CursorID",
+            "Statuses",
+            "LimitPlusOne"
+          ]
+        },
+        {
+          "name": "GetTeamBuildsPageRow",
+          "startLine": 64,
+          "endLine": 76,
+          "methods": [],
+          "properties": [
+            "ID",
+            "StatusGroup",
+            "Reason",
+            "CreatedAt",
+            "FinishedAt",
+            "Vcpu",
+            "RamMb",
+            "TotalDiskSizeMb",
+            "EnvdVersion",
+            "TemplateID",
+            "TemplateAlias"
+          ]
+        },
+        {
+          "name": "GetTeamBuildsPageByBuildIDParams",
+          "startLine": 157,
+          "endLine": 164,
+          "methods": [],
+          "properties": [
+            "TeamID",
+            "BuildID",
+            "CursorCreatedAt",
+            "CursorID",
+            "Statuses",
+            "LimitPlusOne"
+          ]
+        },
+        {
+          "name": "GetTeamBuildsPageByBuildIDRow",
+          "startLine": 166,
+          "endLine": 178,
+          "methods": [],
+          "properties": [
+            "ID",
+            "StatusGroup",
+            "Reason",
+            "CreatedAt",
+            "FinishedAt",
+            "Vcpu",
+            "RamMb",
+            "TotalDiskSizeMb",
+            "EnvdVersion",
+            "TemplateID",
+            "TemplateAlias"
+          ]
+        },
+        {
+          "name": "GetTeamBuildsPageByTemplateAliasParams",
+          "startLine": 265,
+          "endLine": 272,
+          "methods": [],
+          "properties": [
+            "TemplateAlias",
+            "TeamID",
+            "CursorCreatedAt",
+            "CursorID",
+            "Statuses",
+            "LimitPlusOne"
+          ]
+        },
+        {
+          "name": "GetTeamBuildsPageByTemplateAliasRow",
+          "startLine": 274,
+          "endLine": 286,
+          "methods": [],
+          "properties": [
+            "ID",
+            "StatusGroup",
+            "Reason",
+            "CreatedAt",
+            "FinishedAt",
+            "Vcpu",
+            "RamMb",
+            "TotalDiskSizeMb",
+            "EnvdVersion",
+            "TemplateID",
+            "TemplateAlias"
+          ]
+        },
+        {
+          "name": "GetTeamBuildsPageByTemplateIDParams",
+          "startLine": 368,
+          "endLine": 375,
+          "methods": [],
+          "properties": [
+            "TemplateID",
+            "TeamID",
+            "CursorCreatedAt",
+            "CursorID",
+            "Statuses",
+            "LimitPlusOne"
+          ]
+        },
+        {
+          "name": "GetTeamBuildsPageByTemplateIDRow",
+          "startLine": 377,
+          "endLine": 389,
+          "methods": [],
+          "properties": [
+            "ID",
+            "StatusGroup",
+            "Reason",
+            "CreatedAt",
+            "FinishedAt",
+            "Vcpu",
+            "RamMb",
+            "TotalDiskSizeMb",
+            "EnvdVersion",
+            "TemplateID",
+            "TemplateAlias"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTeamBuildsPageParams",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamBuildsPageRow",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamBuildsPage",
+          "line": 78,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamBuildsPageByBuildIDParams",
+          "line": 157,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamBuildsPageByBuildIDRow",
+          "line": 166,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamBuildsPageByBuildID",
+          "line": 180,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamBuildsPageByTemplateAliasParams",
+          "line": 265,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamBuildsPageByTemplateAliasRow",
+          "line": 274,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamBuildsPageByTemplateAlias",
+          "line": 288,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamBuildsPageByTemplateIDParams",
+          "line": 368,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamBuildsPageByTemplateIDRow",
+          "line": 377,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamBuildsPageByTemplateID",
+          "line": 391,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTeamBuildsPage",
+          "callee": "q.db.Query",
+          "lineNumber": 79
+        },
+        {
+          "caller": "GetTeamBuildsPage",
+          "callee": "rows.Close",
+          "lineNumber": 89
+        },
+        {
+          "caller": "GetTeamBuildsPage",
+          "callee": "rows.Next",
+          "lineNumber": 91
+        },
+        {
+          "caller": "GetTeamBuildsPage",
+          "callee": "rows.Scan",
+          "lineNumber": 93
+        },
+        {
+          "caller": "GetTeamBuildsPage",
+          "callee": "append",
+          "lineNumber": 108
+        },
+        {
+          "caller": "GetTeamBuildsPage",
+          "callee": "rows.Err",
+          "lineNumber": 110
+        },
+        {
+          "caller": "GetTeamBuildsPageByBuildID",
+          "callee": "q.db.Query",
+          "lineNumber": 181
+        },
+        {
+          "caller": "GetTeamBuildsPageByBuildID",
+          "callee": "rows.Close",
+          "lineNumber": 192
+        },
+        {
+          "caller": "GetTeamBuildsPageByBuildID",
+          "callee": "rows.Next",
+          "lineNumber": 194
+        },
+        {
+          "caller": "GetTeamBuildsPageByBuildID",
+          "callee": "rows.Scan",
+          "lineNumber": 196
+        },
+        {
+          "caller": "GetTeamBuildsPageByBuildID",
+          "callee": "append",
+          "lineNumber": 211
+        },
+        {
+          "caller": "GetTeamBuildsPageByBuildID",
+          "callee": "rows.Err",
+          "lineNumber": 213
+        },
+        {
+          "caller": "GetTeamBuildsPageByTemplateAlias",
+          "callee": "q.db.Query",
+          "lineNumber": 289
+        },
+        {
+          "caller": "GetTeamBuildsPageByTemplateAlias",
+          "callee": "rows.Close",
+          "lineNumber": 300
+        },
+        {
+          "caller": "GetTeamBuildsPageByTemplateAlias",
+          "callee": "rows.Next",
+          "lineNumber": 302
+        },
+        {
+          "caller": "GetTeamBuildsPageByTemplateAlias",
+          "callee": "rows.Scan",
+          "lineNumber": 304
+        },
+        {
+          "caller": "GetTeamBuildsPageByTemplateAlias",
+          "callee": "append",
+          "lineNumber": 319
+        },
+        {
+          "caller": "GetTeamBuildsPageByTemplateAlias",
+          "callee": "rows.Err",
+          "lineNumber": 321
+        },
+        {
+          "caller": "GetTeamBuildsPageByTemplateID",
+          "callee": "q.db.Query",
+          "lineNumber": 392
+        },
+        {
+          "caller": "GetTeamBuildsPageByTemplateID",
+          "callee": "rows.Close",
+          "lineNumber": 403
+        },
+        {
+          "caller": "GetTeamBuildsPageByTemplateID",
+          "callee": "rows.Next",
+          "lineNumber": 405
+        },
+        {
+          "caller": "GetTeamBuildsPageByTemplateID",
+          "callee": "rows.Scan",
+          "lineNumber": 407
+        },
+        {
+          "caller": "GetTeamBuildsPageByTemplateID",
+          "callee": "append",
+          "lineNumber": 422
+        },
+        {
+          "caller": "GetTeamBuildsPageByTemplateID",
+          "callee": "rows.Err",
+          "lineNumber": 424
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 12,
+        "functionCount": 4,
+        "classCount": 8
+      }
+    },
+    {
+      "path": "packages/db/queries/get_builds_statuses.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 62,
+      "nonEmptyLines": 55,
+      "functions": [
+        {
+          "name": "GetBuildsStatusesByTeam",
+          "startLine": 39,
+          "endLine": 62,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetBuildsStatusesByTeamParams",
+          "startLine": 27,
+          "endLine": 30,
+          "methods": [],
+          "properties": [
+            "TeamID",
+            "BuildIds"
+          ]
+        },
+        {
+          "name": "GetBuildsStatusesByTeamRow",
+          "startLine": 32,
+          "endLine": 37,
+          "methods": [],
+          "properties": [
+            "ID",
+            "StatusGroup",
+            "Reason",
+            "FinishedAt"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetBuildsStatusesByTeamParams",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "GetBuildsStatusesByTeamRow",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "GetBuildsStatusesByTeam",
+          "line": 39,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetBuildsStatusesByTeam",
+          "callee": "q.db.Query",
+          "lineNumber": 40
+        },
+        {
+          "caller": "GetBuildsStatusesByTeam",
+          "callee": "rows.Close",
+          "lineNumber": 44
+        },
+        {
+          "caller": "GetBuildsStatusesByTeam",
+          "callee": "rows.Next",
+          "lineNumber": 46
+        },
+        {
+          "caller": "GetBuildsStatusesByTeam",
+          "callee": "rows.Scan",
+          "lineNumber": 48
+        },
+        {
+          "caller": "GetBuildsStatusesByTeam",
+          "callee": "append",
+          "lineNumber": 56
+        },
+        {
+          "caller": "GetBuildsStatusesByTeam",
+          "callee": "rows.Err",
+          "lineNumber": 58
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/queries/get_concurrent_template_builds.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 77,
+      "nonEmptyLines": 71,
+      "functions": [
+        {
+          "name": "GetConcurrentTemplateBuilds",
+          "startLine": 32,
+          "endLine": 77,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetConcurrentTemplateBuildsParams",
+          "startLine": 27,
+          "endLine": 30,
+          "methods": [],
+          "properties": [
+            "TemplateID",
+            "CurrentBuildID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetConcurrentTemplateBuildsParams",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "GetConcurrentTemplateBuilds",
+          "line": 32,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetConcurrentTemplateBuilds",
+          "callee": "q.db.Query",
+          "lineNumber": 33
+        },
+        {
+          "caller": "GetConcurrentTemplateBuilds",
+          "callee": "rows.Close",
+          "lineNumber": 37
+        },
+        {
+          "caller": "GetConcurrentTemplateBuilds",
+          "callee": "rows.Next",
+          "lineNumber": 39
+        },
+        {
+          "caller": "GetConcurrentTemplateBuilds",
+          "callee": "rows.Scan",
+          "lineNumber": 41
+        },
+        {
+          "caller": "GetConcurrentTemplateBuilds",
+          "callee": "append",
+          "lineNumber": 71
+        },
+        {
+          "caller": "GetConcurrentTemplateBuilds",
+          "callee": "rows.Err",
+          "lineNumber": 73
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    }
+  ]
+}

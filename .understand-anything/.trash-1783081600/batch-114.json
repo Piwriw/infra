@@ -1,0 +1,33 @@
+{
+  "nodes": [
+    {
+      "id": "resource:packages/shared/Makefile",
+      "type": "resource",
+      "name": "Makefile",
+      "filePath": "packages/shared/Makefile",
+      "summary": "shared 包的构建脚本，定义 generate、build-base-template、prep-cluster、test 和 lint 等构建目标，用于代码生成、构建基础模板、运行测试和代码检查。",
+      "tags": ["build-system", "makefile", "test", "code-generation", "infrastructure"],
+      "complexity": "simple",
+      "languageNotes": "Makefile 通过 -include 加载 .env 文件，并使用 $(MAKE) 跨目录调用其他 Makefile 目标。"
+    },
+    {
+      "id": "config:packages/shared/go.mod",
+      "type": "config",
+      "name": "go.mod",
+      "filePath": "packages/shared/go.mod",
+      "summary": "shared 包的 Go 模块定义文件，声明模块路径和 Go 版本（1.26.3），列出所有直接依赖及其版本要求。",
+      "tags": ["configuration", "go-module", "dependency-management"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:packages/shared/go.sum",
+      "type": "config",
+      "name": "go.sum",
+      "filePath": "packages/shared/go.sum",
+      "summary": "shared 包依赖的加密校验和文件，记录所有直接和间接依赖的哈希值，用于验证模块内容的完整性。",
+      "tags": ["configuration", "go-module", "checksum", "dependency-management"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": []
+}

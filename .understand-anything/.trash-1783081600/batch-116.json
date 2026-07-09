@@ -1,0 +1,78 @@
+{
+  "nodes": [
+    {
+      "id": "config:packages/shared/scripts/.env.local",
+      "type": "config",
+      "name": ".env.local",
+      "filePath": "packages/shared/scripts/.env.local",
+      "summary": "本地开发环境变量配置,包含 E2B API 访问令牌、API 密钥和指向本地 API 的 URL,供 build.prod.ts 脚本构建基础模板时使用。",
+      "tags": ["configuration", "environment-variables", "local-development", "credentials", "build-config"],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:packages/shared/scripts/Makefile",
+      "type": "service",
+      "name": "Makefile",
+      "filePath": "packages/shared/scripts/Makefile",
+      "summary": "本地构建基础模板的 Makefile 目标,通过加载 .env.local 并执行 build.prod.ts 来构建用于本地开发的 sandbox 基础模板。",
+      "tags": ["build-system", "local-development", "makefile", "containerization", "deployment"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:packages/shared/scripts/package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "packages/shared/scripts/package.json",
+      "summary": "基础模板构建脚本的 npm 包定义,声明 e2b SDK 作为运行时依赖,dotenv 用于加载本地环境变量。",
+      "tags": ["configuration", "npm-package", "build-system", "dependency-management", "typescript"],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:packages/shared/scripts/Makefile:local-build-base-template",
+      "type": "file",
+      "name": "local-build-base-template",
+      "filePath": "packages/shared/scripts/Makefile",
+      "lineRange": [2, 9],
+      "summary": "Make 目标:安装 npm 依赖后,通过 dotenv 加载 .env.local 并运行 build.prod.ts 来构建本地开发用的 sandbox 基础模板。",
+      "tags": ["build-step", "local-development", "template-build", "makefile-target"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:packages/shared/scripts/Makefile",
+      "target": "step:packages/shared/scripts/Makefile:local-build-base-template",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/shared/scripts/Makefile",
+      "target": "config:packages/shared/scripts/.env.local",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/shared/scripts/Makefile",
+      "target": "config:packages/shared/scripts/package.json",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "step:packages/shared/scripts/Makefile:local-build-base-template",
+      "target": "config:packages/shared/scripts/.env.local",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "step:packages/shared/scripts/Makefile:local-build-base-template",
+      "target": "config:packages/shared/scripts/package.json",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

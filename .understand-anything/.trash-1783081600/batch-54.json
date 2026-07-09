@@ -1,0 +1,62 @@
+{
+  "nodes": [
+    {
+      "id": "service:packages/clickhouse/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "packages/clickhouse/Dockerfile",
+      "summary": "多阶段 Docker 构建，用于生成 ClickHouse 数据库迁移运行器镜像。构建阶段从源码编译 goose 工具，最终阶段基于 Alpine 镜像携带 goose 二进制和迁移脚本，启动时对 ClickHouse 执行所有待应用的迁移。",
+      "tags": ["containerization", "infrastructure", "deployment", "database-migration"],
+      "complexity": "simple",
+      "languageNotes": "采用多阶段构建（multi-stage build）：第一阶段基于 golang:1.26.3-alpine 编译 goose 迁移工具，第二阶段基于最小化 alpine:3.22 镜像仅携带二进制与迁移文件，显著减小最终镜像体积。ENTRYPOINT 通过 goose -table _migrations -dir migrations up 自动执行迁移。"
+    },
+    {
+      "id": "service:packages/clickhouse/Dockerfile:builder",
+      "type": "service",
+      "name": "builder",
+      "filePath": "packages/clickhouse/Dockerfile",
+      "summary": "构建阶段（builder stage），基于 golang:1.26.3-alpine 镜像安装 git 并通过 go install 编译 goose v3.24.2 迁移工具命令行。",
+      "tags": ["containerization", "build-stage", "golang", "migration-tool"],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:packages/clickhouse/Dockerfile:final",
+      "type": "service",
+      "name": "final",
+      "filePath": "packages/clickhouse/Dockerfile",
+      "summary": "最终运行阶段，基于 alpine:3.22 镜像安装 bash 与 ca-certificates，从 builder 阶段复制 goose 二进制，并将迁移目录打包到 /app/migrations，作为 ClickHouse 迁移执行容器。",
+      "tags": ["containerization", "runtime-stage", "alpine", "migration-runner"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:packages/clickhouse/Dockerfile",
+      "target": "service:packages/clickhouse/Dockerfile:builder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/clickhouse/Dockerfile",
+      "target": "service:packages/clickhouse/Dockerfile:final",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/clickhouse/Dockerfile:final",
+      "target": "service:packages/clickhouse/Dockerfile:builder",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/clickhouse/Dockerfile",
+      "target": "file:packages/clickhouse/migrations",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

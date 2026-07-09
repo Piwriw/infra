@@ -1,0 +1,418 @@
+{
+  "nodes": [
+    {
+      "id": "resource:iac/provider-aws/init/buckets.tf",
+      "type": "resource",
+      "name": "buckets.tf",
+      "filePath": "iac/provider-aws/init/buckets.tf",
+      "summary": "Terraform 配置 AWS S3 存储桶，包括 Firecracker 内核、版本、模板、模板构建缓存、Envd 流水线、BusyBox、Loki、负载均衡器日志和 ClickHouse 备份等存储桶，并配置相应的生命周期策略、加密和访问策略。",
+      "tags": ["infrastructure", "aws", "s3", "storage", "firecracker"],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/main.tf",
+      "type": "resource",
+      "name": "main.tf",
+      "filePath": "iac/provider-aws/init/main.tf",
+      "summary": "Terraform 入口配置，获取当前 AWS 区域和 ELB 服务账户信息，并组合调用 network 和 cloudflare 两个子模块搭建基础网络环境。",
+      "tags": ["infrastructure", "aws", "module", "entry-point"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/outputs.tf",
+      "type": "resource",
+      "name": "outputs.tf",
+      "filePath": "iac/provider-aws/init/outputs.tf",
+      "summary": "Terraform 输出定义，导出 S3 存储桶名称、ECR 仓库名称、Cloudflare 配置以及 VPC、子网和安全组 ID 等关键基础设施标识，供下游模块引用。",
+      "tags": ["infrastructure", "terraform", "outputs", "configuration"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/repositories.tf",
+      "type": "resource",
+      "name": "repositories.tf",
+      "filePath": "iac/provider-aws/init/repositories.tf",
+      "summary": "Terraform 配置 AWS ECR 镜像仓库，为 client-proxy、clickhouse-migrator、db-migrator、api、custom-environments、dashboard-api、docker-reverse-proxy 等核心服务创建私有容器镜像仓库。",
+      "tags": ["infrastructure", "aws", "ecr", "container-registry"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/secrets-cluster.tf",
+      "type": "resource",
+      "name": "secrets-cluster.tf",
+      "filePath": "iac/provider-aws/init/secrets-cluster.tf",
+      "summary": "Terraform 配置集群级别的随机凭证（Nomad ACL token、Consul ACL token、Consul DNS token、Consul Gossip 加密密钥），并将它们封装到 AWS Secrets Manager 中统一管理。",
+      "tags": ["infrastructure", "aws", "secrets", "nomad", "consul", "security"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/secrets.tf",
+      "type": "resource",
+      "name": "secrets.tf",
+      "filePath": "iac/provider-aws/init/secrets.tf",
+      "summary": "Terraform 配置应用层敏感凭证，包括 ClickHouse、Grafana、API secret、LaunchDarkly、PostgreSQL、Admin Token、Sandbox Token 哈希种子、Redis 集群 URL 和 TLS CA 等，统一存储到 AWS Secrets Manager。",
+      "tags": ["infrastructure", "aws", "secrets", "security", "database", "credentials"],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/variables.tf",
+      "type": "resource",
+      "name": "variables.tf",
+      "filePath": "iac/provider-aws/init/variables.tf",
+      "summary": "Terraform 输入变量定义，包含命名前缀、存储桶前缀、是否允许强制销毁、AWS 区域和入口子网 ID 等配置参数。",
+      "tags": ["infrastructure", "terraform", "variables", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.setup",
+      "type": "resource",
+      "name": "aws_s3_bucket.setup",
+      "filePath": "iac/provider-aws/init/buckets.tf",
+      "summary": "AWS S3 存储桶用于初始化和引导阶段上传模板、版本等资源文件。",
+      "tags": ["aws", "s3", "storage"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.fc_kernels",
+      "type": "resource",
+      "name": "aws_s3_bucket.fc_kernels",
+      "filePath": "iac/provider-aws/init/buckets.tf",
+      "summary": "AWS S3 存储桶用于存放 Firecracker 微虚拟机所需的内核镜像。",
+      "tags": ["aws", "s3", "firecracker", "kernel"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.fc_versions",
+      "type": "resource",
+      "name": "aws_s3_bucket.fc_versions",
+      "filePath": "iac/provider-aws/init/buckets.tf",
+      "summary": "AWS S3 存储桶用于存放 Firecracker 版本化资源文件。",
+      "tags": ["aws", "s3", "firecracker", "versioning"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.fc_env_pipeline",
+      "type": "resource",
+      "name": "aws_s3_bucket.fc_env_pipeline",
+      "filePath": "iac/provider-aws/init/buckets.tf",
+      "summary": "AWS S3 存储桶用于 envd 环境构建流水线中间产物。",
+      "tags": ["aws", "s3", "envd", "pipeline"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.fc_busybox",
+      "type": "resource",
+      "name": "aws_s3_bucket.fc_busybox",
+      "filePath": "iac/provider-aws/init/buckets.tf",
+      "summary": "AWS S3 存储桶用于存放 Firecracker 启动所需的 BusyBox 根文件系统。",
+      "tags": ["aws", "s3", "firecracker", "busybox"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.fc_templates",
+      "type": "resource",
+      "name": "aws_s3_bucket.fc_templates",
+      "filePath": "iac/provider-aws/init/buckets.tf",
+      "summary": "AWS S3 存储桶用于缓存 Firecracker 沙箱模板，提升冷启动性能。",
+      "tags": ["aws", "s3", "firecracker", "template"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.fc_template_build_cache",
+      "type": "resource",
+      "name": "aws_s3_bucket.fc_template_build_cache",
+      "filePath": "iac/provider-aws/init/buckets.tf",
+      "summary": "AWS S3 存储桶用于缓存 Firecracker 模板构建过程，提升模板构建效率。",
+      "tags": ["aws", "s3", "firecracker", "cache"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.loki_storage",
+      "type": "resource",
+      "name": "aws_s3_bucket.loki_storage",
+      "filePath": "iac/provider-aws/init/buckets.tf",
+      "summary": "AWS S3 存储桶用于 Loki 日志聚合系统的远端对象存储，并配置生命周期策略和服务器端加密。",
+      "tags": ["aws", "s3", "loki", "logging", "observability"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.load_balancer_logs",
+      "type": "resource",
+      "name": "aws_s3_bucket.load_balancer_logs",
+      "filePath": "iac/provider-aws/init/buckets.tf",
+      "summary": "AWS S3 存储桶用于收集 AWS 负载均衡器的访问日志，并附加 IAM 策略允许 ELB 服务账户写入。",
+      "tags": ["aws", "s3", "load-balancer", "logging"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.clickhouse_backups",
+      "type": "resource",
+      "name": "aws_s3_bucket.clickhouse_backups",
+      "filePath": "iac/provider-aws/init/buckets.tf",
+      "summary": "AWS S3 存储桶用于 ClickHouse 数据库备份，配置生命周期策略自动管理备份数据。",
+      "tags": ["aws", "s3", "clickhouse", "backup", "database"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/repositories.tf:aws_ecr_repository.client_proxy",
+      "type": "resource",
+      "name": "aws_ecr_repository.client_proxy",
+      "filePath": "iac/provider-aws/init/repositories.tf",
+      "summary": "AWS ECR 镜像仓库用于存储 client-proxy 服务容器镜像。",
+      "tags": ["aws", "ecr", "client-proxy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/repositories.tf:aws_ecr_repository.clickhouse_migrator",
+      "type": "resource",
+      "name": "aws_ecr_repository.clickhouse_migrator",
+      "filePath": "iac/provider-aws/init/repositories.tf",
+      "summary": "AWS ECR 镜像仓库用于存储 ClickHouse 数据库迁移工具容器镜像。",
+      "tags": ["aws", "ecr", "clickhouse", "migration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/repositories.tf:aws_ecr_repository.db_migrator",
+      "type": "resource",
+      "name": "aws_ecr_repository.db_migrator",
+      "filePath": "iac/provider-aws/init/repositories.tf",
+      "summary": "AWS ECR 镜像仓库用于存储 PostgreSQL 数据库迁移工具容器镜像。",
+      "tags": ["aws", "ecr", "postgres", "migration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/repositories.tf:aws_ecr_repository.api",
+      "type": "resource",
+      "name": "aws_ecr_repository.api",
+      "filePath": "iac/provider-aws/init/repositories.tf",
+      "summary": "AWS ECR 镜像仓库用于存储 E2B API 服务容器镜像。",
+      "tags": ["aws", "ecr", "api"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/repositories.tf:aws_ecr_repository.custom_environments",
+      "type": "resource",
+      "name": "aws_ecr_repository.custom_environments",
+      "filePath": "iac/provider-aws/init/repositories.tf",
+      "summary": "AWS ECR 镜像仓库用于存储自定义环境构建容器镜像。",
+      "tags": ["aws", "ecr", "custom-environments"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/repositories.tf:aws_ecr_repository.dashboard_api",
+      "type": "resource",
+      "name": "aws_ecr_repository.dashboard_api",
+      "filePath": "iac/provider-aws/init/repositories.tf",
+      "summary": "AWS ECR 镜像仓库用于存储仪表板 API 服务容器镜像。",
+      "tags": ["aws", "ecr", "dashboard-api"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/init/repositories.tf:aws_ecr_repository.docker_reverse_proxy",
+      "type": "resource",
+      "name": "aws_ecr_repository.docker_reverse_proxy",
+      "filePath": "iac/provider-aws/init/repositories.tf",
+      "summary": "AWS ECR 镜像仓库用于存储 Docker 反向代理容器镜像。",
+      "tags": ["aws", "ecr", "reverse-proxy"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/provider-aws/init/buckets.tf",
+      "target": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.setup",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/buckets.tf",
+      "target": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.fc_kernels",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/buckets.tf",
+      "target": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.fc_versions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/buckets.tf",
+      "target": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.fc_env_pipeline",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/buckets.tf",
+      "target": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.fc_busybox",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/buckets.tf",
+      "target": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.fc_templates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/buckets.tf",
+      "target": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.fc_template_build_cache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/buckets.tf",
+      "target": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.loki_storage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/buckets.tf",
+      "target": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.load_balancer_logs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/buckets.tf",
+      "target": "resource:iac/provider-aws/init/buckets.tf:aws_s3_bucket.clickhouse_backups",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/repositories.tf",
+      "target": "resource:iac/provider-aws/init/repositories.tf:aws_ecr_repository.client_proxy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/repositories.tf",
+      "target": "resource:iac/provider-aws/init/repositories.tf:aws_ecr_repository.clickhouse_migrator",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/repositories.tf",
+      "target": "resource:iac/provider-aws/init/repositories.tf:aws_ecr_repository.db_migrator",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/repositories.tf",
+      "target": "resource:iac/provider-aws/init/repositories.tf:aws_ecr_repository.api",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/repositories.tf",
+      "target": "resource:iac/provider-aws/init/repositories.tf:aws_ecr_repository.custom_environments",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/repositories.tf",
+      "target": "resource:iac/provider-aws/init/repositories.tf:aws_ecr_repository.dashboard_api",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/repositories.tf",
+      "target": "resource:iac/provider-aws/init/repositories.tf:aws_ecr_repository.docker_reverse_proxy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/init/main.tf",
+      "target": "resource:iac/provider-aws/init/buckets.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/init/main.tf",
+      "target": "resource:iac/provider-aws/init/repositories.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/init/main.tf",
+      "target": "resource:iac/provider-aws/init/secrets.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/init/main.tf",
+      "target": "resource:iac/provider-aws/init/secrets-cluster.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/init/main.tf",
+      "target": "resource:iac/provider-aws/init/outputs.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/init/main.tf",
+      "target": "resource:iac/provider-aws/init/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/init/outputs.tf",
+      "target": "resource:iac/provider-aws/init/buckets.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/init/outputs.tf",
+      "target": "resource:iac/provider-aws/init/repositories.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/init/secrets.tf",
+      "target": "resource:iac/provider-aws/init/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/init/secrets-cluster.tf",
+      "target": "resource:iac/provider-aws/init/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/init/buckets.tf",
+      "target": "resource:iac/provider-aws/init/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

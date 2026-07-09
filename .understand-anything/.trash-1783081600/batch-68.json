@@ -1,0 +1,56 @@
+{
+  "nodes": [
+    {
+      "id": "config:iac/modules/job-clickhouse/configs/config.xml",
+      "type": "config",
+      "name": "config.xml",
+      "filePath": "iac/modules/job-clickhouse/configs/config.xml",
+      "summary": "ClickHouse 服务器核心配置文件，定义异步插入、分布式后台插入、集群分片副本拓扑、Prometheus 指标端点以及各系统日志 TTL（默认 1 天，错误日志 30 天）。",
+      "tags": ["configuration", "database", "clickhouse", "cluster", "metrics"],
+      "complexity": "moderate",
+      "languageNotes": "使用 Consulate 风格的 %{ for ... } 模板占位符在 Nomad 部署时渲染 server_count 个分片副本。"
+    },
+    {
+      "id": "config:iac/modules/job-clickhouse/configs/otel-agent.yaml",
+      "type": "config",
+      "name": "otel-agent.yaml",
+      "filePath": "iac/modules/job-clickhouse/configs/otel-agent.yaml",
+      "summary": "OpenTelemetry Collector 配置：从 ClickHouse Prometheus 端点抓取指标，通过 filter 过滤仅保留 nomad/client_proxy/api/orchestrator 等核心指标，添加 GCP/AWS 资源属性后批量导出到 OTLP 端点。",
+      "tags": ["configuration", "monitoring", "opentelemetry", "prometheus", "observability"],
+      "complexity": "moderate",
+      "languageNotes": "使用 Nomad packer 模板语法 %{ if provider_name == \"gcp\" } 在不同云厂商之间切换 resource detection 行为。"
+    },
+    {
+      "id": "config:iac/modules/job-clickhouse/configs/users.xml",
+      "type": "config",
+      "name": "users.xml",
+      "filePath": "iac/modules/job-clickhouse/configs/users.xml",
+      "summary": "ClickHouse 用户与 Profile 配置：定义 default profile（异步插入、分布式批处理）与受限网络访问（Nomad bridge、localhost、内网 10.0.0.0/8）的用户。",
+      "tags": ["configuration", "database", "clickhouse", "security", "access-control"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:iac/modules/job-clickhouse/configs/config.xml",
+      "target": "config:iac/modules/job-clickhouse/configs/users.xml",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:iac/modules/job-clickhouse/configs/otel-agent.yaml",
+      "target": "config:iac/modules/job-clickhouse/configs/config.xml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:iac/modules/job-clickhouse/configs/config.xml",
+      "target": "config:iac/modules/job-clickhouse/configs/users.xml",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

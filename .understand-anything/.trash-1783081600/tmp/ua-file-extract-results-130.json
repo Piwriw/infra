@@ -1,0 +1,6202 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 25,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/shared/pkg/keys/key.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 112,
+      "nonEmptyLines": 88,
+      "functions": [
+        {
+          "name": "MaskKey",
+          "startLine": 34,
+          "endLine": 64,
+          "params": [
+            "prefix",
+            "value"
+          ]
+        },
+        {
+          "name": "GenerateKey",
+          "startLine": 66,
+          "endLine": 86,
+          "params": [
+            "prefix"
+          ]
+        },
+        {
+          "name": "MaskToken",
+          "startLine": 90,
+          "endLine": 98,
+          "params": [
+            "prefix",
+            "token"
+          ]
+        },
+        {
+          "name": "VerifyKey",
+          "startLine": 100,
+          "endLine": 112,
+          "params": [
+            "prefix",
+            "key"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Key",
+          "startLine": 20,
+          "endLine": 24,
+          "methods": [],
+          "properties": [
+            "PrefixedRawValue",
+            "HashedValue",
+            "Masked"
+          ]
+        },
+        {
+          "name": "MaskedIdentifier",
+          "startLine": 26,
+          "endLine": 31,
+          "methods": [],
+          "properties": [
+            "Prefix",
+            "ValueLength",
+            "MaskedValuePrefix",
+            "MaskedValueSuffix"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Key",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "MaskedIdentifier",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "MaskKey",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "GenerateKey",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "MaskToken",
+          "line": 90,
+          "isDefault": false
+        },
+        {
+          "name": "VerifyKey",
+          "line": 100,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "MaskKey",
+          "callee": "len",
+          "lineNumber": 35
+        },
+        {
+          "caller": "MaskKey",
+          "callee": "fmt.Errorf",
+          "lineNumber": 41
+        },
+        {
+          "caller": "MaskKey",
+          "callee": "fmt.Errorf",
+          "lineNumber": 45
+        },
+        {
+          "caller": "GenerateKey",
+          "callee": "make",
+          "lineNumber": 67
+        },
+        {
+          "caller": "GenerateKey",
+          "callee": "rand.Read",
+          "lineNumber": 69
+        },
+        {
+          "caller": "GenerateKey",
+          "callee": "hex.EncodeToString",
+          "lineNumber": 74
+        },
+        {
+          "caller": "GenerateKey",
+          "callee": "MaskKey",
+          "lineNumber": 76
+        },
+        {
+          "caller": "GenerateKey",
+          "callee": "hasher.Hash",
+          "lineNumber": 83
+        },
+        {
+          "caller": "MaskToken",
+          "callee": "strings.TrimPrefix",
+          "lineNumber": 91
+        },
+        {
+          "caller": "MaskToken",
+          "callee": "MaskKey",
+          "lineNumber": 92
+        },
+        {
+          "caller": "MaskToken",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 97
+        },
+        {
+          "caller": "VerifyKey",
+          "callee": "strings.HasPrefix",
+          "lineNumber": 101
+        },
+        {
+          "caller": "VerifyKey",
+          "callee": "errors.New",
+          "lineNumber": 102
+        },
+        {
+          "caller": "VerifyKey",
+          "callee": "len",
+          "lineNumber": 105
+        },
+        {
+          "caller": "VerifyKey",
+          "callee": "hex.DecodeString",
+          "lineNumber": 106
+        },
+        {
+          "caller": "VerifyKey",
+          "callee": "errors.New",
+          "lineNumber": 108
+        },
+        {
+          "caller": "VerifyKey",
+          "callee": "hasher.Hash",
+          "lineNumber": 111
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 6,
+        "functionCount": 4,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/shared/pkg/keys/sha256_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 15,
+      "nonEmptyLines": 11,
+      "functions": [
+        {
+          "name": "TestSHA256Hashing",
+          "startLine": 9,
+          "endLine": 15,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestSHA256Hashing",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestSHA256Hashing",
+          "callee": "t.Parallel",
+          "lineNumber": 10
+        },
+        {
+          "caller": "TestSHA256Hashing",
+          "callee": "NewSHA256Hashing",
+          "lineNumber": 11
+        },
+        {
+          "caller": "TestSHA256Hashing",
+          "callee": "hasher.Hash",
+          "lineNumber": 13
+        },
+        {
+          "caller": "TestSHA256Hashing",
+          "callee": "assert.Regexp",
+          "lineNumber": 14
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/pkg/keys/sha256.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 30,
+      "nonEmptyLines": 22,
+      "functions": [
+        {
+          "name": "NewSHA256Hashing",
+          "startLine": 11,
+          "endLine": 13,
+          "params": []
+        },
+        {
+          "name": "Hash",
+          "startLine": 15,
+          "endLine": 24,
+          "params": [
+            "key"
+          ]
+        },
+        {
+          "name": "HashWithoutPrefix",
+          "startLine": 26,
+          "endLine": 30,
+          "params": [
+            "key"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Sha256Hashing",
+          "startLine": 9,
+          "endLine": 9,
+          "methods": [
+            "Hash",
+            "HashWithoutPrefix"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "Sha256Hashing",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "NewSHA256Hashing",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "Hash",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "HashWithoutPrefix",
+          "line": 26,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Hash",
+          "callee": "sha256.Sum256",
+          "lineNumber": 16
+        },
+        {
+          "caller": "Hash",
+          "callee": "base64.RawStdEncoding.EncodeToString",
+          "lineNumber": 18
+        },
+        {
+          "caller": "Hash",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 20
+        },
+        {
+          "caller": "HashWithoutPrefix",
+          "callee": "sha256.Sum256",
+          "lineNumber": 27
+        },
+        {
+          "caller": "HashWithoutPrefix",
+          "callee": "base64.RawStdEncoding.EncodeToString",
+          "lineNumber": 29
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/shared/pkg/keys/sha512.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 20,
+      "nonEmptyLines": 15,
+      "functions": [
+        {
+          "name": "HashAccessToken",
+          "startLine": 9,
+          "endLine": 13,
+          "params": [
+            "token"
+          ]
+        },
+        {
+          "name": "HashAccessTokenBytes",
+          "startLine": 16,
+          "endLine": 20,
+          "params": [
+            "token"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "HashAccessToken",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "HashAccessTokenBytes",
+          "line": 16,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "HashAccessToken",
+          "callee": "sha512.Sum512",
+          "lineNumber": 10
+        },
+        {
+          "caller": "HashAccessToken",
+          "callee": "hex.EncodeToString",
+          "lineNumber": 12
+        },
+        {
+          "caller": "HashAccessTokenBytes",
+          "callee": "sha512.Sum512",
+          "lineNumber": 17
+        },
+        {
+          "caller": "HashAccessTokenBytes",
+          "callee": "hex.EncodeToString",
+          "lineNumber": 19
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/pkg/logs/loki/loki_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 78,
+      "nonEmptyLines": 66,
+      "functions": [
+        {
+          "name": "TestResponseMapper_DirectionOrdering",
+          "startLine": 14,
+          "endLine": 66,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "toLogLine",
+          "startLine": 68,
+          "endLine": 78,
+          "params": [
+            "t",
+            "message"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestResponseMapper_DirectionOrdering",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "t.Parallel",
+          "lineNumber": 15
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "time.Now().UTC",
+          "lineNumber": 17
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "time.Now",
+          "lineNumber": 17
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "now.Add",
+          "lineNumber": 24
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "toLogLine",
+          "lineNumber": 24
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "now.Add",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "toLogLine",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "now.Add",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "toLogLine",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "t.Run",
+          "lineNumber": 51
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "t.Parallel",
+          "lineNumber": 52
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "ResponseMapper",
+          "lineNumber": 54
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "t.Context",
+          "lineNumber": 54
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "require.NoError",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "require.Len",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "make",
+          "lineNumber": 58
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "len",
+          "lineNumber": 58
+        },
+        {
+          "caller": "TestResponseMapper_DirectionOrdering",
+          "callee": "assert.Equal",
+          "lineNumber": 63
+        },
+        {
+          "caller": "toLogLine",
+          "callee": "t.Helper",
+          "lineNumber": 69
+        },
+        {
+          "caller": "toLogLine",
+          "callee": "json.Marshal",
+          "lineNumber": 71
+        },
+        {
+          "caller": "toLogLine",
+          "callee": "require.NoError",
+          "lineNumber": 75
+        },
+        {
+          "caller": "toLogLine",
+          "callee": "string",
+          "lineNumber": 77
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/pkg/machineinfo/machine_info_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 120,
+      "nonEmptyLines": 108,
+      "functions": [
+        {
+          "name": "TestIsCompatibleWith",
+          "startLine": 9,
+          "endLine": 71,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestIsExactMatch",
+          "startLine": 73,
+          "endLine": 120,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestIsCompatibleWith",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "TestIsExactMatch",
+          "line": 73,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestIsCompatibleWith",
+          "callee": "t.Parallel",
+          "lineNumber": 10
+        },
+        {
+          "caller": "TestIsCompatibleWith",
+          "callee": "t.Run",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestIsCompatibleWith",
+          "callee": "t.Parallel",
+          "lineNumber": 66
+        },
+        {
+          "caller": "TestIsCompatibleWith",
+          "callee": "assert.Equal",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestIsCompatibleWith",
+          "callee": "tt.build.IsCompatibleWith",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestIsExactMatch",
+          "callee": "t.Parallel",
+          "lineNumber": 74
+        },
+        {
+          "caller": "TestIsExactMatch",
+          "callee": "t.Run",
+          "lineNumber": 114
+        },
+        {
+          "caller": "TestIsExactMatch",
+          "callee": "t.Parallel",
+          "lineNumber": 115
+        },
+        {
+          "caller": "TestIsExactMatch",
+          "callee": "assert.Equal",
+          "lineNumber": 117
+        },
+        {
+          "caller": "TestIsExactMatch",
+          "callee": "tt.a.IsExactMatch",
+          "lineNumber": 117
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/pkg/middleware/otel/metrics/config.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 41,
+      "nonEmptyLines": 34,
+      "functions": [
+        {
+          "name": "defaultConfig",
+          "startLine": 19,
+          "endLine": 29,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "config",
+          "startLine": 10,
+          "endLine": 17,
+          "methods": [],
+          "properties": [
+            "recordInFlight",
+            "recordSize",
+            "recordDuration",
+            "recorder",
+            "attributes",
+            "shouldRecord"
+          ]
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/shared/pkg/middleware/otel/metrics/option.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 66,
+      "nonEmptyLines": 55,
+      "functions": [
+        {
+          "name": "apply",
+          "startLine": 16,
+          "endLine": 18,
+          "params": [
+            "cfg"
+          ]
+        },
+        {
+          "name": "WithAttributes",
+          "startLine": 22,
+          "endLine": 26,
+          "params": [
+            "attributes"
+          ]
+        },
+        {
+          "name": "WithRecordInFlightDisabled",
+          "startLine": 30,
+          "endLine": 34,
+          "params": []
+        },
+        {
+          "name": "WithRecordDurationDisabled",
+          "startLine": 38,
+          "endLine": 42,
+          "params": []
+        },
+        {
+          "name": "WithRecordSizeDisabled",
+          "startLine": 46,
+          "endLine": 50,
+          "params": []
+        },
+        {
+          "name": "WithRecorder",
+          "startLine": 54,
+          "endLine": 58,
+          "params": [
+            "recorder"
+          ]
+        },
+        {
+          "name": "WithShouldRecordFunc",
+          "startLine": 62,
+          "endLine": 66,
+          "params": [
+            "shouldRecord"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Option",
+          "startLine": 10,
+          "endLine": 12,
+          "methods": [
+            "apply"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "Option",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "WithAttributes",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "WithRecordInFlightDisabled",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "WithRecordDurationDisabled",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "WithRecordSizeDisabled",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "WithRecorder",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "WithShouldRecordFunc",
+          "line": 62,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "apply",
+          "callee": "fn",
+          "lineNumber": 17
+        },
+        {
+          "caller": "WithAttributes",
+          "callee": "optionFunc",
+          "lineNumber": 23
+        },
+        {
+          "caller": "WithRecordInFlightDisabled",
+          "callee": "optionFunc",
+          "lineNumber": 31
+        },
+        {
+          "caller": "WithRecordDurationDisabled",
+          "callee": "optionFunc",
+          "lineNumber": 39
+        },
+        {
+          "caller": "WithRecordSizeDisabled",
+          "callee": "optionFunc",
+          "lineNumber": 47
+        },
+        {
+          "caller": "WithRecorder",
+          "callee": "optionFunc",
+          "lineNumber": 55
+        },
+        {
+          "caller": "WithShouldRecordFunc",
+          "callee": "optionFunc",
+          "lineNumber": 63
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 7,
+        "functionCount": 7,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/shared/pkg/middleware/otel/metrics/otelrecorder.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 42,
+      "nonEmptyLines": 34,
+      "functions": [
+        {
+          "name": "GetRecorder",
+          "startLine": 18,
+          "endLine": 37,
+          "params": [
+            "meterProvider",
+            "metricsPrefix"
+          ]
+        },
+        {
+          "name": "ObserveHTTPRequestDuration",
+          "startLine": 40,
+          "endLine": 42,
+          "params": [
+            "ctx",
+            "duration",
+            "attributes"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "otelRecorder",
+          "startLine": 14,
+          "endLine": 16,
+          "methods": [
+            "ObserveHTTPRequestDuration"
+          ],
+          "properties": [
+            "totalDuration"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetRecorder",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "ObserveHTTPRequestDuration",
+          "line": 40,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetRecorder",
+          "callee": "len",
+          "lineNumber": 20
+        },
+        {
+          "caller": "GetRecorder",
+          "callee": "meterProvider.Meter",
+          "lineNumber": 27
+        },
+        {
+          "caller": "GetRecorder",
+          "callee": "meter.Float64Histogram",
+          "lineNumber": 28
+        },
+        {
+          "caller": "GetRecorder",
+          "callee": "metricName",
+          "lineNumber": 29
+        },
+        {
+          "caller": "GetRecorder",
+          "callee": "metric.WithDescription",
+          "lineNumber": 30
+        },
+        {
+          "caller": "GetRecorder",
+          "callee": "metric.WithUnit",
+          "lineNumber": 31
+        },
+        {
+          "caller": "ObserveHTTPRequestDuration",
+          "callee": "r.totalDuration.Record",
+          "lineNumber": 41
+        },
+        {
+          "caller": "ObserveHTTPRequestDuration",
+          "callee": "float64",
+          "lineNumber": 41
+        },
+        {
+          "caller": "ObserveHTTPRequestDuration",
+          "callee": "metric.WithAttributes",
+          "lineNumber": 41
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/shared/pkg/middleware/otel/metrics/recorder.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 13,
+      "nonEmptyLines": 10,
+      "classes": [
+        {
+          "name": "Recorder",
+          "startLine": 10,
+          "endLine": 13,
+          "methods": [
+            "ObserveHTTPRequestDuration"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "Recorder",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/shared/pkg/proxy/errors.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 113,
+      "nonEmptyLines": 90,
+      "functions": [
+        {
+          "name": "Error",
+          "startLine": 17,
+          "endLine": 19,
+          "params": []
+        },
+        {
+          "name": "Unwrap",
+          "startLine": 21,
+          "endLine": 23,
+          "params": []
+        },
+        {
+          "name": "NewErrSandboxNotFound",
+          "startLine": 29,
+          "endLine": 33,
+          "params": [
+            "sandboxId"
+          ]
+        },
+        {
+          "name": "Error",
+          "startLine": 35,
+          "endLine": 37,
+          "params": []
+        },
+        {
+          "name": "NewErrSandboxResumePermissionDenied",
+          "startLine": 43,
+          "endLine": 47,
+          "params": [
+            "sandboxId"
+          ]
+        },
+        {
+          "name": "Error",
+          "startLine": 49,
+          "endLine": 51,
+          "params": []
+        },
+        {
+          "name": "NewErrSandboxStillTransitioning",
+          "startLine": 57,
+          "endLine": 61,
+          "params": [
+            "sandboxId"
+          ]
+        },
+        {
+          "name": "Error",
+          "startLine": 63,
+          "endLine": 65,
+          "params": []
+        },
+        {
+          "name": "Error",
+          "startLine": 72,
+          "endLine": 74,
+          "params": []
+        },
+        {
+          "name": "NewErrMissingTrafficAccessToken",
+          "startLine": 76,
+          "endLine": 81,
+          "params": [
+            "sandboxId",
+            "header"
+          ]
+        },
+        {
+          "name": "Error",
+          "startLine": 88,
+          "endLine": 90,
+          "params": []
+        },
+        {
+          "name": "NewErrInvalidTrafficAccessToken",
+          "startLine": 92,
+          "endLine": 97,
+          "params": [
+            "sandboxId",
+            "header"
+          ]
+        },
+        {
+          "name": "NewErrSandboxResourceExhausted",
+          "startLine": 104,
+          "endLine": 109,
+          "params": [
+            "sandboxId",
+            "message"
+          ]
+        },
+        {
+          "name": "Error",
+          "startLine": 111,
+          "endLine": 113,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "InvalidSandboxPortError",
+          "startLine": 12,
+          "endLine": 15,
+          "methods": [
+            "Error",
+            "Unwrap"
+          ],
+          "properties": [
+            "Port",
+            "wrapped"
+          ]
+        },
+        {
+          "name": "SandboxNotFoundError",
+          "startLine": 25,
+          "endLine": 27,
+          "methods": [
+            "Error"
+          ],
+          "properties": [
+            "SandboxId"
+          ]
+        },
+        {
+          "name": "SandboxResumePermissionDeniedError",
+          "startLine": 39,
+          "endLine": 41,
+          "methods": [
+            "Error"
+          ],
+          "properties": [
+            "SandboxId"
+          ]
+        },
+        {
+          "name": "SandboxStillTransitioningError",
+          "startLine": 53,
+          "endLine": 55,
+          "methods": [
+            "Error"
+          ],
+          "properties": [
+            "SandboxId"
+          ]
+        },
+        {
+          "name": "MissingTrafficAccessTokenError",
+          "startLine": 67,
+          "endLine": 70,
+          "methods": [
+            "Error"
+          ],
+          "properties": [
+            "SandboxId",
+            "Header"
+          ]
+        },
+        {
+          "name": "InvalidTrafficAccessTokenError",
+          "startLine": 83,
+          "endLine": 86,
+          "methods": [
+            "Error"
+          ],
+          "properties": [
+            "SandboxId",
+            "Header"
+          ]
+        },
+        {
+          "name": "SandboxResourceExhaustedError",
+          "startLine": 99,
+          "endLine": 102,
+          "methods": [
+            "Error"
+          ],
+          "properties": [
+            "SandboxId",
+            "Message"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "InvalidSandboxPortError",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "Error",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "Unwrap",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "SandboxNotFoundError",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "NewErrSandboxNotFound",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "Error",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "SandboxResumePermissionDeniedError",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "NewErrSandboxResumePermissionDenied",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "Error",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "SandboxStillTransitioningError",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "NewErrSandboxStillTransitioning",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "Error",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "MissingTrafficAccessTokenError",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "Error",
+          "line": 72,
+          "isDefault": false
+        },
+        {
+          "name": "NewErrMissingTrafficAccessToken",
+          "line": 76,
+          "isDefault": false
+        },
+        {
+          "name": "InvalidTrafficAccessTokenError",
+          "line": 83,
+          "isDefault": false
+        },
+        {
+          "name": "Error",
+          "line": 88,
+          "isDefault": false
+        },
+        {
+          "name": "NewErrInvalidTrafficAccessToken",
+          "line": 92,
+          "isDefault": false
+        },
+        {
+          "name": "SandboxResourceExhaustedError",
+          "line": 99,
+          "isDefault": false
+        },
+        {
+          "name": "NewErrSandboxResourceExhausted",
+          "line": 104,
+          "isDefault": false
+        },
+        {
+          "name": "Error",
+          "line": 111,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 21,
+        "functionCount": 14,
+        "classCount": 7
+      }
+    },
+    {
+      "path": "packages/shared/pkg/proxy/host_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 252,
+      "nonEmptyLines": 238,
+      "functions": [
+        {
+          "name": "TestGetTargetFromRequest",
+          "startLine": 10,
+          "endLine": 252,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestGetTargetFromRequest",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestGetTargetFromRequest",
+          "callee": "t.Parallel",
+          "lineNumber": 11
+        },
+        {
+          "caller": "TestGetTargetFromRequest",
+          "callee": "GetTargetFromRequest",
+          "lineNumber": 13
+        },
+        {
+          "caller": "TestGetTargetFromRequest",
+          "callee": "t.Run",
+          "lineNumber": 218
+        },
+        {
+          "caller": "TestGetTargetFromRequest",
+          "callee": "t.Parallel",
+          "lineNumber": 219
+        },
+        {
+          "caller": "TestGetTargetFromRequest",
+          "callee": "getTargetFromRequest",
+          "lineNumber": 224
+        },
+        {
+          "caller": "TestGetTargetFromRequest",
+          "callee": "t.Fatalf",
+          "lineNumber": 228
+        },
+        {
+          "caller": "TestGetTargetFromRequest",
+          "callee": "require.ErrorIs",
+          "lineNumber": 232
+        },
+        {
+          "caller": "TestGetTargetFromRequest",
+          "callee": "require.ErrorAs",
+          "lineNumber": 238
+        },
+        {
+          "caller": "TestGetTargetFromRequest",
+          "callee": "t.Errorf",
+          "lineNumber": 244
+        },
+        {
+          "caller": "TestGetTargetFromRequest",
+          "callee": "t.Errorf",
+          "lineNumber": 248
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/pkg/retry/retry_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 175,
+      "nonEmptyLines": 135,
+      "functions": [
+        {
+          "name": "fastPolicy",
+          "startLine": 14,
+          "endLine": 22,
+          "params": []
+        },
+        {
+          "name": "TestDo_RetriesThenSucceeds",
+          "startLine": 24,
+          "endLine": 38,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestDo_BudgetExhausted",
+          "startLine": 40,
+          "endLine": 54,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestDo_PerAttemptTimeoutDoesNotAbortLoop",
+          "startLine": 56,
+          "endLine": 72,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestDo_CapsAttemptToRemainingBudget",
+          "startLine": 74,
+          "endLine": 99,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestDo_NonRetryableStops",
+          "startLine": 101,
+          "endLine": 116,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestDo_ParentCancelAborts",
+          "startLine": 118,
+          "endLine": 132,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestDo_NoAttemptTimeoutUsesBudget",
+          "startLine": 134,
+          "endLine": 157,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestDo_OnRetryInvoked",
+          "startLine": 159,
+          "endLine": 175,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestDo_RetriesThenSucceeds",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "TestDo_BudgetExhausted",
+          "line": 40,
+          "isDefault": false
+        },
+        {
+          "name": "TestDo_PerAttemptTimeoutDoesNotAbortLoop",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "TestDo_CapsAttemptToRemainingBudget",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "TestDo_NonRetryableStops",
+          "line": 101,
+          "isDefault": false
+        },
+        {
+          "name": "TestDo_ParentCancelAborts",
+          "line": 118,
+          "isDefault": false
+        },
+        {
+          "name": "TestDo_NoAttemptTimeoutUsesBudget",
+          "line": 134,
+          "isDefault": false
+        },
+        {
+          "name": "TestDo_OnRetryInvoked",
+          "line": 159,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestDo_RetriesThenSucceeds",
+          "callee": "t.Parallel",
+          "lineNumber": 25
+        },
+        {
+          "caller": "TestDo_RetriesThenSucceeds",
+          "callee": "attempts.Add",
+          "lineNumber": 29
+        },
+        {
+          "caller": "TestDo_RetriesThenSucceeds",
+          "callee": "errors.New",
+          "lineNumber": 30
+        },
+        {
+          "caller": "TestDo_RetriesThenSucceeds",
+          "callee": "require.NoError",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TestDo_RetriesThenSucceeds",
+          "callee": "Do",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TestDo_RetriesThenSucceeds",
+          "callee": "context.Background",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TestDo_RetriesThenSucceeds",
+          "callee": "fastPolicy",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TestDo_RetriesThenSucceeds",
+          "callee": "assert.EqualValues",
+          "lineNumber": 37
+        },
+        {
+          "caller": "TestDo_RetriesThenSucceeds",
+          "callee": "attempts.Load",
+          "lineNumber": 37
+        },
+        {
+          "caller": "TestDo_BudgetExhausted",
+          "callee": "t.Parallel",
+          "lineNumber": 41
+        },
+        {
+          "caller": "TestDo_BudgetExhausted",
+          "callee": "attempts.Add",
+          "lineNumber": 45
+        },
+        {
+          "caller": "TestDo_BudgetExhausted",
+          "callee": "errors.New",
+          "lineNumber": 47
+        },
+        {
+          "caller": "TestDo_BudgetExhausted",
+          "callee": "Do",
+          "lineNumber": 50
+        },
+        {
+          "caller": "TestDo_BudgetExhausted",
+          "callee": "context.Background",
+          "lineNumber": 50
+        },
+        {
+          "caller": "TestDo_BudgetExhausted",
+          "callee": "fastPolicy",
+          "lineNumber": 50
+        },
+        {
+          "caller": "TestDo_BudgetExhausted",
+          "callee": "require.Error",
+          "lineNumber": 51
+        },
+        {
+          "caller": "TestDo_BudgetExhausted",
+          "callee": "require.ErrorIs",
+          "lineNumber": 52
+        },
+        {
+          "caller": "TestDo_BudgetExhausted",
+          "callee": "assert.Greater",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TestDo_BudgetExhausted",
+          "callee": "attempts.Load",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TestDo_BudgetExhausted",
+          "callee": "int32",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TestDo_PerAttemptTimeoutDoesNotAbortLoop",
+          "callee": "t.Parallel",
+          "lineNumber": 57
+        },
+        {
+          "caller": "TestDo_PerAttemptTimeoutDoesNotAbortLoop",
+          "callee": "attempts.Add",
+          "lineNumber": 61
+        },
+        {
+          "caller": "TestDo_PerAttemptTimeoutDoesNotAbortLoop",
+          "callee": "ctx.Done",
+          "lineNumber": 62
+        },
+        {
+          "caller": "TestDo_PerAttemptTimeoutDoesNotAbortLoop",
+          "callee": "ctx.Err",
+          "lineNumber": 64
+        },
+        {
+          "caller": "TestDo_PerAttemptTimeoutDoesNotAbortLoop",
+          "callee": "require.NoError",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestDo_PerAttemptTimeoutDoesNotAbortLoop",
+          "callee": "Do",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestDo_PerAttemptTimeoutDoesNotAbortLoop",
+          "callee": "context.Background",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestDo_PerAttemptTimeoutDoesNotAbortLoop",
+          "callee": "fastPolicy",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestDo_PerAttemptTimeoutDoesNotAbortLoop",
+          "callee": "assert.EqualValues",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TestDo_PerAttemptTimeoutDoesNotAbortLoop",
+          "callee": "attempts.Load",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TestDo_CapsAttemptToRemainingBudget",
+          "callee": "t.Parallel",
+          "lineNumber": 75
+        },
+        {
+          "caller": "TestDo_CapsAttemptToRemainingBudget",
+          "callee": "ctx.Done",
+          "lineNumber": 88
+        },
+        {
+          "caller": "TestDo_CapsAttemptToRemainingBudget",
+          "callee": "ctx.Err",
+          "lineNumber": 90
+        },
+        {
+          "caller": "TestDo_CapsAttemptToRemainingBudget",
+          "callee": "time.Now",
+          "lineNumber": 93
+        },
+        {
+          "caller": "TestDo_CapsAttemptToRemainingBudget",
+          "callee": "Do",
+          "lineNumber": 94
+        },
+        {
+          "caller": "TestDo_CapsAttemptToRemainingBudget",
+          "callee": "context.Background",
+          "lineNumber": 94
+        },
+        {
+          "caller": "TestDo_CapsAttemptToRemainingBudget",
+          "callee": "time.Since",
+          "lineNumber": 95
+        },
+        {
+          "caller": "TestDo_CapsAttemptToRemainingBudget",
+          "callee": "require.ErrorIs",
+          "lineNumber": 97
+        },
+        {
+          "caller": "TestDo_CapsAttemptToRemainingBudget",
+          "callee": "assert.Less",
+          "lineNumber": 98
+        },
+        {
+          "caller": "TestDo_NonRetryableStops",
+          "callee": "t.Parallel",
+          "lineNumber": 102
+        },
+        {
+          "caller": "TestDo_NonRetryableStops",
+          "callee": "errors.New",
+          "lineNumber": 104
+        },
+        {
+          "caller": "TestDo_NonRetryableStops",
+          "callee": "attempts.Add",
+          "lineNumber": 107
+        },
+        {
+          "caller": "TestDo_NonRetryableStops",
+          "callee": "errors.Is",
+          "lineNumber": 111
+        },
+        {
+          "caller": "TestDo_NonRetryableStops",
+          "callee": "Do",
+          "lineNumber": 113
+        },
+        {
+          "caller": "TestDo_NonRetryableStops",
+          "callee": "context.Background",
+          "lineNumber": 113
+        },
+        {
+          "caller": "TestDo_NonRetryableStops",
+          "callee": "fastPolicy",
+          "lineNumber": 113
+        },
+        {
+          "caller": "TestDo_NonRetryableStops",
+          "callee": "require.ErrorIs",
+          "lineNumber": 114
+        },
+        {
+          "caller": "TestDo_NonRetryableStops",
+          "callee": "assert.EqualValues",
+          "lineNumber": 115
+        },
+        {
+          "caller": "TestDo_NonRetryableStops",
+          "callee": "attempts.Load",
+          "lineNumber": 115
+        },
+        {
+          "caller": "TestDo_ParentCancelAborts",
+          "callee": "t.Parallel",
+          "lineNumber": 119
+        },
+        {
+          "caller": "TestDo_ParentCancelAborts",
+          "callee": "context.WithCancel",
+          "lineNumber": 121
+        },
+        {
+          "caller": "TestDo_ParentCancelAborts",
+          "callee": "context.Background",
+          "lineNumber": 121
+        },
+        {
+          "caller": "TestDo_ParentCancelAborts",
+          "callee": "cancel",
+          "lineNumber": 123
+        },
+        {
+          "caller": "TestDo_ParentCancelAborts",
+          "callee": "errors.New",
+          "lineNumber": 125
+        },
+        {
+          "caller": "TestDo_ParentCancelAborts",
+          "callee": "Do",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestDo_ParentCancelAborts",
+          "callee": "fastPolicy",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestDo_ParentCancelAborts",
+          "callee": "require.Error",
+          "lineNumber": 129
+        },
+        {
+          "caller": "TestDo_ParentCancelAborts",
+          "callee": "require.ErrorIs",
+          "lineNumber": 130
+        },
+        {
+          "caller": "TestDo_ParentCancelAborts",
+          "callee": "assert.NotErrorIs",
+          "lineNumber": 131
+        },
+        {
+          "caller": "TestDo_NoAttemptTimeoutUsesBudget",
+          "callee": "t.Parallel",
+          "lineNumber": 135
+        },
+        {
+          "caller": "TestDo_NoAttemptTimeoutUsesBudget",
+          "callee": "ctx.Done",
+          "lineNumber": 147
+        },
+        {
+          "caller": "TestDo_NoAttemptTimeoutUsesBudget",
+          "callee": "ctx.Err",
+          "lineNumber": 149
+        },
+        {
+          "caller": "TestDo_NoAttemptTimeoutUsesBudget",
+          "callee": "time.Now",
+          "lineNumber": 152
+        },
+        {
+          "caller": "TestDo_NoAttemptTimeoutUsesBudget",
+          "callee": "Do",
+          "lineNumber": 153
+        },
+        {
+          "caller": "TestDo_NoAttemptTimeoutUsesBudget",
+          "callee": "context.Background",
+          "lineNumber": 153
+        },
+        {
+          "caller": "TestDo_NoAttemptTimeoutUsesBudget",
+          "callee": "require.ErrorIs",
+          "lineNumber": 155
+        },
+        {
+          "caller": "TestDo_NoAttemptTimeoutUsesBudget",
+          "callee": "assert.Less",
+          "lineNumber": 156
+        },
+        {
+          "caller": "TestDo_NoAttemptTimeoutUsesBudget",
+          "callee": "time.Since",
+          "lineNumber": 156
+        },
+        {
+          "caller": "TestDo_OnRetryInvoked",
+          "callee": "t.Parallel",
+          "lineNumber": 160
+        },
+        {
+          "caller": "TestDo_OnRetryInvoked",
+          "callee": "attempts.Add",
+          "lineNumber": 165
+        },
+        {
+          "caller": "TestDo_OnRetryInvoked",
+          "callee": "errors.New",
+          "lineNumber": 166
+        },
+        {
+          "caller": "TestDo_OnRetryInvoked",
+          "callee": "retries.Add",
+          "lineNumber": 171
+        },
+        {
+          "caller": "TestDo_OnRetryInvoked",
+          "callee": "require.NoError",
+          "lineNumber": 173
+        },
+        {
+          "caller": "TestDo_OnRetryInvoked",
+          "callee": "Do",
+          "lineNumber": 173
+        },
+        {
+          "caller": "TestDo_OnRetryInvoked",
+          "callee": "context.Background",
+          "lineNumber": 173
+        },
+        {
+          "caller": "TestDo_OnRetryInvoked",
+          "callee": "fastPolicy",
+          "lineNumber": 173
+        },
+        {
+          "caller": "TestDo_OnRetryInvoked",
+          "callee": "assert.EqualValues",
+          "lineNumber": 174
+        },
+        {
+          "caller": "TestDo_OnRetryInvoked",
+          "callee": "retries.Load",
+          "lineNumber": 174
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 8,
+        "functionCount": 9,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/pkg/retry/retry.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 121,
+      "nonEmptyLines": 102,
+      "functions": [
+        {
+          "name": "Do",
+          "startLine": 42,
+          "endLine": 83,
+          "params": [
+            "ctx",
+            "policy",
+            "retryable",
+            "fn",
+            "onRetry"
+          ]
+        },
+        {
+          "name": "runAttempt",
+          "startLine": 88,
+          "endLine": 97,
+          "params": [
+            "ctx",
+            "attemptTimeout",
+            "fn"
+          ]
+        },
+        {
+          "name": "nextBackoff",
+          "startLine": 99,
+          "endLine": 110,
+          "params": [
+            "cur",
+            "maxBackoff",
+            "multiplier"
+          ]
+        },
+        {
+          "name": "stopError",
+          "startLine": 114,
+          "endLine": 121,
+          "params": [
+            "budgetCtx",
+            "attempt",
+            "lastErr"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Policy",
+          "startLine": 15,
+          "endLine": 29,
+          "methods": [],
+          "properties": [
+            "TotalBudget",
+            "AttemptTimeout",
+            "InitialBackoff",
+            "MaxBackoff",
+            "Multiplier"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Policy",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "Do",
+          "line": 42,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Do",
+          "callee": "context.WithTimeoutCause",
+          "lineNumber": 49
+        },
+        {
+          "caller": "Do",
+          "callee": "cancel",
+          "lineNumber": 50
+        },
+        {
+          "caller": "Do",
+          "callee": "runAttempt",
+          "lineNumber": 55
+        },
+        {
+          "caller": "Do",
+          "callee": "budgetCtx.Err",
+          "lineNumber": 63
+        },
+        {
+          "caller": "Do",
+          "callee": "stopError",
+          "lineNumber": 64
+        },
+        {
+          "caller": "Do",
+          "callee": "retryable",
+          "lineNumber": 67
+        },
+        {
+          "caller": "Do",
+          "callee": "fmt.Errorf",
+          "lineNumber": 68
+        },
+        {
+          "caller": "Do",
+          "callee": "onRetry",
+          "lineNumber": 72
+        },
+        {
+          "caller": "Do",
+          "callee": "budgetCtx.Done",
+          "lineNumber": 76
+        },
+        {
+          "caller": "Do",
+          "callee": "stopError",
+          "lineNumber": 77
+        },
+        {
+          "caller": "Do",
+          "callee": "time.After",
+          "lineNumber": 78
+        },
+        {
+          "caller": "Do",
+          "callee": "nextBackoff",
+          "lineNumber": 81
+        },
+        {
+          "caller": "runAttempt",
+          "callee": "fn",
+          "lineNumber": 90
+        },
+        {
+          "caller": "runAttempt",
+          "callee": "context.WithTimeout",
+          "lineNumber": 93
+        },
+        {
+          "caller": "runAttempt",
+          "callee": "cancel",
+          "lineNumber": 94
+        },
+        {
+          "caller": "runAttempt",
+          "callee": "fn",
+          "lineNumber": 96
+        },
+        {
+          "caller": "nextBackoff",
+          "callee": "time.Duration",
+          "lineNumber": 104
+        },
+        {
+          "caller": "stopError",
+          "callee": "context.Cause",
+          "lineNumber": 115
+        },
+        {
+          "caller": "stopError",
+          "callee": "errors.Is",
+          "lineNumber": 116
+        },
+        {
+          "caller": "stopError",
+          "callee": "fmt.Errorf",
+          "lineNumber": 117
+        },
+        {
+          "caller": "stopError",
+          "callee": "errors.Join",
+          "lineNumber": 120
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/shared/pkg/sandbox-catalog/catalog.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 31,
+      "nonEmptyLines": 23,
+      "classes": [
+        {
+          "name": "SandboxInfo",
+          "startLine": 11,
+          "endLine": 18,
+          "methods": [],
+          "properties": [
+            "OrchestratorID",
+            "OrchestratorIP",
+            "ExecutionID",
+            "StartedAt",
+            "MaxLengthInHours"
+          ]
+        },
+        {
+          "name": "SandboxesCatalog",
+          "startLine": 20,
+          "endLine": 25,
+          "methods": [
+            "GetSandbox",
+            "StoreSandbox",
+            "DeleteSandbox",
+            "Close"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "SandboxInfo",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "SandboxesCatalog",
+          "line": 20,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 0,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/shared/pkg/sandbox-network/byop_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 250,
+      "nonEmptyLines": 232,
+      "functions": [
+        {
+          "name": "stubResolver",
+          "startLine": 17,
+          "endLine": 29,
+          "params": [
+            "table"
+          ]
+        },
+        {
+          "name": "literalOnlyResolver",
+          "startLine": 33,
+          "endLine": 35,
+          "params": []
+        },
+        {
+          "name": "TestValidateEgressProxy_NilPassthrough",
+          "startLine": 37,
+          "endLine": 42,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestValidateEgressProxy_HappyPath",
+          "startLine": 44,
+          "endLine": 60,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestValidateEgressProxy_AcceptsIPLiteralWithoutResolving",
+          "startLine": 62,
+          "endLine": 68,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestValidateEgressProxy_RejectsMalformedAddress",
+          "startLine": 70,
+          "endLine": 94,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestValidateEgressProxy_RejectsInternalEndpoint",
+          "startLine": 96,
+          "endLine": 133,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestValidateEgressProxy_RejectsOrphanPassword",
+          "startLine": 135,
+          "endLine": 144,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestValidateEgressProxy_RejectsOverlongUsername",
+          "startLine": 146,
+          "endLine": 155,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestValidateEgressProxy_RejectsOverlongPassword",
+          "startLine": 157,
+          "endLine": 166,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestValidateEgressProxy_AcceptsMaxLengthCreds",
+          "startLine": 168,
+          "endLine": 180,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestValidateEgressProxy_AcceptsEmptyCreds",
+          "startLine": 182,
+          "endLine": 188,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestValidateEgressProxy_DoesNotMutateInput",
+          "startLine": 190,
+          "endLine": 206,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestValidateEgressProxy_NilResolverFallsBackToDefault",
+          "startLine": 208,
+          "endLine": 215,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestIsIPInDeniedSandboxCIDRs_Exported",
+          "startLine": 217,
+          "endLine": 250,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestValidateEgressProxy_NilPassthrough",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "TestValidateEgressProxy_HappyPath",
+          "line": 44,
+          "isDefault": false
+        },
+        {
+          "name": "TestValidateEgressProxy_AcceptsIPLiteralWithoutResolving",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "TestValidateEgressProxy_RejectsMalformedAddress",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "TestValidateEgressProxy_RejectsInternalEndpoint",
+          "line": 96,
+          "isDefault": false
+        },
+        {
+          "name": "TestValidateEgressProxy_RejectsOrphanPassword",
+          "line": 135,
+          "isDefault": false
+        },
+        {
+          "name": "TestValidateEgressProxy_RejectsOverlongUsername",
+          "line": 146,
+          "isDefault": false
+        },
+        {
+          "name": "TestValidateEgressProxy_RejectsOverlongPassword",
+          "line": 157,
+          "isDefault": false
+        },
+        {
+          "name": "TestValidateEgressProxy_AcceptsMaxLengthCreds",
+          "line": 168,
+          "isDefault": false
+        },
+        {
+          "name": "TestValidateEgressProxy_AcceptsEmptyCreds",
+          "line": 182,
+          "isDefault": false
+        },
+        {
+          "name": "TestValidateEgressProxy_DoesNotMutateInput",
+          "line": 190,
+          "isDefault": false
+        },
+        {
+          "name": "TestValidateEgressProxy_NilResolverFallsBackToDefault",
+          "line": 208,
+          "isDefault": false
+        },
+        {
+          "name": "TestIsIPInDeniedSandboxCIDRs_Exported",
+          "line": 217,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "stubResolver",
+          "callee": "net.ParseIP",
+          "lineNumber": 19
+        },
+        {
+          "caller": "stubResolver",
+          "callee": "errors.New",
+          "lineNumber": 24
+        },
+        {
+          "caller": "literalOnlyResolver",
+          "callee": "stubResolver",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestValidateEgressProxy_NilPassthrough",
+          "callee": "t.Parallel",
+          "lineNumber": 38
+        },
+        {
+          "caller": "TestValidateEgressProxy_NilPassthrough",
+          "callee": "ValidateEgressProxy",
+          "lineNumber": 39
+        },
+        {
+          "caller": "TestValidateEgressProxy_NilPassthrough",
+          "callee": "t.Context",
+          "lineNumber": 39
+        },
+        {
+          "caller": "TestValidateEgressProxy_NilPassthrough",
+          "callee": "literalOnlyResolver",
+          "lineNumber": 39
+        },
+        {
+          "caller": "TestValidateEgressProxy_NilPassthrough",
+          "callee": "require.NoError",
+          "lineNumber": 40
+        },
+        {
+          "caller": "TestValidateEgressProxy_NilPassthrough",
+          "callee": "require.Nil",
+          "lineNumber": 41
+        },
+        {
+          "caller": "TestValidateEgressProxy_HappyPath",
+          "callee": "t.Parallel",
+          "lineNumber": 45
+        },
+        {
+          "caller": "TestValidateEgressProxy_HappyPath",
+          "callee": "stubResolver",
+          "lineNumber": 46
+        },
+        {
+          "caller": "TestValidateEgressProxy_HappyPath",
+          "callee": "net.ParseIP",
+          "lineNumber": 47
+        },
+        {
+          "caller": "TestValidateEgressProxy_HappyPath",
+          "callee": "ValidateEgressProxy",
+          "lineNumber": 54
+        },
+        {
+          "caller": "TestValidateEgressProxy_HappyPath",
+          "callee": "t.Context",
+          "lineNumber": 54
+        },
+        {
+          "caller": "TestValidateEgressProxy_HappyPath",
+          "callee": "require.NoError",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestValidateEgressProxy_HappyPath",
+          "callee": "require.NotNil",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TestValidateEgressProxy_HappyPath",
+          "callee": "assert.Equal",
+          "lineNumber": 57
+        },
+        {
+          "caller": "TestValidateEgressProxy_HappyPath",
+          "callee": "assert.Equal",
+          "lineNumber": 58
+        },
+        {
+          "caller": "TestValidateEgressProxy_HappyPath",
+          "callee": "assert.Equal",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsIPLiteralWithoutResolving",
+          "callee": "t.Parallel",
+          "lineNumber": 63
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsIPLiteralWithoutResolving",
+          "callee": "ValidateEgressProxy",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsIPLiteralWithoutResolving",
+          "callee": "t.Context",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsIPLiteralWithoutResolving",
+          "callee": "literalOnlyResolver",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsIPLiteralWithoutResolving",
+          "callee": "require.NoError",
+          "lineNumber": 66
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsIPLiteralWithoutResolving",
+          "callee": "assert.Equal",
+          "lineNumber": 67
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsMalformedAddress",
+          "callee": "t.Parallel",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsMalformedAddress",
+          "callee": "t.Run",
+          "lineNumber": 87
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsMalformedAddress",
+          "callee": "t.Parallel",
+          "lineNumber": 88
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsMalformedAddress",
+          "callee": "ValidateEgressProxy",
+          "lineNumber": 89
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsMalformedAddress",
+          "callee": "t.Context",
+          "lineNumber": 89
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsMalformedAddress",
+          "callee": "literalOnlyResolver",
+          "lineNumber": 89
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsMalformedAddress",
+          "callee": "require.Error",
+          "lineNumber": 90
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsMalformedAddress",
+          "callee": "assert.Contains",
+          "lineNumber": 91
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsMalformedAddress",
+          "callee": "err.Error",
+          "lineNumber": 91
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsInternalEndpoint",
+          "callee": "t.Parallel",
+          "lineNumber": 97
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsInternalEndpoint",
+          "callee": "net.ParseIP",
+          "lineNumber": 110
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsInternalEndpoint",
+          "callee": "net.ParseIP",
+          "lineNumber": 114
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsInternalEndpoint",
+          "callee": "net.ParseIP",
+          "lineNumber": 114
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsInternalEndpoint",
+          "callee": "t.Run",
+          "lineNumber": 118
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsInternalEndpoint",
+          "callee": "t.Parallel",
+          "lineNumber": 119
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsInternalEndpoint",
+          "callee": "literalOnlyResolver",
+          "lineNumber": 120
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsInternalEndpoint",
+          "callee": "stubResolver",
+          "lineNumber": 122
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsInternalEndpoint",
+          "callee": "ValidateEgressProxy",
+          "lineNumber": 127
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsInternalEndpoint",
+          "callee": "t.Context",
+          "lineNumber": 127
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsInternalEndpoint",
+          "callee": "require.Error",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsInternalEndpoint",
+          "callee": "assert.ErrorIs",
+          "lineNumber": 129
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOrphanPassword",
+          "callee": "t.Parallel",
+          "lineNumber": 136
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOrphanPassword",
+          "callee": "ValidateEgressProxy",
+          "lineNumber": 137
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOrphanPassword",
+          "callee": "t.Context",
+          "lineNumber": 137
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOrphanPassword",
+          "callee": "literalOnlyResolver",
+          "lineNumber": 141
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOrphanPassword",
+          "callee": "require.Error",
+          "lineNumber": 142
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOrphanPassword",
+          "callee": "assert.Contains",
+          "lineNumber": 143
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOrphanPassword",
+          "callee": "err.Error",
+          "lineNumber": 143
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOverlongUsername",
+          "callee": "t.Parallel",
+          "lineNumber": 147
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOverlongUsername",
+          "callee": "ValidateEgressProxy",
+          "lineNumber": 148
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOverlongUsername",
+          "callee": "t.Context",
+          "lineNumber": 148
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOverlongUsername",
+          "callee": "strings.Repeat",
+          "lineNumber": 150
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOverlongUsername",
+          "callee": "literalOnlyResolver",
+          "lineNumber": 152
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOverlongUsername",
+          "callee": "require.Error",
+          "lineNumber": 153
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOverlongUsername",
+          "callee": "assert.Contains",
+          "lineNumber": 154
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOverlongUsername",
+          "callee": "err.Error",
+          "lineNumber": 154
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOverlongPassword",
+          "callee": "t.Parallel",
+          "lineNumber": 158
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOverlongPassword",
+          "callee": "ValidateEgressProxy",
+          "lineNumber": 159
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOverlongPassword",
+          "callee": "t.Context",
+          "lineNumber": 159
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOverlongPassword",
+          "callee": "strings.Repeat",
+          "lineNumber": 162
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOverlongPassword",
+          "callee": "literalOnlyResolver",
+          "lineNumber": 163
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOverlongPassword",
+          "callee": "require.Error",
+          "lineNumber": 164
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOverlongPassword",
+          "callee": "assert.Contains",
+          "lineNumber": 165
+        },
+        {
+          "caller": "TestValidateEgressProxy_RejectsOverlongPassword",
+          "callee": "err.Error",
+          "lineNumber": 165
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsMaxLengthCreds",
+          "callee": "t.Parallel",
+          "lineNumber": 169
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsMaxLengthCreds",
+          "callee": "strings.Repeat",
+          "lineNumber": 170
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsMaxLengthCreds",
+          "callee": "strings.Repeat",
+          "lineNumber": 171
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsMaxLengthCreds",
+          "callee": "ValidateEgressProxy",
+          "lineNumber": 172
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsMaxLengthCreds",
+          "callee": "t.Context",
+          "lineNumber": 172
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsMaxLengthCreds",
+          "callee": "literalOnlyResolver",
+          "lineNumber": 176
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsMaxLengthCreds",
+          "callee": "require.NoError",
+          "lineNumber": 177
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsMaxLengthCreds",
+          "callee": "assert.Equal",
+          "lineNumber": 178
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsMaxLengthCreds",
+          "callee": "assert.Equal",
+          "lineNumber": 179
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsEmptyCreds",
+          "callee": "t.Parallel",
+          "lineNumber": 183
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsEmptyCreds",
+          "callee": "ValidateEgressProxy",
+          "lineNumber": 184
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsEmptyCreds",
+          "callee": "t.Context",
+          "lineNumber": 184
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsEmptyCreds",
+          "callee": "literalOnlyResolver",
+          "lineNumber": 184
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsEmptyCreds",
+          "callee": "require.NoError",
+          "lineNumber": 185
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsEmptyCreds",
+          "callee": "assert.Empty",
+          "lineNumber": 186
+        },
+        {
+          "caller": "TestValidateEgressProxy_AcceptsEmptyCreds",
+          "callee": "assert.Empty",
+          "lineNumber": 187
+        },
+        {
+          "caller": "TestValidateEgressProxy_DoesNotMutateInput",
+          "callee": "t.Parallel",
+          "lineNumber": 191
+        },
+        {
+          "caller": "TestValidateEgressProxy_DoesNotMutateInput",
+          "callee": "stubResolver",
+          "lineNumber": 197
+        },
+        {
+          "caller": "TestValidateEgressProxy_DoesNotMutateInput",
+          "callee": "net.ParseIP",
+          "lineNumber": 198
+        },
+        {
+          "caller": "TestValidateEgressProxy_DoesNotMutateInput",
+          "callee": "ValidateEgressProxy",
+          "lineNumber": 200
+        },
+        {
+          "caller": "TestValidateEgressProxy_DoesNotMutateInput",
+          "callee": "t.Context",
+          "lineNumber": 200
+        },
+        {
+          "caller": "TestValidateEgressProxy_DoesNotMutateInput",
+          "callee": "require.NoError",
+          "lineNumber": 201
+        },
+        {
+          "caller": "TestValidateEgressProxy_DoesNotMutateInput",
+          "callee": "assert.Equal",
+          "lineNumber": 203
+        },
+        {
+          "caller": "TestValidateEgressProxy_DoesNotMutateInput",
+          "callee": "assert.Equal",
+          "lineNumber": 204
+        },
+        {
+          "caller": "TestValidateEgressProxy_DoesNotMutateInput",
+          "callee": "assert.Equal",
+          "lineNumber": 205
+        },
+        {
+          "caller": "TestValidateEgressProxy_NilResolverFallsBackToDefault",
+          "callee": "t.Parallel",
+          "lineNumber": 209
+        },
+        {
+          "caller": "TestValidateEgressProxy_NilResolverFallsBackToDefault",
+          "callee": "ValidateEgressProxy",
+          "lineNumber": 212
+        },
+        {
+          "caller": "TestValidateEgressProxy_NilResolverFallsBackToDefault",
+          "callee": "t.Context",
+          "lineNumber": 212
+        },
+        {
+          "caller": "TestValidateEgressProxy_NilResolverFallsBackToDefault",
+          "callee": "require.NoError",
+          "lineNumber": 213
+        },
+        {
+          "caller": "TestValidateEgressProxy_NilResolverFallsBackToDefault",
+          "callee": "assert.Equal",
+          "lineNumber": 214
+        },
+        {
+          "caller": "TestIsIPInDeniedSandboxCIDRs_Exported",
+          "callee": "t.Parallel",
+          "lineNumber": 218
+        },
+        {
+          "caller": "TestIsIPInDeniedSandboxCIDRs_Exported",
+          "callee": "t.Run",
+          "lineNumber": 245
+        },
+        {
+          "caller": "TestIsIPInDeniedSandboxCIDRs_Exported",
+          "callee": "t.Parallel",
+          "lineNumber": 246
+        },
+        {
+          "caller": "TestIsIPInDeniedSandboxCIDRs_Exported",
+          "callee": "assert.Equal",
+          "lineNumber": 247
+        },
+        {
+          "caller": "TestIsIPInDeniedSandboxCIDRs_Exported",
+          "callee": "IsIPInDeniedSandboxCIDRs",
+          "lineNumber": 247
+        },
+        {
+          "caller": "TestIsIPInDeniedSandboxCIDRs_Exported",
+          "callee": "net.ParseIP",
+          "lineNumber": 247
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 13,
+        "functionCount": 15,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/pkg/sandbox-network/firewall_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 73,
+      "nonEmptyLines": 67,
+      "functions": [
+        {
+          "name": "TestIsSpecifiedIPOrCIDR",
+          "startLine": 9,
+          "endLine": 36,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestAddressStringToCIDR",
+          "startLine": 38,
+          "endLine": 73,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestIsSpecifiedIPOrCIDR",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "TestAddressStringToCIDR",
+          "line": 38,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestIsSpecifiedIPOrCIDR",
+          "callee": "t.Parallel",
+          "lineNumber": 10
+        },
+        {
+          "caller": "TestIsSpecifiedIPOrCIDR",
+          "callee": "t.Run",
+          "lineNumber": 30
+        },
+        {
+          "caller": "TestIsSpecifiedIPOrCIDR",
+          "callee": "t.Parallel",
+          "lineNumber": 31
+        },
+        {
+          "caller": "TestIsSpecifiedIPOrCIDR",
+          "callee": "IsSpecifiedIPOrCIDR",
+          "lineNumber": 32
+        },
+        {
+          "caller": "TestIsSpecifiedIPOrCIDR",
+          "callee": "require.Equal",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestAddressStringToCIDR",
+          "callee": "t.Parallel",
+          "lineNumber": 39
+        },
+        {
+          "caller": "TestAddressStringToCIDR",
+          "callee": "t.Run",
+          "lineNumber": 67
+        },
+        {
+          "caller": "TestAddressStringToCIDR",
+          "callee": "t.Parallel",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestAddressStringToCIDR",
+          "callee": "AddressStringToCIDR",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestAddressStringToCIDR",
+          "callee": "require.Equal",
+          "lineNumber": 70
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/pkg/storage/header/block.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 29,
+      "nonEmptyLines": 22,
+      "functions": [
+        {
+          "name": "TotalBlocks",
+          "startLine": 3,
+          "endLine": 5,
+          "params": [
+            "size",
+            "blockSize"
+          ]
+        },
+        {
+          "name": "BlocksOffsets",
+          "startLine": 7,
+          "endLine": 15,
+          "params": [
+            "size",
+            "blockSize"
+          ]
+        },
+        {
+          "name": "BlockIdx",
+          "startLine": 18,
+          "endLine": 20,
+          "params": [
+            "off",
+            "blockSize"
+          ]
+        },
+        {
+          "name": "BlockCeilIdx",
+          "startLine": 23,
+          "endLine": 25,
+          "params": [
+            "off",
+            "blockSize"
+          ]
+        },
+        {
+          "name": "BlockOffset",
+          "startLine": 27,
+          "endLine": 29,
+          "params": [
+            "idx",
+            "blockSize"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TotalBlocks",
+          "line": 3,
+          "isDefault": false
+        },
+        {
+          "name": "BlocksOffsets",
+          "line": 7,
+          "isDefault": false
+        },
+        {
+          "name": "BlockIdx",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "BlockCeilIdx",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "BlockOffset",
+          "line": 27,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "BlocksOffsets",
+          "callee": "make",
+          "lineNumber": 8
+        },
+        {
+          "caller": "BlocksOffsets",
+          "callee": "TotalBlocks",
+          "lineNumber": 8
+        },
+        {
+          "caller": "BlocksOffsets",
+          "callee": "BlockOffset",
+          "lineNumber": 11
+        },
+        {
+          "caller": "BlocksOffsets",
+          "callee": "int64",
+          "lineNumber": 11
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 5,
+        "functionCount": 5,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/pkg/storage/header/compact_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 137,
+      "nonEmptyLines": 111,
+      "functions": [
+        {
+          "name": "TestNewHeader_PageGranularMappingUnderHugepageBlockSize",
+          "startLine": 16,
+          "endLine": 39,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNewMapping_RoundTrip",
+          "startLine": 41,
+          "endLine": 64,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNewMapping_RejectsUnaligned",
+          "startLine": 66,
+          "endLine": 83,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMapping_SearchOffset",
+          "startLine": 85,
+          "endLine": 112,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMapping_Validate",
+          "startLine": 114,
+          "endLine": 137,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestNewHeader_PageGranularMappingUnderHugepageBlockSize",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "TestNewMapping_RoundTrip",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "TestNewMapping_RejectsUnaligned",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "TestMapping_SearchOffset",
+          "line": 85,
+          "isDefault": false
+        },
+        {
+          "name": "TestMapping_Validate",
+          "line": 114,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestNewHeader_PageGranularMappingUnderHugepageBlockSize",
+          "callee": "t.Parallel",
+          "lineNumber": 17
+        },
+        {
+          "caller": "TestNewHeader_PageGranularMappingUnderHugepageBlockSize",
+          "callee": "uint64",
+          "lineNumber": 19
+        },
+        {
+          "caller": "TestNewHeader_PageGranularMappingUnderHugepageBlockSize",
+          "callee": "uuid.New",
+          "lineNumber": 20
+        },
+        {
+          "caller": "TestNewHeader_PageGranularMappingUnderHugepageBlockSize",
+          "callee": "uuid.New",
+          "lineNumber": 21
+        },
+        {
+          "caller": "TestNewHeader_PageGranularMappingUnderHugepageBlockSize",
+          "callee": "NewHeader",
+          "lineNumber": 31
+        },
+        {
+          "caller": "TestNewHeader_PageGranularMappingUnderHugepageBlockSize",
+          "callee": "require.NoError",
+          "lineNumber": 32
+        },
+        {
+          "caller": "TestNewHeader_PageGranularMappingUnderHugepageBlockSize",
+          "callee": "require.True",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestNewHeader_PageGranularMappingUnderHugepageBlockSize",
+          "callee": "Equal",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestNewHeader_PageGranularMappingUnderHugepageBlockSize",
+          "callee": "h.Mapping.Slice",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestNewHeader_PageGranularMappingUnderHugepageBlockSize",
+          "callee": "h.GetShiftedMapping",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TestNewHeader_PageGranularMappingUnderHugepageBlockSize",
+          "callee": "t.Context",
+          "lineNumber": 36
+        },
+        {
+          "caller": "TestNewHeader_PageGranularMappingUnderHugepageBlockSize",
+          "callee": "require.NoError",
+          "lineNumber": 37
+        },
+        {
+          "caller": "TestNewHeader_PageGranularMappingUnderHugepageBlockSize",
+          "callee": "require.Equal",
+          "lineNumber": 38
+        },
+        {
+          "caller": "TestNewMapping_RoundTrip",
+          "callee": "t.Parallel",
+          "lineNumber": 42
+        },
+        {
+          "caller": "TestNewMapping_RoundTrip",
+          "callee": "uint64",
+          "lineNumber": 44
+        },
+        {
+          "caller": "TestNewMapping_RoundTrip",
+          "callee": "uuid.New",
+          "lineNumber": 45
+        },
+        {
+          "caller": "TestNewMapping_RoundTrip",
+          "callee": "uuid.New",
+          "lineNumber": 46
+        },
+        {
+          "caller": "TestNewMapping_RoundTrip",
+          "callee": "NewMapping",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TestNewMapping_RoundTrip",
+          "callee": "require.NoError",
+          "lineNumber": 54
+        },
+        {
+          "caller": "TestNewMapping_RoundTrip",
+          "callee": "require.Equal",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestNewMapping_RoundTrip",
+          "callee": "len",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestNewMapping_RoundTrip",
+          "callee": "m.Len",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestNewMapping_RoundTrip",
+          "callee": "require.True",
+          "lineNumber": 57
+        },
+        {
+          "caller": "TestNewMapping_RoundTrip",
+          "callee": "Equal",
+          "lineNumber": 57
+        },
+        {
+          "caller": "TestNewMapping_RoundTrip",
+          "callee": "m.Slice",
+          "lineNumber": 57
+        },
+        {
+          "caller": "TestNewMapping_RoundTrip",
+          "callee": "require.Equal",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestNewMapping_RoundTrip",
+          "callee": "m.At",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestNewMapping_RoundTrip",
+          "callee": "require.ElementsMatch",
+          "lineNumber": 63
+        },
+        {
+          "caller": "TestNewMapping_RoundTrip",
+          "callee": "m.Builds",
+          "lineNumber": 63
+        },
+        {
+          "caller": "TestNewMapping_RejectsUnaligned",
+          "callee": "t.Parallel",
+          "lineNumber": 67
+        },
+        {
+          "caller": "TestNewMapping_RejectsUnaligned",
+          "callee": "uint64",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestNewMapping_RejectsUnaligned",
+          "callee": "uuid.New",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestNewMapping_RejectsUnaligned",
+          "callee": "NewMapping",
+          "lineNumber": 72
+        },
+        {
+          "caller": "TestNewMapping_RejectsUnaligned",
+          "callee": "require.ErrorContains",
+          "lineNumber": 73
+        },
+        {
+          "caller": "TestNewMapping_RejectsUnaligned",
+          "callee": "NewMapping",
+          "lineNumber": 75
+        },
+        {
+          "caller": "TestNewMapping_RejectsUnaligned",
+          "callee": "require.ErrorContains",
+          "lineNumber": 76
+        },
+        {
+          "caller": "TestNewMapping_RejectsUnaligned",
+          "callee": "NewMapping",
+          "lineNumber": 78
+        },
+        {
+          "caller": "TestNewMapping_RejectsUnaligned",
+          "callee": "require.ErrorContains",
+          "lineNumber": 79
+        },
+        {
+          "caller": "TestNewMapping_RejectsUnaligned",
+          "callee": "NewMapping",
+          "lineNumber": 81
+        },
+        {
+          "caller": "TestNewMapping_RejectsUnaligned",
+          "callee": "require.ErrorContains",
+          "lineNumber": 82
+        },
+        {
+          "caller": "TestMapping_SearchOffset",
+          "callee": "t.Parallel",
+          "lineNumber": 86
+        },
+        {
+          "caller": "TestMapping_SearchOffset",
+          "callee": "uint64",
+          "lineNumber": 88
+        },
+        {
+          "caller": "TestMapping_SearchOffset",
+          "callee": "uuid.New",
+          "lineNumber": 89
+        },
+        {
+          "caller": "TestMapping_SearchOffset",
+          "callee": "NewMapping",
+          "lineNumber": 95
+        },
+        {
+          "caller": "TestMapping_SearchOffset",
+          "callee": "require.NoError",
+          "lineNumber": 96
+        },
+        {
+          "caller": "TestMapping_SearchOffset",
+          "callee": "int64",
+          "lineNumber": 100
+        },
+        {
+          "caller": "TestMapping_SearchOffset",
+          "callee": "int64",
+          "lineNumber": 100
+        },
+        {
+          "caller": "TestMapping_SearchOffset",
+          "callee": "int64",
+          "lineNumber": 100
+        },
+        {
+          "caller": "TestMapping_SearchOffset",
+          "callee": "int64",
+          "lineNumber": 103
+        },
+        {
+          "caller": "TestMapping_SearchOffset",
+          "callee": "require.Equal",
+          "lineNumber": 108
+        },
+        {
+          "caller": "TestMapping_SearchOffset",
+          "callee": "m.SearchOffset",
+          "lineNumber": 108
+        },
+        {
+          "caller": "TestMapping_SearchOffset",
+          "callee": "require.Equal",
+          "lineNumber": 111
+        },
+        {
+          "caller": "TestMapping_SearchOffset",
+          "callee": "m.SearchOffset",
+          "lineNumber": 111
+        },
+        {
+          "caller": "TestMapping_Validate",
+          "callee": "t.Parallel",
+          "lineNumber": 115
+        },
+        {
+          "caller": "TestMapping_Validate",
+          "callee": "uint64",
+          "lineNumber": 117
+        },
+        {
+          "caller": "TestMapping_Validate",
+          "callee": "uuid.New",
+          "lineNumber": 118
+        },
+        {
+          "caller": "TestMapping_Validate",
+          "callee": "NewMapping",
+          "lineNumber": 120
+        },
+        {
+          "caller": "TestMapping_Validate",
+          "callee": "require.NoError",
+          "lineNumber": 124
+        },
+        {
+          "caller": "TestMapping_Validate",
+          "callee": "require.NoError",
+          "lineNumber": 125
+        },
+        {
+          "caller": "TestMapping_Validate",
+          "callee": "m.Validate",
+          "lineNumber": 125
+        },
+        {
+          "caller": "TestMapping_Validate",
+          "callee": "require.Error",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestMapping_Validate",
+          "callee": "m.Validate",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestMapping_Validate",
+          "callee": "NewMapping",
+          "lineNumber": 131
+        },
+        {
+          "caller": "TestMapping_Validate",
+          "callee": "require.NoError",
+          "lineNumber": 135
+        },
+        {
+          "caller": "TestMapping_Validate",
+          "callee": "require.Error",
+          "lineNumber": 136
+        },
+        {
+          "caller": "TestMapping_Validate",
+          "callee": "gap.Validate",
+          "lineNumber": 136
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 5,
+        "functionCount": 5,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/pkg/storage/header/compact.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 256,
+      "nonEmptyLines": 225,
+      "functions": [
+        {
+          "name": "NewMapping",
+          "startLine": 42,
+          "endLine": 103,
+          "params": [
+            "blockSize",
+            "src"
+          ]
+        },
+        {
+          "name": "newMappingFromColumns",
+          "startLine": 108,
+          "endLine": 130,
+          "params": [
+            "blockSize",
+            "builds",
+            "offsets",
+            "lengths",
+            "storage",
+            "buildIdx"
+          ]
+        },
+        {
+          "name": "Len",
+          "startLine": 133,
+          "endLine": 133,
+          "params": []
+        },
+        {
+          "name": "BlockSize",
+          "startLine": 136,
+          "endLine": 136,
+          "params": []
+        },
+        {
+          "name": "Builds",
+          "startLine": 140,
+          "endLine": 140,
+          "params": []
+        },
+        {
+          "name": "At",
+          "startLine": 144,
+          "endLine": 156,
+          "params": [
+            "i"
+          ]
+        },
+        {
+          "name": "All",
+          "startLine": 160,
+          "endLine": 168,
+          "params": []
+        },
+        {
+          "name": "BytesByBuild",
+          "startLine": 175,
+          "endLine": 189,
+          "params": []
+        },
+        {
+          "name": "Slice",
+          "startLine": 194,
+          "endLine": 201,
+          "params": []
+        },
+        {
+          "name": "Validate",
+          "startLine": 206,
+          "endLine": 234,
+          "params": [
+            "size",
+            "blockSize"
+          ]
+        },
+        {
+          "name": "SearchOffset",
+          "startLine": 240,
+          "endLine": 256,
+          "params": [
+            "off"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Mapping",
+          "startLine": 18,
+          "endLine": 25,
+          "methods": [
+            "Len",
+            "BlockSize",
+            "Builds",
+            "At",
+            "All",
+            "BytesByBuild",
+            "Slice",
+            "Validate",
+            "SearchOffset"
+          ],
+          "properties": [
+            "blockSize",
+            "builds",
+            "offsets",
+            "lengths",
+            "storage",
+            "buildIdx"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Mapping",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "NewMapping",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "Len",
+          "line": 133,
+          "isDefault": false
+        },
+        {
+          "name": "BlockSize",
+          "line": 136,
+          "isDefault": false
+        },
+        {
+          "name": "Builds",
+          "line": 140,
+          "isDefault": false
+        },
+        {
+          "name": "At",
+          "line": 144,
+          "isDefault": false
+        },
+        {
+          "name": "All",
+          "line": 160,
+          "isDefault": false
+        },
+        {
+          "name": "BytesByBuild",
+          "line": 175,
+          "isDefault": false
+        },
+        {
+          "name": "Slice",
+          "line": 194,
+          "isDefault": false
+        },
+        {
+          "name": "Validate",
+          "line": 206,
+          "isDefault": false
+        },
+        {
+          "name": "SearchOffset",
+          "line": 240,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewMapping",
+          "callee": "errors.New",
+          "lineNumber": 44
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "len",
+          "lineNumber": 46
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "make",
+          "lineNumber": 50
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "make",
+          "lineNumber": 51
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "make",
+          "lineNumber": 52
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "len",
+          "lineNumber": 52
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "make",
+          "lineNumber": 53
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "len",
+          "lineNumber": 53
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "make",
+          "lineNumber": 54
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "len",
+          "lineNumber": 54
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "make",
+          "lineNumber": 55
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "len",
+          "lineNumber": 55
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "fmt.Errorf",
+          "lineNumber": 59
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "fmt.Errorf",
+          "lineNumber": 62
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "fmt.Errorf",
+          "lineNumber": 65
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "fmt.Errorf",
+          "lineNumber": 72
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "uint16",
+          "lineNumber": 75
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "len",
+          "lineNumber": 80
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "fmt.Errorf",
+          "lineNumber": 81
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "uint16",
+          "lineNumber": 83
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "len",
+          "lineNumber": 83
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "append",
+          "lineNumber": 85
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "uint32",
+          "lineNumber": 89
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "uint32",
+          "lineNumber": 90
+        },
+        {
+          "caller": "NewMapping",
+          "callee": "uint32",
+          "lineNumber": 91
+        },
+        {
+          "caller": "newMappingFromColumns",
+          "callee": "len",
+          "lineNumber": 109
+        },
+        {
+          "caller": "newMappingFromColumns",
+          "callee": "len",
+          "lineNumber": 110
+        },
+        {
+          "caller": "newMappingFromColumns",
+          "callee": "len",
+          "lineNumber": 110
+        },
+        {
+          "caller": "newMappingFromColumns",
+          "callee": "len",
+          "lineNumber": 110
+        },
+        {
+          "caller": "newMappingFromColumns",
+          "callee": "fmt.Errorf",
+          "lineNumber": 111
+        },
+        {
+          "caller": "newMappingFromColumns",
+          "callee": "len",
+          "lineNumber": 111
+        },
+        {
+          "caller": "newMappingFromColumns",
+          "callee": "len",
+          "lineNumber": 111
+        },
+        {
+          "caller": "newMappingFromColumns",
+          "callee": "len",
+          "lineNumber": 111
+        },
+        {
+          "caller": "newMappingFromColumns",
+          "callee": "int",
+          "lineNumber": 117
+        },
+        {
+          "caller": "newMappingFromColumns",
+          "callee": "len",
+          "lineNumber": 117
+        },
+        {
+          "caller": "newMappingFromColumns",
+          "callee": "fmt.Errorf",
+          "lineNumber": 118
+        },
+        {
+          "caller": "newMappingFromColumns",
+          "callee": "len",
+          "lineNumber": 118
+        },
+        {
+          "caller": "Len",
+          "callee": "len",
+          "lineNumber": 133
+        },
+        {
+          "caller": "At",
+          "callee": "uint64",
+          "lineNumber": 151
+        },
+        {
+          "caller": "At",
+          "callee": "uint64",
+          "lineNumber": 152
+        },
+        {
+          "caller": "At",
+          "callee": "uint64",
+          "lineNumber": 154
+        },
+        {
+          "caller": "All",
+          "callee": "yield",
+          "lineNumber": 163
+        },
+        {
+          "caller": "All",
+          "callee": "m.At",
+          "lineNumber": 163
+        },
+        {
+          "caller": "BytesByBuild",
+          "callee": "make",
+          "lineNumber": 176
+        },
+        {
+          "caller": "BytesByBuild",
+          "callee": "len",
+          "lineNumber": 176
+        },
+        {
+          "caller": "BytesByBuild",
+          "callee": "uint64",
+          "lineNumber": 179
+        },
+        {
+          "caller": "BytesByBuild",
+          "callee": "make",
+          "lineNumber": 183
+        },
+        {
+          "caller": "BytesByBuild",
+          "callee": "len",
+          "lineNumber": 183
+        },
+        {
+          "caller": "Slice",
+          "callee": "make",
+          "lineNumber": 195
+        },
+        {
+          "caller": "Slice",
+          "callee": "len",
+          "lineNumber": 195
+        },
+        {
+          "caller": "Slice",
+          "callee": "m.At",
+          "lineNumber": 197
+        },
+        {
+          "caller": "Validate",
+          "callee": "errors.New",
+          "lineNumber": 208
+        },
+        {
+          "caller": "Validate",
+          "callee": "ValidateMappings",
+          "lineNumber": 214
+        },
+        {
+          "caller": "Validate",
+          "callee": "m.Slice",
+          "lineNumber": 214
+        },
+        {
+          "caller": "Validate",
+          "callee": "uint64",
+          "lineNumber": 219
+        },
+        {
+          "caller": "Validate",
+          "callee": "uint64",
+          "lineNumber": 220
+        },
+        {
+          "caller": "Validate",
+          "callee": "fmt.Errorf",
+          "lineNumber": 222
+        },
+        {
+          "caller": "Validate",
+          "callee": "fmt.Errorf",
+          "lineNumber": 225
+        },
+        {
+          "caller": "Validate",
+          "callee": "fmt.Errorf",
+          "lineNumber": 230
+        },
+        {
+          "caller": "SearchOffset",
+          "callee": "len",
+          "lineNumber": 241
+        },
+        {
+          "caller": "SearchOffset",
+          "callee": "uint64",
+          "lineNumber": 244
+        },
+        {
+          "caller": "SearchOffset",
+          "callee": "len",
+          "lineNumber": 245
+        },
+        {
+          "caller": "SearchOffset",
+          "callee": "int",
+          "lineNumber": 247
+        },
+        {
+          "caller": "SearchOffset",
+          "callee": "uint",
+          "lineNumber": 247
+        },
+        {
+          "caller": "SearchOffset",
+          "callee": "uint64",
+          "lineNumber": 248
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 11,
+        "functionCount": 11,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/shared/pkg/storage/header/diff_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 24,
+      "nonEmptyLines": 18,
+      "functions": [
+        {
+          "name": "TestIsZero",
+          "startLine": 9,
+          "endLine": 24,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestIsZero",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestIsZero",
+          "callee": "t.Parallel",
+          "lineNumber": 10
+        },
+        {
+          "caller": "TestIsZero",
+          "callee": "assert.True",
+          "lineNumber": 12
+        },
+        {
+          "caller": "TestIsZero",
+          "callee": "IsZero",
+          "lineNumber": 12
+        },
+        {
+          "caller": "TestIsZero",
+          "callee": "make",
+          "lineNumber": 12
+        },
+        {
+          "caller": "TestIsZero",
+          "callee": "assert.False",
+          "lineNumber": 13
+        },
+        {
+          "caller": "TestIsZero",
+          "callee": "IsZero",
+          "lineNumber": 13
+        },
+        {
+          "caller": "TestIsZero",
+          "callee": "make",
+          "lineNumber": 17
+        },
+        {
+          "caller": "TestIsZero",
+          "callee": "assert.False",
+          "lineNumber": 19
+        },
+        {
+          "caller": "TestIsZero",
+          "callee": "IsZero",
+          "lineNumber": 19
+        },
+        {
+          "caller": "TestIsZero",
+          "callee": "make",
+          "lineNumber": 21
+        },
+        {
+          "caller": "TestIsZero",
+          "callee": "assert.False",
+          "lineNumber": 23
+        },
+        {
+          "caller": "TestIsZero",
+          "callee": "IsZero",
+          "lineNumber": 23
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/pkg/storage/header/diff.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 37,
+      "nonEmptyLines": 30,
+      "functions": [
+        {
+          "name": "IsZero",
+          "startLine": 24,
+          "endLine": 37,
+          "params": [
+            "b"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "IsZero",
+          "line": 24,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "IsZero",
+          "callee": "len",
+          "lineNumber": 25
+        },
+        {
+          "caller": "IsZero",
+          "callee": "bytes.Equal",
+          "lineNumber": 36
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/pkg/storage/header/inspect.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 130,
+      "nonEmptyLines": 104,
+      "functions": [
+        {
+          "name": "Format",
+          "startLine": 15,
+          "endLine": 24,
+          "params": [
+            "blockSize"
+          ]
+        },
+        {
+          "name": "Layers",
+          "startLine": 33,
+          "endLine": 41,
+          "params": [
+            "mappings"
+          ]
+        },
+        {
+          "name": "Visualize",
+          "startLine": 47,
+          "endLine": 81,
+          "params": [
+            "mappings",
+            "size",
+            "blockSize",
+            "cols",
+            "bottomGroup",
+            "topGroup"
+          ]
+        },
+        {
+          "name": "ValidateMappings",
+          "startLine": 88,
+          "endLine": 112,
+          "params": [
+            "mappings",
+            "size",
+            "blockSize"
+          ]
+        },
+        {
+          "name": "Equal",
+          "startLine": 114,
+          "endLine": 116,
+          "params": [
+            "other"
+          ]
+        },
+        {
+          "name": "Equal",
+          "startLine": 118,
+          "endLine": 130,
+          "params": [
+            "a",
+            "b"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Format",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "Layers",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "Visualize",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "ValidateMappings",
+          "line": 88,
+          "isDefault": false
+        },
+        {
+          "name": "Equal",
+          "line": 114,
+          "isDefault": false
+        },
+        {
+          "name": "Equal",
+          "line": 118,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Format",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 16
+        },
+        {
+          "caller": "Format",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 18
+        },
+        {
+          "caller": "Format",
+          "callee": "mapping.BuildId.String",
+          "lineNumber": 22
+        },
+        {
+          "caller": "Layers",
+          "callee": "make",
+          "lineNumber": 34
+        },
+        {
+          "caller": "Visualize",
+          "callee": "make",
+          "lineNumber": 48
+        },
+        {
+          "caller": "Visualize",
+          "callee": "make",
+          "lineNumber": 70
+        },
+        {
+          "caller": "Visualize",
+          "callee": "uint64",
+          "lineNumber": 72
+        },
+        {
+          "caller": "Visualize",
+          "callee": "uint64",
+          "lineNumber": 73
+        },
+        {
+          "caller": "Visualize",
+          "callee": "len",
+          "lineNumber": 73
+        },
+        {
+          "caller": "Visualize",
+          "callee": "append",
+          "lineNumber": 74
+        },
+        {
+          "caller": "Visualize",
+          "callee": "string",
+          "lineNumber": 74
+        },
+        {
+          "caller": "Visualize",
+          "callee": "append",
+          "lineNumber": 76
+        },
+        {
+          "caller": "Visualize",
+          "callee": "string",
+          "lineNumber": 76
+        },
+        {
+          "caller": "Visualize",
+          "callee": "strings.Join",
+          "lineNumber": 80
+        },
+        {
+          "caller": "ValidateMappings",
+          "callee": "fmt.Errorf",
+          "lineNumber": 93
+        },
+        {
+          "caller": "ValidateMappings",
+          "callee": "mapping.Format",
+          "lineNumber": 93
+        },
+        {
+          "caller": "ValidateMappings",
+          "callee": "fmt.Errorf",
+          "lineNumber": 97
+        },
+        {
+          "caller": "ValidateMappings",
+          "callee": "mapping.Format",
+          "lineNumber": 97
+        },
+        {
+          "caller": "ValidateMappings",
+          "callee": "fmt.Errorf",
+          "lineNumber": 101
+        },
+        {
+          "caller": "ValidateMappings",
+          "callee": "mapping.Format",
+          "lineNumber": 101
+        },
+        {
+          "caller": "ValidateMappings",
+          "callee": "fmt.Errorf",
+          "lineNumber": 108
+        },
+        {
+          "caller": "ValidateMappings",
+          "callee": "mappings[len(mappings)-1].Format",
+          "lineNumber": 108
+        },
+        {
+          "caller": "ValidateMappings",
+          "callee": "len",
+          "lineNumber": 108
+        },
+        {
+          "caller": "Equal",
+          "callee": "len",
+          "lineNumber": 119
+        },
+        {
+          "caller": "Equal",
+          "callee": "len",
+          "lineNumber": 119
+        },
+        {
+          "caller": "Equal",
+          "callee": "a[i].Equal",
+          "lineNumber": 124
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 6,
+        "functionCount": 6,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/pkg/storage/header/mapping_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 947,
+      "nonEmptyLines": 820,
+      "functions": [
+        {
+          "name": "TestMergeMappingsRemoveEmpty",
+          "startLine": 39,
+          "endLine": 56,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMergeMappingsBaseBeforeDiffNoOverlap",
+          "startLine": 58,
+          "endLine": 96,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMergeMappingsDiffBeforeBaseNoOverlap",
+          "startLine": 98,
+          "endLine": 136,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMergeMappingsBaseInsideDiff",
+          "startLine": 138,
+          "endLine": 171,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMergeMappingsDiffInsideBase",
+          "startLine": 173,
+          "endLine": 216,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMergeMappingsBaseAfterDiffWithOverlap",
+          "startLine": 218,
+          "endLine": 256,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMergeMappingsDiffAfterBaseWithOverlap",
+          "startLine": 258,
+          "endLine": 296,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNormalizeMappingsEmptySlice",
+          "startLine": 298,
+          "endLine": 302,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNormalizeMappingsSingleMapping",
+          "startLine": 304,
+          "endLine": 324,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNormalizeMappingsNoAdjacentSameBuildId",
+          "startLine": 326,
+          "endLine": 362,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNormalizeMappingsTwoAdjacentSameBuildId",
+          "startLine": 364,
+          "endLine": 391,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNormalizeMappingsAllSameBuildId",
+          "startLine": 393,
+          "endLine": 432,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNormalizeMappingsMultipleGroupsSameBuildId",
+          "startLine": 434,
+          "endLine": 478,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNormalizeMappingsAlternatingBuildIds",
+          "startLine": 480,
+          "endLine": 523,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNormalizeMappingsThreeConsecutiveSameBuildId",
+          "startLine": 525,
+          "endLine": 558,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNormalizeMappingsMixedPattern",
+          "startLine": 560,
+          "endLine": 623,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNormalizeMappingsZeroLengthMapping",
+          "startLine": 625,
+          "endLine": 658,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNormalizeMappingsDoesNotModifyInput",
+          "startLine": 660,
+          "endLine": 706,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestMergeMappings_Splits",
+          "startLine": 715,
+          "endLine": 884,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNormalizeMappings_DoesNotMergeAcrossStorageGap",
+          "startLine": 891,
+          "endLine": 909,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNormalizeMappings_MergesContiguousStorage",
+          "startLine": 914,
+          "endLine": 927,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNormalizeMappings_MergesEmptyRegardlessOfStorage",
+          "startLine": 933,
+          "endLine": 947,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestMergeMappingsRemoveEmpty",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "TestMergeMappingsBaseBeforeDiffNoOverlap",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "TestMergeMappingsDiffBeforeBaseNoOverlap",
+          "line": 98,
+          "isDefault": false
+        },
+        {
+          "name": "TestMergeMappingsBaseInsideDiff",
+          "line": 138,
+          "isDefault": false
+        },
+        {
+          "name": "TestMergeMappingsDiffInsideBase",
+          "line": 173,
+          "isDefault": false
+        },
+        {
+          "name": "TestMergeMappingsBaseAfterDiffWithOverlap",
+          "line": 218,
+          "isDefault": false
+        },
+        {
+          "name": "TestMergeMappingsDiffAfterBaseWithOverlap",
+          "line": 258,
+          "isDefault": false
+        },
+        {
+          "name": "TestNormalizeMappingsEmptySlice",
+          "line": 298,
+          "isDefault": false
+        },
+        {
+          "name": "TestNormalizeMappingsSingleMapping",
+          "line": 304,
+          "isDefault": false
+        },
+        {
+          "name": "TestNormalizeMappingsNoAdjacentSameBuildId",
+          "line": 326,
+          "isDefault": false
+        },
+        {
+          "name": "TestNormalizeMappingsTwoAdjacentSameBuildId",
+          "line": 364,
+          "isDefault": false
+        },
+        {
+          "name": "TestNormalizeMappingsAllSameBuildId",
+          "line": 393,
+          "isDefault": false
+        },
+        {
+          "name": "TestNormalizeMappingsMultipleGroupsSameBuildId",
+          "line": 434,
+          "isDefault": false
+        },
+        {
+          "name": "TestNormalizeMappingsAlternatingBuildIds",
+          "line": 480,
+          "isDefault": false
+        },
+        {
+          "name": "TestNormalizeMappingsThreeConsecutiveSameBuildId",
+          "line": 525,
+          "isDefault": false
+        },
+        {
+          "name": "TestNormalizeMappingsMixedPattern",
+          "line": 560,
+          "isDefault": false
+        },
+        {
+          "name": "TestNormalizeMappingsZeroLengthMapping",
+          "line": 625,
+          "isDefault": false
+        },
+        {
+          "name": "TestNormalizeMappingsDoesNotModifyInput",
+          "line": 660,
+          "isDefault": false
+        },
+        {
+          "name": "TestMergeMappings_Splits",
+          "line": 715,
+          "isDefault": false
+        },
+        {
+          "name": "TestNormalizeMappings_DoesNotMergeAcrossStorageGap",
+          "line": 891,
+          "isDefault": false
+        },
+        {
+          "name": "TestNormalizeMappings_MergesContiguousStorage",
+          "line": 914,
+          "isDefault": false
+        },
+        {
+          "name": "TestNormalizeMappings_MergesEmptyRegardlessOfStorage",
+          "line": 933,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestMergeMappingsRemoveEmpty",
+          "callee": "t.Parallel",
+          "lineNumber": 40
+        },
+        {
+          "caller": "TestMergeMappingsRemoveEmpty",
+          "callee": "MergeMappings",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestMergeMappingsRemoveEmpty",
+          "callee": "require.True",
+          "lineNumber": 51
+        },
+        {
+          "caller": "TestMergeMappingsRemoveEmpty",
+          "callee": "Equal",
+          "lineNumber": 51
+        },
+        {
+          "caller": "TestMergeMappingsRemoveEmpty",
+          "callee": "ValidateMappings",
+          "lineNumber": 53
+        },
+        {
+          "caller": "TestMergeMappingsRemoveEmpty",
+          "callee": "require.NoError",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestMergeMappingsBaseBeforeDiffNoOverlap",
+          "callee": "t.Parallel",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestMergeMappingsBaseBeforeDiffNoOverlap",
+          "callee": "MergeMappings",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestMergeMappingsBaseBeforeDiffNoOverlap",
+          "callee": "require.True",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestMergeMappingsBaseBeforeDiffNoOverlap",
+          "callee": "Equal",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestMergeMappingsBaseBeforeDiffNoOverlap",
+          "callee": "ValidateMappings",
+          "lineNumber": 93
+        },
+        {
+          "caller": "TestMergeMappingsBaseBeforeDiffNoOverlap",
+          "callee": "require.NoError",
+          "lineNumber": 95
+        },
+        {
+          "caller": "TestMergeMappingsDiffBeforeBaseNoOverlap",
+          "callee": "t.Parallel",
+          "lineNumber": 99
+        },
+        {
+          "caller": "TestMergeMappingsDiffBeforeBaseNoOverlap",
+          "callee": "MergeMappings",
+          "lineNumber": 108
+        },
+        {
+          "caller": "TestMergeMappingsDiffBeforeBaseNoOverlap",
+          "callee": "require.True",
+          "lineNumber": 110
+        },
+        {
+          "caller": "TestMergeMappingsDiffBeforeBaseNoOverlap",
+          "callee": "Equal",
+          "lineNumber": 110
+        },
+        {
+          "caller": "TestMergeMappingsDiffBeforeBaseNoOverlap",
+          "callee": "ValidateMappings",
+          "lineNumber": 133
+        },
+        {
+          "caller": "TestMergeMappingsDiffBeforeBaseNoOverlap",
+          "callee": "require.NoError",
+          "lineNumber": 135
+        },
+        {
+          "caller": "TestMergeMappingsBaseInsideDiff",
+          "callee": "t.Parallel",
+          "lineNumber": 139
+        },
+        {
+          "caller": "TestMergeMappingsBaseInsideDiff",
+          "callee": "MergeMappings",
+          "lineNumber": 148
+        },
+        {
+          "caller": "TestMergeMappingsBaseInsideDiff",
+          "callee": "require.True",
+          "lineNumber": 150
+        },
+        {
+          "caller": "TestMergeMappingsBaseInsideDiff",
+          "callee": "Equal",
+          "lineNumber": 150
+        },
+        {
+          "caller": "TestMergeMappingsBaseInsideDiff",
+          "callee": "ValidateMappings",
+          "lineNumber": 168
+        },
+        {
+          "caller": "TestMergeMappingsBaseInsideDiff",
+          "callee": "require.NoError",
+          "lineNumber": 170
+        },
+        {
+          "caller": "TestMergeMappingsDiffInsideBase",
+          "callee": "t.Parallel",
+          "lineNumber": 174
+        },
+        {
+          "caller": "TestMergeMappingsDiffInsideBase",
+          "callee": "MergeMappings",
+          "lineNumber": 183
+        },
+        {
+          "caller": "TestMergeMappingsDiffInsideBase",
+          "callee": "require.True",
+          "lineNumber": 185
+        },
+        {
+          "caller": "TestMergeMappingsDiffInsideBase",
+          "callee": "Equal",
+          "lineNumber": 185
+        },
+        {
+          "caller": "TestMergeMappingsDiffInsideBase",
+          "callee": "ValidateMappings",
+          "lineNumber": 213
+        },
+        {
+          "caller": "TestMergeMappingsDiffInsideBase",
+          "callee": "require.NoError",
+          "lineNumber": 215
+        },
+        {
+          "caller": "TestMergeMappingsBaseAfterDiffWithOverlap",
+          "callee": "t.Parallel",
+          "lineNumber": 219
+        },
+        {
+          "caller": "TestMergeMappingsBaseAfterDiffWithOverlap",
+          "callee": "MergeMappings",
+          "lineNumber": 228
+        },
+        {
+          "caller": "TestMergeMappingsBaseAfterDiffWithOverlap",
+          "callee": "require.True",
+          "lineNumber": 230
+        },
+        {
+          "caller": "TestMergeMappingsBaseAfterDiffWithOverlap",
+          "callee": "Equal",
+          "lineNumber": 230
+        },
+        {
+          "caller": "TestMergeMappingsBaseAfterDiffWithOverlap",
+          "callee": "ValidateMappings",
+          "lineNumber": 253
+        },
+        {
+          "caller": "TestMergeMappingsBaseAfterDiffWithOverlap",
+          "callee": "require.NoError",
+          "lineNumber": 255
+        },
+        {
+          "caller": "TestMergeMappingsDiffAfterBaseWithOverlap",
+          "callee": "t.Parallel",
+          "lineNumber": 259
+        },
+        {
+          "caller": "TestMergeMappingsDiffAfterBaseWithOverlap",
+          "callee": "MergeMappings",
+          "lineNumber": 268
+        },
+        {
+          "caller": "TestMergeMappingsDiffAfterBaseWithOverlap",
+          "callee": "require.True",
+          "lineNumber": 270
+        },
+        {
+          "caller": "TestMergeMappingsDiffAfterBaseWithOverlap",
+          "callee": "Equal",
+          "lineNumber": 270
+        },
+        {
+          "caller": "TestMergeMappingsDiffAfterBaseWithOverlap",
+          "callee": "ValidateMappings",
+          "lineNumber": 293
+        },
+        {
+          "caller": "TestMergeMappingsDiffAfterBaseWithOverlap",
+          "callee": "require.NoError",
+          "lineNumber": 295
+        },
+        {
+          "caller": "TestNormalizeMappingsEmptySlice",
+          "callee": "t.Parallel",
+          "lineNumber": 299
+        },
+        {
+          "caller": "TestNormalizeMappingsEmptySlice",
+          "callee": "NormalizeMappings",
+          "lineNumber": 300
+        },
+        {
+          "caller": "TestNormalizeMappingsEmptySlice",
+          "callee": "assert.Empty",
+          "lineNumber": 301
+        },
+        {
+          "caller": "TestNormalizeMappingsSingleMapping",
+          "callee": "t.Parallel",
+          "lineNumber": 305
+        },
+        {
+          "caller": "TestNormalizeMappingsSingleMapping",
+          "callee": "NormalizeMappings",
+          "lineNumber": 315
+        },
+        {
+          "caller": "TestNormalizeMappingsSingleMapping",
+          "callee": "assert.Len",
+          "lineNumber": 317
+        },
+        {
+          "caller": "TestNormalizeMappingsSingleMapping",
+          "callee": "assert.Equal",
+          "lineNumber": 318
+        },
+        {
+          "caller": "TestNormalizeMappingsSingleMapping",
+          "callee": "uint64",
+          "lineNumber": 318
+        },
+        {
+          "caller": "TestNormalizeMappingsSingleMapping",
+          "callee": "assert.Equal",
+          "lineNumber": 319
+        },
+        {
+          "caller": "TestNormalizeMappingsSingleMapping",
+          "callee": "assert.Equal",
+          "lineNumber": 320
+        },
+        {
+          "caller": "TestNormalizeMappingsSingleMapping",
+          "callee": "ValidateMappings",
+          "lineNumber": 322
+        },
+        {
+          "caller": "TestNormalizeMappingsSingleMapping",
+          "callee": "require.NoError",
+          "lineNumber": 323
+        },
+        {
+          "caller": "TestNormalizeMappingsNoAdjacentSameBuildId",
+          "callee": "t.Parallel",
+          "lineNumber": 327
+        },
+        {
+          "caller": "TestNormalizeMappingsNoAdjacentSameBuildId",
+          "callee": "uuid.New",
+          "lineNumber": 328
+        },
+        {
+          "caller": "TestNormalizeMappingsNoAdjacentSameBuildId",
+          "callee": "uuid.New",
+          "lineNumber": 329
+        },
+        {
+          "caller": "TestNormalizeMappingsNoAdjacentSameBuildId",
+          "callee": "uuid.New",
+          "lineNumber": 330
+        },
+        {
+          "caller": "TestNormalizeMappingsNoAdjacentSameBuildId",
+          "callee": "NormalizeMappings",
+          "lineNumber": 353
+        },
+        {
+          "caller": "TestNormalizeMappingsNoAdjacentSameBuildId",
+          "callee": "assert.Len",
+          "lineNumber": 355
+        },
+        {
+          "caller": "TestNormalizeMappingsNoAdjacentSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 356
+        },
+        {
+          "caller": "TestNormalizeMappingsNoAdjacentSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 357
+        },
+        {
+          "caller": "TestNormalizeMappingsNoAdjacentSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 358
+        },
+        {
+          "caller": "TestNormalizeMappingsNoAdjacentSameBuildId",
+          "callee": "ValidateMappings",
+          "lineNumber": 360
+        },
+        {
+          "caller": "TestNormalizeMappingsNoAdjacentSameBuildId",
+          "callee": "require.NoError",
+          "lineNumber": 361
+        },
+        {
+          "caller": "TestNormalizeMappingsTwoAdjacentSameBuildId",
+          "callee": "t.Parallel",
+          "lineNumber": 365
+        },
+        {
+          "caller": "TestNormalizeMappingsTwoAdjacentSameBuildId",
+          "callee": "NormalizeMappings",
+          "lineNumber": 381
+        },
+        {
+          "caller": "TestNormalizeMappingsTwoAdjacentSameBuildId",
+          "callee": "assert.Len",
+          "lineNumber": 383
+        },
+        {
+          "caller": "TestNormalizeMappingsTwoAdjacentSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 384
+        },
+        {
+          "caller": "TestNormalizeMappingsTwoAdjacentSameBuildId",
+          "callee": "uint64",
+          "lineNumber": 384
+        },
+        {
+          "caller": "TestNormalizeMappingsTwoAdjacentSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 385
+        },
+        {
+          "caller": "TestNormalizeMappingsTwoAdjacentSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 386
+        },
+        {
+          "caller": "TestNormalizeMappingsTwoAdjacentSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 387
+        },
+        {
+          "caller": "TestNormalizeMappingsTwoAdjacentSameBuildId",
+          "callee": "uint64",
+          "lineNumber": 387
+        },
+        {
+          "caller": "TestNormalizeMappingsTwoAdjacentSameBuildId",
+          "callee": "ValidateMappings",
+          "lineNumber": 389
+        },
+        {
+          "caller": "TestNormalizeMappingsTwoAdjacentSameBuildId",
+          "callee": "require.NoError",
+          "lineNumber": 390
+        },
+        {
+          "caller": "TestNormalizeMappingsAllSameBuildId",
+          "callee": "t.Parallel",
+          "lineNumber": 394
+        },
+        {
+          "caller": "TestNormalizeMappingsAllSameBuildId",
+          "callee": "NormalizeMappings",
+          "lineNumber": 422
+        },
+        {
+          "caller": "TestNormalizeMappingsAllSameBuildId",
+          "callee": "assert.Len",
+          "lineNumber": 424
+        },
+        {
+          "caller": "TestNormalizeMappingsAllSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 425
+        },
+        {
+          "caller": "TestNormalizeMappingsAllSameBuildId",
+          "callee": "uint64",
+          "lineNumber": 425
+        },
+        {
+          "caller": "TestNormalizeMappingsAllSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 426
+        },
+        {
+          "caller": "TestNormalizeMappingsAllSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 427
+        },
+        {
+          "caller": "TestNormalizeMappingsAllSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 428
+        },
+        {
+          "caller": "TestNormalizeMappingsAllSameBuildId",
+          "callee": "uint64",
+          "lineNumber": 428
+        },
+        {
+          "caller": "TestNormalizeMappingsAllSameBuildId",
+          "callee": "ValidateMappings",
+          "lineNumber": 430
+        },
+        {
+          "caller": "TestNormalizeMappingsAllSameBuildId",
+          "callee": "require.NoError",
+          "lineNumber": 431
+        },
+        {
+          "caller": "TestNormalizeMappingsMultipleGroupsSameBuildId",
+          "callee": "t.Parallel",
+          "lineNumber": 435
+        },
+        {
+          "caller": "TestNormalizeMappingsMultipleGroupsSameBuildId",
+          "callee": "uuid.New",
+          "lineNumber": 436
+        },
+        {
+          "caller": "TestNormalizeMappingsMultipleGroupsSameBuildId",
+          "callee": "uuid.New",
+          "lineNumber": 437
+        },
+        {
+          "caller": "TestNormalizeMappingsMultipleGroupsSameBuildId",
+          "callee": "NormalizeMappings",
+          "lineNumber": 466
+        },
+        {
+          "caller": "TestNormalizeMappingsMultipleGroupsSameBuildId",
+          "callee": "assert.Len",
+          "lineNumber": 468
+        },
+        {
+          "caller": "TestNormalizeMappingsMultipleGroupsSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 469
+        },
+        {
+          "caller": "TestNormalizeMappingsMultipleGroupsSameBuildId",
+          "callee": "uint64",
+          "lineNumber": 469
+        },
+        {
+          "caller": "TestNormalizeMappingsMultipleGroupsSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 470
+        },
+        {
+          "caller": "TestNormalizeMappingsMultipleGroupsSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 471
+        },
+        {
+          "caller": "TestNormalizeMappingsMultipleGroupsSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 472
+        },
+        {
+          "caller": "TestNormalizeMappingsMultipleGroupsSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 473
+        },
+        {
+          "caller": "TestNormalizeMappingsMultipleGroupsSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 474
+        },
+        {
+          "caller": "TestNormalizeMappingsMultipleGroupsSameBuildId",
+          "callee": "ValidateMappings",
+          "lineNumber": 476
+        },
+        {
+          "caller": "TestNormalizeMappingsMultipleGroupsSameBuildId",
+          "callee": "require.NoError",
+          "lineNumber": 477
+        },
+        {
+          "caller": "TestNormalizeMappingsAlternatingBuildIds",
+          "callee": "t.Parallel",
+          "lineNumber": 481
+        },
+        {
+          "caller": "TestNormalizeMappingsAlternatingBuildIds",
+          "callee": "uuid.New",
+          "lineNumber": 482
+        },
+        {
+          "caller": "TestNormalizeMappingsAlternatingBuildIds",
+          "callee": "uuid.New",
+          "lineNumber": 483
+        },
+        {
+          "caller": "TestNormalizeMappingsAlternatingBuildIds",
+          "callee": "NormalizeMappings",
+          "lineNumber": 512
+        },
+        {
+          "caller": "TestNormalizeMappingsAlternatingBuildIds",
+          "callee": "assert.Len",
+          "lineNumber": 515
+        },
+        {
+          "caller": "TestNormalizeMappingsAlternatingBuildIds",
+          "callee": "assert.Equal",
+          "lineNumber": 516
+        },
+        {
+          "caller": "TestNormalizeMappingsAlternatingBuildIds",
+          "callee": "assert.Equal",
+          "lineNumber": 517
+        },
+        {
+          "caller": "TestNormalizeMappingsAlternatingBuildIds",
+          "callee": "assert.Equal",
+          "lineNumber": 518
+        },
+        {
+          "caller": "TestNormalizeMappingsAlternatingBuildIds",
+          "callee": "assert.Equal",
+          "lineNumber": 519
+        },
+        {
+          "caller": "TestNormalizeMappingsAlternatingBuildIds",
+          "callee": "ValidateMappings",
+          "lineNumber": 521
+        },
+        {
+          "caller": "TestNormalizeMappingsAlternatingBuildIds",
+          "callee": "require.NoError",
+          "lineNumber": 522
+        },
+        {
+          "caller": "TestNormalizeMappingsThreeConsecutiveSameBuildId",
+          "callee": "t.Parallel",
+          "lineNumber": 526
+        },
+        {
+          "caller": "TestNormalizeMappingsThreeConsecutiveSameBuildId",
+          "callee": "NormalizeMappings",
+          "lineNumber": 548
+        },
+        {
+          "caller": "TestNormalizeMappingsThreeConsecutiveSameBuildId",
+          "callee": "assert.Len",
+          "lineNumber": 550
+        },
+        {
+          "caller": "TestNormalizeMappingsThreeConsecutiveSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 551
+        },
+        {
+          "caller": "TestNormalizeMappingsThreeConsecutiveSameBuildId",
+          "callee": "uint64",
+          "lineNumber": 551
+        },
+        {
+          "caller": "TestNormalizeMappingsThreeConsecutiveSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 552
+        },
+        {
+          "caller": "TestNormalizeMappingsThreeConsecutiveSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 553
+        },
+        {
+          "caller": "TestNormalizeMappingsThreeConsecutiveSameBuildId",
+          "callee": "assert.Equal",
+          "lineNumber": 554
+        },
+        {
+          "caller": "TestNormalizeMappingsThreeConsecutiveSameBuildId",
+          "callee": "uint64",
+          "lineNumber": 554
+        },
+        {
+          "caller": "TestNormalizeMappingsThreeConsecutiveSameBuildId",
+          "callee": "ValidateMappings",
+          "lineNumber": 556
+        },
+        {
+          "caller": "TestNormalizeMappingsThreeConsecutiveSameBuildId",
+          "callee": "require.NoError",
+          "lineNumber": 557
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "t.Parallel",
+          "lineNumber": 561
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "uuid.New",
+          "lineNumber": 562
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "uuid.New",
+          "lineNumber": 563
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "uuid.New",
+          "lineNumber": 564
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "NormalizeMappings",
+          "lineNumber": 605
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "assert.Len",
+          "lineNumber": 607
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "assert.Equal",
+          "lineNumber": 609
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "uint64",
+          "lineNumber": 609
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "assert.Equal",
+          "lineNumber": 610
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "assert.Equal",
+          "lineNumber": 611
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "assert.Equal",
+          "lineNumber": 613
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "assert.Equal",
+          "lineNumber": 614
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "assert.Equal",
+          "lineNumber": 615
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "assert.Equal",
+          "lineNumber": 617
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "assert.Equal",
+          "lineNumber": 618
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "assert.Equal",
+          "lineNumber": 619
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "ValidateMappings",
+          "lineNumber": 621
+        },
+        {
+          "caller": "TestNormalizeMappingsMixedPattern",
+          "callee": "require.NoError",
+          "lineNumber": 622
+        },
+        {
+          "caller": "TestNormalizeMappingsZeroLengthMapping",
+          "callee": "t.Parallel",
+          "lineNumber": 626
+        },
+        {
+          "caller": "TestNormalizeMappingsZeroLengthMapping",
+          "callee": "NormalizeMappings",
+          "lineNumber": 648
+        },
+        {
+          "caller": "TestNormalizeMappingsZeroLengthMapping",
+          "callee": "assert.Len",
+          "lineNumber": 651
+        },
+        {
+          "caller": "TestNormalizeMappingsZeroLengthMapping",
+          "callee": "assert.Equal",
+          "lineNumber": 652
+        },
+        {
+          "caller": "TestNormalizeMappingsZeroLengthMapping",
+          "callee": "uint64",
+          "lineNumber": 652
+        },
+        {
+          "caller": "TestNormalizeMappingsZeroLengthMapping",
+          "callee": "assert.Equal",
+          "lineNumber": 653
+        },
+        {
+          "caller": "TestNormalizeMappingsZeroLengthMapping",
+          "callee": "assert.Equal",
+          "lineNumber": 654
+        },
+        {
+          "caller": "TestNormalizeMappingsZeroLengthMapping",
+          "callee": "ValidateMappings",
+          "lineNumber": 656
+        },
+        {
+          "caller": "TestNormalizeMappingsZeroLengthMapping",
+          "callee": "require.NoError",
+          "lineNumber": 657
+        },
+        {
+          "caller": "TestNormalizeMappingsDoesNotModifyInput",
+          "callee": "t.Parallel",
+          "lineNumber": 661
+        },
+        {
+          "caller": "TestNormalizeMappingsDoesNotModifyInput",
+          "callee": "len",
+          "lineNumber": 684
+        },
+        {
+          "caller": "TestNormalizeMappingsDoesNotModifyInput",
+          "callee": "NormalizeMappings",
+          "lineNumber": 690
+        },
+        {
+          "caller": "TestNormalizeMappingsDoesNotModifyInput",
+          "callee": "assert.Len",
+          "lineNumber": 693
+        },
+        {
+          "caller": "TestNormalizeMappingsDoesNotModifyInput",
+          "callee": "assert.Equal",
+          "lineNumber": 694
+        },
+        {
+          "caller": "TestNormalizeMappingsDoesNotModifyInput",
+          "callee": "uint64",
+          "lineNumber": 694
+        },
+        {
+          "caller": "TestNormalizeMappingsDoesNotModifyInput",
+          "callee": "assert.Equal",
+          "lineNumber": 695
+        },
+        {
+          "caller": "TestNormalizeMappingsDoesNotModifyInput",
+          "callee": "assert.Len",
+          "lineNumber": 698
+        },
+        {
+          "caller": "TestNormalizeMappingsDoesNotModifyInput",
+          "callee": "assert.Equal",
+          "lineNumber": 699
+        },
+        {
+          "caller": "TestNormalizeMappingsDoesNotModifyInput",
+          "callee": "assert.Equal",
+          "lineNumber": 700
+        },
+        {
+          "caller": "TestNormalizeMappingsDoesNotModifyInput",
+          "callee": "assert.Equal",
+          "lineNumber": 701
+        },
+        {
+          "caller": "TestNormalizeMappingsDoesNotModifyInput",
+          "callee": "assert.Equal",
+          "lineNumber": 702
+        },
+        {
+          "caller": "TestNormalizeMappingsDoesNotModifyInput",
+          "callee": "ValidateMappings",
+          "lineNumber": 704
+        },
+        {
+          "caller": "TestNormalizeMappingsDoesNotModifyInput",
+          "callee": "require.NoError",
+          "lineNumber": 705
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "t.Parallel",
+          "lineNumber": 716
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "uuid.New",
+          "lineNumber": 718
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "uuid.New",
+          "lineNumber": 719
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "uuid.New",
+          "lineNumber": 720
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "t.Helper",
+          "lineNumber": 737
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "require.Len",
+          "lineNumber": 738
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 740
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "uint64",
+          "lineNumber": 740
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 741
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 742
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 744
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 746
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 747
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 748
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "t.Helper",
+          "lineNumber": 765
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "require.Len",
+          "lineNumber": 766
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 768
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 770
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 771
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 772
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "t.Helper",
+          "lineNumber": 789
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "require.Len",
+          "lineNumber": 790
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 792
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "uint64",
+          "lineNumber": 792
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 793
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 794
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 796
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "t.Helper",
+          "lineNumber": 810
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "require.Len",
+          "lineNumber": 811
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 813
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 814
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 816
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 818
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 819
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 820
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 822
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 824
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 825
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 826
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "func() []BuildMap {\n\t\t\t\tbuildA := uuid.New()\n\t\t\t\tbuildB := compBaseID\n\t\t\t\tbuildC := uuid.New()\n\n\t\t\t\treturn []BuildMap{\n\t\t\t\t\t{\n\t\t\t\t\t\tOffset: 0, Length: 2 * blockSize,\n\t\t\t\t\t\tBuildId: buildA, BuildStorageOffset: 0,\n\t\t\t\t\t},\n\t\t\t\t\t{\n\t\t\t\t\t\tOffset: 2 * blockSize, Length: 4 * blockSize,\n\t\t\t\t\t\tBuildId: buildB, BuildStorageOffset: 0,\n\t\t\t\t\t},\n\t\t\t\t\t{\n\t\t\t\t\t\tOffset: 6 * blockSize, Length: 2 * blockSize,\n\t\t\t\t\t\tBuildId: buildC, BuildStorageOffset: 0,\n\t\t\t\t\t},\n\t\t\t\t}\n\t\t\t}",
+          "lineNumber": 831
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "uuid.New",
+          "lineNumber": 832
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "uuid.New",
+          "lineNumber": 834
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "t.Helper",
+          "lineNumber": 856
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "require.Len",
+          "lineNumber": 857
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 860
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 861
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 862
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "uint64",
+          "lineNumber": 862
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 865
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 868
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 869
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "assert.Equal",
+          "lineNumber": 870
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "t.Run",
+          "lineNumber": 876
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "t.Parallel",
+          "lineNumber": 877
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "MergeMappings",
+          "lineNumber": 879
+        },
+        {
+          "caller": "TestMergeMappings_Splits",
+          "callee": "tc.validate",
+          "lineNumber": 881
+        },
+        {
+          "caller": "TestNormalizeMappings_DoesNotMergeAcrossStorageGap",
+          "callee": "t.Parallel",
+          "lineNumber": 892
+        },
+        {
+          "caller": "TestNormalizeMappings_DoesNotMergeAcrossStorageGap",
+          "callee": "NormalizeMappings",
+          "lineNumber": 900
+        },
+        {
+          "caller": "TestNormalizeMappings_DoesNotMergeAcrossStorageGap",
+          "callee": "require.Len",
+          "lineNumber": 902
+        },
+        {
+          "caller": "TestNormalizeMappings_DoesNotMergeAcrossStorageGap",
+          "callee": "assert.Equal",
+          "lineNumber": 903
+        },
+        {
+          "caller": "TestNormalizeMappings_DoesNotMergeAcrossStorageGap",
+          "callee": "uint64",
+          "lineNumber": 903
+        },
+        {
+          "caller": "TestNormalizeMappings_DoesNotMergeAcrossStorageGap",
+          "callee": "assert.Equal",
+          "lineNumber": 904
+        },
+        {
+          "caller": "TestNormalizeMappings_DoesNotMergeAcrossStorageGap",
+          "callee": "assert.Equal",
+          "lineNumber": 905
+        },
+        {
+          "caller": "TestNormalizeMappings_DoesNotMergeAcrossStorageGap",
+          "callee": "assert.Equal",
+          "lineNumber": 906
+        },
+        {
+          "caller": "TestNormalizeMappings_DoesNotMergeAcrossStorageGap",
+          "callee": "require.NoError",
+          "lineNumber": 908
+        },
+        {
+          "caller": "TestNormalizeMappings_DoesNotMergeAcrossStorageGap",
+          "callee": "ValidateMappings",
+          "lineNumber": 908
+        },
+        {
+          "caller": "TestNormalizeMappings_MergesContiguousStorage",
+          "callee": "t.Parallel",
+          "lineNumber": 915
+        },
+        {
+          "caller": "TestNormalizeMappings_MergesContiguousStorage",
+          "callee": "NormalizeMappings",
+          "lineNumber": 922
+        },
+        {
+          "caller": "TestNormalizeMappings_MergesContiguousStorage",
+          "callee": "require.Len",
+          "lineNumber": 924
+        },
+        {
+          "caller": "TestNormalizeMappings_MergesContiguousStorage",
+          "callee": "assert.Equal",
+          "lineNumber": 925
+        },
+        {
+          "caller": "TestNormalizeMappings_MergesContiguousStorage",
+          "callee": "assert.Equal",
+          "lineNumber": 926
+        },
+        {
+          "caller": "TestNormalizeMappings_MergesEmptyRegardlessOfStorage",
+          "callee": "t.Parallel",
+          "lineNumber": 934
+        },
+        {
+          "caller": "TestNormalizeMappings_MergesEmptyRegardlessOfStorage",
+          "callee": "NormalizeMappings",
+          "lineNumber": 942
+        },
+        {
+          "caller": "TestNormalizeMappings_MergesEmptyRegardlessOfStorage",
+          "callee": "require.Len",
+          "lineNumber": 944
+        },
+        {
+          "caller": "TestNormalizeMappings_MergesEmptyRegardlessOfStorage",
+          "callee": "assert.Equal",
+          "lineNumber": 945
+        },
+        {
+          "caller": "TestNormalizeMappings_MergesEmptyRegardlessOfStorage",
+          "callee": "assert.Equal",
+          "lineNumber": 946
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 22,
+        "functionCount": 22,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/shared/pkg/storage/header/mapping.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 243,
+      "nonEmptyLines": 192,
+      "functions": [
+        {
+          "name": "CreateMapping",
+          "startLine": 22,
+          "endLine": 44,
+          "params": [
+            "buildId",
+            "dirty",
+            "blockSize"
+          ]
+        },
+        {
+          "name": "MergeMappings",
+          "startLine": 52,
+          "endLine": 205,
+          "params": [
+            "baseMapping",
+            "diffMapping"
+          ]
+        },
+        {
+          "name": "NormalizeMappings",
+          "startLine": 219,
+          "endLine": 243,
+          "params": [
+            "mappings"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "BuildMap",
+          "startLine": 14,
+          "endLine": 20,
+          "methods": [],
+          "properties": [
+            "Offset",
+            "Length",
+            "BuildId",
+            "BuildStorageOffset"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "BuildMap",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "CreateMapping",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "MergeMappings",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "NormalizeMappings",
+          "line": 219,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CreateMapping",
+          "callee": "dirty.Ranges",
+          "lineNumber": 30
+        },
+        {
+          "caller": "CreateMapping",
+          "callee": "int64",
+          "lineNumber": 31
+        },
+        {
+          "caller": "CreateMapping",
+          "callee": "int64",
+          "lineNumber": 31
+        },
+        {
+          "caller": "CreateMapping",
+          "callee": "uint64",
+          "lineNumber": 33
+        },
+        {
+          "caller": "CreateMapping",
+          "callee": "BlockOffset",
+          "lineNumber": 33
+        },
+        {
+          "caller": "CreateMapping",
+          "callee": "int64",
+          "lineNumber": 33
+        },
+        {
+          "caller": "CreateMapping",
+          "callee": "uint64",
+          "lineNumber": 35
+        },
+        {
+          "caller": "CreateMapping",
+          "callee": "BlockOffset",
+          "lineNumber": 35
+        },
+        {
+          "caller": "CreateMapping",
+          "callee": "append",
+          "lineNumber": 39
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "len",
+          "lineNumber": 56
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "make",
+          "lineNumber": 60
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "len",
+          "lineNumber": 60
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "copy",
+          "lineNumber": 62
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "make",
+          "lineNumber": 66
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "len",
+          "lineNumber": 71
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "len",
+          "lineNumber": 71
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "append",
+          "lineNumber": 90
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "append",
+          "lineNumber": 100
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "int64",
+          "lineNumber": 121
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "int64",
+          "lineNumber": 121
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "append",
+          "lineNumber": 124
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "uint64",
+          "lineNumber": 126
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "append",
+          "lineNumber": 133
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "int64",
+          "lineNumber": 137
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "int64",
+          "lineNumber": 137
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "int64",
+          "lineNumber": 137
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "int64",
+          "lineNumber": 138
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "uint64",
+          "lineNumber": 142
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "uint64",
+          "lineNumber": 143
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "uint64",
+          "lineNumber": 145
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "append",
+          "lineNumber": 158
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "int64",
+          "lineNumber": 162
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "int64",
+          "lineNumber": 162
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "int64",
+          "lineNumber": 162
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "int64",
+          "lineNumber": 163
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "uint64",
+          "lineNumber": 167
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "uint64",
+          "lineNumber": 168
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "uint64",
+          "lineNumber": 170
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "int64",
+          "lineNumber": 182
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "int64",
+          "lineNumber": 182
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "append",
+          "lineNumber": 185
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "uint64",
+          "lineNumber": 187
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "fmt.Fprintf",
+          "lineNumber": 198
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "append",
+          "lineNumber": 201
+        },
+        {
+          "caller": "MergeMappings",
+          "callee": "append",
+          "lineNumber": 202
+        },
+        {
+          "caller": "NormalizeMappings",
+          "callee": "len",
+          "lineNumber": 220
+        },
+        {
+          "caller": "NormalizeMappings",
+          "callee": "make",
+          "lineNumber": 224
+        },
+        {
+          "caller": "NormalizeMappings",
+          "callee": "len",
+          "lineNumber": 224
+        },
+        {
+          "caller": "NormalizeMappings",
+          "callee": "len",
+          "lineNumber": 228
+        },
+        {
+          "caller": "NormalizeMappings",
+          "callee": "append",
+          "lineNumber": 235
+        },
+        {
+          "caller": "NormalizeMappings",
+          "callee": "append",
+          "lineNumber": 240
+        },
+        {
+          "caller": "NormalizeMappings",
+          "callee": "slices.Clone",
+          "lineNumber": 242
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    }
+  ]
+}

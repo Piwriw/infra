@@ -1,0 +1,1808 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/factories/run.go",
+      "type": "file",
+      "name": "run.go",
+      "filePath": "packages/orchestrator/pkg/factories/run.go",
+      "summary": "协调器的主工厂和 orchestrator 入口点 — 解析配置、初始化共享依赖、启动 NFS proxy、健康检查与超循环 (hyperloop) 服务器，并管理所有生命周期。",
+      "tags": [
+        "entry-point",
+        "factory",
+        "orchestrator",
+        "lifecycle"
+      ],
+      "complexity": "complex",
+      "languageNotes": "中心编排工厂：扇出 (fan-out) 出 NFS proxy、健康检查、模板服务、egress 代理等多个守护 goroutine。"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/healthcheck/healthcheck.go",
+      "type": "file",
+      "name": "healthcheck.go",
+      "filePath": "packages/orchestrator/pkg/healthcheck/healthcheck.go",
+      "summary": "为 orchestrator 提供 gRPC 服务状态的 HTTP /health 端点，把 orchestrator-info 服务状态映射为 healthy/draining/unhealthy。",
+      "tags": [
+        "healthcheck",
+        "http-handler",
+        "service-status"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generate.go",
+      "type": "file",
+      "name": "generate.go",
+      "filePath": "packages/orchestrator/pkg/hyperloopserver/contracts/generate.go",
+      "summary": "OpenAPI spec 代码生成指令文件 — 调用 oapi-codegen 从 spec/openapi-hyperloop.yml 生成 server interface 和 types。",
+      "tags": [
+        "code-generation",
+        "openapi"
+      ],
+      "complexity": "simple",
+      "languageNotes": "仅一行 go:generate 指令；不运行就不会生成任何产物。"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go",
+      "type": "file",
+      "name": "generated.go",
+      "filePath": "packages/orchestrator/pkg/hyperloopserver/contracts/generated.go",
+      "summary": "由 oapi-codegen 自动生成的 Go 代码 — 定义 ServerInterface、ServerInterfaceWrapper、Models 和 Gin 路由注册器；禁止手工编辑。",
+      "tags": [
+        "code-generation",
+        "openapi",
+        "generated",
+        "router"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "包含自动化 header “DO NOT EDIT” — 所有变更必须改源 OpenAPI spec 并重新运行 make generate。"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/hyperloopserver/handlers/logs.go",
+      "type": "file",
+      "name": "logs.go",
+      "filePath": "packages/orchestrator/pkg/hyperloopserver/handlers/logs.go",
+      "summary": "sandbox 调用 /logs 上报日志条目；handler 校验 sandboxID 防伪装、转发到 logs-collector 外部服务。",
+      "tags": [
+        "logs",
+        "api-handler",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/hyperloopserver/handlers/me.go",
+      "type": "file",
+      "name": "me.go",
+      "filePath": "packages/orchestrator/pkg/hyperloopserver/handlers/me.go",
+      "summary": "sandbox 调用 /me 查询自身 sandboxID，根据 RemoteAddr 在 sandbox 映射中反查到归属沙箱。",
+      "tags": [
+        "api-handler",
+        "sandbox-lookup"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/factories/run.go:Deps",
+      "type": "class",
+      "name": "Deps",
+      "summary": "共享基础设施依赖",
+      "tags": [
+        "dependency-injection",
+        "infrastructure"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        78,
+        85
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/factories/run.go:EgressSetup",
+      "type": "class",
+      "name": "EgressSetup",
+      "summary": "EgressFactory 返回的代理+生命周期",
+      "tags": [
+        "egress",
+        "lifecycle"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        89,
+        99
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/factories/run.go:Options",
+      "type": "class",
+      "name": "Options",
+      "summary": "orchestrator Options 配置版本/CommitSHA 与 EgressFactory",
+      "tags": [
+        "config",
+        "factory"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        106,
+        110
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/healthcheck/healthcheck.go:Healthcheck",
+      "type": "class",
+      "name": "Healthcheck",
+      "summary": "持有 service.Info 的健康检查对象",
+      "tags": [
+        "healthcheck",
+        "service-status"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        16,
+        21
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:Error",
+      "type": "class",
+      "name": "Error",
+      "summary": "oapi-codegen 生成的 Error 模型",
+      "tags": [
+        "openapi",
+        "model"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        19,
+        26
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:Me",
+      "type": "class",
+      "name": "Me",
+      "summary": "oapi-codegen 生成的 Me 模型",
+      "tags": [
+        "openapi",
+        "model"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        28,
+        32
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:ServerInterface",
+      "type": "class",
+      "name": "ServerInterface",
+      "summary": "oapi-codegen 生成的 Logs/Me 路由接口",
+      "tags": [
+        "openapi",
+        "interface"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        40,
+        48
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:ServerInterfaceWrapper",
+      "type": "class",
+      "name": "ServerInterfaceWrapper",
+      "summary": "oapi-codegen 生成的 Gin 适配 wrapper",
+      "tags": [
+        "openapi",
+        "gin"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        50,
+        57
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:GinServerOptions",
+      "type": "class",
+      "name": "GinServerOptions",
+      "summary": "oapi-codegen 生成的 Gin server 选项",
+      "tags": [
+        "openapi",
+        "config"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        85,
+        90
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/factories/run.go:Run",
+      "type": "function",
+      "name": "Run",
+      "summary": "orchestrator 启动入口",
+      "tags": [
+        "entry-point",
+        "lifecycle"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        127,
+        150
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/factories/run.go:ensureDirs",
+      "type": "function",
+      "name": "ensureDirs",
+      "summary": "确保运行时所需的所有缓存目录存在",
+      "tags": [
+        "filesystem",
+        "config"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        152,
+        173
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/factories/run.go:acquireOrchestratorLock",
+      "type": "function",
+      "name": "acquireOrchestratorLock",
+      "summary": "通过 flock 获取单实例互斥",
+      "tags": [
+        "concurrency",
+        "singleton"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        175,
+        200
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/factories/run.go:startNFSProxy",
+      "type": "function",
+      "name": "startNFSProxy",
+      "summary": "启动 NFS 代理与缓存后端 chroot",
+      "tags": [
+        "nfs-proxy",
+        "service"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        987,
+        1040
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/factories/run.go:setupBuildStorage",
+      "type": "function",
+      "name": "setupBuildStorage",
+      "summary": "构造模板构建存储后端",
+      "tags": [
+        "storage",
+        "template"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        1042,
+        1074
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/factories/run.go:newStorage",
+      "type": "function",
+      "name": "newStorage",
+      "summary": "根据配置与 egress 构造存储实例",
+      "tags": [
+        "storage",
+        "factory"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        1076,
+        1082
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/healthcheck/healthcheck.go:NewHealthcheck",
+      "type": "function",
+      "name": "NewHealthcheck",
+      "summary": "新建健康检查实例",
+      "tags": [
+        "healthcheck",
+        "factory"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        23,
+        30
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/healthcheck/healthcheck.go:CreateHandler",
+      "type": "function",
+      "name": "CreateHandler",
+      "summary": "为 /health 返回 http.Handler",
+      "tags": [
+        "http-handler",
+        "healthcheck"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        32,
+        38
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:RegisterHandlersWithOptions",
+      "type": "function",
+      "name": "RegisterHandlersWithOptions",
+      "summary": "注册 Gin 路由 + OpenAPI",
+      "tags": [
+        "router",
+        "gin"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        97,
+        99
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/hyperloopserver/handlers/logs.go:Logs",
+      "type": "function",
+      "name": "Logs",
+      "summary": "处理 sandbox /logs 上报",
+      "tags": [
+        "api-handler",
+        "logs"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        19,
+        82
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/hyperloopserver/handlers/logs.go:validatePayloadSandboxID",
+      "type": "function",
+      "name": "validatePayloadSandboxID",
+      "summary": "校验日志负载里的 sandbox ID 与源 sandbox 匹配",
+      "tags": [
+        "validation"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        85,
+        99
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/hyperloopserver/handlers/me.go:Me",
+      "type": "function",
+      "name": "Me",
+      "summary": "处理 sandbox /me 信息查询",
+      "tags": [
+        "api-handler",
+        "sandbox-lookup"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        16,
+        28
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "class:packages/orchestrator/pkg/factories/run.go:Deps",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "class:packages/orchestrator/pkg/factories/run.go:EgressSetup",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "class:packages/orchestrator/pkg/factories/run.go:Options",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/healthcheck/healthcheck.go",
+      "target": "class:packages/orchestrator/pkg/healthcheck/healthcheck.go:Healthcheck",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go",
+      "target": "class:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:Error",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go",
+      "target": "class:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:Me",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go",
+      "target": "class:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:ServerInterface",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go",
+      "target": "class:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:ServerInterfaceWrapper",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go",
+      "target": "class:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:GinServerOptions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "function:packages/orchestrator/pkg/factories/run.go:Run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "function:packages/orchestrator/pkg/factories/run.go:ensureDirs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "function:packages/orchestrator/pkg/factories/run.go:acquireOrchestratorLock",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "function:packages/orchestrator/pkg/factories/run.go:startNFSProxy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "function:packages/orchestrator/pkg/factories/run.go:setupBuildStorage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "function:packages/orchestrator/pkg/factories/run.go:newStorage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/healthcheck/healthcheck.go",
+      "target": "function:packages/orchestrator/pkg/healthcheck/healthcheck.go:NewHealthcheck",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/healthcheck/healthcheck.go",
+      "target": "function:packages/orchestrator/pkg/healthcheck/healthcheck.go:CreateHandler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go",
+      "target": "function:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:RegisterHandlersWithOptions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/logs.go",
+      "target": "function:packages/orchestrator/pkg/hyperloopserver/handlers/logs.go:Logs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/logs.go",
+      "target": "function:packages/orchestrator/pkg/hyperloopserver/handlers/logs.go:validatePayloadSandboxID",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/me.go",
+      "target": "function:packages/orchestrator/pkg/hyperloopserver/handlers/me.go:Me",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/builder.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/change.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/chroot_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/chroot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/mountns.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/events/events.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/healthcheck/healthcheck.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/hyperloopserver/server.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/localupload/handler_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/localupload/handler.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/metrics/host.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/metrics/sandboxes.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/proxy_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/proxy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/spanconn.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/portmap/logging.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/portmap/main_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/portmap/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/portmap/recover.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/portmap/server_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/portmap/server.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/proxy/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/proxy/proxy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/metrics/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/manager_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/manager.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/noop.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cgroup/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/devicehelper.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch_writezeroes_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/dispatch.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/mounthelper.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/dscp_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/host.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/slot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_kv.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_memory.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/header_metrics_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/header_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/local_file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/local_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/mask_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/peerclient/blob_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/peerclient/blob.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/peerclient/registry.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/peerclient/resolver.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/peerclient/seekable_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/peerclient/seekable.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/peerclient/storage_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/peerclient/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/storage_file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/storage_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/template/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/server/chunks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/server/chunks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/server/drain_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/server/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/server/prefetch_harvest_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/server/prefetch_harvest.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/server/sandboxes_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/server/sandboxes_update_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/server/sandboxes.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/server/template_cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/server/upload_retry_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/server/upload_retry.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/server/utils.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/service/info.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/service/machineinfo/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/service/service_info.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/startupreclaim/firecracker_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/startupreclaim/firecracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/startupreclaim/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/template/constants/service.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/template/server/create_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/template/server/delete_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/template/server/drain_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/template/server/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/template/server/template_status_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/template/server/template_status.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/template/server/upload_layer_files_template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/dir_create_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/dir_create.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/dir_list_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/dir_list.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/errors.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/file_create_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/file_create.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/file_get_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/file_get.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/path_delete_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/path_delete.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/path_stat_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/path_stat.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/path_update.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/service_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/service.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/utils_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/volume_create.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/volume_delete.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "file:packages/orchestrator/pkg/volumes/volume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/healthcheck/healthcheck.go",
+      "target": "file:packages/orchestrator/pkg/service/info.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/healthcheck/healthcheck.go",
+      "target": "file:packages/orchestrator/pkg/service/service_info.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/me.go",
+      "target": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/me.go",
+      "target": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "class:packages/orchestrator/pkg/factories/run.go:Deps",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "class:packages/orchestrator/pkg/factories/run.go:EgressSetup",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "class:packages/orchestrator/pkg/factories/run.go:Options",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/factories/run.go",
+      "target": "function:packages/orchestrator/pkg/factories/run.go:Run",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/healthcheck/healthcheck.go",
+      "target": "class:packages/orchestrator/pkg/healthcheck/healthcheck.go:Healthcheck",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/healthcheck/healthcheck.go",
+      "target": "function:packages/orchestrator/pkg/healthcheck/healthcheck.go:NewHealthcheck",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/healthcheck/healthcheck.go",
+      "target": "function:packages/orchestrator/pkg/healthcheck/healthcheck.go:CreateHandler",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go",
+      "target": "class:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:Error",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go",
+      "target": "class:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:Me",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go",
+      "target": "class:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:ServerInterface",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go",
+      "target": "class:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:ServerInterfaceWrapper",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go",
+      "target": "class:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:GinServerOptions",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go",
+      "target": "function:packages/orchestrator/pkg/hyperloopserver/contracts/generated.go:RegisterHandlersWithOptions",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/logs.go",
+      "target": "function:packages/orchestrator/pkg/hyperloopserver/handlers/logs.go:Logs",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/logs.go",
+      "target": "function:packages/orchestrator/pkg/hyperloopserver/handlers/logs.go:validatePayloadSandboxID",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/hyperloopserver/handlers/me.go",
+      "target": "function:packages/orchestrator/pkg/hyperloopserver/handlers/me.go:Me",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

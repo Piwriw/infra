@@ -1,0 +1,454 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "type": "file",
+      "name": "storage_cache_blob.go",
+      "filePath": "packages/shared/pkg/storage/storage_cache_blob.go",
+      "summary": "在 Blob 接口之上挂载本地缓存的 cachedBlob 实现，提供 Exists/Metadata/WriteTo/Put 的缓存旁路逻辑。",
+      "tags": [
+        "storage",
+        "cache",
+        "blob",
+        "nfs"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/storage_cache_blob_test.go",
+      "type": "file",
+      "name": "storage_cache_blob_test.go",
+      "filePath": "packages/shared/pkg/storage/storage_cache_blob_test.go",
+      "summary": "覆盖 cachedBlob 的 Put 与 writeFileToCache 行为。",
+      "tags": [
+        "test",
+        "cache",
+        "blob"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/storage_cache_compressed_test.go",
+      "type": "file",
+      "name": "storage_cache_compressed_test.go",
+      "filePath": "packages/shared/pkg/storage/storage_cache_compressed_test.go",
+      "summary": "验证压缩缓存读取器在解压透明转发场景下行为正确。",
+      "tags": [
+        "test",
+        "cache",
+        "compression"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/storage_cache_blob.go:cachedBlob",
+      "type": "class",
+      "name": "cachedBlob",
+      "filePath": "packages/shared/pkg/storage/storage_cache_blob.go",
+      "lineRange": [
+        20,
+        176
+      ],
+      "summary": "Blob 接口的本地缓存实现：先查 NFS 缓存，未命中再读远端。",
+      "tags": [
+        "storage",
+        "cache",
+        "blob"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/storage_cache_blob.go:writeFileToCache",
+      "type": "function",
+      "name": "writeFileToCache",
+      "filePath": "packages/shared/pkg/storage/storage_cache_blob.go",
+      "lineRange": [
+        120,
+        176
+      ],
+      "summary": "将远端数据流式写入本地缓存目录。",
+      "tags": [
+        "storage",
+        "cache",
+        "writer"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/storage_cache_blob.go:copyFullFileFromCache",
+      "type": "function",
+      "name": "copyFullFileFromCache",
+      "filePath": "packages/shared/pkg/storage/storage_cache_blob.go",
+      "lineRange": [
+        80,
+        120
+      ],
+      "summary": "从本地缓存拷贝完整文件到目标位置。",
+      "tags": [
+        "storage",
+        "cache",
+        "copy"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "class:packages/shared/pkg/storage/storage_cache_blob.go:cachedBlob",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "function:packages/shared/pkg/storage/storage_cache_blob.go:writeFileToCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "function:packages/shared/pkg/storage/storage_cache_blob.go:copyFullFileFromCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/featureflags/client_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/featureflags/client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/featureflags/context_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/featureflags/context.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/featureflags/flags.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/logger/exporter_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/logger/exporter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/logger/fields.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/logger/grpc.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/logger/logger.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/storage/lock/atomic_file_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/storage/lock/atomic_file.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/storage/lock/file_lock_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/storage/lock/file_lock.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/apply_all_or_none.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/copy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/env_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/env.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/error_once_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/error_once.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/errorcollector_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/errorcollector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/filter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/grpc_codes.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/iter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/lazy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/logging.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/map_values.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/mocks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/move_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/move.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/must.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/promise_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/promise.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/ptr.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/resizable_semaphore_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/resizable_semaphore.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/set_once_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/set_once.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/strings.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/symlink.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/version_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/version.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/waitgroup_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "target": "file:packages/shared/pkg/utils/waitgroup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_blob_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache_blob.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache_compressed_test.go",
+      "target": "file:packages/shared/pkg/storage/storage_cache.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

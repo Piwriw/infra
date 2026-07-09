@@ -1,0 +1,842 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 3,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/orchestrator/cmd/dummy-orchestrator/main.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 188,
+      "nonEmptyLines": 158,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 42,
+          "endLine": 162,
+          "params": []
+        },
+        {
+          "name": "envOrDefault",
+          "startLine": 164,
+          "endLine": 170,
+          "params": [
+            "key",
+            "def"
+          ]
+        },
+        {
+          "name": "splitCSV",
+          "startLine": 172,
+          "endLine": 188,
+          "params": [
+            "s"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "envOrDefault",
+          "lineNumber": 43
+        },
+        {
+          "caller": "main",
+          "callee": "envOrDefault",
+          "lineNumber": 44
+        },
+        {
+          "caller": "main",
+          "callee": "envOrDefault",
+          "lineNumber": 45
+        },
+        {
+          "caller": "main",
+          "callee": "splitCSV",
+          "lineNumber": 46
+        },
+        {
+          "caller": "main",
+          "callee": "os.Getenv",
+          "lineNumber": 46
+        },
+        {
+          "caller": "main",
+          "callee": "envOrDefault",
+          "lineNumber": 48
+        },
+        {
+          "caller": "main",
+          "callee": "strconv.ParseUint",
+          "lineNumber": 54
+        },
+        {
+          "caller": "main",
+          "callee": "log.Fatalf",
+          "lineNumber": 55
+        },
+        {
+          "caller": "main",
+          "callee": "strconv.ParseUint",
+          "lineNumber": 57
+        },
+        {
+          "caller": "main",
+          "callee": "log.Fatalf",
+          "lineNumber": 58
+        },
+        {
+          "caller": "main",
+          "callee": "signal.NotifyContext",
+          "lineNumber": 61
+        },
+        {
+          "caller": "main",
+          "callee": "context.Background",
+          "lineNumber": 61
+        },
+        {
+          "caller": "main",
+          "callee": "cancel",
+          "lineNumber": 62
+        },
+        {
+          "caller": "main",
+          "callee": "lc.Listen",
+          "lineNumber": 65
+        },
+        {
+          "caller": "main",
+          "callee": "cancel",
+          "lineNumber": 67
+        },
+        {
+          "caller": "main",
+          "callee": "log.Fatalf",
+          "lineNumber": 69
+        },
+        {
+          "caller": "main",
+          "callee": "grpc.NewServer",
+          "lineNumber": 72
+        },
+        {
+          "caller": "main",
+          "callee": "dummyserver.NewSandbox",
+          "lineNumber": 74
+        },
+        {
+          "caller": "main",
+          "callee": "orchestrator.RegisterSandboxServiceServer",
+          "lineNumber": 75
+        },
+        {
+          "caller": "main",
+          "callee": "orchestrator.RegisterChunkServiceServer",
+          "lineNumber": 76
+        },
+        {
+          "caller": "main",
+          "callee": "orchestrator.RegisterVolumeServiceServer",
+          "lineNumber": 77
+        },
+        {
+          "caller": "main",
+          "callee": "uuid.NewString",
+          "lineNumber": 79
+        },
+        {
+          "caller": "main",
+          "callee": "orchestratorinfo.RegisterInfoServiceServer",
+          "lineNumber": 80
+        },
+        {
+          "caller": "main",
+          "callee": "dummyserver.NewInfo",
+          "lineNumber": 80
+        },
+        {
+          "caller": "main",
+          "callee": "health.NewServer",
+          "lineNumber": 82
+        },
+        {
+          "caller": "main",
+          "callee": "healthSrv.SetServingStatus",
+          "lineNumber": 83
+        },
+        {
+          "caller": "main",
+          "callee": "healthSrv.SetServingStatus",
+          "lineNumber": 84
+        },
+        {
+          "caller": "main",
+          "callee": "healthpb.RegisterHealthServer",
+          "lineNumber": 85
+        },
+        {
+          "caller": "main",
+          "callee": "http.NewServeMux",
+          "lineNumber": 91
+        },
+        {
+          "caller": "main",
+          "callee": "httpMux.HandleFunc",
+          "lineNumber": 92
+        },
+        {
+          "caller": "main",
+          "callee": "w.WriteHeader",
+          "lineNumber": 93
+        },
+        {
+          "caller": "main",
+          "callee": "w.Write",
+          "lineNumber": 94
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 102
+        },
+        {
+          "caller": "main",
+          "callee": "sbxServer.ClientID",
+          "lineNumber": 103
+        },
+        {
+          "caller": "main",
+          "callee": "make",
+          "lineNumber": 105
+        },
+        {
+          "caller": "main",
+          "callee": "func() {\n\t\tgrpcErr <- srv.Serve(grpcLis)\n\t}",
+          "lineNumber": 106
+        },
+        {
+          "caller": "main",
+          "callee": "srv.Serve",
+          "lineNumber": 107
+        },
+        {
+          "caller": "main",
+          "callee": "make",
+          "lineNumber": 110
+        },
+        {
+          "caller": "main",
+          "callee": "func() {\n\t\terr := httpSrv.ListenAndServe()\n\t\tif errors.Is(err, http.ErrServerClosed) {\n\t\t\terr = nil\n\t\t}\n\t\thttpErr <- err\n\t}",
+          "lineNumber": 111
+        },
+        {
+          "caller": "main",
+          "callee": "httpSrv.ListenAndServe",
+          "lineNumber": 112
+        },
+        {
+          "caller": "main",
+          "callee": "errors.Is",
+          "lineNumber": 113
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 120
+        },
+        {
+          "caller": "main",
+          "callee": "context.WithTimeout",
+          "lineNumber": 122
+        },
+        {
+          "caller": "main",
+          "callee": "context.Background",
+          "lineNumber": 122
+        },
+        {
+          "caller": "main",
+          "callee": "shutdownCancel",
+          "lineNumber": 123
+        },
+        {
+          "caller": "main",
+          "callee": "httpSrv.Shutdown",
+          "lineNumber": 125
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 126
+        },
+        {
+          "caller": "main",
+          "callee": "srv.GracefulStop",
+          "lineNumber": 129
+        },
+        {
+          "caller": "main",
+          "callee": "ctx.Done",
+          "lineNumber": 135
+        },
+        {
+          "caller": "main",
+          "callee": "shutdown",
+          "lineNumber": 136
+        },
+        {
+          "caller": "main",
+          "callee": "errors.Is",
+          "lineNumber": 139
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 140
+        },
+        {
+          "caller": "main",
+          "callee": "shutdown",
+          "lineNumber": 142
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 146
+        },
+        {
+          "caller": "main",
+          "callee": "shutdown",
+          "lineNumber": 148
+        },
+        {
+          "caller": "main",
+          "callee": "errors.Is",
+          "lineNumber": 153
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 154
+        },
+        {
+          "caller": "main",
+          "callee": "log.Printf",
+          "lineNumber": 159
+        },
+        {
+          "caller": "envOrDefault",
+          "callee": "os.LookupEnv",
+          "lineNumber": 165
+        },
+        {
+          "caller": "splitCSV",
+          "callee": "strings.Split",
+          "lineNumber": 177
+        },
+        {
+          "caller": "splitCSV",
+          "callee": "make",
+          "lineNumber": 178
+        },
+        {
+          "caller": "splitCSV",
+          "callee": "len",
+          "lineNumber": 178
+        },
+        {
+          "caller": "splitCSV",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 180
+        },
+        {
+          "caller": "splitCSV",
+          "callee": "append",
+          "lineNumber": 184
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 0,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/dummyserver/info.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 63,
+      "nonEmptyLines": 55,
+      "functions": [
+        {
+          "name": "NewInfo",
+          "startLine": 29,
+          "endLine": 44,
+          "params": [
+            "nodeID",
+            "serviceID",
+            "version",
+            "commit",
+            "labels"
+          ]
+        },
+        {
+          "name": "ServiceInfo",
+          "startLine": 46,
+          "endLine": 58,
+          "params": [
+            "_",
+            "_"
+          ]
+        },
+        {
+          "name": "ServiceStatusOverride",
+          "startLine": 60,
+          "endLine": 63,
+          "params": [
+            "_",
+            "_"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "InfoServer",
+          "startLine": 16,
+          "endLine": 26,
+          "methods": [
+            "ServiceInfo",
+            "ServiceStatusOverride"
+          ],
+          "properties": [
+            "nodeID",
+            "serviceID",
+            "version",
+            "commit",
+            "labels",
+            "startedAt",
+            "machineInfo"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "InfoServer",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "NewInfo",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "ServiceInfo",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "ServiceStatusOverride",
+          "line": 60,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewInfo",
+          "callee": "time.Now",
+          "lineNumber": 36
+        },
+        {
+          "caller": "ServiceInfo",
+          "callee": "timestamppb.New",
+          "lineNumber": 54
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/orchestrator/pkg/dummyserver/sandbox.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 152,
+      "nonEmptyLines": 120,
+      "functions": [
+        {
+          "name": "NewSandbox",
+          "startLine": 39,
+          "endLine": 44,
+          "params": []
+        },
+        {
+          "name": "ClientID",
+          "startLine": 47,
+          "endLine": 49,
+          "params": []
+        },
+        {
+          "name": "Create",
+          "startLine": 51,
+          "endLine": 80,
+          "params": [
+            "_",
+            "req"
+          ]
+        },
+        {
+          "name": "Update",
+          "startLine": 82,
+          "endLine": 103,
+          "params": [
+            "_",
+            "req"
+          ]
+        },
+        {
+          "name": "List",
+          "startLine": 105,
+          "endLine": 118,
+          "params": [
+            "_",
+            "_"
+          ]
+        },
+        {
+          "name": "Delete",
+          "startLine": 120,
+          "endLine": 130,
+          "params": [
+            "_",
+            "req"
+          ]
+        },
+        {
+          "name": "Pause",
+          "startLine": 132,
+          "endLine": 143,
+          "params": [
+            "_",
+            "req"
+          ]
+        },
+        {
+          "name": "Checkpoint",
+          "startLine": 145,
+          "endLine": 148,
+          "params": [
+            "_",
+            "_"
+          ]
+        },
+        {
+          "name": "ListCachedBuilds",
+          "startLine": 150,
+          "endLine": 152,
+          "params": [
+            "_",
+            "_"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SandboxServer",
+          "startLine": 27,
+          "endLine": 34,
+          "methods": [
+            "ClientID",
+            "Create",
+            "Update",
+            "List",
+            "Delete",
+            "Pause",
+            "Checkpoint",
+            "ListCachedBuilds"
+          ],
+          "properties": [
+            "clientID",
+            "mu",
+            "sandboxes"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "SandboxServer",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "NewSandbox",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "ClientID",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "Create",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "Update",
+          "line": 82,
+          "isDefault": false
+        },
+        {
+          "name": "List",
+          "line": 105,
+          "isDefault": false
+        },
+        {
+          "name": "Delete",
+          "line": 120,
+          "isDefault": false
+        },
+        {
+          "name": "Pause",
+          "line": 132,
+          "isDefault": false
+        },
+        {
+          "name": "Checkpoint",
+          "line": 145,
+          "isDefault": false
+        },
+        {
+          "name": "ListCachedBuilds",
+          "line": 150,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewSandbox",
+          "callee": "uuid.NewString",
+          "lineNumber": 41
+        },
+        {
+          "caller": "NewSandbox",
+          "callee": "make",
+          "lineNumber": 42
+        },
+        {
+          "caller": "Create",
+          "callee": "req.GetSandbox",
+          "lineNumber": 52
+        },
+        {
+          "caller": "Create",
+          "callee": "status.Error",
+          "lineNumber": 53
+        },
+        {
+          "caller": "Create",
+          "callee": "req.GetSandbox().GetSandboxId",
+          "lineNumber": 56
+        },
+        {
+          "caller": "Create",
+          "callee": "req.GetSandbox",
+          "lineNumber": 56
+        },
+        {
+          "caller": "Create",
+          "callee": "status.Error",
+          "lineNumber": 58
+        },
+        {
+          "caller": "Create",
+          "callee": "req.GetStartTime",
+          "lineNumber": 61
+        },
+        {
+          "caller": "Create",
+          "callee": "timestamppb.Now",
+          "lineNumber": 63
+        },
+        {
+          "caller": "Create",
+          "callee": "proto.Clone",
+          "lineNumber": 66
+        },
+        {
+          "caller": "Create",
+          "callee": "req.GetSandbox",
+          "lineNumber": 66
+        },
+        {
+          "caller": "Create",
+          "callee": "req.GetEndTime",
+          "lineNumber": 72
+        },
+        {
+          "caller": "Create",
+          "callee": "s.mu.Lock",
+          "lineNumber": 75
+        },
+        {
+          "caller": "Create",
+          "callee": "s.mu.Unlock",
+          "lineNumber": 77
+        },
+        {
+          "caller": "Update",
+          "callee": "req.GetSandboxId",
+          "lineNumber": 83
+        },
+        {
+          "caller": "Update",
+          "callee": "status.Error",
+          "lineNumber": 84
+        },
+        {
+          "caller": "Update",
+          "callee": "s.mu.Lock",
+          "lineNumber": 87
+        },
+        {
+          "caller": "Update",
+          "callee": "s.mu.Unlock",
+          "lineNumber": 88
+        },
+        {
+          "caller": "Update",
+          "callee": "req.GetSandboxId",
+          "lineNumber": 90
+        },
+        {
+          "caller": "Update",
+          "callee": "status.Errorf",
+          "lineNumber": 92
+        },
+        {
+          "caller": "Update",
+          "callee": "req.GetSandboxId",
+          "lineNumber": 92
+        },
+        {
+          "caller": "Update",
+          "callee": "req.GetEndTime",
+          "lineNumber": 95
+        },
+        {
+          "caller": "Update",
+          "callee": "req.GetEndTime",
+          "lineNumber": 96
+        },
+        {
+          "caller": "Update",
+          "callee": "req.GetEgress",
+          "lineNumber": 100
+        },
+        {
+          "caller": "List",
+          "callee": "s.mu.Lock",
+          "lineNumber": 106
+        },
+        {
+          "caller": "List",
+          "callee": "s.mu.Unlock",
+          "lineNumber": 107
+        },
+        {
+          "caller": "List",
+          "callee": "make",
+          "lineNumber": 109
+        },
+        {
+          "caller": "List",
+          "callee": "len",
+          "lineNumber": 109
+        },
+        {
+          "caller": "List",
+          "callee": "proto.Clone",
+          "lineNumber": 112
+        },
+        {
+          "caller": "List",
+          "callee": "append",
+          "lineNumber": 113
+        },
+        {
+          "caller": "Delete",
+          "callee": "req.GetSandboxId",
+          "lineNumber": 121
+        },
+        {
+          "caller": "Delete",
+          "callee": "status.Error",
+          "lineNumber": 122
+        },
+        {
+          "caller": "Delete",
+          "callee": "s.mu.Lock",
+          "lineNumber": 125
+        },
+        {
+          "caller": "Delete",
+          "callee": "delete",
+          "lineNumber": 126
+        },
+        {
+          "caller": "Delete",
+          "callee": "req.GetSandboxId",
+          "lineNumber": 126
+        },
+        {
+          "caller": "Delete",
+          "callee": "s.mu.Unlock",
+          "lineNumber": 127
+        },
+        {
+          "caller": "Pause",
+          "callee": "req.GetSandboxId",
+          "lineNumber": 133
+        },
+        {
+          "caller": "Pause",
+          "callee": "status.Error",
+          "lineNumber": 134
+        },
+        {
+          "caller": "Pause",
+          "callee": "s.mu.Lock",
+          "lineNumber": 138
+        },
+        {
+          "caller": "Pause",
+          "callee": "delete",
+          "lineNumber": 139
+        },
+        {
+          "caller": "Pause",
+          "callee": "req.GetSandboxId",
+          "lineNumber": 139
+        },
+        {
+          "caller": "Pause",
+          "callee": "s.mu.Unlock",
+          "lineNumber": 140
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 10,
+        "functionCount": 9,
+        "classCount": 1
+      }
+    }
+  ]
+}

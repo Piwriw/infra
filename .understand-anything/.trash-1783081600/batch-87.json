@@ -1,0 +1,70 @@
+{
+  "nodes": [
+    {
+      "id": "resource:iac/provider-gcp/persistent-volume-types/main.tf",
+      "type": "resource",
+      "name": "main.tf",
+      "filePath": "iac/provider-gcp/persistent-volume-types/main.tf",
+      "summary": "Terraform 模块主文件,定义 google_filestore_instance 资源,为 orchestrator 持久化卷提供 NFS 共享存储,根据 tier 自动选择 NFS 版本并配置性能参数。",
+      "tags": ["infrastructure", "filestore", "nfs", "persistent-storage", "gcp"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/persistent-volume-types/persistent-volumes",
+      "type": "resource",
+      "name": "google_filestore_instance.persistent-volumes",
+      "filePath": "iac/provider-gcp/persistent-volume-types/main.tf",
+      "summary": "GCP Filestore 实例资源,提供 NFS 协议的持久化存储卷,启用删除保护以避免 orchestrator 异常,支持可选的 IOPS 性能配置。",
+      "tags": ["filestore", "nfs", "persistent-volume", "deletion-protection"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/persistent-volume-types/output.tf",
+      "type": "resource",
+      "name": "output.tf",
+      "filePath": "iac/provider-gcp/persistent-volume-types/output.tf",
+      "summary": "Terraform 模块输出文件,导出 NFS 版本号与 NFS 挂载位置(IP 地址和共享路径),供其他模块消费以挂载持久卷。",
+      "tags": ["infrastructure", "outputs", "nfs-mount"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/persistent-volume-types/variables.tf",
+      "type": "resource",
+      "name": "variables.tf",
+      "filePath": "iac/provider-gcp/persistent-volume-types/variables.tf",
+      "summary": "Terraform 模块输入变量定义,包括 NFS 版本、prefix、key、tier、location、删除保护开关、容量、网络以及性能配置(可选 max_iops)。",
+      "tags": ["infrastructure", "variables", "input-config", "validation"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/provider-gcp/persistent-volume-types/main.tf",
+      "target": "resource:iac/provider-gcp/persistent-volume-types/persistent-volumes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-gcp/persistent-volume-types/main.tf",
+      "target": "resource:iac/provider-gcp/persistent-volume-types/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/persistent-volume-types/main.tf",
+      "target": "resource:iac/provider-gcp/persistent-volume-types/output.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/persistent-volume-types/output.tf",
+      "target": "resource:iac/provider-gcp/persistent-volume-types/persistent-volumes",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

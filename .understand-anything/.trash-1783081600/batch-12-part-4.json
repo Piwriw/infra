@@ -1,0 +1,1267 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "type": "file",
+      "name": "nfs.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "summary": "NFSHandler：Mount 请求解析 /volume_name、查找 sandbox 的 VolumeMountConfig、用 chrooted.Builder 派生 chrooted 文件系统；通过 sandbox Map 事件释放 chroot。",
+      "tags": [
+        "nfs-proxy",
+        "sandbox-mount",
+        "volume",
+        "observer"
+      ],
+      "complexity": "complex",
+      "languageNotes": "chrootsByLifecycleID 按 sandbox lifecycle 跟踪挂载；网络释放时统一卸载并增加 unmounts counter；OTEL 暴露 mounts/unmounts/gauge。"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "type": "file",
+      "name": "e2e_test.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "summary": "用 testcontainers 真实运行 Ubuntu 容器，通过 mount 协议挂载 nfsproxy 暴露的卷 — 验证 start.sh + test.sh 端到端流程。",
+      "tags": [
+        "test",
+        "e2e",
+        "testcontainers",
+        "nfs-proxy"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Privileged + host 网络 + port 转发到 nfsproxy 与 portmapper；用 embedded shell 脚本驱动容器。"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/logged/change.go",
+      "type": "file",
+      "name": "change.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/logged/change.go",
+      "summary": "billy.Change 的日志包装 — 记录每次调用开始/结束、参数和耗时。",
+      "tags": [
+        "nfs-proxy",
+        "billy-adapter",
+        "logging"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/logged/file.go",
+      "type": "file",
+      "name": "file.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/logged/file.go",
+      "summary": "billy.File 的日志包装 — 每条 I/O 调用进入打印 uuid requestID 与耗时。",
+      "tags": [
+        "nfs-proxy",
+        "billy-adapter",
+        "logging"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/logged/fs.go",
+      "type": "file",
+      "name": "fs.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/logged/fs.go",
+      "summary": "billy.Filesystem 的日志包装层 — 在原有 FS 上覆盖一层用于追踪 stat/handle 调用记录。",
+      "tags": [
+        "nfs-proxy",
+        "billy-adapter",
+        "logging"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/logged/handler.go",
+      "type": "file",
+      "name": "handler.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/logged/handler.go",
+      "summary": "nfs.Handler 的日志包装入口 — WrapWithLogging 包装 MT 操作的 Mount/Change/FSStat/ToHandle/FromHandle。",
+      "tags": [
+        "nfs-proxy",
+        "handler-wrapper",
+        "logging"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:NFSHandler",
+      "type": "class",
+      "name": "NFSHandler",
+      "summary": "nfs.Handler chroot 实现",
+      "tags": [
+        "nfs-proxy",
+        "handler"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        36,
+        45
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/e2e_test.go:testLogConsumer",
+      "type": "class",
+      "name": "testLogConsumer",
+      "summary": "转储 testcontainers 日志到 testing.T",
+      "tags": [
+        "test",
+        "logging"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        45,
+        47
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/logged/change.go:loggedChange",
+      "type": "class",
+      "name": "loggedChange",
+      "summary": "billy.Change 日志包装",
+      "tags": [
+        "billy-adapter",
+        "nfs-proxy",
+        "logging"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        11,
+        14
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/logged/file.go:loggedFile",
+      "type": "class",
+      "name": "loggedFile",
+      "summary": "billy.File 日志包装",
+      "tags": [
+        "billy-adapter",
+        "nfs-proxy",
+        "logging"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        9,
+        12
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/logged/fs.go:loggedFS",
+      "type": "class",
+      "name": "loggedFS",
+      "summary": "billy.Filesystem 日志包装",
+      "tags": [
+        "billy-adapter",
+        "nfs-proxy",
+        "logging"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        12,
+        16
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/logged/handler.go:loggedHandler",
+      "type": "class",
+      "name": "loggedHandler",
+      "summary": "nfs.Handler 日志包装",
+      "tags": [
+        "handler-wrapper",
+        "nfs-proxy",
+        "logging"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        14,
+        18
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:NewNFSHandler",
+      "type": "function",
+      "name": "NewNFSHandler",
+      "summary": "构造 NFS handler + OTEL counter/gauge",
+      "tags": [
+        "factory",
+        "otel"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        49,
+        91
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:OnNetworkRelease",
+      "type": "function",
+      "name": "OnNetworkRelease",
+      "summary": "在 sandbox 网络释放时回收 chroot",
+      "tags": [
+        "observer",
+        "cleanup"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        95,
+        115
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:Mount",
+      "type": "function",
+      "name": "Mount",
+      "summary": "NFS mount 入口 — 查 sandbox + 解析 path",
+      "tags": [
+        "nfs-proxy"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        117,
+        135
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:getChroot",
+      "type": "function",
+      "name": "getChroot",
+      "summary": "根据 mount path 派生 team/volume chroot",
+      "tags": [
+        "nfs-proxy",
+        "volume"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        139,
+        189
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:Change",
+      "type": "function",
+      "name": "Change",
+      "summary": "实现 nfs.Handler.Change",
+      "tags": [
+        "nfs-proxy"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        191,
+        205
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/e2e_test.go:TestIntegrationTest",
+      "type": "function",
+      "name": "TestIntegrationTest",
+      "summary": "用 testcontainers 跑真实 NFS 挂载端到端",
+      "tags": [
+        "test",
+        "e2e"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        94,
+        217
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/logged/file.go:wrapFile",
+      "type": "function",
+      "name": "wrapFile",
+      "summary": "把 billy.File 包装成 loggedFile",
+      "tags": [
+        "logging",
+        "billy-adapter"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        16,
+        18
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/logged/fs.go:wrapFS",
+      "type": "function",
+      "name": "wrapFS",
+      "summary": "把 billy.Filesystem 包装成 loggedFS",
+      "tags": [
+        "logging",
+        "billy-adapter"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        20,
+        22
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/logged/handler.go:WrapWithLogging",
+      "type": "function",
+      "name": "WrapWithLogging",
+      "summary": "公开 API — 在 handler 外层叠加日志中间件",
+      "tags": [
+        "factory",
+        "logging"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        22,
+        24
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/logged/handler.go:Mount",
+      "type": "function",
+      "name": "Mount",
+      "summary": "nfs.Handler.Mount 日志包装",
+      "tags": [
+        "logging"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        26,
+        42
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:NFSHandler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/e2e_test.go:testLogConsumer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/change.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/logged/change.go:loggedChange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/file.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/logged/file.go:loggedFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/fs.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/logged/fs.go:loggedFS",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/handler.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/logged/handler.go:loggedHandler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:NewNFSHandler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:OnNetworkRelease",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:Mount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:getChroot",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:Change",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/e2e_test.go:TestIntegrationTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/file.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/logged/file.go:wrapFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/fs.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/logged/fs.go:wrapFS",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/handler.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/logged/handler.go:WrapWithLogging",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/handler.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/logged/handler.go:Mount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/builder.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/change.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/chroot_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/chroot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/mountns.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/parsing.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/cfg/service.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/builder.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/change.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/chroot_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/chroot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/fs.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/mountns_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/chrooted/mountns.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/portmap/logging.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/portmap/main_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/portmap/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/portmap/recover.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/portmap/server_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/portmap/server.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/checks.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/envd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/fsfreeze_pause_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/health.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/deny_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/dscp_egress_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/egressproxy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/firewall.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/host.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/network.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/pool.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/slot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_kv.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage_memory.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/network/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reboot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/throwaway_resume_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metric_labels.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/upload_metrics.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/e2e_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/uploads.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/fs.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/handler.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:NFSHandler",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:NewNFSHandler",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:Mount",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:getChroot",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:Change",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/chroot/nfs.go:OnNetworkRelease",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/change.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/logged/change.go:loggedChange",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/file.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/logged/file.go:loggedFile",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/file.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/logged/file.go:wrapFile",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/fs.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/logged/fs.go:loggedFS",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/fs.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/logged/fs.go:wrapFS",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/handler.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/logged/handler.go:loggedHandler",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/handler.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/logged/handler.go:WrapWithLogging",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/handler.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/logged/handler.go:Mount",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

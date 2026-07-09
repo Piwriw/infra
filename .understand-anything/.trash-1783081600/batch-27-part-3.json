@@ -1,0 +1,1227 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "type": "file",
+      "name": "prefetch_tracker.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "summary": "预取追踪器 PrefetchTracker：记录 block 访问序列供 Cache 提前 fetch 数据。 输出 PrefetchData（BlockEntries + AccessType），可与 Chunker 的 IsCached 联动。",
+      "tags": [
+        "prefetch",
+        "tracker",
+        "block-storage"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/range.go",
+      "type": "file",
+      "name": "range.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/range.go",
+      "summary": "orchestrator sandbox block 子系统组件: range.go 承担 block storage 与 NBD 直连链路的 range.go 相关职责。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "type": "file",
+      "name": "range_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "summary": "Range 与 bitset 工具的单元测试，覆盖边界、对齐、稀疏、迭代与总大小。 包括 TestRange_Offsets_Iteration、TestBitsetRanges_Sparse 与 TestGetSize。",
+      "tags": [
+        "test",
+        "range",
+        "bitset"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "type": "file",
+      "name": "streaming_chunk.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "summary": "Chunker：把远端 rootfs 的 RangeTable 切分为按 chunk block 对齐的本地 fetcher。 通过 fetchSession 并发拉取、自动早返回、暴露 IsCached 帮上层做预取决策。",
+      "tags": [
+        "chunker",
+        "streaming",
+        "block-storage",
+        "fetch"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "type": "file",
+      "name": "streaming_chunk_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "summary": "Chunker 流式行为测试：覆盖 partial、cache hit、并发、错误保留、panic 恢复、stress。 fakeSeekable / controlledReader 模拟延迟、控制块推进，用于确定性 race 注入。",
+      "tags": [
+        "test",
+        "chunker",
+        "streaming"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "type": "file",
+      "name": "tracker.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "summary": "小块 dirty/zero 位图追踪器 Tracker：以 Range 为单位维护页面状态并导出 bitset。 提供给 cache.Dedup 与 dedupPlan，决定哪些页面要走 dirty/zero 通道。",
+      "tags": [
+        "tracker",
+        "bitset",
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/block/tracker_test.go",
+      "type": "file",
+      "name": "tracker_test.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/tracker_test.go",
+      "summary": "Tracker 单元测试，覆盖 SetRange / Get / HasRange / Present / Export 等方法。 一个长测试函数覆盖多种状态机切换。",
+      "tags": [
+        "test",
+        "tracker"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "type": "file",
+      "name": "memory.go",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "summary": "Firecracker VM 内存导出协调：Memfd → cache → NBD 写入。 ExportMemory 把 memfd 写入 cache，可选开启 dedup（bestEffort/directIO/budget）。",
+      "tags": [
+        "fc",
+        "memory",
+        "export",
+        "dedup",
+        "core"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go:PrefetchTracker",
+      "type": "class",
+      "name": "PrefetchTracker",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "lineRange": [
+        40,
+        51
+      ],
+      "summary": "block 子系统的 PrefetchTracker 实现，定义在 packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go:NewPrefetchTracker",
+      "type": "function",
+      "name": "NewPrefetchTracker",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "lineRange": [
+        53,
+        62
+      ],
+      "summary": "NewPrefetchTracker 是 prefetch_tracker.go 中的关键函数，行 53-62。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go:Add",
+      "type": "function",
+      "name": "Add",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "lineRange": [
+        65,
+        84
+      ],
+      "summary": "Add 是 prefetch_tracker.go 中的关键函数，行 65-84。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go:PrefetchData",
+      "type": "function",
+      "name": "PrefetchData",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "lineRange": [
+        86,
+        101
+      ],
+      "summary": "PrefetchData 是 prefetch_tracker.go 中的关键函数，行 86-101。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/range_test.go:TestRange_End",
+      "type": "function",
+      "name": "TestRange_End",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "lineRange": [
+        33,
+        77
+      ],
+      "summary": "TestRange_End 是 range_test.go 中的关键函数，行 33-77。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/range_test.go:TestNewRange",
+      "type": "function",
+      "name": "TestNewRange",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "lineRange": [
+        79,
+        123
+      ],
+      "summary": "TestNewRange 是 range_test.go 中的关键函数，行 79-123。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/range_test.go:TestNewRangeFromBlocks",
+      "type": "function",
+      "name": "TestNewRangeFromBlocks",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "lineRange": [
+        125,
+        193
+      ],
+      "summary": "TestNewRangeFromBlocks 是 range_test.go 中的关键函数，行 125-193。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/range_test.go:TestRange_Offsets",
+      "type": "function",
+      "name": "TestRange_Offsets",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "lineRange": [
+        195,
+        270
+      ],
+      "summary": "TestRange_Offsets 是 range_test.go 中的关键函数，行 195-270。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/range_test.go:TestGetSize",
+      "type": "function",
+      "name": "TestGetSize",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "lineRange": [
+        410,
+        464
+      ],
+      "summary": "TestGetSize 是 range_test.go 中的关键函数，行 410-464。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/range_test.go:TestRange_Offsets_EdgeCases",
+      "type": "function",
+      "name": "TestRange_Offsets_EdgeCases",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "lineRange": [
+        466,
+        510
+      ],
+      "summary": "TestRange_Offsets_EdgeCases 是 range_test.go 中的关键函数，行 466-510。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:Chunker",
+      "type": "class",
+      "name": "Chunker",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "lineRange": [
+        26,
+        37
+      ],
+      "summary": "block 子系统的 Chunker 实现，定义在 packages/orchestrator/pkg/sandbox/block/streaming_chunk.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:NewChunker",
+      "type": "function",
+      "name": "NewChunker",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "lineRange": [
+        39,
+        59
+      ],
+      "summary": "NewChunker 是 streaming_chunk.go 中的关键函数，行 39-59。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:Slice",
+      "type": "function",
+      "name": "Slice",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "lineRange": [
+        72,
+        123
+      ],
+      "summary": "Slice 是 streaming_chunk.go 中的关键函数，行 72-123。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:getOrCreateSession",
+      "type": "function",
+      "name": "getOrCreateSession",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "lineRange": [
+        127,
+        155
+      ],
+      "summary": "getOrCreateSession 是 streaming_chunk.go 中的关键函数，行 127-155。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:fetch",
+      "type": "function",
+      "name": "fetch",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "lineRange": [
+        160,
+        192
+      ],
+      "summary": "fetch 是 streaming_chunk.go 中的关键函数，行 160-192。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:runFetch",
+      "type": "function",
+      "name": "runFetch",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "lineRange": [
+        195,
+        263
+      ],
+      "summary": "runFetch 是 streaming_chunk.go 中的关键函数，行 195-263。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:progressiveFetch",
+      "type": "function",
+      "name": "progressiveFetch",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "lineRange": [
+        273,
+        331
+      ],
+      "summary": "progressiveFetch 是 streaming_chunk.go 中的关键函数，行 273-331。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:releaseSession",
+      "type": "function",
+      "name": "releaseSession",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "lineRange": [
+        334,
+        347
+      ],
+      "summary": "releaseSession 是 streaming_chunk.go 中的关键函数，行 334-347。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:locateChunk",
+      "type": "function",
+      "name": "locateChunk",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "lineRange": [
+        353,
+        366
+      ],
+      "summary": "locateChunk 是 streaming_chunk.go 中的关键函数，行 353-366。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:fakeSeekable",
+      "type": "class",
+      "name": "fakeSeekable",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "lineRange": [
+        51,
+        56
+      ],
+      "summary": "block 子系统的 fakeSeekable 实现，定义在 packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:panicSeekable",
+      "type": "class",
+      "name": "panicSeekable",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "lineRange": [
+        419,
+        422
+      ],
+      "summary": "block 子系统的 panicSeekable 实现，定义在 packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:panicReader",
+      "type": "class",
+      "name": "panicReader",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "lineRange": [
+        443,
+        447
+      ],
+      "summary": "block 子系统的 panicReader 实现，定义在 packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:controlledReader",
+      "type": "class",
+      "name": "controlledReader",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "lineRange": [
+        564,
+        571
+      ],
+      "summary": "block 子系统的 controlledReader 实现，定义在 packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:OpenRangeReader",
+      "type": "function",
+      "name": "OpenRangeReader",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "lineRange": [
+        85,
+        136
+      ],
+      "summary": "OpenRangeReader 是 streaming_chunk_test.go 中的关键函数，行 85-136。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:makeCompressedTestData",
+      "type": "function",
+      "name": "makeCompressedTestData",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "lineRange": [
+        138,
+        152
+      ],
+      "summary": "makeCompressedTestData 是 streaming_chunk_test.go 中的关键函数，行 138-152。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:TestChunker_ConcurrentSameChunk",
+      "type": "function",
+      "name": "TestChunker_ConcurrentSameChunk",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "lineRange": [
+        254,
+        287
+      ],
+      "summary": "TestChunker_ConcurrentSameChunk 是 streaming_chunk_test.go 中的关键函数，行 254-287。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:TestChunker_EarlyReturn",
+      "type": "function",
+      "name": "TestChunker_EarlyReturn",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "lineRange": [
+        289,
+        338
+      ],
+      "summary": "TestChunker_EarlyReturn 是 streaming_chunk_test.go 中的关键函数，行 289-338。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:TestChunker_ContextCancellation",
+      "type": "function",
+      "name": "TestChunker_ContextCancellation",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "lineRange": [
+        362,
+        391
+      ],
+      "summary": "TestChunker_ContextCancellation 是 streaming_chunk_test.go 中的关键函数，行 362-391。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:Read",
+      "type": "function",
+      "name": "Read",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "lineRange": [
+        449,
+        463
+      ],
+      "summary": "Read 是 streaming_chunk_test.go 中的关键函数，行 449-463。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:TestChunker_ConcurrentStress",
+      "type": "function",
+      "name": "TestChunker_ConcurrentStress",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "lineRange": [
+        490,
+        527
+      ],
+      "summary": "TestChunker_ConcurrentStress 是 streaming_chunk_test.go 中的关键函数，行 490-527。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:newControlledChunker",
+      "type": "function",
+      "name": "newControlledChunker",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "lineRange": [
+        544,
+        560
+      ],
+      "summary": "newControlledChunker 是 streaming_chunk_test.go 中的关键函数，行 544-560。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/sandbox/block/tracker.go:Tracker",
+      "type": "class",
+      "name": "Tracker",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "lineRange": [
+        22,
+        25
+      ],
+      "summary": "block 子系统的 Tracker 实现，定义在 packages/orchestrator/pkg/sandbox/block/tracker.go 中。",
+      "tags": [
+        "block-storage",
+        "data-structure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/tracker.go:SetRange",
+      "type": "function",
+      "name": "SetRange",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "lineRange": [
+        36,
+        56
+      ],
+      "summary": "SetRange 是 tracker.go 中的关键函数，行 36-56。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/tracker.go:Get",
+      "type": "function",
+      "name": "Get",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "lineRange": [
+        58,
+        70
+      ],
+      "summary": "Get 是 tracker.go 中的关键函数，行 58-70。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/tracker.go:HasRange",
+      "type": "function",
+      "name": "HasRange",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "lineRange": [
+        75,
+        94
+      ],
+      "summary": "HasRange 是 tracker.go 中的关键函数，行 75-94。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/tracker.go:Present",
+      "type": "function",
+      "name": "Present",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "lineRange": [
+        98,
+        109
+      ],
+      "summary": "Present 是 tracker.go 中的关键函数，行 98-109。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/block/tracker_test.go:TestTracker",
+      "type": "function",
+      "name": "TestTracker",
+      "filePath": "packages/orchestrator/pkg/sandbox/block/tracker_test.go",
+      "lineRange": [
+        11,
+        108
+      ],
+      "summary": "TestTracker 是 tracker_test.go 中的关键函数，行 11-108。",
+      "tags": [
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/memory.go:exportMemoryFromFc",
+      "type": "function",
+      "name": "exportMemoryFromFc",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "lineRange": [
+        30,
+        66
+      ],
+      "summary": "exportMemoryFromFc 是 memory.go 中的关键函数，行 30-66。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/sandbox/fc/memory.go:ExportMemory",
+      "type": "function",
+      "name": "ExportMemory",
+      "filePath": "packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "lineRange": [
+        73,
+        157
+      ],
+      "summary": "ExportMemory 是 memory.go 中的关键函数，行 73-157。",
+      "tags": [
+        "block-storage"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/metrics/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/metrics/main.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/cache.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_sim_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/dedup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/device.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/empty.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/fetch_session.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/iov.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/local.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/memfd.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/overlay.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/range.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/range.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_slow_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/range.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/path_direct_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/range.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/nbd/testutils/build_device.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go:PrefetchTracker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go:NewPrefetchTracker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go:Add",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/prefetch_tracker.go:PrefetchData",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/range_test.go:TestRange_End",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/range_test.go:TestNewRange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/range_test.go:TestNewRangeFromBlocks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/range_test.go:TestRange_Offsets",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/range_test.go:TestGetSize",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/range_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/range_test.go:TestRange_Offsets_EdgeCases",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:Chunker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:NewChunker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:Slice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:getOrCreateSession",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:fetch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:runFetch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:progressiveFetch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:releaseSession",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk.go:locateChunk",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:fakeSeekable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:panicSeekable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:panicReader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:controlledReader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:OpenRangeReader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:makeCompressedTestData",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:TestChunker_ConcurrentSameChunk",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:TestChunker_EarlyReturn",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:TestChunker_ContextCancellation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:Read",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:TestChunker_ConcurrentStress",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:newControlledChunker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/streaming_chunk_test.go:Read",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "target": "class:packages/orchestrator/pkg/sandbox/block/tracker.go:Tracker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/tracker.go:SetRange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/tracker.go:Get",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/tracker.go:HasRange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/tracker.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/tracker.go:Present",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/block/tracker_test.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/block/tracker_test.go:TestTracker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/memory.go:exportMemoryFromFc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/sandbox/fc/memory.go",
+      "target": "function:packages/orchestrator/pkg/sandbox/fc/memory.go:ExportMemory",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ]
+}

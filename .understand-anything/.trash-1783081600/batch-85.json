@@ -1,0 +1,406 @@
+{
+  "nodes": [
+    {
+      "id": "resource:iac/provider-gcp/nomad/images.tf",
+      "type": "resource",
+      "name": "images.tf",
+      "filePath": "iac/provider-gcp/nomad/images.tf",
+      "summary": "声明 GCP Artifact Registry 中各服务容器镜像的 data source,供 Nomad Job 拉取 API、db_migrator、docker_reverse_proxy、client_proxy、clickhouse_migrator、dashboard_api 等镜像。",
+      "tags": ["terraform", "artifact-registry", "container-images", "infrastructure"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf",
+      "type": "resource",
+      "name": "main.tf",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "Nomad 主入口,编排 API、Dashboard API、Client Proxy、Redis、OTel Collector、Loki、Orchestrator、Template Manager、ClickHouse 等模块与 Secret Manager、IAM、Scheduler 等 GCP/Nomad 资源。",
+      "tags": ["terraform", "nomad", "infrastructure", "orchestration", "deployment"],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/moved.tf",
+      "type": "resource",
+      "name": "moved.tf",
+      "filePath": "iac/provider-gcp/nomad/moved.tf",
+      "summary": "Terraform `moved` 块集合,用于将已有的 Nomad Job 与子模块资源重命名/重组到新位置(例如将多个 nomad_job 移入对应 module),无需销毁重建。",
+      "tags": ["terraform", "state-migration", "refactor", "infrastructure"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/variables.tf",
+      "type": "resource",
+      "name": "variables.tf",
+      "filePath": "iac/provider-gcp/nomad/variables.tf",
+      "summary": "Nomad 模块的输入变量集合(99 个),涵盖环境/区域/节点池、API/Orchestrator/ClientProxy 端口与资源、ClickHouse、Loki、OTel、Secret、GCS Token 等所有可调参数。",
+      "tags": ["terraform", "variables", "configuration", "infrastructure"],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/images.tf:api_image",
+      "type": "resource",
+      "name": "api_image",
+      "filePath": "iac/provider-gcp/nomad/images.tf",
+      "summary": "从 GCP Artifact Registry 拉取 API 服务最新 Docker 镜像元数据,供 Nomad Job 使用。",
+      "tags": ["artifact-registry", "docker-image", "api"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/images.tf:db_migrator_image",
+      "type": "resource",
+      "name": "db_migrator_image",
+      "filePath": "iac/provider-gcp/nomad/images.tf",
+      "summary": "拉取数据库迁移器镜像,用于运行 schema 迁移任务。",
+      "tags": ["artifact-registry", "docker-image", "migration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/images.tf:client_proxy_image",
+      "type": "resource",
+      "name": "client_proxy_image",
+      "filePath": "iac/provider-gcp/nomad/images.tf",
+      "summary": "拉取 Client Proxy 边缘路由镜像,用于服务发现与请求路由。",
+      "tags": ["artifact-registry", "docker-image", "edge-router"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:nomad_job.docker_reverse_proxy",
+      "type": "resource",
+      "name": "nomad_job.docker_reverse_proxy",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "在 Nomad 上部署 Docker Reverse Proxy Job,为 Docker Registry 提供流量反向代理。",
+      "tags": ["nomad", "reverse-proxy", "docker"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:nomad_job.clean_nfs_cache",
+      "type": "resource",
+      "name": "nomad_job.clean_nfs_cache",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "部署 NFS 缓存清理 Nomad Job,定期回收 Firecracker filestore 缓存占用。",
+      "tags": ["nomad", "cleanup", "filestore"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:nomad_scheduler_config.config",
+      "type": "resource",
+      "name": "nomad_scheduler_config",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "配置 Nomad Scheduler 参数,控制 Job 调度行为。",
+      "tags": ["nomad", "scheduler", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:module.ingress",
+      "type": "resource",
+      "name": "ingress",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "Ingress 模块,部署 Traefik 入口代理处理外部 HTTPS 流量并路由到 API、Dashboard 等服务。",
+      "tags": ["module", "ingress", "traefik", "reverse-proxy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:module.api",
+      "type": "resource",
+      "name": "api",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "API 模块,部署 REST API 服务到 Nomad 集群,处理 sandbox 管理请求并连接 PostgreSQL/Redis/ClickHouse。",
+      "tags": ["module", "api", "rest-api"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:module.dashboard_api",
+      "type": "resource",
+      "name": "dashboard_api",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "Dashboard API 模块,部署供控制台使用的 Dashboard API 服务。",
+      "tags": ["module", "dashboard", "api"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:module.redis",
+      "type": "resource",
+      "name": "redis",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "Redis 模块,在 Nomad 上部署 Redis 实例,用于缓存、状态管理与 pub/sub。",
+      "tags": ["module", "redis", "cache"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:module.client_proxy",
+      "type": "resource",
+      "name": "client_proxy",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "Client Proxy 模块,基于 Consul 服务发现将请求路由到对应的 Orchestrator 实例。",
+      "tags": ["module", "client-proxy", "edge-router", "service-discovery"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:module.otel_collector",
+      "type": "resource",
+      "name": "otel_collector",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "OTel Collector 模块,收集并转发 Nomad Job 上的 traces/metrics/logs 到 Grafana Stack 与 GCP Telemetry。",
+      "tags": ["module", "opentelemetry", "observability"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:module.otel_collector_nomad_server",
+      "type": "resource",
+      "name": "otel_collector_nomad_server",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "在 Nomad Server 节点上部署的 OTel Collector DaemonSet 风格 Job,收集宿主机/Server 遥测数据。",
+      "tags": ["module", "opentelemetry", "nomad-server"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:module.logs_collector",
+      "type": "resource",
+      "name": "logs_collector",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "Logs Collector 模块,集中收集并转发容器日志到 Loki。",
+      "tags": ["module", "logging", "loki"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:module.orchestrator",
+      "type": "resource",
+      "name": "orchestrator",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "Orchestrator 模块,在 Nomad 上以 count > 0 方式部署 Firecracker microVM 编排服务。",
+      "tags": ["module", "orchestrator", "firecracker"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:module.template_manager",
+      "type": "resource",
+      "name": "template_manager",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "Template Manager 模块,负责 Firecracker rootfs/内核模板的预热与缓存管理。",
+      "tags": ["module", "template-manager", "firecracker"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:module.template_manager_autoscaler",
+      "type": "resource",
+      "name": "template_manager_autoscaler",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "Template Manager Autoscaler 模块,通过 Nomad Autoscaler 根据 nomad_nodepool_apm 指标动态扩缩容模板管理器。",
+      "tags": ["module", "autoscaler", "nomad"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:module.loki",
+      "type": "resource",
+      "name": "loki",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "Loki 模块,在 Nomad 上部署 Loki 日志聚合服务并对接 GCS 存储桶。",
+      "tags": ["module", "loki", "logging"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:module.clickhouse",
+      "type": "resource",
+      "name": "clickhouse",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "ClickHouse 模块,在 Nomad 上部署 ClickHouse 集群,处理分析查询与 sandbox_events 事件存储。",
+      "tags": ["module", "clickhouse", "analytics"],
+      "complexity": "complex"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:google_service_account.clickhouse_service_account",
+      "type": "resource",
+      "name": "clickhouse_service_account",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "为 ClickHouse 创建专用 GCP Service Account,授予 GCS 读写权限以支持备份与还原。",
+      "tags": ["gcp", "iam", "service-account", "clickhouse"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-gcp/nomad/main.tf:google_storage_hmac_key.clickhouse_hmac_key",
+      "type": "resource",
+      "name": "clickhouse_hmac_key",
+      "filePath": "iac/provider-gcp/nomad/main.tf",
+      "summary": "为 ClickHouse Service Account 创建 GCS HMAC Key,允许其使用 S3 兼容协议访问 GCS 备份桶。",
+      "tags": ["gcp", "storage", "hmac", "clickhouse"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/provider-gcp/nomad/main.tf",
+      "target": "resource:iac/provider-gcp/nomad/images.tf:api_image",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/main.tf",
+      "target": "resource:iac/provider-gcp/nomad/images.tf:db_migrator_image",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/main.tf",
+      "target": "resource:iac/provider-gcp/nomad/images.tf:client_proxy_image",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/main.tf",
+      "target": "resource:iac/provider-gcp/nomad/variables.tf",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/moved.tf",
+      "target": "resource:iac/provider-gcp/nomad/main.tf",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/main.tf:module.ingress",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:nomad_scheduler_config.config",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/main.tf:module.api",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:nomad_scheduler_config.config",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/main.tf:module.api",
+      "target": "resource:iac/provider-gcp/nomad/images.tf:api_image",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/main.tf:module.client_proxy",
+      "target": "resource:iac/provider-gcp/nomad/images.tf:client_proxy_image",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/main.tf:module.clickhouse",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:google_service_account.clickhouse_service_account",
+      "type": "provisions",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/main.tf:module.clickhouse",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:google_storage_hmac_key.clickhouse_hmac_key",
+      "type": "provisions",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/main.tf:nomad_job.docker_reverse_proxy",
+      "target": "resource:iac/provider-gcp/nomad/images.tf:api_image",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/main.tf:nomad_job.clean_nfs_cache",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:nomad_scheduler_config.config",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/moved.tf",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:module.ingress",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/moved.tf",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:module.api",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/moved.tf",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:module.client_proxy",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/moved.tf",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:module.loki",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/moved.tf",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:module.logs_collector",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/moved.tf",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:module.clickhouse",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/moved.tf",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:module.otel_collector",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/moved.tf",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:module.otel_collector_nomad_server",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/moved.tf",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:module.orchestrator",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/moved.tf",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:module.redis",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/moved.tf",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:module.template_manager",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "resource:iac/provider-gcp/nomad/moved.tf",
+      "target": "resource:iac/provider-gcp/nomad/main.tf:module.template_manager_autoscaler",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

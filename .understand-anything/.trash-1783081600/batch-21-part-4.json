@@ -1,0 +1,1038 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/shared/pkg/storage/paths_cache.go",
+      "type": "file",
+      "name": "paths_cache.go",
+      "filePath": "packages/shared/pkg/storage/paths_cache.go",
+      "summary": "提供 NFS 本地缓存目录下的对象路径生成(Memfile/Rootfs/Metadata/Snapfile 等)。",
+      "tags": [
+        "storage",
+        "paths",
+        "cache",
+        "nfs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/paths_test.go",
+      "type": "file",
+      "name": "paths_test.go",
+      "filePath": "packages/shared/pkg/storage/paths_test.go",
+      "summary": "校验路径解析逻辑(从对象路径判断 kind/blob 类型)。",
+      "tags": [
+        "test",
+        "paths"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/sandbox.go",
+      "type": "file",
+      "name": "sandbox.go",
+      "filePath": "packages/shared/pkg/storage/sandbox.go",
+      "summary": "管理沙箱运行时文件路径(Firecracker socket、UFFD socket、缓存 rootfs、cgroup 名称等)并提供文件回收工具。",
+      "tags": [
+        "storage",
+        "sandbox",
+        "paths",
+        "reclaim"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/sandbox_reclaim_test.go",
+      "type": "file",
+      "name": "sandbox_reclaim_test.go",
+      "filePath": "packages/shared/pkg/storage/sandbox_reclaim_test.go",
+      "summary": "验证 ReclaimSandboxFiles 能正确识别并删除沙箱产生的全部文件。",
+      "tags": [
+        "test",
+        "sandbox",
+        "reclaim"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/storage.go",
+      "type": "file",
+      "name": "storage.go",
+      "filePath": "packages/shared/pkg/storage/storage.go",
+      "summary": "存储层核心抽象：定义 StorageProvider/Blob/Seekable/RangeReader/ReadStats 等接口，提供 GetStorageProvider 工厂方法。",
+      "tags": [
+        "storage",
+        "interface",
+        "factory",
+        "abstraction"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/storage_aws.go",
+      "type": "file",
+      "name": "storage_aws.go",
+      "filePath": "packages/shared/pkg/storage/storage_aws.go",
+      "summary": "AWS S3 后端实现，封装 Blob/Seekable 操作以及签名 URL 上传。",
+      "tags": [
+        "storage",
+        "aws",
+        "s3",
+        "backend"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/storage_cache.go",
+      "type": "file",
+      "name": "storage_cache.go",
+      "filePath": "packages/shared/pkg/storage/storage_cache.go",
+      "summary": "在 StorageProvider 之上包装一层 NFS 本地缓存，对象读写时优先访问本地缓存并支持异步写回。",
+      "tags": [
+        "storage",
+        "cache",
+        "nfs",
+        "wrapper"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/paths_cache.go:CachePaths",
+      "type": "class",
+      "name": "CachePaths",
+      "filePath": "packages/shared/pkg/storage/paths_cache.go",
+      "lineRange": [
+        10,
+        56
+      ],
+      "summary": "提供 NFS 本地缓存目录下的对象路径(memfile/rootfs/snapfile/metadata)。",
+      "tags": [
+        "paths",
+        "cache",
+        "nfs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/paths_cache.go:Cache",
+      "type": "function",
+      "name": "Cache",
+      "filePath": "packages/shared/pkg/storage/paths_cache.go",
+      "lineRange": [
+        20,
+        30
+      ],
+      "summary": "构造 CachePaths 实例。",
+      "tags": [
+        "cache",
+        "factory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/paths_cache.go:Close",
+      "type": "function",
+      "name": "Close",
+      "filePath": "packages/shared/pkg/storage/paths_cache.go",
+      "lineRange": [
+        45,
+        56
+      ],
+      "summary": "清理缓存目录引用。",
+      "tags": [
+        "cache",
+        "cleanup"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/sandbox.go:SandboxFiles",
+      "type": "class",
+      "name": "SandboxFiles",
+      "filePath": "packages/shared/pkg/storage/sandbox.go",
+      "lineRange": [
+        20,
+        70
+      ],
+      "summary": "封装沙箱运行时路径集合(firecracker socket、UFFD socket、rootfs 等)。",
+      "tags": [
+        "sandbox",
+        "paths"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/sandbox.go:Config",
+      "type": "class",
+      "name": "Config",
+      "filePath": "packages/shared/pkg/storage/sandbox.go",
+      "lineRange": [
+        75,
+        134
+      ],
+      "summary": "沙箱配置：包含 sandboxID、cache rootfs 路径等。",
+      "tags": [
+        "sandbox",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/sandbox.go:ReclaimSandboxFiles",
+      "type": "function",
+      "name": "ReclaimSandboxFiles",
+      "filePath": "packages/shared/pkg/storage/sandbox.go",
+      "lineRange": [
+        110,
+        134
+      ],
+      "summary": "扫描并删除 sandbox 关联的全部运行时文件。",
+      "tags": [
+        "sandbox",
+        "cleanup",
+        "reclaim"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/storage.go:StorageProvider",
+      "type": "class",
+      "name": "StorageProvider",
+      "filePath": "packages/shared/pkg/storage/storage.go",
+      "lineRange": [
+        30,
+        90
+      ],
+      "summary": "存储提供者抽象接口：管理 blob 与 seekable 对象的生命周期。",
+      "tags": [
+        "storage",
+        "interface",
+        "abstraction"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/storage.go:Blob",
+      "type": "class",
+      "name": "Blob",
+      "filePath": "packages/shared/pkg/storage/storage.go",
+      "lineRange": [
+        95,
+        130
+      ],
+      "summary": "不可变二进制对象的抽象(OpenRangeReader/Exists/Size)。",
+      "tags": [
+        "storage",
+        "blob",
+        "interface"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/storage.go:Seekable",
+      "type": "class",
+      "name": "Seekable",
+      "filePath": "packages/shared/pkg/storage/storage.go",
+      "lineRange": [
+        130,
+        170
+      ],
+      "summary": "可写可定位存储对象抽象(StoreFile/OpenRangeReader/Size)。",
+      "tags": [
+        "storage",
+        "seekable",
+        "interface"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/storage.go:RangeReader",
+      "type": "class",
+      "name": "RangeReader",
+      "filePath": "packages/shared/pkg/storage/storage.go",
+      "lineRange": [
+        170,
+        200
+      ],
+      "summary": "范围读取器抽象(Read/Close/Stats)。",
+      "tags": [
+        "storage",
+        "io",
+        "interface"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/storage.go:SeekableWriter",
+      "type": "class",
+      "name": "SeekableWriter",
+      "filePath": "packages/shared/pkg/storage/storage.go",
+      "lineRange": [
+        200,
+        220
+      ],
+      "summary": "seekable 对象写入接口(WriteTo/StoreFile)。",
+      "tags": [
+        "storage",
+        "io",
+        "interface"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/storage.go:ReadStats",
+      "type": "class",
+      "name": "ReadStats",
+      "filePath": "packages/shared/pkg/storage/storage.go",
+      "lineRange": [
+        220,
+        245
+      ],
+      "summary": "读取统计：字节数、读次数、读取耗时等。",
+      "tags": [
+        "storage",
+        "metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/storage.go:StorageConfig",
+      "type": "class",
+      "name": "StorageConfig",
+      "filePath": "packages/shared/pkg/storage/storage.go",
+      "lineRange": [
+        245,
+        280
+      ],
+      "summary": "存储层初始化配置(bucket/provider/limiter)。",
+      "tags": [
+        "storage",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/storage.go:PeerTransitionedError",
+      "type": "class",
+      "name": "PeerTransitionedError",
+      "filePath": "packages/shared/pkg/storage/storage.go",
+      "lineRange": [
+        280,
+        300
+      ],
+      "summary": "表示对端节点发生迁移而需重新路由的错误类型。",
+      "tags": [
+        "storage",
+        "error",
+        "routing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/storage.go:GetStorageProvider",
+      "type": "function",
+      "name": "GetStorageProvider",
+      "filePath": "packages/shared/pkg/storage/storage.go",
+      "lineRange": [
+        310,
+        346
+      ],
+      "summary": "根据环境变量构造对应 provider(local/aws/gcp)。",
+      "tags": [
+        "storage",
+        "factory"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/storage.go:UploadFramed",
+      "type": "function",
+      "name": "UploadFramed",
+      "filePath": "packages/shared/pkg/storage/storage.go",
+      "lineRange": [
+        140,
+        180
+      ],
+      "summary": "将帧流式上传到 seekable 对象。",
+      "tags": [
+        "storage",
+        "upload",
+        "frame"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/storage.go:UploadBlob",
+      "type": "function",
+      "name": "UploadBlob",
+      "filePath": "packages/shared/pkg/storage/storage.go",
+      "lineRange": [
+        180,
+        220
+      ],
+      "summary": "上传完整 blob 并支持压缩/校验选项。",
+      "tags": [
+        "storage",
+        "upload",
+        "blob"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/storage.go:GetBlob",
+      "type": "function",
+      "name": "GetBlob",
+      "filePath": "packages/shared/pkg/storage/storage.go",
+      "lineRange": [
+        320,
+        346
+      ],
+      "summary": "根据 path 获取 blob 句柄。",
+      "tags": [
+        "storage",
+        "blob",
+        "factory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/storage_aws.go:awsStorage",
+      "type": "class",
+      "name": "awsStorage",
+      "filePath": "packages/shared/pkg/storage/storage_aws.go",
+      "lineRange": [
+        20,
+        100
+      ],
+      "summary": "AWS S3 后端实现 StorageProvider 接口。",
+      "tags": [
+        "storage",
+        "aws",
+        "s3",
+        "backend"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/storage_aws.go:awsObject",
+      "type": "class",
+      "name": "awsObject",
+      "filePath": "packages/shared/pkg/storage/storage_aws.go",
+      "lineRange": [
+        100,
+        200
+      ],
+      "summary": "AWS S3 单个对象的句柄。",
+      "tags": [
+        "storage",
+        "aws",
+        "object"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/storage_cache.go:cache",
+      "type": "class",
+      "name": "cache",
+      "filePath": "packages/shared/pkg/storage/storage_cache.go",
+      "lineRange": [
+        20,
+        163
+      ],
+      "summary": "StorageProvider 的 NFS 本地缓存包装器，支持读取穿透、写回与特性开关控制。",
+      "tags": [
+        "storage",
+        "cache",
+        "nfs",
+        "wrapper"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/storage_cache.go:WrapInNFSCache",
+      "type": "function",
+      "name": "WrapInNFSCache",
+      "filePath": "packages/shared/pkg/storage/storage_cache.go",
+      "lineRange": [
+        30,
+        70
+      ],
+      "summary": "将任意 StorageProvider 包装为带 NFS 缓存的实现。",
+      "tags": [
+        "cache",
+        "factory"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/storage_cache.go:WithSkipCacheWriteback",
+      "type": "function",
+      "name": "WithSkipCacheWriteback",
+      "filePath": "packages/shared/pkg/storage/storage_cache.go",
+      "lineRange": [
+        1,
+        20
+      ],
+      "summary": "构造一个 context value 用于跳过写回。",
+      "tags": [
+        "cache",
+        "context"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/shared/pkg/storage/paths_cache.go",
+      "target": "class:packages/shared/pkg/storage/paths_cache.go:CachePaths",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/paths_cache.go",
+      "target": "function:packages/shared/pkg/storage/paths_cache.go:Cache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/paths_cache.go",
+      "target": "function:packages/shared/pkg/storage/paths_cache.go:Close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/sandbox.go",
+      "target": "class:packages/shared/pkg/storage/sandbox.go:SandboxFiles",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/sandbox.go",
+      "target": "class:packages/shared/pkg/storage/sandbox.go:Config",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/sandbox.go",
+      "target": "function:packages/shared/pkg/storage/sandbox.go:ReclaimSandboxFiles",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "class:packages/shared/pkg/storage/storage.go:StorageProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "class:packages/shared/pkg/storage/storage.go:Blob",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "class:packages/shared/pkg/storage/storage.go:Seekable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "class:packages/shared/pkg/storage/storage.go:RangeReader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "class:packages/shared/pkg/storage/storage.go:SeekableWriter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "class:packages/shared/pkg/storage/storage.go:ReadStats",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "class:packages/shared/pkg/storage/storage.go:StorageConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "class:packages/shared/pkg/storage/storage.go:PeerTransitionedError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "function:packages/shared/pkg/storage/storage.go:GetStorageProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "function:packages/shared/pkg/storage/storage.go:UploadFramed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "function:packages/shared/pkg/storage/storage.go:UploadBlob",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "function:packages/shared/pkg/storage/storage.go:GetBlob",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_aws.go",
+      "target": "class:packages/shared/pkg/storage/storage_aws.go:awsStorage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_aws.go",
+      "target": "class:packages/shared/pkg/storage/storage_aws.go:awsObject",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache.go",
+      "target": "class:packages/shared/pkg/storage/storage_cache.go:cache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache.go",
+      "target": "function:packages/shared/pkg/storage/storage_cache.go:WrapInNFSCache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache.go",
+      "target": "function:packages/shared/pkg/storage/storage_cache.go:WithSkipCacheWriteback",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/sandbox.go",
+      "target": "file:packages/shared/pkg/id/id_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/sandbox.go",
+      "target": "file:packages/shared/pkg/id/id.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/env/env.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/limit/gcloud.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/limit/limiter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/limit/upload.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/storage/storageopts/storageopts.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/apply_all_or_none.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/copy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/env_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/env.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/error_once_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/error_once.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/errorcollector_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/errorcollector.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/filter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/grpc_codes.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/iter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/lazy.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/logging.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/map_values.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/mocks_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/move_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/move.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/must.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/promise_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/promise.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/ptr.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/resizable_semaphore_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/resizable_semaphore.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/set_once_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/set_once.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/strings.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/symlink.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/version_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/version.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/waitgroup_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage.go",
+      "target": "file:packages/shared/pkg/utils/waitgroup.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_aws.go",
+      "target": "file:packages/shared/pkg/logger/exporter_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_aws.go",
+      "target": "file:packages/shared/pkg/logger/exporter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_aws.go",
+      "target": "file:packages/shared/pkg/logger/fields.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_aws.go",
+      "target": "file:packages/shared/pkg/logger/grpc.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_aws.go",
+      "target": "file:packages/shared/pkg/logger/logger.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache.go",
+      "target": "file:packages/shared/pkg/featureflags/client_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache.go",
+      "target": "file:packages/shared/pkg/featureflags/client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache.go",
+      "target": "file:packages/shared/pkg/featureflags/context_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache.go",
+      "target": "file:packages/shared/pkg/featureflags/context.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache.go",
+      "target": "file:packages/shared/pkg/featureflags/flags.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache.go",
+      "target": "file:packages/shared/pkg/logger/exporter_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache.go",
+      "target": "file:packages/shared/pkg/logger/exporter.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache.go",
+      "target": "file:packages/shared/pkg/logger/fields.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache.go",
+      "target": "file:packages/shared/pkg/logger/grpc.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/storage_cache.go",
+      "target": "file:packages/shared/pkg/logger/logger.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/paths_test.go",
+      "target": "file:packages/shared/pkg/storage/paths.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/sandbox_reclaim_test.go",
+      "target": "file:packages/shared/pkg/storage/sandbox.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

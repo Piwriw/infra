@@ -1,0 +1,138 @@
+{
+  "nodes": [
+    {
+      "id": "document:packages/orchestrator/pkg/sandbox/docs/00-index.md",
+      "type": "document",
+      "name": "00-index.md",
+      "filePath": "packages/orchestrator/pkg/sandbox/docs/00-index.md",
+      "summary": "pkg/sandbox 模块原理总览：说明该模块在 orchestrator 中的位置、目录结构、核心类型、关键调用链（创建/恢复/暂停/关闭）以及按学习顺序排列的文档索引。",
+      "tags": ["documentation", "overview", "module-guide", "firecracker", "orchestrator"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:packages/orchestrator/pkg/sandbox/docs/01-sandbox-entry.md",
+      "type": "document",
+      "name": "01-sandbox-entry.md",
+      "filePath": "packages/orchestrator/pkg/sandbox/docs/01-sandbox-entry.md",
+      "summary": "深入解析 sandbox.go 顶层入口：Config / RuntimeMetadata / Resources / Sandbox / Factory 核心类型，以及 CreateSandbox、ResumeSandbox、Pause、Stop、Shutdown、Wait 等关键流程。",
+      "tags": ["documentation", "sandbox", "lifecycle", "entry-point", "orchestrator"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:packages/orchestrator/pkg/sandbox/docs/02-cleanup-reclaim-map.md",
+      "type": "document",
+      "name": "02-cleanup-reclaim-map.md",
+      "filePath": "packages/orchestrator/pkg/sandbox/docs/02-cleanup-reclaim-map.md",
+      "summary": "解析 cleanup.go 清理链、reclaim.go 暂停前最佳努力回收（fstrim/sync/drop_caches/cgroup freeze）以及 map.go 双 map 沙箱索引与订阅者设计。",
+      "tags": ["documentation", "cleanup", "reclaim", "sandbox-map", "lifecycle"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:packages/orchestrator/pkg/sandbox/docs/03-checks-hoststats.md",
+      "type": "document",
+      "name": "03-checks-hoststats.md",
+      "filePath": "packages/orchestrator/pkg/sandbox/docs/03-checks-hoststats.md",
+      "summary": "解析健康检查子系统：Checks 调度器、health.go 单次 /health 探测、metrics.go 拉取 envd /metrics、hoststats.go 与 hoststats_collector.go 后台 cgroup 采样及与 sandbox 生命周期的绑定。",
+      "tags": ["documentation", "health-check", "metrics", "cgroup", "monitoring"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:packages/orchestrator/pkg/sandbox/docs/04-snapshot-and-uploads.md",
+      "type": "document",
+      "name": "04-snapshot-and-uploads.md",
+      "filePath": "packages/orchestrator/pkg/sandbox/docs/04-snapshot-and-uploads.md",
+      "summary": "解析 snapshot 数据结构、build_upload V3/V4 路径（含 resolveCompressConfig、uploadFramed、seekableTypeFor）、uploads.go 跨 orchestrator 等待与 Redis pub/sub 协调、snapshot_metrics 指标。",
+      "tags": ["documentation", "snapshot", "upload", "gcs", "orchestrator"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:packages/orchestrator/pkg/sandbox/docs/05-fc.md",
+      "type": "document",
+      "name": "05-fc.md",
+      "filePath": "packages/orchestrator/pkg/sandbox/docs/05-fc.md",
+      "summary": "解析 fc/ Firecracker 进程抽象：Process 生命周期（NewProcess/configure/Create/Resume/Pause/Stop）、apiClient REST 包装、config 路径解析、script_builder 启动脚本、KernelArgs、mmds、memory 导出、fc_metrics 采集、fph_gates 限流。",
+      "tags": ["documentation", "firecracker", "process", "api-client", "kernel-args"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:packages/orchestrator/pkg/sandbox/docs/06-block.md",
+      "type": "document",
+      "name": "06-block.md",
+      "filePath": "packages/orchestrator/pkg/sandbox/docs/06-block.md",
+      "summary": "解析 block/ 块设备抽象：mmap Cache（WriteAt/WriteZeroesAt/Slice/ExportToDiff/Dedup）、Tracker 三态、Local/Empty/Overlay 设备实现、Memfd 与 DedupedMemfdCache、fetchSession、Chunker 流式拉取、PrefetchTracker、dedup.go 父 memfile 去重。",
+      "tags": ["documentation", "block-device", "cache", "dedup", "chunker"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:packages/orchestrator/pkg/sandbox/docs/07-nbd.md",
+      "type": "document",
+      "name": "07-nbd.md",
+      "filePath": "packages/orchestrator/pkg/sandbox/docs/07-nbd.md",
+      "summary": "解析 nbd/ Linux NBD 用户态服务端：协议包格式、DevicePool /dev/nbd* 资源池、Dispatch NBD 协议服务端（Handle/cmdRead/cmdWrite/cmdWriteZeroes/Drain）、DirectPathMount NBD 客户端与内核注入。",
+      "tags": ["documentation", "nbd", "kernel", "block-device", "protocol"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:packages/orchestrator/pkg/sandbox/docs/08-uffd.md",
+      "type": "document",
+      "name": "08-uffd.md",
+      "filePath": "packages/orchestrator/pkg/sandbox/docs/08-uffd.md",
+      "summary": "解析 uffd/ userfaultfd 按需分页与写时复制：MemoryBackend 接口、Uffd 主实现（Start/handle/Prefault/Stop/DiffMetadata/PrefetchData/Memfd/ServeStats）、NoopMemory、prefetch/ 主动预取、fdexit/ 退出事件、memory/ 辅助与 userfaultfd/ 高级包装。",
+      "tags": ["documentation", "userfaultfd", "copy-on-write", "memory", "prefetch"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:packages/orchestrator/pkg/sandbox/docs/09-cgroup-network-rootfs.md",
+      "type": "document",
+      "name": "09-cgroup-network-rootfs.md",
+      "filePath": "packages/orchestrator/pkg/sandbox/docs/09-cgroup-network-rootfs.md",
+      "summary": "解析资源管理三大子模块：cgroup/ v2 资源计量（CgroupHandle、managerImpl、noopManager）、network/ 网络命名空间与防火墙（Slot、CreateNetwork veth pair、NAT、egress proxy、Pool 双池）、rootfs/ 暴露方式（DirectProvider 与 NBDProvider 的选择）。",
+      "tags": ["documentation", "cgroup", "network", "rootfs", "resource-management"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:packages/orchestrator/pkg/sandbox/docs/10-template-and-build.md",
+      "type": "document",
+      "name": "10-template-and-build.md",
+      "filePath": "packages/orchestrator/pkg/sandbox/docs/10-template-and-build.md",
+      "summary": "解析 template/ 模板缓存（Template 接口、Cache TTL、GetTemplate、AddSnapshot、storageTemplate、File 抽象）与 build/ 差异存储（File.ReadAt、planRead、readSegment 错误恢复、Slice 零拷贝、IsCached dedup 优化、createDiff、DiffStore）。",
+      "tags": ["documentation", "template", "build", "diff-storage", "cache"],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/00-index.md", "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/00-index.md", "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/00-index.md", "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/00-index.md", "target": "file:packages/orchestrator/pkg/sandbox/map.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/00-index.md", "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/00-index.md", "target": "file:packages/orchestrator/pkg/sandbox/envd.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/01-sandbox-entry.md", "target": "file:packages/orchestrator/pkg/sandbox/sandbox.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/01-sandbox-entry.md", "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/01-sandbox-entry.md", "target": "file:packages/orchestrator/pkg/sandbox/map.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/02-cleanup-reclaim-map.md", "target": "file:packages/orchestrator/pkg/sandbox/cleanup.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/02-cleanup-reclaim-map.md", "target": "file:packages/orchestrator/pkg/sandbox/reclaim.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/02-cleanup-reclaim-map.md", "target": "file:packages/orchestrator/pkg/sandbox/map.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/03-checks-hoststats.md", "target": "file:packages/orchestrator/pkg/sandbox/checks.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/03-checks-hoststats.md", "target": "file:packages/orchestrator/pkg/sandbox/health.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/03-checks-hoststats.md", "target": "file:packages/orchestrator/pkg/sandbox/metrics.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/03-checks-hoststats.md", "target": "file:packages/orchestrator/pkg/sandbox/hoststats.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/03-checks-hoststats.md", "target": "file:packages/orchestrator/pkg/sandbox/hoststats_collector.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/04-snapshot-and-uploads.md", "target": "file:packages/orchestrator/pkg/sandbox/snapshot.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/04-snapshot-and-uploads.md", "target": "file:packages/orchestrator/pkg/sandbox/build_upload.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/04-snapshot-and-uploads.md", "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v3.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/04-snapshot-and-uploads.md", "target": "file:packages/orchestrator/pkg/sandbox/build_upload_v4.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/04-snapshot-and-uploads.md", "target": "file:packages/orchestrator/pkg/sandbox/uploads.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/04-snapshot-and-uploads.md", "target": "file:packages/orchestrator/pkg/sandbox/snapshot_metrics.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/04-snapshot-and-uploads.md", "target": "file:packages/orchestrator/pkg/sandbox/diffcreator.go", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/05-fc.md", "target": "file:packages/orchestrator/pkg/sandbox/fc", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/06-block.md", "target": "file:packages/orchestrator/pkg/sandbox/block", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/07-nbd.md", "target": "file:packages/orchestrator/pkg/sandbox/nbd", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/08-uffd.md", "target": "file:packages/orchestrator/pkg/sandbox/uffd", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/09-cgroup-network-rootfs.md", "target": "file:packages/orchestrator/pkg/sandbox/cgroup", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/09-cgroup-network-rootfs.md", "target": "file:packages/orchestrator/pkg/sandbox/network", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/09-cgroup-network-rootfs.md", "target": "file:packages/orchestrator/pkg/sandbox/rootfs", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/10-template-and-build.md", "target": "file:packages/orchestrator/pkg/sandbox/template", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:packages/orchestrator/pkg/sandbox/docs/10-template-and-build.md", "target": "file:packages/orchestrator/pkg/sandbox/build", "type": "documents", "direction": "forward", "weight": 0.5}
+  ]
+}

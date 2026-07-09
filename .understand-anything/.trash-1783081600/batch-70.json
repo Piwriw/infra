@@ -1,0 +1,506 @@
+{
+  "nodes": [
+    {
+      "id": "config:iac/nomad-cluster-disk-image/setup/daemon.json",
+      "type": "config",
+      "name": "daemon.json",
+      "filePath": "iac/nomad-cluster-disk-image/setup/daemon.json",
+      "summary": "Docker daemon 配置片段，仅禁用 ICC（容器间通信），供 Packer 镜像构建阶段注入到集群节点。",
+      "tags": ["configuration", "containerization", "infrastructure", "docker", "packer"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/nomad-cluster-disk-image/setup/install-clickhouse-client.sh",
+      "type": "file",
+      "name": "install-clickhouse-client.sh",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-clickhouse-client.sh",
+      "summary": "在 Nomad 集群基础镜像中预装指定版本的 clickhouse-client：从官方 tarball 下载、校验 SHA-512、解压并安装到 /usr/local/bin，同时配置 profile.d 以确保登录 shell 可用。",
+      "tags": ["shell", "clickhouse", "installation", "packer", "infrastructure"],
+      "complexity": "moderate",
+      "languageNotes": "使用 mktemp + trap 模式安全清理临时目录；避免覆盖 POSIX TMPDIR；通过 sha512sum -c 校验标准 checksum 文件。"
+    },
+    {
+      "id": "file:iac/nomad-cluster-disk-image/setup/install-cni-plugins.sh",
+      "type": "file",
+      "name": "install-cni-plugins.sh",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-cni-plugins.sh",
+      "summary": "将 containernetworking/plugins 的 CNI 二进制预装到 /opt/cni/bin，使 Nomad 可在 bridge 网络模式下工作；自动识别 amd64/arm64 架构并校验 SHA-256。",
+      "tags": ["shell", "cni", "networking", "nomad", "packer", "infrastructure"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "type": "file",
+      "name": "install-consul.sh",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "summary": "在 Packer 构建的镜像中安装 Consul：创建系统用户与安装目录、下载官方二进制并通过 retry 包装确保稳定、支持 TLS 证书安装以便启用 mTLS。",
+      "tags": ["shell", "consul", "installation", "tls", "packer", "infrastructure"],
+      "complexity": "complex",
+      "languageNotes": "依赖 /opt/gruntwork/bash-commons 中的 assert.sh/log.sh/os.sh 工具库；retry 函数封装最多 5 次重试并保留退出状态。"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:print_usage",
+      "type": "function",
+      "name": "print_usage",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "lineRange": [23, 42],
+      "summary": "打印 install-consul 脚本的命令行参数与示例。",
+      "tags": ["utility", "documentation", "cli"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:retry",
+      "type": "function",
+      "name": "retry",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "lineRange": [45, 66],
+      "summary": "封装命令最多 5 次重试，每次失败后 sleep 10 秒，用于下载 Consul 二进制等不稳定的网络操作。",
+      "tags": ["utility", "retry", "error-handling"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:install_dependencies",
+      "type": "function",
+      "name": "install_dependencies",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "lineRange": [68, 78],
+      "summary": "通过 apt-get 安装 curl、unzip、jq 等 Consul 运行所需依赖；目前仅支持 Ubuntu。",
+      "tags": ["dependency", "package-management", "apt"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:create_consul_user",
+      "type": "function",
+      "name": "create_consul_user",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "lineRange": [80, 89],
+      "summary": "创建 Consul 服务的专用系统用户，若已存在则跳过。",
+      "tags": ["user-management", "system"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:create_consul_install_paths",
+      "type": "function",
+      "name": "create_consul_install_paths",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "lineRange": [91, 104],
+      "summary": "创建 Consul 安装所需的 bin/config/data/tls 目录并 chown 给 consul 用户。",
+      "tags": ["filesystem", "installation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:fetch_binary",
+      "type": "function",
+      "name": "fetch_binary",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "lineRange": [106, 117],
+      "summary": "通过 retry 包装从官方 releases 下载 Consul 二进制 zip 包到 /tmp/consul.zip。",
+      "tags": ["download", "http", "consul"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:install_binary",
+      "type": "function",
+      "name": "install_binary",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "lineRange": [119, 140],
+      "summary": "解压 zip 并将 consul 二进制移动到安装目录 bin/，添加可执行权限，并在 /usr/local/bin 创建软链接。",
+      "tags": ["installation", "binary", "symlink"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:install_tls_certificates",
+      "type": "function",
+      "name": "install_tls_certificates",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "lineRange": [142, 161],
+      "summary": "将 CA、证书与私钥移动到 Consul 的 tls/ 目录并设置严格权限（仅属主可读）。",
+      "tags": ["tls", "security", "certificates"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:install",
+      "type": "function",
+      "name": "install",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "lineRange": [163, 244],
+      "summary": "主入口函数：解析 CLI 参数、调用依赖安装/用户创建/目录创建/二进制下载/TLS 配置等子步骤，最终验证 consul 命令可用。",
+      "tags": ["entry-point", "cli", "orchestration"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "type": "file",
+      "name": "install-nomad.sh",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "summary": "在 Packer 构建的镜像中安装 Nomad：创建 nomad 用户与安装目录、下载官方 zip、配置 supervisor 管理 Nomad 进程。",
+      "tags": ["shell", "nomad", "installation", "supervisor", "packer", "infrastructure"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:print_usage",
+      "type": "function",
+      "name": "print_usage",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "lineRange": [16, 31],
+      "summary": "打印 install-nomad 脚本的命令行参数与示例。",
+      "tags": ["utility", "documentation", "cli"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:log",
+      "type": "function",
+      "name": "log",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "lineRange": [33, 38],
+      "summary": "通用日志函数，带时间戳和级别写到 stderr。",
+      "tags": ["logging", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:assert_not_empty",
+      "type": "function",
+      "name": "assert_not_empty",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "lineRange": [55, 64],
+      "summary": "断言 CLI 参数非空，否则打印 usage 并以非零状态退出。",
+      "tags": ["validation", "cli", "error-handling"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:install_supervisord_debian",
+      "type": "function",
+      "name": "install_supervisord_debian",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "lineRange": [67, 73],
+      "summary": "通过 apt 安装 supervisor，注册为默认服务并拷贝 supervisord.conf 到 /etc/supervisor/。",
+      "tags": ["supervisor", "apt", "service"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:has_apt_get",
+      "type": "function",
+      "name": "has_apt_get",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "lineRange": [84, 86],
+      "summary": "通过 command -v 检查系统中是否存在 apt-get 包管理器。",
+      "tags": ["utility", "os-detection"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:install_dependencies",
+      "type": "function",
+      "name": "install_dependencies",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "lineRange": [88, 99],
+      "summary": "通过 apt-get 安装 curl/unzip/jq 和 supervisor，目前仅支持 Debian/Ubuntu 发行版。",
+      "tags": ["dependency", "package-management", "apt"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:user_exists",
+      "type": "function",
+      "name": "user_exists",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "lineRange": [101, 104],
+      "summary": "通过 id 命令判断系统用户是否存在。",
+      "tags": ["utility", "user-management"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:create_nomad_user",
+      "type": "function",
+      "name": "create_nomad_user",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "lineRange": [106, 115],
+      "summary": "创建 Nomad 服务用户，若已存在则跳过。",
+      "tags": ["user-management", "system"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:create_nomad_install_paths",
+      "type": "function",
+      "name": "create_nomad_install_paths",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "lineRange": [117, 130],
+      "summary": "创建 Nomad 的 bin/config/data/log 安装目录并修改属主为 nomad 用户。",
+      "tags": ["filesystem", "installation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:install_binaries",
+      "type": "function",
+      "name": "install_binaries",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "lineRange": [132, 158],
+      "summary": "下载指定版本的 Nomad 二进制 zip、解压并安装到 /opt/nomad/bin，同时创建 /usr/local/bin/nomad 软链接。",
+      "tags": ["download", "installation", "binary", "symlink"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:install",
+      "type": "function",
+      "name": "install",
+      "filePath": "iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "lineRange": [160, 207],
+      "summary": "主入口函数：解析 CLI 参数并依次执行依赖安装、用户创建、目录创建、二进制安装。",
+      "tags": ["entry-point", "cli", "orchestration"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh",
+      "type": "file",
+      "name": "supervisor-initd-script.sh",
+      "filePath": "iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh",
+      "summary": "LSB 兼容的 SysVinit 脚本，用于在镜像中以 init.d 方式管理 supervisord 进程的 start/stop/reload/restart。",
+      "tags": ["shell", "initd", "supervisor", "service-management", "infrastructure"],
+      "complexity": "moderate",
+      "languageNotes": "遵循 chkconfig/LSB init 脚本约定，依赖 /etc/rc.d/init.d/functions 中的 daemon 与 killproc。"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh:start",
+      "type": "function",
+      "name": "start",
+      "filePath": "iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh",
+      "lineRange": [50, 60],
+      "summary": "通过 daemon 启动 supervisord，成功后创建 lockfile 并打印 supervisorctl status。",
+      "tags": ["service-management", "startup"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh:stop",
+      "type": "function",
+      "name": "stop",
+      "filePath": "iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh",
+      "lineRange": [62, 68],
+      "summary": "通过 killproc 优雅停止 supervisord，并清理 lockfile 与 pidfile。",
+      "tags": ["service-management", "shutdown"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh:reload",
+      "type": "function",
+      "name": "reload",
+      "filePath": "iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh",
+      "lineRange": [70, 80],
+      "summary": "向 supervisord 进程发送 SIGHUP 让其重载配置；若返回 7（未运行）则报告失败。",
+      "tags": ["service-management", "reload"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh:restart",
+      "type": "function",
+      "name": "restart",
+      "filePath": "iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh",
+      "lineRange": [82, 85],
+      "summary": "组合 stop+start 实现 supervisord 完整重启。",
+      "tags": ["service-management", "restart"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:install",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:print_usage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:log",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:assert_not_empty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:install_supervisord_debian",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:has_apt_get",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:install_dependencies",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:user_exists",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:create_nomad_user",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:create_nomad_install_paths",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-nomad.sh:install_binaries",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:install",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:print_usage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:retry",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:install_dependencies",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:create_consul_user",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:create_consul_install_paths",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:fetch_binary",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:install_binary",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/install-consul.sh:install_tls_certificates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh:start",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh:stop",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh:reload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh",
+      "target": "function:iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh:restart",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "target": "file:iac/nomad-cluster-disk-image/setup/install-consul.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "target": "file:iac/nomad-cluster-disk-image/setup/install-cni-plugins.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "target": "file:iac/nomad-cluster-disk-image/setup/install-clickhouse-client.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "target": "config:iac/nomad-cluster-disk-image/setup/daemon.json",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/nomad-cluster-disk-image/setup/install-nomad.sh",
+      "target": "file:iac/nomad-cluster-disk-image/setup/supervisor-initd-script.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

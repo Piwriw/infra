@@ -1,0 +1,1033 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/cmd/inspect-build/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/orchestrator/cmd/inspect-build/main.go",
+      "summary": "inspect-build 命令的入口与参数解析，整合数据获取与报告输出流程。",
+      "tags": [
+        "command",
+        "entry-point",
+        "cli"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "type": "file",
+      "name": "report.go",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "summary": "build 报告聚合模块，按数据/Mapping/FetchMap/Builds 等维度组织结构化报告并计算压缩率统计。",
+      "tags": [
+        "report",
+        "data-analysis",
+        "build"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "type": "file",
+      "name": "cmdutil.go",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "summary": "orchestrator CLI 共享工具：日志抑制、产物大小获取与解析的通用辅助函数集。",
+      "tags": [
+        "utility",
+        "cli",
+        "logging",
+        "build"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "type": "file",
+      "name": "storage.go",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "summary": "CLI 工具的存储抽象层，统一处理本地文件系统与 GCS 路径下的 build header 与数据读取。",
+      "tags": [
+        "utility",
+        "storage",
+        "gcs",
+        "abstraction"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/main.go:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "packages/orchestrator/cmd/inspect-build/main.go",
+      "lineRange": [
+        20,
+        101
+      ],
+      "summary": "main 函数（行 20-101）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/main.go:printUsage",
+      "type": "function",
+      "name": "printUsage",
+      "filePath": "packages/orchestrator/cmd/inspect-build/main.go",
+      "lineRange": [
+        103,
+        115
+      ],
+      "summary": "printUsage 函数（行 103-115）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/main.go:printHeader",
+      "type": "function",
+      "name": "printHeader",
+      "filePath": "packages/orchestrator/cmd/inspect-build/main.go",
+      "lineRange": [
+        117,
+        170
+      ],
+      "summary": "printHeader 函数（行 117-170）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/main.go:inspectData",
+      "type": "function",
+      "name": "inspectData",
+      "filePath": "packages/orchestrator/cmd/inspect-build/main.go",
+      "lineRange": [
+        172,
+        237
+      ],
+      "summary": "inspectData 函数（行 172-237）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report.go:roleOf",
+      "type": "function",
+      "name": "roleOf",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        190,
+        201
+      ],
+      "summary": "roleOf 函数（行 190-201）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report.go:gather",
+      "type": "function",
+      "name": "gather",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        204,
+        274
+      ],
+      "summary": "gather 函数（行 204-274）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report.go:gatherChain",
+      "type": "function",
+      "name": "gatherChain",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        279,
+        314
+      ],
+      "summary": "gatherChain 函数（行 279-314）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report.go:ancestorIDs",
+      "type": "function",
+      "name": "ancestorIDs",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        319,
+        336
+      ],
+      "summary": "ancestorIDs 函数（行 319-336）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report.go:ancestorUsageOf",
+      "type": "function",
+      "name": "ancestorUsageOf",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        340,
+        369
+      ],
+      "summary": "ancestorUsageOf 函数（行 340-369）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report.go:annotateFrameFetches",
+      "type": "function",
+      "name": "annotateFrameFetches",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        376,
+        388
+      ],
+      "summary": "annotateFrameFetches 函数（行 376-388）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report.go:framesInRange",
+      "type": "function",
+      "name": "framesInRange",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        393,
+        424
+      ],
+      "summary": "framesInRange 函数（行 393-424）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report.go:gatherData",
+      "type": "function",
+      "name": "gatherData",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        426,
+        462
+      ],
+      "summary": "gatherData 函数（行 426-462）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report.go:gatherMappings",
+      "type": "function",
+      "name": "gatherMappings",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        464,
+        499
+      ],
+      "summary": "gatherMappings 函数（行 464-499）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report.go:gatherFetchmap",
+      "type": "function",
+      "name": "gatherFetchmap",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        509,
+        635
+      ],
+      "summary": "gatherFetchmap 函数（行 509-635）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report.go:gatherBuilds",
+      "type": "function",
+      "name": "gatherBuilds",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        637,
+        671
+      ],
+      "summary": "gatherBuilds 函数（行 637-671）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report.go:filterReport",
+      "type": "function",
+      "name": "filterReport",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        676,
+        705
+      ],
+      "summary": "filterReport 函数（行 676-705）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report.go:filteredMappings",
+      "type": "function",
+      "name": "filteredMappings",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        707,
+        719
+      ],
+      "summary": "filteredMappings 函数（行 707-719）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report.go:filteredFrames",
+      "type": "function",
+      "name": "filteredFrames",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        721,
+        733
+      ],
+      "summary": "filteredFrames 函数（行 721-733）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report.go:storedSize",
+      "type": "function",
+      "name": "storedSize",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        735,
+        748
+      ],
+      "summary": "storedSize 函数（行 735-748）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/inspect-build/report.go:headerUncompressedSize",
+      "type": "function",
+      "name": "headerUncompressedSize",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        769,
+        785
+      ],
+      "summary": "headerUncompressedSize 函数（行 769-785）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/inspect-build/report.go:report",
+      "type": "class",
+      "name": "report",
+      "filePath": "packages/orchestrator/cmd/inspect-build/report.go",
+      "lineRange": [
+        25,
+        45
+      ],
+      "summary": "report 类型（行 25-45）",
+      "tags": [
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go:SuppressNoisyLogs",
+      "type": "function",
+      "name": "SuppressNoisyLogs",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "lineRange": [
+        19,
+        24
+      ],
+      "summary": "SuppressNoisyLogs 函数（行 19-24）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go:SuppressNoisyLogsKeepStdLog",
+      "type": "function",
+      "name": "SuppressNoisyLogsKeepStdLog",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "lineRange": [
+        27,
+        29
+      ],
+      "summary": "SuppressNoisyLogsKeepStdLog 函数（行 27-29）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go:GetHeaderInfo",
+      "type": "function",
+      "name": "GetHeaderInfo",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "lineRange": [
+        43,
+        54
+      ],
+      "summary": "GetHeaderInfo 函数（行 43-54）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go:GetFileSizes",
+      "type": "function",
+      "name": "GetFileSizes",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "lineRange": [
+        57,
+        64
+      ],
+      "summary": "GetFileSizes 函数（行 57-64）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go:GetActualFileSize",
+      "type": "function",
+      "name": "GetActualFileSize",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "lineRange": [
+        67,
+        71
+      ],
+      "summary": "GetActualFileSize 函数（行 67-71）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go:MainArtifacts",
+      "type": "function",
+      "name": "MainArtifacts",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "lineRange": [
+        81,
+        86
+      ],
+      "summary": "MainArtifacts 函数（行 81-86）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go:SmallArtifacts",
+      "type": "function",
+      "name": "SmallArtifacts",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "lineRange": [
+        89,
+        96
+      ],
+      "summary": "SmallArtifacts 函数（行 89-96）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go:ArtifactInfo",
+      "type": "class",
+      "name": "ArtifactInfo",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "lineRange": [
+        74,
+        78
+      ],
+      "summary": "ArtifactInfo 类型（行 74-78）",
+      "tags": [
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:IsGCSPath",
+      "type": "function",
+      "name": "IsGCSPath",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "lineRange": [
+        15,
+        17
+      ],
+      "summary": "IsGCSPath 函数（行 15-17）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:NormalizeGCSPath",
+      "type": "function",
+      "name": "NormalizeGCSPath",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "lineRange": [
+        20,
+        29
+      ],
+      "summary": "NormalizeGCSPath 函数（行 20-29）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:ExtractBucketName",
+      "type": "function",
+      "name": "ExtractBucketName",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "lineRange": [
+        32,
+        36
+      ],
+      "summary": "ExtractBucketName 函数（行 32-36）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:SetupStorage",
+      "type": "function",
+      "name": "SetupStorage",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "lineRange": [
+        41,
+        60
+      ],
+      "summary": "SetupStorage 函数（行 41-60）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:ReadFile",
+      "type": "function",
+      "name": "ReadFile",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "lineRange": [
+        64,
+        75
+      ],
+      "summary": "ReadFile 函数（行 64-75）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:ReadHeader",
+      "type": "function",
+      "name": "ReadHeader",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "lineRange": [
+        79,
+        88
+      ],
+      "summary": "ReadHeader 函数（行 79-88）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:ReadFromGCS",
+      "type": "function",
+      "name": "ReadFromGCS",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "lineRange": [
+        92,
+        119
+      ],
+      "summary": "ReadFromGCS 函数（行 92-119）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:OpenDataFile",
+      "type": "function",
+      "name": "OpenDataFile",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "lineRange": [
+        162,
+        172
+      ],
+      "summary": "OpenDataFile 函数（行 162-172）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:openLocal",
+      "type": "function",
+      "name": "openLocal",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "lineRange": [
+        174,
+        188
+      ],
+      "summary": "openLocal 函数（行 174-188）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:openGCS",
+      "type": "function",
+      "name": "openGCS",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "lineRange": [
+        190,
+        212
+      ],
+      "summary": "openGCS 函数（行 190-212）",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/internal/cmdutil/storage.go:DataReader",
+      "type": "class",
+      "name": "DataReader",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "lineRange": [
+        122,
+        125
+      ],
+      "summary": "DataReader 类型（行 122-125）",
+      "tags": [
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/internal/cmdutil/storage.go:localReader",
+      "type": "class",
+      "name": "localReader",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "lineRange": [
+        127,
+        129
+      ],
+      "summary": "localReader 类型（行 127-129）",
+      "tags": [
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/internal/cmdutil/storage.go:gcsReader",
+      "type": "class",
+      "name": "gcsReader",
+      "filePath": "packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "lineRange": [
+        139,
+        143
+      ],
+      "summary": "gcsReader 类型（行 139-143）",
+      "tags": [
+        "class"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/main.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/main.go:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/main.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/main.go:printUsage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/main.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/main.go:printHeader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/main.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/main.go:inspectData",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report.go:roleOf",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report.go:gather",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report.go:gatherChain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report.go:ancestorIDs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report.go:ancestorUsageOf",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report.go:annotateFrameFetches",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report.go:framesInRange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report.go:gatherData",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report.go:gatherMappings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report.go:gatherFetchmap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report.go:gatherBuilds",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report.go:filterReport",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report.go:filteredMappings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report.go:filteredFrames",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report.go:storedSize",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "function:packages/orchestrator/cmd/inspect-build/report.go:headerUncompressedSize",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "class:packages/orchestrator/cmd/inspect-build/report.go:report",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go:SuppressNoisyLogs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go:SuppressNoisyLogsKeepStdLog",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go:GetHeaderInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go:GetFileSizes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go:GetActualFileSize",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go:MainArtifacts",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go:SmallArtifacts",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "target": "class:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go:ArtifactInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:IsGCSPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:NormalizeGCSPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:ExtractBucketName",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:SetupStorage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:ReadFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:ReadHeader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:ReadFromGCS",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:OpenDataFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:openLocal",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "target": "function:packages/orchestrator/cmd/internal/cmdutil/storage.go:openGCS",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "target": "class:packages/orchestrator/cmd/internal/cmdutil/storage.go:DataReader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "target": "class:packages/orchestrator/cmd/internal/cmdutil/storage.go:localReader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "target": "class:packages/orchestrator/cmd/internal/cmdutil/storage.go:gcsReader",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/main.go",
+      "target": "file:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/main.go",
+      "target": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/main.go",
+      "target": "file:packages/orchestrator/cmd/internal/cmdutil/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/main.go",
+      "target": "file:packages/orchestrator/pkg/sandbox/artifact/names.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "file:packages/orchestrator/cmd/internal/cmdutil/cmdutil.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "file:packages/orchestrator/cmd/internal/cmdutil/storage.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/inspect-build/report.go",
+      "target": "file:packages/orchestrator/cmd/internal/cmdutil/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

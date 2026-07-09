@@ -1,0 +1,990 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "type": "file",
+      "name": "get_concurrent_template_builds_test.go",
+      "filePath": "packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "summary": "集成测试：并发模板构建查询的标签匹配、跨模板隔离与去重行为。",
+      "tags": [
+        "test",
+        "integration",
+        "database",
+        "concurrency"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_ReturnsBuildWithSameTag",
+      "type": "function",
+      "name": "TestGetConcurrentTemplateBuilds_ReturnsBuildWithSameTag",
+      "filePath": "packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "lineRange": [
+        13,
+        35
+      ],
+      "summary": "验证并发构建查询在相同标签下返回构建。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_DoesNotReturnBuildWithDifferentTag",
+      "type": "function",
+      "name": "TestGetConcurrentTemplateBuilds_DoesNotReturnBuildWithDifferentTag",
+      "filePath": "packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "lineRange": [
+        37,
+        58
+      ],
+      "summary": "验证不同标签下不返回该构建。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_ReturnsBuildsWithOverlappingTags",
+      "type": "function",
+      "name": "TestGetConcurrentTemplateBuilds_ReturnsBuildsWithOverlappingTags",
+      "filePath": "packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "lineRange": [
+        60,
+        90
+      ],
+      "summary": "验证重叠标签场景下返回多个构建。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_DoesNotReturnBuildsFromOtherTemplates",
+      "type": "function",
+      "name": "TestGetConcurrentTemplateBuilds_DoesNotReturnBuildsFromOtherTemplates",
+      "filePath": "packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "lineRange": [
+        92,
+        115
+      ],
+      "summary": "验证不会返回其他模板的构建。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_OnlyReturnsPendingAndInProgressBuilds",
+      "type": "function",
+      "name": "TestGetConcurrentTemplateBuilds_OnlyReturnsPendingAndInProgressBuilds",
+      "filePath": "packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "lineRange": [
+        117,
+        156
+      ],
+      "summary": "验证仅返回待处理与进行中状态的构建。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_NoDuplicatesWithMultipleOverlappingTags",
+      "type": "function",
+      "name": "TestGetConcurrentTemplateBuilds_NoDuplicatesWithMultipleOverlappingTags",
+      "filePath": "packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "lineRange": [
+        158,
+        183
+      ],
+      "summary": "验证多重叠标签下不会重复返回同一构建。",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/retry/wrapper.go",
+      "type": "file",
+      "name": "wrapper.go",
+      "filePath": "packages/db/pkg/retry/wrapper.go",
+      "summary": "数据库重试包装器：包装 DBTX 以指数退避重试 Exec/Query/QueryRow，并集成 OTEL 与日志。",
+      "tags": [
+        "retry",
+        "database",
+        "observability",
+        "wrapper"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/db/pkg/retry/wrapper.go:RetryableDBTX",
+      "type": "class",
+      "name": "RetryableDBTX",
+      "filePath": "packages/db/pkg/retry/wrapper.go",
+      "lineRange": [
+        30,
+        33
+      ],
+      "summary": "实现了 types.DBTX 接口的数据库事务类型，提供带重试的 Exec/Query/QueryRow。",
+      "tags": [
+        "retry",
+        "database",
+        "wrapper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper.go:Wrap",
+      "type": "function",
+      "name": "Wrap",
+      "filePath": "packages/db/pkg/retry/wrapper.go",
+      "lineRange": [
+        36,
+        46
+      ],
+      "summary": "将 DBTX 包装为可重试版本；若已是事务则原样返回。",
+      "tags": [
+        "retry",
+        "wrapper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper.go:Exec",
+      "type": "function",
+      "name": "Exec",
+      "filePath": "packages/db/pkg/retry/wrapper.go",
+      "lineRange": [
+        49,
+        65
+      ],
+      "summary": "带重试的 Exec：执行 SQL 并在可重试错误时退避重试。",
+      "tags": [
+        "retry",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper.go:Query",
+      "type": "function",
+      "name": "Query",
+      "filePath": "packages/db/pkg/retry/wrapper.go",
+      "lineRange": [
+        69,
+        85
+      ],
+      "summary": "带重试的 Query：返回可扫描行的结果集。",
+      "tags": [
+        "retry",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper.go:QueryRow",
+      "type": "function",
+      "name": "QueryRow",
+      "filePath": "packages/db/pkg/retry/wrapper.go",
+      "lineRange": [
+        89,
+        97
+      ],
+      "summary": "带重试的 QueryRow：返回带 Scan 重试逻辑的行对象。",
+      "tags": [
+        "retry",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper.go:Scan",
+      "type": "function",
+      "name": "Scan",
+      "filePath": "packages/db/pkg/retry/wrapper.go",
+      "lineRange": [
+        110,
+        126
+      ],
+      "summary": "retryableRow.Scan：扫描行并在连接错误时重试。",
+      "tags": [
+        "retry",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper.go:handleRetry",
+      "type": "function",
+      "name": "handleRetry",
+      "filePath": "packages/db/pkg/retry/wrapper.go",
+      "lineRange": [
+        128,
+        141
+      ],
+      "summary": "内部辅助：在两次尝试之间处理日志记录与退避休眠。",
+      "tags": [
+        "retry",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper.go:backoffFunc",
+      "type": "function",
+      "name": "backoffFunc",
+      "filePath": "packages/db/pkg/retry/wrapper.go",
+      "lineRange": [
+        156,
+        168
+      ],
+      "summary": "返回单次尝试前的休眠时长（含抖动），遵循指数退避 + 上限。",
+      "tags": [
+        "retry",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper.go:calculateBackoff",
+      "type": "function",
+      "name": "calculateBackoff",
+      "filePath": "packages/db/pkg/retry/wrapper.go",
+      "lineRange": [
+        171,
+        186
+      ],
+      "summary": "计算给定尝试序号的指数退避时长，clamp 至 maxBackoff。",
+      "tags": [
+        "retry",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/retry/wrapper.go:recordRetrySpan",
+      "type": "function",
+      "name": "recordRetrySpan",
+      "filePath": "packages/db/pkg/retry/wrapper.go",
+      "lineRange": [
+        199,
+        209
+      ],
+      "summary": "在 OTEL span 上记录重试事件及属性。",
+      "tags": [
+        "retry",
+        "observability"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/dberrors/dberrors.go",
+      "type": "file",
+      "name": "dberrors.go",
+      "filePath": "packages/db/pkg/dberrors/dberrors.go",
+      "summary": "数据库错误判断工具：识别未找到错误、唯一约束冲突、外键约束冲突。",
+      "tags": [
+        "database",
+        "error-handling",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/dberrors/dberrors.go:IsNotFoundError",
+      "type": "function",
+      "name": "IsNotFoundError",
+      "filePath": "packages/db/pkg/dberrors/dberrors.go",
+      "lineRange": [
+        11,
+        13
+      ],
+      "summary": "判断错误是否为 pgx 的 ErrNoRows。",
+      "tags": [
+        "database",
+        "error-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/dberrors/dberrors.go:IsUniqueConstraintViolation",
+      "type": "function",
+      "name": "IsUniqueConstraintViolation",
+      "filePath": "packages/db/pkg/dberrors/dberrors.go",
+      "lineRange": [
+        15,
+        22
+      ],
+      "summary": "判断错误是否为 PostgreSQL 唯一约束冲突 (SQLSTATE 23505)。",
+      "tags": [
+        "database",
+        "error-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/db/pkg/dberrors/dberrors.go:IsForeignKeyViolation",
+      "type": "function",
+      "name": "IsForeignKeyViolation",
+      "filePath": "packages/db/pkg/dberrors/dberrors.go",
+      "lineRange": [
+        24,
+        31
+      ],
+      "summary": "判断错误是否为 PostgreSQL 外键约束冲突 (SQLSTATE 23503)。",
+      "tags": [
+        "database",
+        "error-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_asc.sql.go",
+      "type": "file",
+      "name": "list_template_tag_groups_by_name_asc.sql.go",
+      "filePath": "packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_asc.sql.go",
+      "summary": "sqlc 生成的查询代码：按名称升序列出模板标签组。",
+      "tags": [
+        "sqlc-generated",
+        "tag-group-query",
+        "database"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_asc.sql.go:ListTemplateTagGroupsByNameAsc",
+      "type": "function",
+      "name": "ListTemplateTagGroupsByNameAsc",
+      "filePath": "packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_asc.sql.go",
+      "lineRange": [
+        88,
+        120
+      ],
+      "summary": "执行 sqlc 生成的 SQL，按名称升序返回模板标签组。",
+      "tags": [
+        "sqlc-generated",
+        "query"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_ReturnsBuildWithSameTag",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_DoesNotReturnBuildWithDifferentTag",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_ReturnsBuildsWithOverlappingTags",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_DoesNotReturnBuildsFromOtherTemplates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_OnlyReturnsPendingAndInProgressBuilds",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_NoDuplicatesWithMultipleOverlappingTags",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_ReturnsBuildWithSameTag",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_DoesNotReturnBuildWithDifferentTag",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_ReturnsBuildsWithOverlappingTags",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_DoesNotReturnBuildsFromOtherTemplates",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_OnlyReturnsPendingAndInProgressBuilds",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "function:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go:TestGetConcurrentTemplateBuilds_NoDuplicatesWithMultipleOverlappingTags",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/pkg/testutils/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/pkg/testutils/queries.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/active_template_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/check_alias_exists.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/create_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/create_new_snapshot.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/create_snapshot_template_env.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/create_template_build_assignment.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/create_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/delete_old_aliases.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/delete_template_build_assignment.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/delete_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/exists_template_snapshots.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/finish_template_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_active_clusters.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_build_info.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_builds_paginated.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_builds_statuses.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_concurrent_template_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_exclusive_builds_for_template_deletion.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_inprogress_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_last_snapshot.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_sandbox_record.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_snapshot_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_snapshots_with_cursor.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_team_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_team_templates_with_cursor.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_team_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_template_aliases.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_template_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_template_by_id.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_template_with_build_by_tag.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_template_with_builds.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/get_templatealias_by_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/list_team_snapshot_templates.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/list_template_tags.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/models.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/resolve_team.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/team_members.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/update_snapshot_origin_node.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/update_template_build_status.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/update_template_spawns.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/update_template.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/upsert_alias.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/validate_build.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/tests/builds/get_concurrent_template_builds_test.go",
+      "target": "file:packages/db/queries/volumes.sql.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "class:packages/db/pkg/retry/wrapper.go:RetryableDBTX",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "function:packages/db/pkg/retry/wrapper.go:Wrap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "function:packages/db/pkg/retry/wrapper.go:Exec",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "function:packages/db/pkg/retry/wrapper.go:Query",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "function:packages/db/pkg/retry/wrapper.go:QueryRow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "function:packages/db/pkg/retry/wrapper.go:Scan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "function:packages/db/pkg/retry/wrapper.go:handleRetry",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "function:packages/db/pkg/retry/wrapper.go:backoffFunc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "function:packages/db/pkg/retry/wrapper.go:calculateBackoff",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "function:packages/db/pkg/retry/wrapper.go:recordRetrySpan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "class:packages/db/pkg/retry/wrapper.go:RetryableDBTX",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "function:packages/db/pkg/retry/wrapper.go:Wrap",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "function:packages/db/pkg/retry/wrapper.go:Exec",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "function:packages/db/pkg/retry/wrapper.go:Query",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "function:packages/db/pkg/retry/wrapper.go:QueryRow",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "function:packages/db/pkg/retry/wrapper.go:Scan",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "file:packages/db/pkg/types/db.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "file:packages/db/pkg/types/types_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/retry/wrapper.go",
+      "target": "file:packages/db/pkg/types/types.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors.go",
+      "target": "function:packages/db/pkg/dberrors/dberrors.go:IsNotFoundError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors.go",
+      "target": "function:packages/db/pkg/dberrors/dberrors.go:IsUniqueConstraintViolation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors.go",
+      "target": "function:packages/db/pkg/dberrors/dberrors.go:IsForeignKeyViolation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors.go",
+      "target": "function:packages/db/pkg/dberrors/dberrors.go:IsNotFoundError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors.go",
+      "target": "function:packages/db/pkg/dberrors/dberrors.go:IsUniqueConstraintViolation",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dberrors/dberrors.go",
+      "target": "function:packages/db/pkg/dberrors/dberrors.go:IsForeignKeyViolation",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_asc.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_asc.sql.go:ListTemplateTagGroupsByNameAsc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_asc.sql.go",
+      "target": "function:packages/db/pkg/dashboard/queries/list_template_tag_groups_by_name_asc.sql.go:ListTemplateTagGroupsByNameAsc",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

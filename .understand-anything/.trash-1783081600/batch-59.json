@@ -1,0 +1,62 @@
+{
+  "nodes": [
+    {
+      "id": "service:packages/nomad-nodepool-apm/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "packages/nomad-nodepool-apm/Dockerfile",
+      "summary": "用于构建 nomad-nodepool-apm（Nomad Autoscaler APM 插件）的多阶段 Dockerfile：在 golang-alpine 镜像中编译二进制，再复制到最小化的 alpine 镜像中，最终由 Nomad Autoscaler 提取使用。",
+      "tags": ["containerization", "infrastructure", "deployment", "nomad-autoscaler", "multi-stage-build"],
+      "complexity": "simple",
+      "languageNotes": "使用 ARG 参数化 GOLANG_VERSION 与 ALPINE_VERSION，便于版本升级；CGO_ENABLED=0 产生纯静态二进制以适配 alpine 基础镜像。"
+    },
+    {
+      "id": "service:packages/nomad-nodepool-apm/Dockerfile:builder",
+      "type": "service",
+      "name": "builder",
+      "filePath": "packages/nomad-nodepool-apm/Dockerfile",
+      "summary": "构建阶段：基于 golang:1.26.3-alpine3.22，执行 go mod download 后复制源码并构建静态二进制 /nomad-nodepool-apm。",
+      "tags": ["containerization", "build-stage", "golang", "infrastructure"],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:packages/nomad-nodepool-apm/Dockerfile:alpine",
+      "type": "service",
+      "name": "alpine",
+      "filePath": "packages/nomad-nodepool-apm/Dockerfile",
+      "summary": "最终运行阶段：基于 alpine:3.22 最小镜像，仅包含从 builder 阶段复制过来的 /nomad-nodepool-apm 二进制，作为 ENTRYPOINT。",
+      "tags": ["containerization", "runtime-stage", "alpine", "infrastructure"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:packages/nomad-nodepool-apm/Dockerfile",
+      "target": "service:packages/nomad-nodepool-apm/Dockerfile:builder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/nomad-nodepool-apm/Dockerfile",
+      "target": "service:packages/nomad-nodepool-apm/Dockerfile:alpine",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/nomad-nodepool-apm/Dockerfile:alpine",
+      "target": "service:packages/nomad-nodepool-apm/Dockerfile:builder",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/nomad-nodepool-apm/Dockerfile",
+      "target": "file:packages/nomad-nodepool-apm/main.go",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

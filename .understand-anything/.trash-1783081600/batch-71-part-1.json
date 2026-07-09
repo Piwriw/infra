@@ -1,0 +1,810 @@
+{
+  "nodes": [
+    {
+      "id": "file:iac/provider-aws/Makefile",
+      "type": "pipeline",
+      "name": "Makefile",
+      "filePath": "iac/provider-aws/Makefile",
+      "summary": "AWS provider IaC 项目的 Makefile,封装 Terraform 工作流(plan/apply/init/move/destroy)以及环境切换(provider-login、switch)。",
+      "tags": [
+        "infrastructure",
+        "build-system",
+        "terraform",
+        "deployment"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/provider-aws/alb.tf",
+      "type": "resource",
+      "name": "alb.tf",
+      "filePath": "iac/provider-aws/alb.tf",
+      "summary": "AWS 应用负载均衡器(ALB)、安全组、监听器和目标组的 Terraform 配置,负责 ingress 流量分发、gRPC 路由以及 Nomad UI 入口。",
+      "tags": [
+        "infrastructure",
+        "load-balancer",
+        "terraform",
+        "aws",
+        "networking"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/provider-aws/alb_athena.tf",
+      "type": "resource",
+      "name": "alb_athena.tf",
+      "filePath": "iac/provider-aws/alb_athena.tf",
+      "summary": "AWS Glue 数据目录与 Athena 工作组配置,用于将 ALB 访问日志注册到 Glue Catalog 并通过 Athena 进行查询分析。",
+      "tags": [
+        "infrastructure",
+        "logging",
+        "athena",
+        "glue",
+        "analytics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:iac/provider-aws/domain.tf",
+      "type": "resource",
+      "name": "domain.tf",
+      "filePath": "iac/provider-aws/domain.tf",
+      "summary": "域名相关 Terraform 资源:ACM 通配符证书申请、Cloudflare DNS 记录配置(Cert validation 与路由)。",
+      "tags": [
+        "infrastructure",
+        "dns",
+        "tls",
+        "cloudflare",
+        "terraform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-aws/Makefile:provider-login",
+      "type": "resource",
+      "name": "provider-login",
+      "filePath": "iac/provider-aws/Makefile",
+      "lineRange": [
+        57,
+        59
+      ],
+      "summary": "Makefile 目标 `provider-login`,对应一组 Terraform 命令(`terraform init/plan/apply/move`)。",
+      "tags": [
+        "build-system",
+        "makefile",
+        "deployment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-aws/Makefile:switch",
+      "type": "resource",
+      "name": "switch",
+      "filePath": "iac/provider-aws/Makefile",
+      "lineRange": [
+        61,
+        63
+      ],
+      "summary": "Makefile 目标 `switch`,对应一组 Terraform 命令(`terraform init/plan/apply/move`)。",
+      "tags": [
+        "build-system",
+        "makefile",
+        "deployment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-aws/Makefile:init",
+      "type": "resource",
+      "name": "init",
+      "filePath": "iac/provider-aws/Makefile",
+      "lineRange": [
+        65,
+        75
+      ],
+      "summary": "Makefile 目标 `init`,对应一组 Terraform 命令(`terraform init/plan/apply/move`)。",
+      "tags": [
+        "build-system",
+        "makefile",
+        "deployment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-aws/Makefile:plan",
+      "type": "resource",
+      "name": "plan",
+      "filePath": "iac/provider-aws/Makefile",
+      "lineRange": [
+        77,
+        81
+      ],
+      "summary": "Makefile 目标 `plan`,对应一组 Terraform 命令(`terraform init/plan/apply/move`)。",
+      "tags": [
+        "build-system",
+        "makefile",
+        "deployment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-aws/Makefile:plan-only-jobs",
+      "type": "resource",
+      "name": "plan-only-jobs",
+      "filePath": "iac/provider-aws/Makefile",
+      "lineRange": [
+        85,
+        89
+      ],
+      "summary": "Makefile 目标 `plan-only-jobs`,对应一组 Terraform 命令(`terraform init/plan/apply/move`)。",
+      "tags": [
+        "build-system",
+        "makefile",
+        "deployment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-aws/Makefile:plan-without-jobs",
+      "type": "resource",
+      "name": "plan-without-jobs",
+      "filePath": "iac/provider-aws/Makefile",
+      "lineRange": [
+        91,
+        95
+      ],
+      "summary": "Makefile 目标 `plan-without-jobs`,对应一组 Terraform 命令(`terraform init/plan/apply/move`)。",
+      "tags": [
+        "build-system",
+        "makefile",
+        "deployment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-aws/Makefile:apply",
+      "type": "resource",
+      "name": "apply",
+      "filePath": "iac/provider-aws/Makefile",
+      "lineRange": [
+        97,
+        100
+      ],
+      "summary": "Makefile 目标 `apply`,对应一组 Terraform 命令(`terraform init/plan/apply/move`)。",
+      "tags": [
+        "build-system",
+        "makefile",
+        "deployment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-aws/Makefile:state-migrate",
+      "type": "resource",
+      "name": "state-migrate",
+      "filePath": "iac/provider-aws/Makefile",
+      "lineRange": [
+        102,
+        105
+      ],
+      "summary": "Makefile 目标 `state-migrate`,对应一组 Terraform 命令(`terraform init/plan/apply/move`)。",
+      "tags": [
+        "build-system",
+        "makefile",
+        "deployment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-aws/Makefile:apply-init",
+      "type": "resource",
+      "name": "apply-init",
+      "filePath": "iac/provider-aws/Makefile",
+      "lineRange": [
+        107,
+        109
+      ],
+      "summary": "Makefile 目标 `apply-init`,对应一组 Terraform 命令(`terraform init/plan/apply/move`)。",
+      "tags": [
+        "build-system",
+        "makefile",
+        "deployment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-aws/Makefile:move",
+      "type": "resource",
+      "name": "move",
+      "filePath": "iac/provider-aws/Makefile",
+      "lineRange": [
+        111,
+        114
+      ],
+      "summary": "Makefile 目标 `move`,对应一组 Terraform 命令(`terraform init/plan/apply/move`)。",
+      "tags": [
+        "build-system",
+        "makefile",
+        "deployment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:iac/provider-aws/Makefile:destroy",
+      "type": "resource",
+      "name": "destroy",
+      "filePath": "iac/provider-aws/Makefile",
+      "lineRange": [
+        116,
+        119
+      ],
+      "summary": "Makefile 目标 `destroy`,对应一组 Terraform 命令(`terraform init/plan/apply/move`)。",
+      "tags": [
+        "build-system",
+        "makefile",
+        "deployment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/alb.tf:aws_security_group.ingress",
+      "type": "resource",
+      "name": "ingress",
+      "filePath": "iac/provider-aws/alb.tf",
+      "lineRange": [
+        1,
+        34
+      ],
+      "summary": "AWS 安全组 资源 `aws_security_group.ingress`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/alb.tf:aws_lb.ingress",
+      "type": "resource",
+      "name": "ingress",
+      "filePath": "iac/provider-aws/alb.tf",
+      "lineRange": [
+        36,
+        50
+      ],
+      "summary": "AWS 负载均衡器 资源 `aws_lb.ingress`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/alb.tf:aws_lb_listener.ingress_redirect",
+      "type": "resource",
+      "name": "ingress_redirect",
+      "filePath": "iac/provider-aws/alb.tf",
+      "lineRange": [
+        52,
+        67
+      ],
+      "summary": "ALB 监听器 资源 `aws_lb_listener.ingress_redirect`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/alb.tf:aws_lb_listener.ingress_wildcard",
+      "type": "resource",
+      "name": "ingress_wildcard",
+      "filePath": "iac/provider-aws/alb.tf",
+      "lineRange": [
+        69,
+        82
+      ],
+      "summary": "ALB 监听器 资源 `aws_lb_listener.ingress_wildcard`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/alb.tf:aws_lb_listener_rule.ingress_grpc",
+      "type": "resource",
+      "name": "ingress_grpc",
+      "filePath": "iac/provider-aws/alb.tf",
+      "lineRange": [
+        84,
+        99
+      ],
+      "summary": "ALB 监听器规则 资源 `aws_lb_listener_rule.ingress_grpc`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/alb.tf:aws_lb_listener_rule.nomad",
+      "type": "resource",
+      "name": "nomad",
+      "filePath": "iac/provider-aws/alb.tf",
+      "lineRange": [
+        101,
+        117
+      ],
+      "summary": "ALB 监听器规则 资源 `aws_lb_listener_rule.nomad`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/alb.tf:aws_lb_target_group.ingress",
+      "type": "resource",
+      "name": "ingress",
+      "filePath": "iac/provider-aws/alb.tf",
+      "lineRange": [
+        119,
+        139
+      ],
+      "summary": "ALB 目标组 资源 `aws_lb_target_group.ingress`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/alb.tf:aws_lb_target_group.ingress_grpc",
+      "type": "resource",
+      "name": "ingress_grpc",
+      "filePath": "iac/provider-aws/alb.tf",
+      "lineRange": [
+        141,
+        161
+      ],
+      "summary": "ALB 目标组 资源 `aws_lb_target_group.ingress_grpc`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/alb.tf:aws_lb_target_group.nomad",
+      "type": "resource",
+      "name": "nomad",
+      "filePath": "iac/provider-aws/alb.tf",
+      "lineRange": [
+        163,
+        183
+      ],
+      "summary": "ALB 目标组 资源 `aws_lb_target_group.nomad`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/alb_athena.tf:aws_glue_catalog_database.ingress_load_balancer_logs",
+      "type": "resource",
+      "name": "ingress_load_balancer_logs",
+      "filePath": "iac/provider-aws/alb_athena.tf",
+      "lineRange": [
+        10,
+        13
+      ],
+      "summary": "Glue 数据库 资源 `aws_glue_catalog_database.ingress_load_balancer_logs`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/alb_athena.tf:aws_glue_catalog_table.ingress_load_balancer_logs",
+      "type": "resource",
+      "name": "ingress_load_balancer_logs",
+      "filePath": "iac/provider-aws/alb_athena.tf",
+      "lineRange": [
+        15,
+        219
+      ],
+      "summary": "Glue 数据表 资源 `aws_glue_catalog_table.ingress_load_balancer_logs`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/alb_athena.tf:aws_athena_workgroup.operations",
+      "type": "resource",
+      "name": "operations",
+      "filePath": "iac/provider-aws/alb_athena.tf",
+      "lineRange": [
+        221,
+        233
+      ],
+      "summary": "Athena 工作组 资源 `aws_athena_workgroup.operations`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/alb_athena.tf:data.aws_s3_bucket.load_balancer_logs",
+      "type": "resource",
+      "name": "aws_s3_bucket.load_balancer_logs",
+      "filePath": "iac/provider-aws/alb_athena.tf",
+      "lineRange": [
+        6,
+        8
+      ],
+      "summary": "数据源 `data.aws_s3_bucket.load_balancer_logs`(`data.aws_s3_bucket`)。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/domain.tf:aws_acm_certificate.wildcard",
+      "type": "resource",
+      "name": "wildcard",
+      "filePath": "iac/provider-aws/domain.tf",
+      "lineRange": [
+        13,
+        20
+      ],
+      "summary": "ACM 证书 资源 `aws_acm_certificate.wildcard`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/domain.tf:aws_acm_certificate_validation.wildcard",
+      "type": "resource",
+      "name": "wildcard",
+      "filePath": "iac/provider-aws/domain.tf",
+      "lineRange": [
+        22,
+        24
+      ],
+      "summary": "ACM 证书验证 资源 `aws_acm_certificate_validation.wildcard`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/domain.tf:cloudflare_record.cert",
+      "type": "resource",
+      "name": "cert",
+      "filePath": "iac/provider-aws/domain.tf",
+      "lineRange": [
+        26,
+        40
+      ],
+      "summary": "Cloudflare DNS 记录 资源 `cloudflare_record.cert`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/domain.tf:cloudflare_record.routing",
+      "type": "resource",
+      "name": "routing",
+      "filePath": "iac/provider-aws/domain.tf",
+      "lineRange": [
+        42,
+        49
+      ],
+      "summary": "Cloudflare DNS 记录 资源 `cloudflare_record.routing`。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/domain.tf:data.cloudflare_zone.domain",
+      "type": "resource",
+      "name": "cloudflare_zone.domain",
+      "filePath": "iac/provider-aws/domain.tf",
+      "lineRange": [
+        9,
+        11
+      ],
+      "summary": "数据源 `data.cloudflare_zone.domain`(`data.cloudflare_zone`)。",
+      "tags": [
+        "infrastructure",
+        "terraform",
+        "aws"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:iac/provider-aws/Makefile",
+      "target": "step:iac/provider-aws/Makefile:provider-login",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/Makefile",
+      "target": "step:iac/provider-aws/Makefile:switch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/Makefile",
+      "target": "step:iac/provider-aws/Makefile:init",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/Makefile",
+      "target": "step:iac/provider-aws/Makefile:plan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/Makefile",
+      "target": "step:iac/provider-aws/Makefile:plan-only-jobs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/Makefile",
+      "target": "step:iac/provider-aws/Makefile:plan-without-jobs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/Makefile",
+      "target": "step:iac/provider-aws/Makefile:apply",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/Makefile",
+      "target": "step:iac/provider-aws/Makefile:state-migrate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/Makefile",
+      "target": "step:iac/provider-aws/Makefile:apply-init",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/Makefile",
+      "target": "step:iac/provider-aws/Makefile:move",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/Makefile",
+      "target": "step:iac/provider-aws/Makefile:destroy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/alb.tf",
+      "target": "resource:iac/provider-aws/alb.tf:aws_security_group.ingress",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/alb.tf",
+      "target": "resource:iac/provider-aws/alb.tf:aws_lb.ingress",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/alb.tf",
+      "target": "resource:iac/provider-aws/alb.tf:aws_lb_listener.ingress_redirect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/alb.tf",
+      "target": "resource:iac/provider-aws/alb.tf:aws_lb_listener.ingress_wildcard",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/alb.tf",
+      "target": "resource:iac/provider-aws/alb.tf:aws_lb_listener_rule.ingress_grpc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/alb.tf",
+      "target": "resource:iac/provider-aws/alb.tf:aws_lb_listener_rule.nomad",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/alb.tf",
+      "target": "resource:iac/provider-aws/alb.tf:aws_lb_target_group.ingress",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/alb.tf",
+      "target": "resource:iac/provider-aws/alb.tf:aws_lb_target_group.ingress_grpc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/alb.tf",
+      "target": "resource:iac/provider-aws/alb.tf:aws_lb_target_group.nomad",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/alb_athena.tf",
+      "target": "resource:iac/provider-aws/alb_athena.tf:aws_glue_catalog_database.ingress_load_balancer_logs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/alb_athena.tf",
+      "target": "resource:iac/provider-aws/alb_athena.tf:aws_glue_catalog_table.ingress_load_balancer_logs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/alb_athena.tf",
+      "target": "resource:iac/provider-aws/alb_athena.tf:aws_athena_workgroup.operations",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/alb_athena.tf",
+      "target": "resource:iac/provider-aws/alb_athena.tf:data.aws_s3_bucket.load_balancer_logs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/domain.tf",
+      "target": "resource:iac/provider-aws/domain.tf:aws_acm_certificate.wildcard",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/domain.tf",
+      "target": "resource:iac/provider-aws/domain.tf:aws_acm_certificate_validation.wildcard",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/domain.tf",
+      "target": "resource:iac/provider-aws/domain.tf:cloudflare_record.cert",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/domain.tf",
+      "target": "resource:iac/provider-aws/domain.tf:cloudflare_record.routing",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/domain.tf",
+      "target": "resource:iac/provider-aws/domain.tf:data.cloudflare_zone.domain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/alb.tf",
+      "target": "file:iac/provider-aws/alb_athena.tf",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:iac/provider-aws/domain.tf",
+      "target": "file:iac/provider-aws/alb.tf",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:iac/provider-aws/Makefile",
+      "target": "file:iac/provider-aws/main.tf",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-aws/Makefile",
+      "target": "file:iac/provider-aws/alb.tf",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-aws/Makefile",
+      "target": "file:iac/provider-aws/alb_athena.tf",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-aws/Makefile",
+      "target": "file:iac/provider-aws/domain.tf",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-aws/Makefile",
+      "target": "file:iac/provider-aws/moved.tf",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

@@ -1,0 +1,375 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/logged/util.go",
+      "type": "file",
+      "name": "util.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/logged/util.go",
+      "summary": "logStart 工具 — 记录 start/duration/requestID，并按错误等级切换 debug/warn。",
+      "tags": [
+        "nfs-proxy",
+        "logging-utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/metrics/change.go",
+      "type": "file",
+      "name": "change.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/metrics/change.go",
+      "summary": "billy.Change 的指标包装 — 在 chmod/chown/chtimes 上记录调用次数与耗时。",
+      "tags": [
+        "nfs-proxy",
+        "billy-adapter",
+        "otel-metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/metrics/file.go",
+      "type": "file",
+      "name": "file.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/metrics/file.go",
+      "summary": "billy.File 的指标包装 — 文件关闭时一并结束内部打开的 gauge，统计读写锁调用耗时。",
+      "tags": [
+        "nfs-proxy",
+        "billy-adapter",
+        "otel-metrics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/metrics/fs.go",
+      "type": "file",
+      "name": "fs.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/metrics/fs.go",
+      "summary": "billy.Filesystem 的指标包装 — 调用前 recordCall 启动计时，再 wrapFile 透传到 handle 关闭。",
+      "tags": [
+        "nfs-proxy",
+        "billy-adapter",
+        "otel-metrics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/metrics/handler.go",
+      "type": "file",
+      "name": "handler.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/metrics/handler.go",
+      "summary": "nfs.Handler 的指标包装入口 — WrapWithMetrics 把 OTEL 调用次数/耗时直方图挂到每次 NFS 操作上。",
+      "tags": [
+        "nfs-proxy",
+        "handler-wrapper",
+        "otel-metrics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/orchestrator/pkg/nfsproxy/metrics/util.go",
+      "type": "file",
+      "name": "util.go",
+      "filePath": "packages/orchestrator/pkg/nfsproxy/metrics/util.go",
+      "summary": "指标中间件公用工具 — recordCall 计时 + classifyResult 区分 client/other 错误并上报 counter & histogram。",
+      "tags": [
+        "nfs-proxy",
+        "otel-metrics",
+        "error-classification"
+      ],
+      "complexity": "simple",
+      "languageNotes": "callsCounter + durationRecorder 分别记录调用数和毫秒级时长，os.ErrNotExist/ErrExist 归类为 client_error。"
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/metrics/change.go:metricsChange",
+      "type": "class",
+      "name": "metricsChange",
+      "summary": "billy.Change 指标包装",
+      "tags": [
+        "billy-adapter",
+        "nfs-proxy",
+        "otel-metrics"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        11,
+        14
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/metrics/file.go:metricsFile",
+      "type": "class",
+      "name": "metricsFile",
+      "summary": "billy.File 指标包装",
+      "tags": [
+        "billy-adapter",
+        "nfs-proxy",
+        "otel-metrics"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        9,
+        13
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/metrics/fs.go:metricsFS",
+      "type": "class",
+      "name": "metricsFS",
+      "summary": "billy.Filesystem 指标包装",
+      "tags": [
+        "billy-adapter",
+        "nfs-proxy",
+        "otel-metrics"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        12,
+        17
+      ]
+    },
+    {
+      "id": "class:packages/orchestrator/pkg/nfsproxy/metrics/handler.go:metricsHandler",
+      "type": "class",
+      "name": "metricsHandler",
+      "summary": "nfs.Handler 指标包装",
+      "tags": [
+        "handler-wrapper",
+        "nfs-proxy",
+        "otel-metrics"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        14,
+        17
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/logged/util.go:logStart",
+      "type": "function",
+      "name": "logStart",
+      "summary": "生成 start/end 计时闭包注入日志字段",
+      "tags": [
+        "logging-utility"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        14,
+        39
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/metrics/file.go:wrapFile",
+      "type": "function",
+      "name": "wrapFile",
+      "summary": "把 billy.File 包装成 metricsFile",
+      "tags": [
+        "otel-metrics",
+        "billy-adapter"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        17,
+        19
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/metrics/fs.go:wrapFS",
+      "type": "function",
+      "name": "wrapFS",
+      "summary": "把 billy.Filesystem 包装成 metricsFS",
+      "tags": [
+        "otel-metrics",
+        "billy-adapter"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        21,
+        23
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/metrics/handler.go:WrapWithMetrics",
+      "type": "function",
+      "name": "WrapWithMetrics",
+      "summary": "公开 API — 用 OTEL 计数器包装 nfs.Handler",
+      "tags": [
+        "factory",
+        "otel-metrics"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        21,
+        23
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/metrics/handler.go:Mount",
+      "type": "function",
+      "name": "Mount",
+      "summary": "NFS.Mount 指标包装",
+      "tags": [
+        "otel-metrics"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        25,
+        42
+      ]
+    },
+    {
+      "id": "function:packages/orchestrator/pkg/nfsproxy/metrics/util.go:recordCall",
+      "type": "function",
+      "name": "recordCall",
+      "summary": "采样 NFS 调用耗时 + 错误分类",
+      "tags": [
+        "otel-metrics"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        40,
+        55
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/change.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/metrics/change.go:metricsChange",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/file.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/metrics/file.go:metricsFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/fs.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/metrics/fs.go:metricsFS",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/handler.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/metrics/handler.go:metricsHandler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/logged/util.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/logged/util.go:logStart",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/file.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/metrics/file.go:wrapFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/fs.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/metrics/fs.go:wrapFS",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/handler.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/metrics/handler.go:WrapWithMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/handler.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/metrics/handler.go:Mount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/util.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/metrics/util.go:recordCall",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/fs.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/handler.go",
+      "target": "file:packages/orchestrator/pkg/nfsproxy/cfg/model.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/change.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/metrics/change.go:metricsChange",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/file.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/metrics/file.go:metricsFile",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/file.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/metrics/file.go:wrapFile",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/fs.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/metrics/fs.go:metricsFS",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/fs.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/metrics/fs.go:wrapFS",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/handler.go",
+      "target": "class:packages/orchestrator/pkg/nfsproxy/metrics/handler.go:metricsHandler",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/handler.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/metrics/handler.go:WrapWithMetrics",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/pkg/nfsproxy/metrics/handler.go",
+      "target": "function:packages/orchestrator/pkg/nfsproxy/metrics/handler.go:Mount",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

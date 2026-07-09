@@ -1,0 +1,42 @@
+{
+  "nodes": [
+    {
+      "id": "config:packages/dashboard-api/.env.local",
+      "type": "config",
+      "name": ".env.local",
+      "filePath": "packages/dashboard-api/.env.local",
+      "summary": "Dashboard API 服务的本地开发环境变量配置,包含 PostgreSQL、Redis、ClickHouse、OpenTelemetry collector 等本地连接信息及管理员令牌。",
+      "tags": ["configuration", "environment", "local-dev", "dashboard-api"],
+      "complexity": "simple"
+    },
+    {
+      "id": "pipeline:packages/dashboard-api/Makefile",
+      "type": "pipeline",
+      "name": "Makefile",
+      "filePath": "packages/dashboard-api/Makefile",
+      "summary": "Dashboard API 服务的构建脚本,定义 generate、build、build-debug、build-and-upload、run、run-local、test 等目标,支持 GCP/AWS 双平台镜像发布。",
+      "tags": ["build-system", "ci-cd", "containerization", "dashboard-api"],
+      "complexity": "moderate",
+      "languageNotes": "使用 .last_used_env 跟踪当前激活环境,通过 PROVIDER 变量在 AWS ECR 与 GCP Artifact Registry 之间切换镜像仓库。"
+    },
+    {
+      "id": "config:packages/dashboard-api/go.mod",
+      "type": "config",
+      "name": "go.mod",
+      "filePath": "packages/dashboard-api/go.mod",
+      "summary": "Dashboard API 服务的 Go 模块定义文件,声明 Gin、OpenTelemetry、pgx、oapi-codegen、LaunchDarkly 等直接依赖,并通过 replace 指令引用 monorepo 内 auth、shared、db、clickhouse 包。",
+      "tags": ["configuration", "go-modules", "dependency-management", "dashboard-api"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:packages/dashboard-api/go.sum",
+      "type": "config",
+      "name": "go.sum",
+      "filePath": "packages/dashboard-api/go.sum",
+      "summary": "Dashboard API 服务的 Go 模块校验和文件,锁定 go.mod 中直接与间接依赖的精确版本哈希,确保构建可复现。",
+      "tags": ["configuration", "go-modules", "checksums", "dashboard-api"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": []
+}

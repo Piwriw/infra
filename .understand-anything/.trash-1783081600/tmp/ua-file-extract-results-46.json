@@ -1,0 +1,2720 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 11,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/auth/pkg/auth/identity_lookup.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 84,
+      "nonEmptyLines": 70,
+      "functions": [
+        {
+          "name": "newAuthIdentityLookup",
+          "startLine": 33,
+          "endLine": 37,
+          "params": [
+            "queries"
+          ]
+        },
+        {
+          "name": "GetUserIdentity",
+          "startLine": 39,
+          "endLine": 53,
+          "params": [
+            "ctx",
+            "iss",
+            "sub"
+          ]
+        },
+        {
+          "name": "newCachingIdentityLookup",
+          "startLine": 64,
+          "endLine": 69,
+          "params": [
+            "delegate"
+          ]
+        },
+        {
+          "name": "identityCacheKey",
+          "startLine": 73,
+          "endLine": 75,
+          "params": [
+            "iss",
+            "sub"
+          ]
+        },
+        {
+          "name": "GetUserIdentity",
+          "startLine": 77,
+          "endLine": 84,
+          "params": [
+            "ctx",
+            "iss",
+            "sub"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "authIdentityLookup",
+          "startLine": 25,
+          "endLine": 27,
+          "methods": [
+            "GetUserIdentity"
+          ],
+          "properties": [
+            "queries"
+          ]
+        },
+        {
+          "name": "cachingIdentityLookup",
+          "startLine": 59,
+          "endLine": 62,
+          "methods": [
+            "GetUserIdentity"
+          ],
+          "properties": [
+            "delegate",
+            "cache"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetUserIdentity",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "GetUserIdentity",
+          "line": 77,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "newAuthIdentityLookup",
+          "callee": "newCachingIdentityLookup",
+          "lineNumber": 36
+        },
+        {
+          "caller": "GetUserIdentity",
+          "callee": "l.queries.GetUserIdentity",
+          "lineNumber": 40
+        },
+        {
+          "caller": "GetUserIdentity",
+          "callee": "dberrors.IsNotFoundError",
+          "lineNumber": 45
+        },
+        {
+          "caller": "GetUserIdentity",
+          "callee": "fmt.Errorf",
+          "lineNumber": 49
+        },
+        {
+          "caller": "GetUserIdentity",
+          "callee": "l.cache.GetOrSet",
+          "lineNumber": 81
+        },
+        {
+          "caller": "GetUserIdentity",
+          "callee": "identityCacheKey",
+          "lineNumber": 81
+        },
+        {
+          "caller": "GetUserIdentity",
+          "callee": "l.delegate.GetUserIdentity",
+          "lineNumber": 82
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 2,
+        "functionCount": 5,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/identity_lookup_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 134,
+      "nonEmptyLines": 111,
+      "functions": [
+        {
+          "name": "GetUserIdentity",
+          "startLine": 24,
+          "endLine": 34,
+          "params": [
+            "_",
+            "iss",
+            "sub"
+          ]
+        },
+        {
+          "name": "TestCachingIdentityLookup_CachesSuccess",
+          "startLine": 36,
+          "endLine": 61,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestCachingIdentityLookup_DoesNotCacheNotFound",
+          "startLine": 63,
+          "endLine": 82,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestCachingIdentityLookup_DoesNotCacheError",
+          "startLine": 84,
+          "endLine": 106,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestCachingIdentityLookup_SeparateKeysPerIssuerAndSubject",
+          "startLine": 108,
+          "endLine": 134,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "countingIdentityLookup",
+          "startLine": 15,
+          "endLine": 22,
+          "methods": [
+            "GetUserIdentity"
+          ],
+          "properties": [
+            "mu",
+            "calls",
+            "results"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetUserIdentity",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "TestCachingIdentityLookup_CachesSuccess",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "TestCachingIdentityLookup_DoesNotCacheNotFound",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "TestCachingIdentityLookup_DoesNotCacheError",
+          "line": 84,
+          "isDefault": false
+        },
+        {
+          "name": "TestCachingIdentityLookup_SeparateKeysPerIssuerAndSubject",
+          "line": 108,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetUserIdentity",
+          "callee": "l.calls.Add",
+          "lineNumber": 25
+        },
+        {
+          "caller": "GetUserIdentity",
+          "callee": "l.mu.Lock",
+          "lineNumber": 26
+        },
+        {
+          "caller": "GetUserIdentity",
+          "callee": "l.mu.Unlock",
+          "lineNumber": 27
+        },
+        {
+          "caller": "TestCachingIdentityLookup_CachesSuccess",
+          "callee": "t.Parallel",
+          "lineNumber": 37
+        },
+        {
+          "caller": "TestCachingIdentityLookup_CachesSuccess",
+          "callee": "uuid.New",
+          "lineNumber": 39
+        },
+        {
+          "caller": "TestCachingIdentityLookup_CachesSuccess",
+          "callee": "newCachingIdentityLookup",
+          "lineNumber": 46
+        },
+        {
+          "caller": "TestCachingIdentityLookup_CachesSuccess",
+          "callee": "lookup.GetUserIdentity",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestCachingIdentityLookup_CachesSuccess",
+          "callee": "t.Context",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestCachingIdentityLookup_CachesSuccess",
+          "callee": "t.Fatalf",
+          "lineNumber": 51
+        },
+        {
+          "caller": "TestCachingIdentityLookup_CachesSuccess",
+          "callee": "t.Fatalf",
+          "lineNumber": 54
+        },
+        {
+          "caller": "TestCachingIdentityLookup_CachesSuccess",
+          "callee": "base.calls.Load",
+          "lineNumber": 58
+        },
+        {
+          "caller": "TestCachingIdentityLookup_CachesSuccess",
+          "callee": "t.Fatalf",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheNotFound",
+          "callee": "t.Parallel",
+          "lineNumber": 64
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheNotFound",
+          "callee": "newCachingIdentityLookup",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheNotFound",
+          "callee": "lookup.GetUserIdentity",
+          "lineNumber": 73
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheNotFound",
+          "callee": "t.Context",
+          "lineNumber": 73
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheNotFound",
+          "callee": "errors.Is",
+          "lineNumber": 74
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheNotFound",
+          "callee": "t.Fatalf",
+          "lineNumber": 75
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheNotFound",
+          "callee": "base.calls.Load",
+          "lineNumber": 79
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheNotFound",
+          "callee": "t.Fatalf",
+          "lineNumber": 80
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheError",
+          "callee": "t.Parallel",
+          "lineNumber": 85
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheError",
+          "callee": "errors.New",
+          "lineNumber": 87
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheError",
+          "callee": "newCachingIdentityLookup",
+          "lineNumber": 94
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheError",
+          "callee": "lookup.GetUserIdentity",
+          "lineNumber": 97
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheError",
+          "callee": "t.Context",
+          "lineNumber": 97
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheError",
+          "callee": "errors.Is",
+          "lineNumber": 98
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheError",
+          "callee": "t.Fatalf",
+          "lineNumber": 99
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheError",
+          "callee": "base.calls.Load",
+          "lineNumber": 103
+        },
+        {
+          "caller": "TestCachingIdentityLookup_DoesNotCacheError",
+          "callee": "t.Fatalf",
+          "lineNumber": 104
+        },
+        {
+          "caller": "TestCachingIdentityLookup_SeparateKeysPerIssuerAndSubject",
+          "callee": "t.Parallel",
+          "lineNumber": 109
+        },
+        {
+          "caller": "TestCachingIdentityLookup_SeparateKeysPerIssuerAndSubject",
+          "callee": "uuid.New",
+          "lineNumber": 111
+        },
+        {
+          "caller": "TestCachingIdentityLookup_SeparateKeysPerIssuerAndSubject",
+          "callee": "uuid.New",
+          "lineNumber": 111
+        },
+        {
+          "caller": "TestCachingIdentityLookup_SeparateKeysPerIssuerAndSubject",
+          "callee": "newCachingIdentityLookup",
+          "lineNumber": 119
+        },
+        {
+          "caller": "TestCachingIdentityLookup_SeparateKeysPerIssuerAndSubject",
+          "callee": "lookup.GetUserIdentity",
+          "lineNumber": 121
+        },
+        {
+          "caller": "TestCachingIdentityLookup_SeparateKeysPerIssuerAndSubject",
+          "callee": "t.Context",
+          "lineNumber": 121
+        },
+        {
+          "caller": "TestCachingIdentityLookup_SeparateKeysPerIssuerAndSubject",
+          "callee": "t.Fatalf",
+          "lineNumber": 123
+        },
+        {
+          "caller": "TestCachingIdentityLookup_SeparateKeysPerIssuerAndSubject",
+          "callee": "lookup.GetUserIdentity",
+          "lineNumber": 126
+        },
+        {
+          "caller": "TestCachingIdentityLookup_SeparateKeysPerIssuerAndSubject",
+          "callee": "t.Context",
+          "lineNumber": 126
+        },
+        {
+          "caller": "TestCachingIdentityLookup_SeparateKeysPerIssuerAndSubject",
+          "callee": "t.Fatalf",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestCachingIdentityLookup_SeparateKeysPerIssuerAndSubject",
+          "callee": "base.calls.Load",
+          "lineNumber": 131
+        },
+        {
+          "caller": "TestCachingIdentityLookup_SeparateKeysPerIssuerAndSubject",
+          "callee": "t.Fatalf",
+          "lineNumber": 132
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 5,
+        "functionCount": 5,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/oidc/audience.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 104,
+      "nonEmptyLines": 87,
+      "functions": [
+        {
+          "name": "validateAudienceMatchPolicy",
+          "startLine": 30,
+          "endLine": 44,
+          "params": [
+            "policy",
+            "audiences"
+          ]
+        },
+        {
+          "name": "validateAudience",
+          "startLine": 52,
+          "endLine": 74,
+          "params": [
+            "claims",
+            "audiences"
+          ]
+        },
+        {
+          "name": "extractAudiences",
+          "startLine": 78,
+          "endLine": 104,
+          "params": [
+            "claims"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "validateAudienceMatchPolicy",
+          "callee": "len",
+          "lineNumber": 31
+        },
+        {
+          "caller": "validateAudienceMatchPolicy",
+          "callee": "errors.New",
+          "lineNumber": 32
+        },
+        {
+          "caller": "validateAudienceMatchPolicy",
+          "callee": "len",
+          "lineNumber": 35
+        },
+        {
+          "caller": "validateAudienceMatchPolicy",
+          "callee": "fmt.Errorf",
+          "lineNumber": 36
+        },
+        {
+          "caller": "validateAudienceMatchPolicy",
+          "callee": "len",
+          "lineNumber": 39
+        },
+        {
+          "caller": "validateAudienceMatchPolicy",
+          "callee": "fmt.Errorf",
+          "lineNumber": 40
+        },
+        {
+          "caller": "validateAudience",
+          "callee": "len",
+          "lineNumber": 53
+        },
+        {
+          "caller": "validateAudience",
+          "callee": "extractAudiences",
+          "lineNumber": 57
+        },
+        {
+          "caller": "validateAudience",
+          "callee": "make",
+          "lineNumber": 62
+        },
+        {
+          "caller": "validateAudience",
+          "callee": "len",
+          "lineNumber": 62
+        },
+        {
+          "caller": "validateAudience",
+          "callee": "errors.New",
+          "lineNumber": 73
+        },
+        {
+          "caller": "extractAudiences",
+          "callee": "errors.New",
+          "lineNumber": 81
+        },
+        {
+          "caller": "extractAudiences",
+          "callee": "make",
+          "lineNumber": 90
+        },
+        {
+          "caller": "extractAudiences",
+          "callee": "len",
+          "lineNumber": 90
+        },
+        {
+          "caller": "extractAudiences",
+          "callee": "fmt.Errorf",
+          "lineNumber": 94
+        },
+        {
+          "caller": "extractAudiences",
+          "callee": "append",
+          "lineNumber": 97
+        },
+        {
+          "caller": "extractAudiences",
+          "callee": "fmt.Errorf",
+          "lineNumber": 102
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/oidc/audience_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 73,
+      "nonEmptyLines": 66,
+      "functions": [
+        {
+          "name": "TestValidateAudienceMatchPolicy",
+          "startLine": 9,
+          "endLine": 73,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestValidateAudienceMatchPolicy",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestValidateAudienceMatchPolicy",
+          "callee": "t.Parallel",
+          "lineNumber": 10
+        },
+        {
+          "caller": "TestValidateAudienceMatchPolicy",
+          "callee": "t.Run",
+          "lineNumber": 60
+        },
+        {
+          "caller": "TestValidateAudienceMatchPolicy",
+          "callee": "t.Parallel",
+          "lineNumber": 61
+        },
+        {
+          "caller": "TestValidateAudienceMatchPolicy",
+          "callee": "validateAudienceMatchPolicy",
+          "lineNumber": 63
+        },
+        {
+          "caller": "TestValidateAudienceMatchPolicy",
+          "callee": "require.NoError",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestValidateAudienceMatchPolicy",
+          "callee": "require.Error",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestValidateAudienceMatchPolicy",
+          "callee": "require.Contains",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestValidateAudienceMatchPolicy",
+          "callee": "err.Error",
+          "lineNumber": 70
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/oidc/config.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 98,
+      "nonEmptyLines": 79,
+      "functions": [
+        {
+          "name": "UnmarshalJSON",
+          "startLine": 35,
+          "endLine": 58,
+          "params": [
+            "data"
+          ]
+        },
+        {
+          "name": "Normalized",
+          "startLine": 61,
+          "endLine": 71,
+          "params": []
+        },
+        {
+          "name": "Validate",
+          "startLine": 77,
+          "endLine": 88,
+          "params": []
+        },
+        {
+          "name": "discoveryURL",
+          "startLine": 92,
+          "endLine": 98,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "Config",
+          "startLine": 21,
+          "endLine": 24,
+          "methods": [
+            "UnmarshalJSON",
+            "Normalized",
+            "Validate",
+            "discoveryURL"
+          ],
+          "properties": [
+            "Issuer",
+            "CacheDuration"
+          ]
+        },
+        {
+          "name": "Issuer",
+          "startLine": 27,
+          "endLine": 32,
+          "methods": [],
+          "properties": [
+            "URL",
+            "DiscoveryURL",
+            "Audiences",
+            "AudienceMatchPolicy"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Config",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "Issuer",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "UnmarshalJSON",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "Normalized",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "Validate",
+          "line": 77,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "UnmarshalJSON",
+          "callee": "json.Unmarshal",
+          "lineNumber": 42
+        },
+        {
+          "caller": "UnmarshalJSON",
+          "callee": "time.ParseDuration",
+          "lineNumber": 49
+        },
+        {
+          "caller": "UnmarshalJSON",
+          "callee": "fmt.Errorf",
+          "lineNumber": 51
+        },
+        {
+          "caller": "Normalized",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 63
+        },
+        {
+          "caller": "Normalized",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 64
+        },
+        {
+          "caller": "Validate",
+          "callee": "append",
+          "lineNumber": 80
+        },
+        {
+          "caller": "Validate",
+          "callee": "validateIssuerURL",
+          "lineNumber": 80
+        },
+        {
+          "caller": "Validate",
+          "callee": "append",
+          "lineNumber": 81
+        },
+        {
+          "caller": "Validate",
+          "callee": "validateDiscoveryURL",
+          "lineNumber": 81
+        },
+        {
+          "caller": "Validate",
+          "callee": "validateAudienceMatchPolicy",
+          "lineNumber": 83
+        },
+        {
+          "caller": "Validate",
+          "callee": "append",
+          "lineNumber": 84
+        },
+        {
+          "caller": "Validate",
+          "callee": "fmt.Errorf",
+          "lineNumber": 84
+        },
+        {
+          "caller": "Validate",
+          "callee": "errors.Join",
+          "lineNumber": 87
+        },
+        {
+          "caller": "discoveryURL",
+          "callee": "strings.TrimRight",
+          "lineNumber": 97
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/oidc/config_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 182,
+      "nonEmptyLines": 175,
+      "functions": [
+        {
+          "name": "TestEntry_Validate",
+          "startLine": 9,
+          "endLine": 182,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestEntry_Validate",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestEntry_Validate",
+          "callee": "t.Parallel",
+          "lineNumber": 10
+        },
+        {
+          "caller": "TestEntry_Validate",
+          "callee": "t.Run",
+          "lineNumber": 169
+        },
+        {
+          "caller": "TestEntry_Validate",
+          "callee": "t.Parallel",
+          "lineNumber": 170
+        },
+        {
+          "caller": "TestEntry_Validate",
+          "callee": "tt.entry.Validate",
+          "lineNumber": 172
+        },
+        {
+          "caller": "TestEntry_Validate",
+          "callee": "require.NoError",
+          "lineNumber": 174
+        },
+        {
+          "caller": "TestEntry_Validate",
+          "callee": "require.Error",
+          "lineNumber": 178
+        },
+        {
+          "caller": "TestEntry_Validate",
+          "callee": "require.Contains",
+          "lineNumber": 179
+        },
+        {
+          "caller": "TestEntry_Validate",
+          "callee": "err.Error",
+          "lineNumber": 179
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/oidc/oidc.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 310,
+      "nonEmptyLines": 262,
+      "functions": [
+        {
+          "name": "NewVerifier",
+          "startLine": 54,
+          "endLine": 112,
+          "params": [
+            "ctx",
+            "entry",
+            "httpClient",
+            "identities"
+          ]
+        },
+        {
+          "name": "Verify",
+          "startLine": 118,
+          "endLine": 150,
+          "params": [
+            "ctx",
+            "tokenString"
+          ]
+        },
+        {
+          "name": "claimString",
+          "startLine": 152,
+          "endLine": 177,
+          "params": [
+            "claims",
+            "name"
+          ]
+        },
+        {
+          "name": "fetchDiscoveryDocument",
+          "startLine": 179,
+          "endLine": 215,
+          "params": [
+            "ctx",
+            "httpClient",
+            "discoveryURL"
+          ]
+        },
+        {
+          "name": "validateHTTPSURL",
+          "startLine": 220,
+          "endLine": 226,
+          "params": [
+            "rawURL",
+            "field"
+          ]
+        },
+        {
+          "name": "validateURL",
+          "startLine": 242,
+          "endLine": 263,
+          "params": [
+            "rawURL",
+            "field"
+          ]
+        },
+        {
+          "name": "isLoopbackHost",
+          "startLine": 275,
+          "endLine": 285,
+          "params": [
+            "host"
+          ]
+        },
+        {
+          "name": "validateIssuerURL",
+          "startLine": 288,
+          "endLine": 294,
+          "params": [
+            "issuerURL"
+          ]
+        },
+        {
+          "name": "validateDiscoveryURL",
+          "startLine": 298,
+          "endLine": 310,
+          "params": [
+            "issuerURL",
+            "discoveryURL"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "IdentityLookup",
+          "startLine": 32,
+          "endLine": 34,
+          "methods": [
+            "GetUserIdentity"
+          ],
+          "properties": []
+        },
+        {
+          "name": "Verifier",
+          "startLine": 37,
+          "endLine": 42,
+          "methods": [
+            "Verify"
+          ],
+          "properties": [
+            "keyfunc",
+            "audiences",
+            "parserOptions",
+            "identities"
+          ]
+        },
+        {
+          "name": "discoveryDocument",
+          "startLine": 46,
+          "endLine": 49,
+          "methods": [],
+          "properties": [
+            "Issuer",
+            "JWKSURI"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "IdentityLookup",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "Verifier",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "NewVerifier",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "Verify",
+          "line": 118,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewVerifier",
+          "callee": "errors.New",
+          "lineNumber": 56
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "errors.New",
+          "lineNumber": 60
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "errors.New",
+          "lineNumber": 64
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "entry.discoveryURL",
+          "lineNumber": 67
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "validateHTTPSURL",
+          "lineNumber": 68
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "fetchDiscoveryDocument",
+          "lineNumber": 72
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "fmt.Errorf",
+          "lineNumber": 74
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "fmt.Errorf",
+          "lineNumber": 78
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "validateHTTPSURL",
+          "lineNumber": 81
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "jwkset.NewStorageFromHTTP",
+          "lineNumber": 85
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "fmt.Errorf",
+          "lineNumber": 92
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "keyfunc.New",
+          "lineNumber": 95
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "fmt.Errorf",
+          "lineNumber": 100
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "jwt.WithExpirationRequired",
+          "lineNumber": 107
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "jwt.WithIssuer",
+          "lineNumber": 108
+        },
+        {
+          "caller": "Verify",
+          "callee": "jwt.ParseWithClaims",
+          "lineNumber": 120
+        },
+        {
+          "caller": "Verify",
+          "callee": "v.keyfunc.KeyfuncCtx(ctx)",
+          "lineNumber": 121
+        },
+        {
+          "caller": "Verify",
+          "callee": "v.keyfunc.KeyfuncCtx",
+          "lineNumber": 121
+        },
+        {
+          "caller": "Verify",
+          "callee": "fmt.Errorf",
+          "lineNumber": 124
+        },
+        {
+          "caller": "Verify",
+          "callee": "errors.New",
+          "lineNumber": 127
+        },
+        {
+          "caller": "Verify",
+          "callee": "validateAudience",
+          "lineNumber": 130
+        },
+        {
+          "caller": "Verify",
+          "callee": "fmt.Errorf",
+          "lineNumber": 131
+        },
+        {
+          "caller": "Verify",
+          "callee": "claimString",
+          "lineNumber": 134
+        },
+        {
+          "caller": "Verify",
+          "callee": "errors.New",
+          "lineNumber": 136
+        },
+        {
+          "caller": "Verify",
+          "callee": "claimString",
+          "lineNumber": 139
+        },
+        {
+          "caller": "Verify",
+          "callee": "errors.New",
+          "lineNumber": 141
+        },
+        {
+          "caller": "Verify",
+          "callee": "v.identities.GetUserIdentity",
+          "lineNumber": 144
+        },
+        {
+          "caller": "Verify",
+          "callee": "fmt.Errorf",
+          "lineNumber": 146
+        },
+        {
+          "caller": "claimString",
+          "callee": "len",
+          "lineNumber": 162
+        },
+        {
+          "caller": "claimString",
+          "callee": "len",
+          "lineNumber": 168
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "context.WithTimeout",
+          "lineNumber": 180
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "cancel",
+          "lineNumber": 181
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "http.NewRequestWithContext",
+          "lineNumber": 183
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "fmt.Errorf",
+          "lineNumber": 185
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "req.Header.Set",
+          "lineNumber": 187
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "httpClient.Do",
+          "lineNumber": 189
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "fmt.Errorf",
+          "lineNumber": 191
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "resp.Body.Close",
+          "lineNumber": 193
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "io.ReadAll",
+          "lineNumber": 196
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "io.LimitReader",
+          "lineNumber": 196
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "fmt.Errorf",
+          "lineNumber": 198
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "string",
+          "lineNumber": 198
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "json.NewDecoder(resp.Body).Decode",
+          "lineNumber": 202
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "json.NewDecoder",
+          "lineNumber": 202
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "fmt.Errorf",
+          "lineNumber": 203
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "errors.New",
+          "lineNumber": 207
+        },
+        {
+          "caller": "fetchDiscoveryDocument",
+          "callee": "errors.New",
+          "lineNumber": 211
+        },
+        {
+          "caller": "validateHTTPSURL",
+          "callee": "validateURL",
+          "lineNumber": 221
+        },
+        {
+          "caller": "validateHTTPSURL",
+          "callee": "len",
+          "lineNumber": 221
+        },
+        {
+          "caller": "validateURL",
+          "callee": "url.Parse",
+          "lineNumber": 245
+        },
+        {
+          "caller": "validateURL",
+          "callee": "fmt.Errorf",
+          "lineNumber": 247
+        },
+        {
+          "caller": "validateURL",
+          "callee": "isLoopbackHost",
+          "lineNumber": 249
+        },
+        {
+          "caller": "validateURL",
+          "callee": "u.Hostname",
+          "lineNumber": 249
+        },
+        {
+          "caller": "validateURL",
+          "callee": "append",
+          "lineNumber": 250
+        },
+        {
+          "caller": "validateURL",
+          "callee": "fmt.Errorf",
+          "lineNumber": 250
+        },
+        {
+          "caller": "validateURL",
+          "callee": "append",
+          "lineNumber": 253
+        },
+        {
+          "caller": "validateURL",
+          "callee": "fmt.Errorf",
+          "lineNumber": 253
+        },
+        {
+          "caller": "validateURL",
+          "callee": "len",
+          "lineNumber": 255
+        },
+        {
+          "caller": "validateURL",
+          "callee": "append",
+          "lineNumber": 256
+        },
+        {
+          "caller": "validateURL",
+          "callee": "fmt.Errorf",
+          "lineNumber": 256
+        },
+        {
+          "caller": "validateURL",
+          "callee": "len",
+          "lineNumber": 258
+        },
+        {
+          "caller": "validateURL",
+          "callee": "append",
+          "lineNumber": 259
+        },
+        {
+          "caller": "validateURL",
+          "callee": "fmt.Errorf",
+          "lineNumber": 259
+        },
+        {
+          "caller": "isLoopbackHost",
+          "callee": "strings.EqualFold",
+          "lineNumber": 279
+        },
+        {
+          "caller": "isLoopbackHost",
+          "callee": "net.ParseIP",
+          "lineNumber": 282
+        },
+        {
+          "caller": "isLoopbackHost",
+          "callee": "ip.IsLoopback",
+          "lineNumber": 284
+        },
+        {
+          "caller": "validateIssuerURL",
+          "callee": "errors.New",
+          "lineNumber": 290
+        },
+        {
+          "caller": "validateIssuerURL",
+          "callee": "validateURL",
+          "lineNumber": 293
+        },
+        {
+          "caller": "validateDiscoveryURL",
+          "callee": "strings.TrimRight",
+          "lineNumber": 304
+        },
+        {
+          "caller": "validateDiscoveryURL",
+          "callee": "strings.TrimRight",
+          "lineNumber": 304
+        },
+        {
+          "caller": "validateDiscoveryURL",
+          "callee": "append",
+          "lineNumber": 305
+        },
+        {
+          "caller": "validateDiscoveryURL",
+          "callee": "errors.New",
+          "lineNumber": 305
+        },
+        {
+          "caller": "validateDiscoveryURL",
+          "callee": "append",
+          "lineNumber": 307
+        },
+        {
+          "caller": "validateDiscoveryURL",
+          "callee": "validateURL",
+          "lineNumber": 307
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 9,
+        "classCount": 3
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/oidc/oidc_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 208,
+      "nonEmptyLines": 167,
+      "functions": [
+        {
+          "name": "GetUserIdentity",
+          "startLine": 27,
+          "endLine": 35,
+          "params": [
+            "_",
+            "iss",
+            "sub"
+          ]
+        },
+        {
+          "name": "TestVerifier_Verify",
+          "startLine": 37,
+          "endLine": 76,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestVerifier_IdentityNotFound",
+          "startLine": 78,
+          "endLine": 113,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestVerifier_IdentityLookupError",
+          "startLine": 115,
+          "endLine": 152,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestVerifier_RejectsWrongAudience",
+          "startLine": 154,
+          "endLine": 189,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestNewVerifier_DiscoveryIssuerMismatch",
+          "startLine": 191,
+          "endLine": 208,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "stubIdentityLookup",
+          "startLine": 19,
+          "endLine": 25,
+          "methods": [
+            "GetUserIdentity"
+          ],
+          "properties": [
+            "userID",
+            "err",
+            "lastIss",
+            "lastSub"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetUserIdentity",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "TestVerifier_Verify",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "TestVerifier_IdentityNotFound",
+          "line": 78,
+          "isDefault": false
+        },
+        {
+          "name": "TestVerifier_IdentityLookupError",
+          "line": 115,
+          "isDefault": false
+        },
+        {
+          "name": "TestVerifier_RejectsWrongAudience",
+          "line": 154,
+          "isDefault": false
+        },
+        {
+          "name": "TestNewVerifier_DiscoveryIssuerMismatch",
+          "line": 191,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "t.Parallel",
+          "lineNumber": 38
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "rsa.GenerateKey",
+          "lineNumber": 40
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "require.NoError",
+          "lineNumber": 41
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "NewTestServer",
+          "lineNumber": 44
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "uuid.New",
+          "lineNumber": 46
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "NewVerifier",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "t.Context",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "server.Client",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "require.NoError",
+          "lineNumber": 57
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "jwt.NewWithClaims",
+          "lineNumber": 60
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "time.Now().Add(time.Hour).Unix",
+          "lineNumber": 64
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "time.Now().Add",
+          "lineNumber": 64
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "time.Now",
+          "lineNumber": 64
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "token.SignedString",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "require.NoError",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "verifier.Verify",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "t.Context",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "require.NoError",
+          "lineNumber": 72
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "require.Equal",
+          "lineNumber": 73
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "require.Equal",
+          "lineNumber": 74
+        },
+        {
+          "caller": "TestVerifier_Verify",
+          "callee": "require.Equal",
+          "lineNumber": 75
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "t.Parallel",
+          "lineNumber": 79
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "rsa.GenerateKey",
+          "lineNumber": 81
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "require.NoError",
+          "lineNumber": 82
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "NewTestServer",
+          "lineNumber": 85
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "NewVerifier",
+          "lineNumber": 89
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "t.Context",
+          "lineNumber": 89
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "server.Client",
+          "lineNumber": 95
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "require.NoError",
+          "lineNumber": 96
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "jwt.NewWithClaims",
+          "lineNumber": 98
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "time.Now().Add(time.Hour).Unix",
+          "lineNumber": 102
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "time.Now().Add",
+          "lineNumber": 102
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "time.Now",
+          "lineNumber": 102
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "token.SignedString",
+          "lineNumber": 106
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "require.NoError",
+          "lineNumber": 107
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "verifier.Verify",
+          "lineNumber": 109
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "t.Context",
+          "lineNumber": 109
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "require.Error",
+          "lineNumber": 110
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "require.ErrorIs",
+          "lineNumber": 111
+        },
+        {
+          "caller": "TestVerifier_IdentityNotFound",
+          "callee": "require.Equal",
+          "lineNumber": 112
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "t.Parallel",
+          "lineNumber": 116
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "rsa.GenerateKey",
+          "lineNumber": 118
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "require.NoError",
+          "lineNumber": 119
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "NewTestServer",
+          "lineNumber": 122
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "errors.New",
+          "lineNumber": 124
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "NewVerifier",
+          "lineNumber": 127
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "t.Context",
+          "lineNumber": 127
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "server.Client",
+          "lineNumber": 133
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "require.NoError",
+          "lineNumber": 134
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "jwt.NewWithClaims",
+          "lineNumber": 136
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "time.Now().Add(time.Hour).Unix",
+          "lineNumber": 140
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "time.Now().Add",
+          "lineNumber": 140
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "time.Now",
+          "lineNumber": 140
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "token.SignedString",
+          "lineNumber": 144
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "require.NoError",
+          "lineNumber": 145
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "verifier.Verify",
+          "lineNumber": 147
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "t.Context",
+          "lineNumber": 147
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "require.Error",
+          "lineNumber": 148
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "require.ErrorIs",
+          "lineNumber": 149
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "require.NotErrorIs",
+          "lineNumber": 150
+        },
+        {
+          "caller": "TestVerifier_IdentityLookupError",
+          "callee": "require.Equal",
+          "lineNumber": 151
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "t.Parallel",
+          "lineNumber": 155
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "rsa.GenerateKey",
+          "lineNumber": 157
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "require.NoError",
+          "lineNumber": 158
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "NewTestServer",
+          "lineNumber": 161
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "uuid.New",
+          "lineNumber": 163
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "NewVerifier",
+          "lineNumber": 164
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "t.Context",
+          "lineNumber": 164
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "server.Client",
+          "lineNumber": 170
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "require.NoError",
+          "lineNumber": 171
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "jwt.NewWithClaims",
+          "lineNumber": 173
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "uuid.NewString",
+          "lineNumber": 176
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "time.Now().Add(time.Hour).Unix",
+          "lineNumber": 177
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "time.Now().Add",
+          "lineNumber": 177
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "time.Now",
+          "lineNumber": 177
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "token.SignedString",
+          "lineNumber": 181
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "require.NoError",
+          "lineNumber": 182
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "verifier.Verify",
+          "lineNumber": 184
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "t.Context",
+          "lineNumber": 184
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "require.Error",
+          "lineNumber": 185
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "require.Empty",
+          "lineNumber": 187
+        },
+        {
+          "caller": "TestVerifier_RejectsWrongAudience",
+          "callee": "require.Empty",
+          "lineNumber": 188
+        },
+        {
+          "caller": "TestNewVerifier_DiscoveryIssuerMismatch",
+          "callee": "t.Parallel",
+          "lineNumber": 192
+        },
+        {
+          "caller": "TestNewVerifier_DiscoveryIssuerMismatch",
+          "callee": "rsa.GenerateKey",
+          "lineNumber": 194
+        },
+        {
+          "caller": "TestNewVerifier_DiscoveryIssuerMismatch",
+          "callee": "require.NoError",
+          "lineNumber": 195
+        },
+        {
+          "caller": "TestNewVerifier_DiscoveryIssuerMismatch",
+          "callee": "NewTestServer",
+          "lineNumber": 198
+        },
+        {
+          "caller": "TestNewVerifier_DiscoveryIssuerMismatch",
+          "callee": "NewVerifier",
+          "lineNumber": 200
+        },
+        {
+          "caller": "TestNewVerifier_DiscoveryIssuerMismatch",
+          "callee": "t.Context",
+          "lineNumber": 200
+        },
+        {
+          "caller": "TestNewVerifier_DiscoveryIssuerMismatch",
+          "callee": "server.Client",
+          "lineNumber": 205
+        },
+        {
+          "caller": "TestNewVerifier_DiscoveryIssuerMismatch",
+          "callee": "require.Error",
+          "lineNumber": 206
+        },
+        {
+          "caller": "TestNewVerifier_DiscoveryIssuerMismatch",
+          "callee": "require.Contains",
+          "lineNumber": 207
+        },
+        {
+          "caller": "TestNewVerifier_DiscoveryIssuerMismatch",
+          "callee": "err.Error",
+          "lineNumber": 207
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 6,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/oidc/testserver.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 52,
+      "nonEmptyLines": 45,
+      "functions": [
+        {
+          "name": "NewTestServer",
+          "startLine": 20,
+          "endLine": 52,
+          "params": [
+            "t",
+            "publicKey",
+            "keyID",
+            "discoveryIssuer"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "NewTestServer",
+          "line": 20,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewTestServer",
+          "callee": "t.Helper",
+          "lineNumber": 21
+        },
+        {
+          "caller": "NewTestServer",
+          "callee": "http.NewServeMux",
+          "lineNumber": 23
+        },
+        {
+          "caller": "NewTestServer",
+          "callee": "httptest.NewTLSServer",
+          "lineNumber": 24
+        },
+        {
+          "caller": "NewTestServer",
+          "callee": "t.Cleanup",
+          "lineNumber": 25
+        },
+        {
+          "caller": "NewTestServer",
+          "callee": "mux.HandleFunc",
+          "lineNumber": 27
+        },
+        {
+          "caller": "NewTestServer",
+          "callee": "json.NewEncoder(w).Encode",
+          "lineNumber": 28
+        },
+        {
+          "caller": "NewTestServer",
+          "callee": "json.NewEncoder",
+          "lineNumber": 28
+        },
+        {
+          "caller": "NewTestServer",
+          "callee": "t.Errorf",
+          "lineNumber": 33
+        },
+        {
+          "caller": "NewTestServer",
+          "callee": "mux.HandleFunc",
+          "lineNumber": 37
+        },
+        {
+          "caller": "NewTestServer",
+          "callee": "json.NewEncoder(w).Encode",
+          "lineNumber": 38
+        },
+        {
+          "caller": "NewTestServer",
+          "callee": "json.NewEncoder",
+          "lineNumber": 38
+        },
+        {
+          "caller": "NewTestServer",
+          "callee": "string",
+          "lineNumber": 42
+        },
+        {
+          "caller": "NewTestServer",
+          "callee": "t.Errorf",
+          "lineNumber": 47
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/verifier.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 125,
+      "nonEmptyLines": 101,
+      "functions": [
+        {
+          "name": "enabled",
+          "startLine": 21,
+          "endLine": 23,
+          "params": []
+        },
+        {
+          "name": "normalize",
+          "startLine": 26,
+          "endLine": 33,
+          "params": []
+        },
+        {
+          "name": "validate",
+          "startLine": 36,
+          "endLine": 44,
+          "params": []
+        },
+        {
+          "name": "NewVerifier",
+          "startLine": 64,
+          "endLine": 94,
+          "params": [
+            "ctx",
+            "config",
+            "oidcHTTPClient",
+            "identities"
+          ]
+        },
+        {
+          "name": "Verify",
+          "startLine": 98,
+          "endLine": 125,
+          "params": [
+            "ctx",
+            "tokenString"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ProviderConfig",
+          "startLine": 16,
+          "endLine": 18,
+          "methods": [
+            "enabled",
+            "normalize",
+            "validate"
+          ],
+          "properties": [
+            "JWT"
+          ]
+        },
+        {
+          "name": "strategy",
+          "startLine": 48,
+          "endLine": 50,
+          "methods": [
+            "Verify"
+          ],
+          "properties": []
+        },
+        {
+          "name": "Verifier",
+          "startLine": 54,
+          "endLine": 56,
+          "methods": [
+            "Verify"
+          ],
+          "properties": [
+            "strategies"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ProviderConfig",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "Verifier",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "NewVerifier",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "Verify",
+          "line": 98,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "enabled",
+          "callee": "len",
+          "lineNumber": 22
+        },
+        {
+          "caller": "normalize",
+          "callee": "make",
+          "lineNumber": 27
+        },
+        {
+          "caller": "normalize",
+          "callee": "len",
+          "lineNumber": 27
+        },
+        {
+          "caller": "normalize",
+          "callee": "entry.Normalized",
+          "lineNumber": 29
+        },
+        {
+          "caller": "validate",
+          "callee": "entry.Validate",
+          "lineNumber": 38
+        },
+        {
+          "caller": "validate",
+          "callee": "fmt.Errorf",
+          "lineNumber": 39
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "config.normalize",
+          "lineNumber": 65
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "normalized.validate",
+          "lineNumber": 66
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "normalized.enabled",
+          "lineNumber": 69
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "make",
+          "lineNumber": 73
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "len",
+          "lineNumber": 73
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "len",
+          "lineNumber": 75
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "errors.New",
+          "lineNumber": 76
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "oidc.NewVerifier",
+          "lineNumber": 80
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "fmt.Errorf",
+          "lineNumber": 82
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "append",
+          "lineNumber": 84
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "len",
+          "lineNumber": 87
+        },
+        {
+          "caller": "NewVerifier",
+          "callee": "errors.New",
+          "lineNumber": 88
+        },
+        {
+          "caller": "Verify",
+          "callee": "errors.New",
+          "lineNumber": 100
+        },
+        {
+          "caller": "Verify",
+          "callee": "len",
+          "lineNumber": 103
+        },
+        {
+          "caller": "Verify",
+          "callee": "errors.New",
+          "lineNumber": 104
+        },
+        {
+          "caller": "Verify",
+          "callee": "make",
+          "lineNumber": 107
+        },
+        {
+          "caller": "Verify",
+          "callee": "len",
+          "lineNumber": 107
+        },
+        {
+          "caller": "Verify",
+          "callee": "strategy.Verify",
+          "lineNumber": 109
+        },
+        {
+          "caller": "Verify",
+          "callee": "append",
+          "lineNumber": 111
+        },
+        {
+          "caller": "Verify",
+          "callee": "append",
+          "lineNumber": 116
+        },
+        {
+          "caller": "Verify",
+          "callee": "errors.New",
+          "lineNumber": 116
+        },
+        {
+          "caller": "Verify",
+          "callee": "fmt.Errorf",
+          "lineNumber": 124
+        },
+        {
+          "caller": "Verify",
+          "callee": "errors.Join",
+          "lineNumber": 124
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 4,
+        "functionCount": 5,
+        "classCount": 3
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/verifier_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 174,
+      "nonEmptyLines": 145,
+      "functions": [
+        {
+          "name": "newStubIdentityLookup",
+          "startLine": 29,
+          "endLine": 31,
+          "params": []
+        },
+        {
+          "name": "set",
+          "startLine": 33,
+          "endLine": 35,
+          "params": [
+            "iss",
+            "sub",
+            "id"
+          ]
+        },
+        {
+          "name": "GetUserIdentity",
+          "startLine": 37,
+          "endLine": 43,
+          "params": [
+            "_",
+            "iss",
+            "sub"
+          ]
+        },
+        {
+          "name": "httpClientForServers",
+          "startLine": 48,
+          "endLine": 62,
+          "params": []
+        },
+        {
+          "name": "TestNewVerifier_DisabledConfigReturnsNil",
+          "startLine": 64,
+          "endLine": 70,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestVerifier_VerifyJWT",
+          "startLine": 72,
+          "endLine": 113,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestVerifier_VerifyMultipleJWTIssuers",
+          "startLine": 115,
+          "endLine": 174,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "stubIdentityLookup",
+          "startLine": 25,
+          "endLine": 27,
+          "methods": [
+            "set",
+            "GetUserIdentity"
+          ],
+          "properties": [
+            "mapping"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetUserIdentity",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "TestNewVerifier_DisabledConfigReturnsNil",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "TestVerifier_VerifyJWT",
+          "line": 72,
+          "isDefault": false
+        },
+        {
+          "name": "TestVerifier_VerifyMultipleJWTIssuers",
+          "line": 115,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "httpClientForServers",
+          "callee": "x509.NewCertPool",
+          "lineNumber": 49
+        },
+        {
+          "caller": "httpClientForServers",
+          "callee": "pool.AddCert",
+          "lineNumber": 51
+        },
+        {
+          "caller": "httpClientForServers",
+          "callee": "s.Certificate",
+          "lineNumber": 51
+        },
+        {
+          "caller": "TestNewVerifier_DisabledConfigReturnsNil",
+          "callee": "t.Parallel",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestNewVerifier_DisabledConfigReturnsNil",
+          "callee": "NewVerifier",
+          "lineNumber": 67
+        },
+        {
+          "caller": "TestNewVerifier_DisabledConfigReturnsNil",
+          "callee": "t.Context",
+          "lineNumber": 67
+        },
+        {
+          "caller": "TestNewVerifier_DisabledConfigReturnsNil",
+          "callee": "require.NoError",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestNewVerifier_DisabledConfigReturnsNil",
+          "callee": "require.Nil",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "t.Parallel",
+          "lineNumber": 73
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "rsa.GenerateKey",
+          "lineNumber": 75
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "require.NoError",
+          "lineNumber": 76
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "oidc.NewTestServer",
+          "lineNumber": 79
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "newStubIdentityLookup",
+          "lineNumber": 81
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "uuid.New",
+          "lineNumber": 83
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "lookup.set",
+          "lineNumber": 84
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "NewVerifier",
+          "lineNumber": 86
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "t.Context",
+          "lineNumber": 86
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "server.Client",
+          "lineNumber": 97
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "require.NoError",
+          "lineNumber": 98
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "jwt.NewWithClaims",
+          "lineNumber": 100
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "time.Now().Add(time.Hour).Unix",
+          "lineNumber": 104
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "time.Now().Add",
+          "lineNumber": 104
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "time.Now",
+          "lineNumber": 104
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "jwksToken.SignedString",
+          "lineNumber": 107
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "require.NoError",
+          "lineNumber": 108
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "verifier.Verify",
+          "lineNumber": 110
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "t.Context",
+          "lineNumber": 110
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "require.NoError",
+          "lineNumber": 111
+        },
+        {
+          "caller": "TestVerifier_VerifyJWT",
+          "callee": "require.Equal",
+          "lineNumber": 112
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "t.Parallel",
+          "lineNumber": 116
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "rsa.GenerateKey",
+          "lineNumber": 118
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "require.NoError",
+          "lineNumber": 119
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "rsa.GenerateKey",
+          "lineNumber": 120
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "require.NoError",
+          "lineNumber": 121
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "oidc.NewTestServer",
+          "lineNumber": 130
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "oidc.NewTestServer",
+          "lineNumber": 131
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "newStubIdentityLookup",
+          "lineNumber": 133
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "uuid.New",
+          "lineNumber": 135
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "lookup.set",
+          "lineNumber": 136
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "NewVerifier",
+          "lineNumber": 138
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "t.Context",
+          "lineNumber": 138
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "httpClientForServers",
+          "lineNumber": 155
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "require.NoError",
+          "lineNumber": 156
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "jwt.NewWithClaims",
+          "lineNumber": 160
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "time.Now().Add(time.Hour).Unix",
+          "lineNumber": 164
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "time.Now().Add",
+          "lineNumber": 164
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "time.Now",
+          "lineNumber": 164
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "token.SignedString",
+          "lineNumber": 168
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "require.NoError",
+          "lineNumber": 169
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "verifier.Verify",
+          "lineNumber": 171
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "t.Context",
+          "lineNumber": 171
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "require.NoError",
+          "lineNumber": 172
+        },
+        {
+          "caller": "TestVerifier_VerifyMultipleJWTIssuers",
+          "callee": "require.Equal",
+          "lineNumber": 173
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 4,
+        "functionCount": 7,
+        "classCount": 1
+      }
+    }
+  ]
+}

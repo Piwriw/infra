@@ -1,0 +1,1756 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/orchestrator/cmd/simulate-gcs-traffic/files.go",
+      "type": "file",
+      "name": "files.go",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/files.go",
+      "summary": "\u5b9e\u73b0 GCS \u6d41\u91cf\u6a21\u62df\u5668\u4e2d\u6587\u4ef6\u53d1\u73b0\u4e0e\u968f\u673a\u8bfb\u53d6\u903b\u8f91\uff1a\u4f7f\u7528 cloud.google.com/go/storage \u5217\u51fa\u6876\u5185\u5bf9\u8c61\uff0c\u6309\u6700\u5c0f\u6587\u4ef6\u5927\u5c0f\u8fc7\u6ee4\uff1b\u63d0\u4f9b files \u7ed3\u6784\u4f53\u5728\u56fa\u5b9a chunk \u5927\u5c0f\u4e0b\u968f\u673a\u9009\u62e9\u672a\u8bfb\u6587\u4ef6\u504f\u79fb\u3002",
+      "tags": [
+        "gcs",
+        "storage",
+        "random-read",
+        "file-discovery",
+        "benchmark"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/files.go:findFiles",
+      "type": "function",
+      "name": "findFiles",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/files.go",
+      "lineRange": [
+        15,
+        58
+      ],
+      "summary": "\u521b\u5efa GCS \u5ba2\u6237\u7aef\u5e76\u5217\u51fa\u6876\u5185\u6240\u6709\u5bf9\u8c61\uff0c\u53ef\u9009\u6309\u524d\u7f00\u8fc7\u6ee4\uff1b\u6309 minFileSize \u4e0e limitFileCount \u7b5b\u9009\u540e\u4fdd\u5b58\u5230 processor.allFiles\u3002",
+      "tags": [
+        "gcs",
+        "iterator",
+        "file-listing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/files.go:newFiles",
+      "type": "function",
+      "name": "newFiles",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/files.go",
+      "lineRange": [
+        72,
+        81
+      ],
+      "summary": "\u6784\u9020 files \u72b6\u6001\u5bf9\u8c61\uff0c\u521d\u59cb\u5316\u968f\u673a\u6570\u751f\u6210\u5668\u4e0e\u5df2\u8bfb\u504f\u79fb\u96c6\u5408\u3002",
+      "tags": [
+        "constructor",
+        "random",
+        "state"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/files.go:nextRead",
+      "type": "function",
+      "name": "nextRead",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/files.go",
+      "lineRange": [
+        83,
+        115
+      ],
+      "summary": "\u968f\u673a\u9009\u62e9\u6587\u4ef6\u4e0e chunk \u5bf9\u9f50\u7684\u504f\u79fb\uff1b\u82e5\u7981\u7528 allowRepeatReads \u5219\u901a\u8fc7 usedRanges \u53bb\u91cd\uff0c\u6700\u591a\u91cd\u8bd5 10 \u6b21\u3002",
+      "tags": [
+        "random-offset",
+        "deduplication",
+        "chunk-read"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/files.go:removeAtIndex",
+      "type": "function",
+      "name": "removeAtIndex",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/files.go",
+      "lineRange": [
+        60,
+        62
+      ],
+      "summary": "\u6cdb\u578b\u5de5\u5177\u51fd\u6570\uff1a\u4f7f\u7528 slices.Delete \u79fb\u9664\u5207\u7247\u4e2d\u6307\u5b9a\u7d22\u5f15\u7684\u5143\u7d20\u3002",
+      "tags": [
+        "generic",
+        "slice",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/files.go:files",
+      "type": "class",
+      "name": "files",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/files.go",
+      "lineRange": [
+        64,
+        70
+      ],
+      "summary": "\u6301\u6709 GCS \u8def\u5f84\u4e0e chunk \u5927\u5c0f\u7684\u72b6\u6001\u7ed3\u6784\uff0c\u8d1f\u8d23\u8ffd\u8e2a\u6bcf\u4e2a\u6587\u4ef6\u5df2\u8bfb\u53d6\u7684 chunk \u504f\u79fb\u3002",
+      "tags": [
+        "state",
+        "random-access"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "type": "file",
+      "name": "main_test.go",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "summary": "GCS \u6d41\u91cf\u6a21\u62df\u5668\u7684\u5355\u5143\u6d4b\u8bd5\uff0c\u8986\u76d6\u573a\u666f\u7b1b\u5361\u5c14\u79ef\u751f\u6210\u3001CSV \u5bfc\u51fa\u3001\u6301\u7eed\u65f6\u95f4\u6c47\u603b\u3001\u968f\u673a\u8bfb\u53d6\u5de5\u5177\u4ee5\u53ca GCP \u73af\u5883\u5143\u6570\u636e\u83b7\u53d6\uff08\u8fd0\u884c\u5728\u975e GCP \u65f6\u8df3\u8fc7\uff09\u3002",
+      "tags": [
+        "test",
+        "unit-test",
+        "gcs",
+        "benchmark-helper"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go:mockExperiment",
+      "type": "class",
+      "name": "mockExperiment",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "lineRange": [
+        15,
+        17
+      ],
+      "summary": "\u7528\u4e8e generateScenarios \u6d4b\u8bd5\u7684 experiment \u6869\u5b9e\u73b0\uff0csetup/teardown \u5747\u4e3a no-op\u3002",
+      "tags": [
+        "mock",
+        "test-stub",
+        "experiment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go:TestGenerateScenarios",
+      "type": "function",
+      "name": "TestGenerateScenarios",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "lineRange": [
+        21,
+        68
+      ],
+      "summary": "\u9a8c\u8bc1 generateScenarios \u6b63\u786e\u751f\u6210\u6240\u6709\u5b9e\u9a8c\u9009\u9879\u7684\u7b1b\u5361\u5c14\u79ef\uff0c\u5e76\u65ad\u8a00 Name() \u62fc\u63a5\u987a\u5e8f\u3002",
+      "tags": [
+        "test",
+        "cartesian-product",
+        "scenario"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go:TestDumpResultsToCSV",
+      "type": "function",
+      "name": "TestDumpResultsToCSV",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "lineRange": [
+        70,
+        132
+      ],
+      "summary": "\u9a8c\u8bc1 dumpResultsToCSV \u5199\u51fa\u542b instance type\u3001\u5b9e\u9a8c\u7ef4\u5ea6\u3001\u6301\u7eed\u65f6\u95f4\u7edf\u8ba1\u4e0e\u76f4\u65b9\u56fe\u5217\u7684 CSV \u6587\u4ef6\u3002",
+      "tags": [
+        "test",
+        "csv",
+        "output"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go:TestSummarizeDurations",
+      "type": "function",
+      "name": "TestSummarizeDurations",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "lineRange": [
+        134,
+        182
+      ],
+      "summary": "\u5b50\u6d4b\u8bd5\u8986\u76d6\u7a7a\u5207\u7247\u3001\u5355\u5143\u7d20\u3001\u591a\u5143\u7d20\u4ee5\u53ca\u771f\u5b9e\u4e1a\u52a1\u573a\u666f\uff08428 \u6587\u4ef6/23ms p50\uff09\u4e0b\u7684\u767e\u5206\u4f4d\u4e0e\u7edf\u8ba1\u3002",
+      "tags": [
+        "test",
+        "percentile",
+        "statistics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go:TestRemoveAtIndex",
+      "type": "function",
+      "name": "TestRemoveAtIndex",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "lineRange": [
+        184,
+        243
+      ],
+      "summary": "\u8986\u76d6 slices.Delete \u5404\u79cd\u8fb9\u754c\u60c5\u51b5\uff1a\u9996/\u4e2d/\u5c3e\u3001\u539f\u59cb\u5207\u7247\u88ab\u4fee\u6539\u3001\u8d8a\u754c/\u7a7a\u5207\u7247 panic\u3002",
+      "tags": [
+        "test",
+        "slice",
+        "edge-case"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go:TestGetEnvironmentMetadata",
+      "type": "function",
+      "name": "TestGetEnvironmentMetadata",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "lineRange": [
+        245,
+        254
+      ],
+      "summary": "\u901a\u8fc7 GCE metadata server \u9a8c\u8bc1 machine-type \u8fd4\u56de\u503c\uff1b\u975e GCP \u73af\u5883\u81ea\u52a8\u8df3\u8fc7\u3002",
+      "tags": [
+        "test",
+        "gce-metadata",
+        "skippable"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "summary": "GCS \u6d41\u91cf\u6a21\u62df\u5668\u5165\u53e3\uff1a\u89e3\u6790\u547d\u4ee4\u884c\u53c2\u6570\u3001\u6536\u96c6 GCE \u73af\u5883\u5143\u6570\u636e\u3001\u679a\u4e3e\u5b9e\u9a8c\u7b1b\u5361\u5c14\u79ef\uff0c\u8c03\u5ea6\u5e76\u53d1\u8bfb\u53d6\u5e76\u6c47\u603b p50/p95/p99 \u7b49\u5ef6\u8fdf\u76f4\u65b9\u56fe\u5230 CSV\uff1b\u652f\u6301 pprof \u7aef\u70b9\u3002",
+      "tags": [
+        "entry-point",
+        "benchmark",
+        "gcs",
+        "concurrency",
+        "cli"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main.go:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "lineRange": [
+        35,
+        129
+      ],
+      "summary": "\u89e3\u6790 CLI flag\u3001\u6536\u96c6 GCE \u5143\u6570\u636e\u3001\u8fd0\u884c\u5168\u90e8\u5b9e\u9a8c\u573a\u666f\u5e76\u628a\u7ed3\u679c\u5199\u5165 CSV\uff1b\u53ef\u9009\u542f\u52a8 pprof HTTP \u670d\u52a1\u3002",
+      "tags": [
+        "entry-point",
+        "cli",
+        "experiment-runner"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main.go:generateScenarios",
+      "type": "function",
+      "name": "generateScenarios",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "lineRange": [
+        158,
+        201
+      ],
+      "summary": "\u5229\u7528 iter.Seq \u6309\u5b57\u5178\u5e8f\u5bf9\u5b9e\u9a8c map \u7684\u6bcf\u4e2a\u7ef4\u5ea6\u4ea4\u53c9\u7ec4\u5408\uff0c\u60f0\u6027\u4ea7\u51fa\u6240\u6709 scenario\u3002",
+      "tags": [
+        "iter",
+        "combinator",
+        "scenario"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main.go:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "lineRange": [
+        203,
+        280
+      ],
+      "summary": "\u6267\u884c\u5355\u4e2a\u5b9e\u9a8c\u573a\u666f\uff1a\u8c03\u7528 setup\u3001\u6309\u4fe1\u53f7\u91cf\u5e76\u53d1\u8dd1\u8bfb\u3001\u6c47\u603b\u8017\u65f6\uff0c\u8fc7\u5feb\u8bfb\u53d6\u4f1a\u6253\u5370\u544a\u8b66\u3002",
+      "tags": [
+        "concurrency",
+        "semaphore",
+        "workgroup"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main.go:summarizeDurations",
+      "type": "function",
+      "name": "summarizeDurations",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "lineRange": [
+        302,
+        352
+      ],
+      "summary": "\u5bf9\u8bfb\u53d6\u8017\u65f6\u96c6\u5408\u6392\u5e8f\u540e\u8ba1\u7b97 min/max/mean/p50/p95/p99/\u6807\u51c6\u5dee\u5e76\u6309\u6876\u751f\u6210\u76f4\u65b9\u56fe\u3002",
+      "tags": [
+        "statistics",
+        "percentile",
+        "histogram"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/main.go:processor",
+      "type": "class",
+      "name": "processor",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "lineRange": [
+        147,
+        156
+      ],
+      "summary": "\u6301\u6709\u5b9e\u9a8c\u914d\u7f6e\uff08\u6876\u3001\u524d\u7f00\u3001\u6700\u5c0f\u6587\u4ef6\u5927\u5c0f\u3001\u6587\u4ef6\u6570\u9650\u5236\uff09\u4e0e\u5df2\u53d1\u73b0\u6587\u4ef6\u5217\u8868\u7684\u72b6\u6001\u7ed3\u6784\u3002",
+      "tags": [
+        "config",
+        "state"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/main.go:result",
+      "type": "class",
+      "name": "result",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "lineRange": [
+        282,
+        289
+      ],
+      "summary": "\u5355\u6b21\u5b9e\u9a8c\u7ed3\u679c\uff1a\u573a\u666f\u3001\u5ef6\u8fdf\u7edf\u8ba1\u3001\u5e76\u53d1\u5ea6\u3001\u6210\u529f\u8bfb\u53d6\u6570\u4e0e\u603b\u8017\u65f6\u3002",
+      "tags": [
+        "result",
+        "aggregation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/main.go:durationSummary",
+      "type": "class",
+      "name": "durationSummary",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "lineRange": [
+        297,
+        300
+      ],
+      "summary": "\u5ef6\u8fdf\u7edf\u8ba1\u805a\u5408\u7ed3\u6784\uff08\u767e\u5206\u4f4d/\u5747\u503c/\u6807\u51c6\u5dee/\u76f4\u65b9\u56fe\uff09\u3002",
+      "tags": [
+        "statistics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go",
+      "type": "file",
+      "name": "metadata.go",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go",
+      "summary": "\u901a\u8fc7 GCE metadata server (metadata.google.internal) \u62c9\u53d6\u5f53\u524d\u865a\u62df\u673a\u673a\u578b\u4fe1\u606f\uff0c\u9644\u5e26\u7ed9 benchmark CSV\u3002",
+      "tags": [
+        "gce-metadata",
+        "environment-info"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go:getEnvironmentMetadata",
+      "type": "function",
+      "name": "getEnvironmentMetadata",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go",
+      "lineRange": [
+        15,
+        24
+      ],
+      "summary": "\u4ece GCE metadata server \u83b7\u53d6\u673a\u5668\u7c7b\u578b\u5e76\u5c01\u88c5\u4e3a environmentMetadata\u3002",
+      "tags": [
+        "metadata",
+        "gce"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go:getMetadata",
+      "type": "function",
+      "name": "getMetadata",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go",
+      "lineRange": [
+        28,
+        55
+      ],
+      "summary": "\u5411 metadata.google.internal \u53d1\u8d77\u5e26 Metadata-Flavor: Google \u5934\u7684 GET \u8bf7\u6c42\u5e76\u8fd4\u56de\u6700\u540e\u4e00\u6bb5\u8def\u5f84\u503c\u3002",
+      "tags": [
+        "http",
+        "metadata-server"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go:environmentMetadata",
+      "type": "class",
+      "name": "environmentMetadata",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go",
+      "lineRange": [
+        11,
+        13
+      ],
+      "summary": "GCS \u6d41\u91cf\u5b9e\u9a8c\u73af\u5883\u5143\u6570\u636e\uff0c\u4ec5\u5305\u542b\u5ba2\u6237\u7aef\u673a\u5668\u7c7b\u578b\u3002",
+      "tags": [
+        "metadata"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:packages/orchestrator/cmd/simulate-gcs-traffic/readme.md",
+      "type": "document",
+      "name": "readme.md",
+      "filePath": "packages/orchestrator/cmd/simulate-gcs-traffic/readme.md",
+      "summary": "GCS \u6d41\u91cf\u6a21\u62df\u5668\u4f7f\u7528\u8bf4\u660e\uff1a\u4e00\u6761 SSH \u8fdc\u7a0b\u6784\u5efa\u5e76\u6267\u884c\u6a21\u62df\u5668\u7684\u547d\u4ee4\uff0c\u5c06\u7ed3\u679c CSV \u56de\u4f20\u3002",
+      "tags": [
+        "documentation",
+        "cli",
+        "gcs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/simulate-nfs-traffic/csv.go",
+      "type": "file",
+      "name": "csv.go",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/csv.go",
+      "summary": "\u628a NFS \u6d41\u91cf\u5b9e\u9a8c\u7ed3\u679c\uff08\u542b filestore \u5143\u6570\u636e\u5217\u4e0e\u6bcf\u573a\u666f\u5ef6\u8fdf\u7edf\u8ba1\uff09\u5199\u5165 CSV\u3002",
+      "tags": [
+        "csv",
+        "output",
+        "nfs"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/csv.go:dumpResultsToCSV",
+      "type": "function",
+      "name": "dumpResultsToCSV",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/csv.go",
+      "lineRange": [
+        12,
+        86
+      ],
+      "summary": "\u6c47\u603b\u6240\u6709\u573a\u666f\u4e2d\u51fa\u73b0\u7684\u5b9e\u9a8c key \u4e0e\u7edf\u4e00\u6307\u6807\u5217\uff0c\u5c06 filestore \u5143\u6570\u636e + \u5b9e\u9a8c\u503c + \u5ef6\u8fdf\u7edf\u8ba1\u5199\u5165 CSV\u3002",
+      "tags": [
+        "csv",
+        "aggregation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/csv.go:toMillis",
+      "type": "function",
+      "name": "toMillis",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/csv.go",
+      "lineRange": [
+        88,
+        90
+      ],
+      "summary": "\u628a time.Duration \u5e8f\u5217\u5316\u4e3a\u6beb\u79d2\u5b57\u7b26\u4e32\u3002",
+      "tags": [
+        "format",
+        "duration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/csv.go:toIntString",
+      "type": "function",
+      "name": "toIntString",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/csv.go",
+      "lineRange": [
+        92,
+        94
+      ],
+      "summary": "\u628a\u6574\u6570\u683c\u5f0f\u5316\u4e3a\u5b57\u7b26\u4e32\u3002",
+      "tags": [
+        "format",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "type": "file",
+      "name": "experiments.go",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "summary": "NFS \u6d41\u91cf\u5b9e\u9a8c\u77e9\u9635\u4e0e experiment \u63a5\u53e3\u5b9e\u73b0\uff1a\u5305\u542b\u5e76\u53d1\u5ea6\u3001\u8bfb\u53d6\u65b9\u6cd5\u3001read-ahead\u3001sysctl TCP/NFS \u8c03\u53c2\u3001read/skip \u8ba1\u6570\u3001\u662f\u5426\u5141\u8bb8\u91cd\u590d\u8bfb\u7b49\u53ef\u8c03\u7ef4\u5ea6\u3002",
+      "tags": [
+        "experiment",
+        "sysctl",
+        "read-ahead",
+        "tuning",
+        "nfs"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:experiment",
+      "type": "class",
+      "name": "experiment",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "lineRange": [
+        88,
+        91
+      ],
+      "summary": "\u5b9e\u9a8c\u63a5\u53e3\uff1a\u5b9a\u4e49 setup/teardown \u94a9\u5b50\uff0c\u5bf9 processor \u8fdb\u884c\u914d\u7f6e\u4fee\u6539\u3002",
+      "tags": [
+        "interface",
+        "experiment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:element",
+      "type": "class",
+      "name": "element",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "lineRange": [
+        93,
+        96
+      ],
+      "summary": "scenario \u4e2d\u7684\u5355\u4e2a\u5b9e\u9a8c\u6761\u76ee\uff0c\u7ed1\u5b9a\u5c55\u793a\u540d\u4e0e\u5177\u4f53 experiment \u5b9e\u4f8b\u3002",
+      "tags": [
+        "data-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:scenario",
+      "type": "class",
+      "name": "scenario",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "lineRange": [
+        98,
+        100
+      ],
+      "summary": "\u4e00\u4e2a\u5b9e\u9a8c\u7ec4\u5408\u7684\u4e0d\u53ef\u53d8\u5feb\u7167\uff1b\u63d0\u4f9b setup/teardown/Name \u7528\u4e8e\u9a71\u52a8\u6d4b\u8bd5\u8fd0\u884c\u3002",
+      "tags": [
+        "scenario",
+        "composite"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:setReadAhead",
+      "type": "class",
+      "name": "setReadAhead",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "lineRange": [
+        145,
+        150
+      ],
+      "summary": "\u5b9e\u9a8c\u5b9e\u73b0\uff1a\u901a\u8fc7 findmnt/mountpoint \u5b9a\u4f4d NFS \u8bbe\u5907\u4e3b\u6b21\u53f7\uff0c\u5199\u5165 /sys/class/bdi/<major:minor>/read_ahead_kb\uff0cteardown \u6062\u590d\u539f\u503c\u3002",
+      "tags": [
+        "sysfs",
+        "read-ahead",
+        "bdi"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:setConcurrentRequests",
+      "type": "class",
+      "name": "setConcurrentRequests",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "lineRange": [
+        190,
+        192
+      ],
+      "summary": "\u5b9e\u9a8c\u5b9e\u73b0\uff1a\u5728 setup \u4e2d\u628a processor.concurrentRequests \u8bbe\u4e3a\u6307\u5b9a\u503c\u3002",
+      "tags": [
+        "concurrency",
+        "tuning"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:setSysFs",
+      "type": "class",
+      "name": "setSysFs",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "lineRange": [
+        202,
+        206
+      ],
+      "summary": "\u5b9e\u9a8c\u5b9e\u73b0\uff1a\u4f7f\u7528 sysctl -n/-w \u8bfb\u5199\u4efb\u610f sysctl \u952e\uff0cteardown \u6062\u590d\u539f\u503c\u3002",
+      "tags": [
+        "sysctl",
+        "kernel-tuning"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:readMethodExperiment",
+      "type": "class",
+      "name": "readMethodExperiment",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "lineRange": [
+        235,
+        237
+      ],
+      "summary": "\u5b9e\u9a8c\u5b9e\u73b0\uff1a\u6ce8\u5165\u81ea\u5b9a\u4e49 readMethod \u51fd\u6570\u5230 processor\uff0c\u4fbf\u4e8e\u6bd4\u8f83 ReadAt \u4e0e\u6d41\u5f0f Read \u7b49\u4e0d\u540c IO \u6a21\u5f0f\u3002",
+      "tags": [
+        "io",
+        "read-strategy"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:setReadCount",
+      "type": "class",
+      "name": "setReadCount",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "lineRange": [
+        251,
+        253
+      ],
+      "summary": "\u5b9e\u9a8c\u5b9e\u73b0\uff1a\u5728 setup \u4e2d\u628a processor.readCount \u8bbe\u4e3a\u6307\u5b9a\u503c\u3002",
+      "tags": [
+        "tuning"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:setSkipCount",
+      "type": "class",
+      "name": "setSkipCount",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "lineRange": [
+        265,
+        267
+      ],
+      "summary": "\u5b9e\u9a8c\u5b9e\u73b0\uff1a\u5728 setup \u4e2d\u628a processor.skipCount \u8bbe\u4e3a\u6307\u5b9a\u503c\u3002",
+      "tags": [
+        "tuning"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:setAllowRepeatReads",
+      "type": "class",
+      "name": "setAllowRepeatReads",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "lineRange": [
+        279,
+        281
+      ],
+      "summary": "\u5b9e\u9a8c\u5b9e\u73b0\uff1a\u5207\u6362 processor.allowRepeatReads \u6807\u5fd7\u3002",
+      "tags": [
+        "tuning"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/simulate-nfs-traffic/files.go",
+      "type": "file",
+      "name": "files.go",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/files.go",
+      "summary": "NFS \u6d41\u91cf\u6a21\u62df\u5668\u6587\u4ef6\u53d1\u73b0\uff1a\u901a\u8fc7 filepath.WalkDir \u904d\u5386\u672c\u5730\u8def\u5f84\uff0c\u4ec5\u4fdd\u7559\u5927\u5c0f\u7b49\u4e8e expectedFileSize \u7684\u6587\u4ef6\uff1bfiles \u7ed3\u6784\u8d1f\u8d23\u968f\u673a\u9009\u53d6\uff08\u53ef\u9009\u62e9\u4e0d\u653e\u56de\uff09\u3002",
+      "tags": [
+        "file-walk",
+        "random-select",
+        "nfs"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/files.go:findFiles",
+      "type": "function",
+      "name": "findFiles",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/files.go",
+      "lineRange": [
+        12,
+        51
+      ],
+      "summary": "\u4f7f\u7528 filepath.WalkDir \u9012\u5f52\u904d\u5386 processor.path\uff0c\u7b5b\u9009\u5927\u5c0f\u4e25\u683c\u7b49\u4e8e expectedFileSize \u7684\u6587\u4ef6\u5e76\u4fdd\u5b58\u3002",
+      "tags": [
+        "walk",
+        "file-discovery"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/files.go:removeAtIndex",
+      "type": "function",
+      "name": "removeAtIndex",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/files.go",
+      "lineRange": [
+        53,
+        55
+      ],
+      "summary": "\u6cdb\u578b\u5de5\u5177\uff1a\u4f7f\u7528 slices.Delete \u79fb\u9664\u6307\u5b9a\u7d22\u5f15\u5143\u7d20\u3002",
+      "tags": [
+        "generic",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/files.go:selectFile",
+      "type": "function",
+      "name": "selectFile",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/files.go",
+      "lineRange": [
+        63,
+        77
+      ],
+      "summary": "\u968f\u673a\u9009\u62e9\u6587\u4ef6\uff1b\u5f53 allowRepeatReads=false \u65f6\u4ece\u5217\u8868\u4e2d\u79fb\u9664\u4ee5\u907f\u514d\u91cd\u590d\u8bfb\u3002",
+      "tags": [
+        "random",
+        "deduplication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/files.go:files",
+      "type": "class",
+      "name": "files",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/files.go",
+      "lineRange": [
+        57,
+        61
+      ],
+      "summary": "\u6301\u6709\u968f\u673a\u6570\u53d1\u751f\u5668\u4e0e\u5df2\u9009\u8def\u5f84\u5217\u8868\uff0c\u652f\u6301\u4e0d\u653e\u56de\u62bd\u6837\u3002",
+      "tags": [
+        "state",
+        "random"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "type": "file",
+      "name": "main_test.go",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "summary": "NFS \u6d41\u91cf\u6a21\u62df\u5668\u5355\u5143\u6d4b\u8bd5\uff1a\u8986\u76d6 nfsstat \u8f93\u51fa\u89e3\u6790\u3001\u573a\u666f\u751f\u6210\u3001CSV \u5bfc\u51fa\u3001\u6301\u7eed\u65f6\u95f4\u6c47\u603b\u3001\u968f\u673a\u9009\u62e9\u4ee5\u53ca GCP filestore \u5143\u6570\u636e\u91c7\u96c6\u3002",
+      "tags": [
+        "test",
+        "unit-test",
+        "nfs",
+        "filestore"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go:mockExperiment",
+      "type": "class",
+      "name": "mockExperiment",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "lineRange": [
+        48,
+        50
+      ],
+      "summary": "\u6d4b\u8bd5\u6869 experiment \u6ee1\u8db3 experiment \u63a5\u53e3\uff0csetup/teardown \u5747\u4e3a no-op\u3002",
+      "tags": [
+        "mock",
+        "test-stub"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go:TestNfsstatParse",
+      "type": "function",
+      "name": "TestNfsstatParse",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "lineRange": [
+        15,
+        46
+      ],
+      "summary": "\u89e3\u6790 nfsstat --list \u6587\u672c\u6837\u4f8b\uff0c\u9a8c\u8bc1\u6bcf\u6761 NFS \u5ba2\u6237\u7aef\u64cd\u4f5c\u8ba1\u6570\u3002",
+      "tags": [
+        "test",
+        "nfsstat",
+        "parser"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go:TestGenerateScenarios",
+      "type": "function",
+      "name": "TestGenerateScenarios",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "lineRange": [
+        55,
+        102
+      ],
+      "summary": "\u9a8c\u8bc1 generateScenarios \u751f\u6210\u6240\u6709\u5b9e\u9a8c\u7ef4\u5ea6\u7b1b\u5361\u5c14\u79ef\u5e76\u4fdd\u8bc1 Name \u987a\u5e8f\u3002",
+      "tags": [
+        "test",
+        "scenario"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go:TestDumpResultsToCSV",
+      "type": "function",
+      "name": "TestDumpResultsToCSV",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "lineRange": [
+        104,
+        161
+      ],
+      "summary": "\u9a8c\u8bc1 dumpResultsToCSV \u8f93\u51fa\u5305\u542b filestore \u5143\u6570\u636e\u5217\u4e0e\u6bcf\u573a\u666f\u541e\u5410\u91cf/\u5ef6\u8fdf\u7edf\u8ba1\u3002",
+      "tags": [
+        "test",
+        "csv"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go:TestSummarizeDurations",
+      "type": "function",
+      "name": "TestSummarizeDurations",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "lineRange": [
+        163,
+        211
+      ],
+      "summary": "\u5b50\u6d4b\u8bd5\u8986\u76d6\u7a7a/\u5355/\u591a\u5143\u7d20\u53ca\u771f\u5b9e\u4e1a\u52a1\u573a\u666f\u4e0b summarizeDurations \u7684\u767e\u5206\u4f4d/\u7edf\u8ba1\u8f93\u51fa\u3002",
+      "tags": [
+        "test",
+        "statistics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go:TestRemoveAtIndex",
+      "type": "function",
+      "name": "TestRemoveAtIndex",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "lineRange": [
+        213,
+        272
+      ],
+      "summary": "\u8986\u76d6 slices.Delete \u7684\u5404\u79cd\u8fb9\u754c\u573a\u666f\u3002",
+      "tags": [
+        "test",
+        "slice"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go:TestGetFilestoreMetadata",
+      "type": "function",
+      "name": "TestGetFilestoreMetadata",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "lineRange": [
+        274,
+        283
+      ],
+      "summary": "\u5728 GCP \u73af\u5883\u4e0b\u901a\u8fc7 gcloud filestore describe \u62c9\u53d6\u5143\u6570\u636e\u5e76\u65ad\u8a00 ReadIOPS \u975e\u96f6\u3002",
+      "tags": [
+        "test",
+        "gcloud",
+        "filestore"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "type": "file",
+      "name": "main.go",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "summary": "NFS \u6d41\u91cf\u6a21\u62df\u5668\u5165\u53e3\uff1a\u89e3\u6790 CLI\uff0c\u8c03\u7528 gcloud \u62c9\u53d6 filestore \u5143\u6570\u636e\uff0c\u904d\u5386\u5b9e\u9a8c\u7b1b\u5361\u5c14\u79ef\uff0c\u8c03\u5ea6\u5e76\u53d1\u8bfb\u53d6\u5e76\u6c47\u603b\u5ef6\u8fdf\u5230 CSV\uff1b\u652f\u6301\u53ef\u9009 nfs \u7f13\u5b58\u6e05\u7406\u4e0e nfsstat \u6293\u53d6\u3002",
+      "tags": [
+        "entry-point",
+        "benchmark",
+        "nfs",
+        "concurrency",
+        "cli"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main.go:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "lineRange": [
+        25,
+        114
+      ],
+      "summary": "\u89e3\u6790 CLI flag\u3001\u83b7\u53d6 filestore \u5143\u6570\u636e\u3001\u6536\u96c6\u6240\u6709\u5b9e\u9a8c\u573a\u666f\u7ed3\u679c\u5e76\u5199\u5165 CSV\u3002",
+      "tags": [
+        "entry-point",
+        "cli"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main.go:mustParseInt",
+      "type": "function",
+      "name": "mustParseInt",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "lineRange": [
+        116,
+        123
+      ],
+      "summary": "\u89e3\u6790\u6574\u6570\uff0c\u9519\u8bef\u65f6 panic\u3002",
+      "tags": [
+        "helper",
+        "panic-on-error"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main.go:generateScenarios",
+      "type": "function",
+      "name": "generateScenarios",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "lineRange": [
+        134,
+        177
+      ],
+      "summary": "\u60f0\u6027\u4ea7\u51fa\u6240\u6709\u5b9e\u9a8c\u7ec4\u5408\u7684 scenario\uff0c\u952e\u540d\u6309\u5b57\u5178\u5e8f\u6392\u5217\u3002",
+      "tags": [
+        "iter",
+        "combinator"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main.go:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "lineRange": [
+        194,
+        302
+      ],
+      "summary": "\u8fd0\u884c\u5355\u4e2a\u5b9e\u9a8c\uff1a\u53ef\u9009 drop_caches \u4e0e nfsstat \u5feb\u7167\uff0c\u6309\u4fe1\u53f7\u91cf\u5e76\u53d1\u8bfb\u6587\u4ef6\uff0c\u6c47\u603b\u5ef6\u8fdf\u7edf\u8ba1\u5e76\u5bf9\u6bd4 nfsstat \u589e\u91cf\u3002",
+      "tags": [
+        "concurrency",
+        "nfs",
+        "benchmark"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main.go:summarizeDurations",
+      "type": "function",
+      "name": "summarizeDurations",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "lineRange": [
+        314,
+        355
+      ],
+      "summary": "\u5bf9\u8bfb\u53d6\u8017\u65f6\u96c6\u5408\u6392\u5e8f\u540e\u8ba1\u7b97 min/max/mean/p50/p95/p99/\u6807\u51c6\u5dee\u3002",
+      "tags": [
+        "statistics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/main.go:processor",
+      "type": "class",
+      "name": "processor",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "lineRange": [
+        179,
+        192
+      ],
+      "summary": "\u6301\u6709 NFS \u5b9e\u9a8c\u914d\u7f6e\u4e0e\u72b6\u6001\uff1a\u8def\u5f84\u3001\u5e76\u53d1\u5ea6\u3001\u8bfb\u53d6\u6b21\u6570\u3001\u662f\u5426\u4e22\u5f03\u7f13\u5b58\u3001\u662f\u5426\u91c7\u96c6 nfsstat \u7b49\u3002",
+      "tags": [
+        "config",
+        "state"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/main.go:result",
+      "type": "class",
+      "name": "result",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "lineRange": [
+        125,
+        132
+      ],
+      "summary": "NFS \u5355\u6b21\u5b9e\u9a8c\u7ed3\u679c\uff1a\u573a\u666f\u3001\u5ef6\u8fdf\u7edf\u8ba1\u3001\u5e76\u53d1\u5ea6\u3001\u6210\u529f\u8bfb\u53d6\u6570\u3001\u603b\u8017\u65f6\u3002",
+      "tags": [
+        "result"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/main.go:durationSummary",
+      "type": "class",
+      "name": "durationSummary",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "lineRange": [
+        310,
+        312
+      ],
+      "summary": "\u6301\u7eed\u65f6\u95f4\u7edf\u8ba1\u805a\u5408\uff08\u767e\u5206\u4f4d/\u5747\u503c/\u6807\u51c6\u5dee\uff09\u3002",
+      "tags": [
+        "statistics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go",
+      "type": "file",
+      "name": "metadata.go",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go",
+      "summary": "\u901a\u8fc7 gcloud filestore describe \u62c9\u53d6\u5b9e\u4f8b\u5bb9\u91cf/IOPS/\u5e26\u5bbd\uff0c\u5e76\u7ed3\u5408 GCE metadata server \u83b7\u53d6\u673a\u5668\u7c7b\u578b\uff0c\u9644\u5e26\u5728 benchmark CSV \u4e2d\u3002",
+      "tags": [
+        "gcloud",
+        "filestore",
+        "metadata"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go:getEnvironmentMetadata",
+      "type": "function",
+      "name": "getEnvironmentMetadata",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go",
+      "lineRange": [
+        30,
+        57
+      ],
+      "summary": "\u8c03\u7528 gcloud \u89e3\u6790 filestore JSON \u63cf\u8ff0\uff0c\u5e76\u7ec4\u5408\u673a\u5668\u7c7b\u578b\u8f93\u51fa environmentMetadata\u3002",
+      "tags": [
+        "gcloud",
+        "metadata"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go:getMetadata",
+      "type": "function",
+      "name": "getMetadata",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go",
+      "lineRange": [
+        61,
+        88
+      ],
+      "summary": "\u901a\u8fc7 GCE metadata server \u62c9\u53d6\u4efb\u610f\u8def\u5f84\u5143\u6570\u636e\u3002",
+      "tags": [
+        "http",
+        "metadata-server"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go:environmentMetadata",
+      "type": "class",
+      "name": "environmentMetadata",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go",
+      "lineRange": [
+        13,
+        18
+      ],
+      "summary": "NFS \u5b9e\u9a8c\u73af\u5883\u5143\u6570\u636e\uff1afilestore \u5bb9\u91cf/IOPS/\u5e26\u5bbd\u4e0e\u5ba2\u6237\u7aef\u673a\u5668\u7c7b\u578b\u3002",
+      "tags": [
+        "metadata"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go:filestoreInstance",
+      "type": "class",
+      "name": "filestoreInstance",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go",
+      "lineRange": [
+        20,
+        28
+      ],
+      "summary": "gcloud filestore describe JSON \u53cd\u5e8f\u5217\u5316\u76ee\u6807\u7ed3\u6784\u3002",
+      "tags": [
+        "json",
+        "schema"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "type": "file",
+      "name": "nfsstat.go",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "summary": "\u6293\u53d6 /proc/net/rpc/nfs \u5feb\u7167\u5e76\u901a\u8fc7 nfsstat --list --since \u5bf9\u6bd4\u589e\u91cf\uff0c\u6309 category/function/count \u6c47\u603b\u3002",
+      "tags": [
+        "nfsstat",
+        "proc",
+        "delta"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go:storeNfsStat",
+      "type": "function",
+      "name": "storeNfsStat",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "lineRange": [
+        12,
+        31
+      ],
+      "summary": "\u8bfb\u53d6 /proc/net/rpc/nfs \u5199\u5165\u4e34\u65f6\u6587\u4ef6\uff0c\u5e76\u628a\u8def\u5f84\u4fdd\u5b58\u5230 processor.nfsStatFile\u3002",
+      "tags": [
+        "snapshot",
+        "proc"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go:compareNfsStat",
+      "type": "function",
+      "name": "compareNfsStat",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "lineRange": [
+        33,
+        49
+      ],
+      "summary": "\u8c03\u7528 nfsstat --list --since \u6293\u53d6\u589e\u91cf\u5e76\u89e3\u6790\u3001\u6c47\u603b\u8f93\u51fa\u3002",
+      "tags": [
+        "nfsstat",
+        "delta"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go:summarizeNfsstat",
+      "type": "function",
+      "name": "summarizeNfsstat",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "lineRange": [
+        51,
+        55
+      ],
+      "summary": "\u628a nfsstat \u589e\u91cf\u4ee5 category/function/count \u7684\u683c\u5f0f\u6253\u5370\u3002",
+      "tags": [
+        "print"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go:nfsstatParse",
+      "type": "function",
+      "name": "nfsstatParse",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "lineRange": [
+        62,
+        100
+      ],
+      "summary": "\u89e3\u6790 nfsstat \u6587\u672c\uff0c\u63d0\u53d6 category/function/count \u4e09\u5143\u7ec4\u3002",
+      "tags": [
+        "parser"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go:safeRemove",
+      "type": "function",
+      "name": "safeRemove",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "lineRange": [
+        102,
+        106
+      ],
+      "summary": "\u5220\u9664\u6587\u4ef6\u5e76\u5728\u9519\u8bef\u65f6\u6253\u5370\u65e5\u5fd7\u3002",
+      "tags": [
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go:nfsstat",
+      "type": "class",
+      "name": "nfsstat",
+      "filePath": "packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "lineRange": [
+        57,
+        60
+      ],
+      "summary": "nfsstat \u89e3\u6790\u7ed3\u679c\u4e09\u5143\u7ec4\uff1acategory\u3001function\u3001count\u3002",
+      "tags": [
+        "data-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/orchestrator/generate.go",
+      "type": "file",
+      "name": "generate.go",
+      "filePath": "packages/orchestrator/generate.go",
+      "summary": "Orchestrator \u9876\u5c42\u4ee3\u7801\u751f\u6210\u5165\u53e3\uff1a\u901a\u8fc7 //go:generate \u6307\u4ee4\u89e6\u53d1 protoc \u4e3a orchestrator\u3001volume\u3001chunks\u3001orchestrator-info\u3001template-manager \u4e94\u4e2a proto \u751f\u6210 Go \u4e0e gRPC \u4ee3\u7801\uff0c\u5e76\u8c03\u7528 mockery \u751f\u6210 mock\u3002",
+      "tags": [
+        "code-generation",
+        "protoc",
+        "go-generate"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/files.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/files.go:findFiles",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/files.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/files.go:newFiles",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/files.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/files.go:nextRead",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/files.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/files.go:removeAtIndex",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/files.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/files.go:files",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go:mockExperiment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go:TestGenerateScenarios",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go:TestDumpResultsToCSV",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go:TestSummarizeDurations",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go:TestRemoveAtIndex",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go:TestGetEnvironmentMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go:mockExperiment",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go:TestGenerateScenarios",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "target": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "target": "file:packages/orchestrator/cmd/simulate-gcs-traffic/files.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main_test.go",
+      "target": "file:packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main.go:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main.go:generateScenarios",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main.go:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/main.go:summarizeDurations",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/main.go:processor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/main.go:result",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/main.go:durationSummary",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go:getEnvironmentMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go",
+      "target": "function:packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go:getMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go",
+      "target": "class:packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go:environmentMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "document:packages/orchestrator/cmd/simulate-gcs-traffic/readme.md",
+      "target": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/csv.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/csv.go:dumpResultsToCSV",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/csv.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/csv.go:toMillis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/csv.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/csv.go:toIntString",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:experiment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:element",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:scenario",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:setReadAhead",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:setConcurrentRequests",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:setSysFs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:readMethodExperiment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:setReadCount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:setSkipCount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go:setAllowRepeatReads",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/files.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/files.go:findFiles",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/files.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/files.go:removeAtIndex",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/files.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/files.go:selectFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/files.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/files.go:files",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go:mockExperiment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go:TestNfsstatParse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go:TestGenerateScenarios",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go:TestDumpResultsToCSV",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go:TestSummarizeDurations",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go:TestRemoveAtIndex",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go:TestGetFilestoreMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "target": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "target": "file:packages/orchestrator/cmd/simulate-nfs-traffic/files.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "target": "file:packages/orchestrator/cmd/simulate-nfs-traffic/csv.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "target": "file:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main_test.go",
+      "target": "file:packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main.go:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main.go:mustParseInt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main.go:generateScenarios",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main.go:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/main.go:summarizeDurations",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/main.go:processor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/main.go:result",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/main.go:durationSummary",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go:getEnvironmentMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go:getMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go:environmentMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go:filestoreInstance",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go:storeNfsStat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go:compareNfsStat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go:summarizeNfsstat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go:nfsstatParse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "target": "function:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go:safeRemove",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "target": "class:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go:nfsstat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "target": "file:packages/orchestrator/cmd/simulate-gcs-traffic/files.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-gcs-traffic/main.go",
+      "target": "file:packages/orchestrator/cmd/simulate-gcs-traffic/metadata.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "target": "file:packages/orchestrator/cmd/simulate-nfs-traffic/files.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "target": "file:packages/orchestrator/cmd/simulate-nfs-traffic/metadata.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "target": "file:packages/orchestrator/cmd/simulate-nfs-traffic/csv.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "target": "file:packages/orchestrator/cmd/simulate-nfs-traffic/nfsstat.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/orchestrator/cmd/simulate-nfs-traffic/main.go",
+      "target": "file:packages/orchestrator/cmd/simulate-nfs-traffic/experiments.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

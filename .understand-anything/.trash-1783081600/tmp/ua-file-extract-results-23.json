@@ -1,0 +1,2452 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 30,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/db/client/client.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 57,
+      "nonEmptyLines": 44,
+      "functions": [
+        {
+          "name": "NewClient",
+          "startLine": 24,
+          "endLine": 35,
+          "params": [
+            "ctx",
+            "databaseURL"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 37,
+          "endLine": 41,
+          "params": []
+        },
+        {
+          "name": "WithTx",
+          "startLine": 44,
+          "endLine": 57,
+          "params": [
+            "ctx"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Client",
+          "startLine": 17,
+          "endLine": 22,
+          "methods": [
+            "Close",
+            "WithTx"
+          ],
+          "properties": [
+            "Dashboard",
+            "conn"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Client",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "NewClient",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "WithTx",
+          "line": 44,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewClient",
+          "callee": "pool.New",
+          "lineNumber": 25
+        },
+        {
+          "caller": "NewClient",
+          "callee": "database.New",
+          "lineNumber": 31
+        },
+        {
+          "caller": "NewClient",
+          "callee": "dashboardqueries.New",
+          "lineNumber": 32
+        },
+        {
+          "caller": "Close",
+          "callee": "db.conn.Close",
+          "lineNumber": 38
+        },
+        {
+          "caller": "WithTx",
+          "callee": "db.conn.BeginTx",
+          "lineNumber": 45
+        },
+        {
+          "caller": "WithTx",
+          "callee": "db.Queries.WithTx",
+          "lineNumber": 51
+        },
+        {
+          "caller": "WithTx",
+          "callee": "db.Dashboard.WithTx",
+          "lineNumber": 52
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/client/migration.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 47,
+      "nonEmptyLines": 37,
+      "functions": [
+        {
+          "name": "init",
+          "startLine": 17,
+          "endLine": 19,
+          "params": []
+        },
+        {
+          "name": "CheckMigrationVersion",
+          "startLine": 21,
+          "endLine": 47,
+          "params": [
+            "ctx",
+            "connectionString",
+            "expectedMigration"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CheckMigrationVersion",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "init",
+          "callee": "goose.SetTableName",
+          "lineNumber": 18
+        },
+        {
+          "caller": "CheckMigrationVersion",
+          "callee": "sql.Open",
+          "lineNumber": 22
+        },
+        {
+          "caller": "CheckMigrationVersion",
+          "callee": "fmt.Errorf",
+          "lineNumber": 24
+        },
+        {
+          "caller": "CheckMigrationVersion",
+          "callee": "func() {\n\t\tdbErr := db.Close()\n\t\tif dbErr != nil {\n\t\t\tlogger.L().Error(ctx, \"Failed to close database connection\", zap.Error(dbErr))\n\t\t}\n\t}",
+          "lineNumber": 26
+        },
+        {
+          "caller": "CheckMigrationVersion",
+          "callee": "db.Close",
+          "lineNumber": 27
+        },
+        {
+          "caller": "CheckMigrationVersion",
+          "callee": "logger.L().Error",
+          "lineNumber": 29
+        },
+        {
+          "caller": "CheckMigrationVersion",
+          "callee": "logger.L",
+          "lineNumber": 29
+        },
+        {
+          "caller": "CheckMigrationVersion",
+          "callee": "zap.Error",
+          "lineNumber": 29
+        },
+        {
+          "caller": "CheckMigrationVersion",
+          "callee": "goose.GetDBVersion",
+          "lineNumber": 33
+        },
+        {
+          "caller": "CheckMigrationVersion",
+          "callee": "fmt.Errorf",
+          "lineNumber": 35
+        },
+        {
+          "caller": "CheckMigrationVersion",
+          "callee": "fmt.Errorf",
+          "lineNumber": 41
+        },
+        {
+          "caller": "CheckMigrationVersion",
+          "callee": "logger.L().Info",
+          "lineNumber": 44
+        },
+        {
+          "caller": "CheckMigrationVersion",
+          "callee": "logger.L",
+          "lineNumber": 44
+        },
+        {
+          "caller": "CheckMigrationVersion",
+          "callee": "zap.Int64",
+          "lineNumber": 44
+        },
+        {
+          "caller": "CheckMigrationVersion",
+          "callee": "zap.Int64",
+          "lineNumber": 44
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/client/tests.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 23,
+      "nonEmptyLines": 17,
+      "functions": [
+        {
+          "name": "TestsRawSQL",
+          "startLine": 9,
+          "endLine": 13,
+          "params": [
+            "ctx",
+            "sql"
+          ]
+        },
+        {
+          "name": "TestsRawSQLQuery",
+          "startLine": 15,
+          "endLine": 23,
+          "params": [
+            "ctx",
+            "sql",
+            "processRows"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestsRawSQL",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "TestsRawSQLQuery",
+          "line": 15,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestsRawSQL",
+          "callee": "db.conn.Exec",
+          "lineNumber": 10
+        },
+        {
+          "caller": "TestsRawSQLQuery",
+          "callee": "db.conn.Query",
+          "lineNumber": 16
+        },
+        {
+          "caller": "TestsRawSQLQuery",
+          "callee": "rows.Close",
+          "lineNumber": 20
+        },
+        {
+          "caller": "TestsRawSQLQuery",
+          "callee": "processRows",
+          "lineNumber": 22
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/client.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 89,
+      "nonEmptyLines": 69,
+      "functions": [
+        {
+          "name": "NewClient",
+          "startLine": 28,
+          "endLine": 51,
+          "params": [
+            "ctx",
+            "databaseURL",
+            "replicaURL"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 53,
+          "endLine": 61,
+          "params": []
+        },
+        {
+          "name": "WithTx",
+          "startLine": 64,
+          "endLine": 71,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "TestsRawSQL",
+          "startLine": 74,
+          "endLine": 78,
+          "params": [
+            "ctx",
+            "sql"
+          ]
+        },
+        {
+          "name": "TestsRawSQLQuery",
+          "startLine": 81,
+          "endLine": 89,
+          "params": [
+            "ctx",
+            "sql",
+            "processRows"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Client",
+          "startLine": 21,
+          "endLine": 26,
+          "methods": [
+            "Close",
+            "WithTx",
+            "TestsRawSQL",
+            "TestsRawSQLQuery"
+          ],
+          "properties": [
+            "Read",
+            "Write",
+            "writeConn",
+            "readConn"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Client",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "NewClient",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "WithTx",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "TestsRawSQL",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "TestsRawSQLQuery",
+          "line": 81,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewClient",
+          "callee": "pool.New",
+          "lineNumber": 29
+        },
+        {
+          "caller": "NewClient",
+          "callee": "authqueries.New",
+          "lineNumber": 34
+        },
+        {
+          "caller": "NewClient",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 38
+        },
+        {
+          "caller": "NewClient",
+          "callee": "pool.New",
+          "lineNumber": 40
+        },
+        {
+          "caller": "NewClient",
+          "callee": "strings.Join",
+          "lineNumber": 40
+        },
+        {
+          "caller": "NewClient",
+          "callee": "writePool.Close",
+          "lineNumber": 42
+        },
+        {
+          "caller": "NewClient",
+          "callee": "authqueries.New",
+          "lineNumber": 47
+        },
+        {
+          "caller": "Close",
+          "callee": "db.writeConn.Close",
+          "lineNumber": 54
+        },
+        {
+          "caller": "Close",
+          "callee": "db.readConn.Close",
+          "lineNumber": 57
+        },
+        {
+          "caller": "WithTx",
+          "callee": "db.writeConn.BeginTx",
+          "lineNumber": 65
+        },
+        {
+          "caller": "WithTx",
+          "callee": "db.Write.WithTx",
+          "lineNumber": 70
+        },
+        {
+          "caller": "TestsRawSQL",
+          "callee": "db.writeConn.Exec",
+          "lineNumber": 75
+        },
+        {
+          "caller": "TestsRawSQLQuery",
+          "callee": "db.writeConn.Query",
+          "lineNumber": 82
+        },
+        {
+          "caller": "TestsRawSQLQuery",
+          "callee": "rows.Close",
+          "lineNumber": 86
+        },
+        {
+          "caller": "TestsRawSQLQuery",
+          "callee": "processRows",
+          "lineNumber": 88
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 6,
+        "functionCount": 5,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/create_access_token.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 86,
+      "nonEmptyLines": 79,
+      "functions": [
+        {
+          "name": "CreateAccessToken",
+          "startLine": 62,
+          "endLine": 86,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CreateAccessTokenParams",
+          "startLine": 39,
+          "endLine": 48,
+          "methods": [],
+          "properties": [
+            "ID",
+            "UserID",
+            "AccessTokenHash",
+            "AccessTokenPrefix",
+            "AccessTokenLength",
+            "AccessTokenMaskPrefix",
+            "AccessTokenMaskSuffix",
+            "Name"
+          ]
+        },
+        {
+          "name": "CreateAccessTokenRow",
+          "startLine": 50,
+          "endLine": 60,
+          "methods": [],
+          "properties": [
+            "ID",
+            "UserID",
+            "AccessTokenHash",
+            "AccessTokenPrefix",
+            "AccessTokenLength",
+            "AccessTokenMaskPrefix",
+            "AccessTokenMaskSuffix",
+            "Name",
+            "CreatedAt"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreateAccessTokenParams",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "CreateAccessTokenRow",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "CreateAccessToken",
+          "line": 62,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CreateAccessToken",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 63
+        },
+        {
+          "caller": "CreateAccessToken",
+          "callee": "row.Scan",
+          "lineNumber": 74
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/create_team_api_key.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 78,
+      "nonEmptyLines": 72,
+      "functions": [
+        {
+          "name": "CreateTeamAPIKey",
+          "startLine": 51,
+          "endLine": 78,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CreateTeamAPIKeyParams",
+          "startLine": 40,
+          "endLine": 49,
+          "methods": [],
+          "properties": [
+            "TeamID",
+            "CreatedBy",
+            "ApiKeyHash",
+            "ApiKeyPrefix",
+            "ApiKeyLength",
+            "ApiKeyMaskPrefix",
+            "ApiKeyMaskSuffix",
+            "Name"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreateTeamAPIKeyParams",
+          "line": 40,
+          "isDefault": false
+        },
+        {
+          "name": "CreateTeamAPIKey",
+          "line": 51,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CreateTeamAPIKey",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 52
+        },
+        {
+          "caller": "CreateTeamAPIKey",
+          "callee": "row.Scan",
+          "lineNumber": 63
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/db.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 32,
+      "nonEmptyLines": 25,
+      "functions": [
+        {
+          "name": "New",
+          "startLine": 20,
+          "endLine": 22,
+          "params": [
+            "db"
+          ]
+        },
+        {
+          "name": "WithTx",
+          "startLine": 28,
+          "endLine": 32,
+          "params": [
+            "tx"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "DBTX",
+          "startLine": 14,
+          "endLine": 18,
+          "methods": [
+            "Exec",
+            "Query",
+            "QueryRow"
+          ],
+          "properties": []
+        },
+        {
+          "name": "Queries",
+          "startLine": 24,
+          "endLine": 26,
+          "methods": [
+            "WithTx"
+          ],
+          "properties": [
+            "db"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DBTX",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "New",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "Queries",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "WithTx",
+          "line": 28,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 2,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/delete_access_token.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 30,
+      "nonEmptyLines": 24,
+      "functions": [
+        {
+          "name": "DeleteAccessToken",
+          "startLine": 25,
+          "endLine": 30,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "DeleteAccessTokenParams",
+          "startLine": 20,
+          "endLine": 23,
+          "methods": [],
+          "properties": [
+            "ID",
+            "UserID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DeleteAccessTokenParams",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "DeleteAccessToken",
+          "line": 25,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "DeleteAccessToken",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 26
+        },
+        {
+          "caller": "DeleteAccessToken",
+          "callee": "row.Scan",
+          "lineNumber": 28
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/delete_public_user.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 22,
+      "nonEmptyLines": 17,
+      "functions": [
+        {
+          "name": "DeletePublicUser",
+          "startLine": 19,
+          "endLine": 22,
+          "params": [
+            "ctx",
+            "id"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DeletePublicUser",
+          "line": 19,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "DeletePublicUser",
+          "callee": "q.db.Exec",
+          "lineNumber": 20
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/delete_team_api_key.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 43,
+      "nonEmptyLines": 37,
+      "functions": [
+        {
+          "name": "DeleteTeamAPIKey",
+          "startLine": 25,
+          "endLine": 43,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "DeleteTeamAPIKeyParams",
+          "startLine": 20,
+          "endLine": 23,
+          "methods": [],
+          "properties": [
+            "ID",
+            "TeamID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DeleteTeamAPIKeyParams",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "DeleteTeamAPIKey",
+          "line": 25,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "DeleteTeamAPIKey",
+          "callee": "q.db.Query",
+          "lineNumber": 26
+        },
+        {
+          "caller": "DeleteTeamAPIKey",
+          "callee": "rows.Close",
+          "lineNumber": 30
+        },
+        {
+          "caller": "DeleteTeamAPIKey",
+          "callee": "rows.Next",
+          "lineNumber": 32
+        },
+        {
+          "caller": "DeleteTeamAPIKey",
+          "callee": "rows.Scan",
+          "lineNumber": 34
+        },
+        {
+          "caller": "DeleteTeamAPIKey",
+          "callee": "append",
+          "lineNumber": 37
+        },
+        {
+          "caller": "DeleteTeamAPIKey",
+          "callee": "rows.Err",
+          "lineNumber": 39
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/get_api_keys.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 70,
+      "nonEmptyLines": 64,
+      "functions": [
+        {
+          "name": "GetTeamAPIKeysWithCreator",
+          "startLine": 42,
+          "endLine": 70,
+          "params": [
+            "ctx",
+            "teamID"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetTeamAPIKeysWithCreatorRow",
+          "startLine": 30,
+          "endLine": 40,
+          "methods": [],
+          "properties": [
+            "ID",
+            "Name",
+            "ApiKeyPrefix",
+            "ApiKeyLength",
+            "ApiKeyMaskPrefix",
+            "ApiKeyMaskSuffix",
+            "CreatedByID",
+            "CreatedAt",
+            "LastUsed"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTeamAPIKeysWithCreatorRow",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamAPIKeysWithCreator",
+          "line": 42,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTeamAPIKeysWithCreator",
+          "callee": "q.db.Query",
+          "lineNumber": 43
+        },
+        {
+          "caller": "GetTeamAPIKeysWithCreator",
+          "callee": "rows.Close",
+          "lineNumber": 47
+        },
+        {
+          "caller": "GetTeamAPIKeysWithCreator",
+          "callee": "rows.Next",
+          "lineNumber": 49
+        },
+        {
+          "caller": "GetTeamAPIKeysWithCreator",
+          "callee": "rows.Scan",
+          "lineNumber": 51
+        },
+        {
+          "caller": "GetTeamAPIKeysWithCreator",
+          "callee": "append",
+          "lineNumber": 64
+        },
+        {
+          "caller": "GetTeamAPIKeysWithCreator",
+          "callee": "rows.Err",
+          "lineNumber": 66
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/get_team.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 187,
+      "nonEmptyLines": 171,
+      "functions": [
+        {
+          "name": "GetTeamWithTierByAPIKey",
+          "startLine": 27,
+          "endLine": 51,
+          "params": [
+            "ctx",
+            "apiKeyHash"
+          ]
+        },
+        {
+          "name": "GetTeamWithTierByTeamAndUser",
+          "startLine": 71,
+          "endLine": 95,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "GetTeamWithTierByTeamID",
+          "startLine": 109,
+          "endLine": 133,
+          "params": [
+            "ctx",
+            "id"
+          ]
+        },
+        {
+          "name": "GetTeamsWithUsersTeamsWithTier",
+          "startLine": 149,
+          "endLine": 187,
+          "params": [
+            "ctx",
+            "userID"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetTeamWithTierByAPIKeyRow",
+          "startLine": 22,
+          "endLine": 25,
+          "methods": [],
+          "properties": [
+            "Team",
+            "TeamLimit"
+          ]
+        },
+        {
+          "name": "GetTeamWithTierByTeamAndUserParams",
+          "startLine": 61,
+          "endLine": 64,
+          "methods": [],
+          "properties": [
+            "UserID",
+            "ID"
+          ]
+        },
+        {
+          "name": "GetTeamWithTierByTeamAndUserRow",
+          "startLine": 66,
+          "endLine": 69,
+          "methods": [],
+          "properties": [
+            "Team",
+            "TeamLimit"
+          ]
+        },
+        {
+          "name": "GetTeamWithTierByTeamIDRow",
+          "startLine": 104,
+          "endLine": 107,
+          "methods": [],
+          "properties": [
+            "Team",
+            "TeamLimit"
+          ]
+        },
+        {
+          "name": "GetTeamsWithUsersTeamsWithTierRow",
+          "startLine": 143,
+          "endLine": 147,
+          "methods": [],
+          "properties": [
+            "Team",
+            "IsDefault",
+            "TeamLimit"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTeamWithTierByAPIKeyRow",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamWithTierByAPIKey",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamWithTierByTeamAndUserParams",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamWithTierByTeamAndUserRow",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamWithTierByTeamAndUser",
+          "line": 71,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamWithTierByTeamIDRow",
+          "line": 104,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamWithTierByTeamID",
+          "line": 109,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamsWithUsersTeamsWithTierRow",
+          "line": 143,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamsWithUsersTeamsWithTier",
+          "line": 149,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTeamWithTierByAPIKey",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 28
+        },
+        {
+          "caller": "GetTeamWithTierByAPIKey",
+          "callee": "row.Scan",
+          "lineNumber": 30
+        },
+        {
+          "caller": "GetTeamWithTierByTeamAndUser",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 72
+        },
+        {
+          "caller": "GetTeamWithTierByTeamAndUser",
+          "callee": "row.Scan",
+          "lineNumber": 74
+        },
+        {
+          "caller": "GetTeamWithTierByTeamID",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 110
+        },
+        {
+          "caller": "GetTeamWithTierByTeamID",
+          "callee": "row.Scan",
+          "lineNumber": 112
+        },
+        {
+          "caller": "GetTeamsWithUsersTeamsWithTier",
+          "callee": "q.db.Query",
+          "lineNumber": 150
+        },
+        {
+          "caller": "GetTeamsWithUsersTeamsWithTier",
+          "callee": "rows.Close",
+          "lineNumber": 154
+        },
+        {
+          "caller": "GetTeamsWithUsersTeamsWithTier",
+          "callee": "rows.Next",
+          "lineNumber": 156
+        },
+        {
+          "caller": "GetTeamsWithUsersTeamsWithTier",
+          "callee": "rows.Scan",
+          "lineNumber": 158
+        },
+        {
+          "caller": "GetTeamsWithUsersTeamsWithTier",
+          "callee": "append",
+          "lineNumber": 181
+        },
+        {
+          "caller": "GetTeamsWithUsersTeamsWithTier",
+          "callee": "rows.Err",
+          "lineNumber": 183
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 9,
+        "functionCount": 4,
+        "classCount": 5
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/get_team_api_key_hashes.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 38,
+      "nonEmptyLines": 33,
+      "functions": [
+        {
+          "name": "GetTeamAPIKeyHashes",
+          "startLine": 20,
+          "endLine": 38,
+          "params": [
+            "ctx",
+            "teamID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTeamAPIKeyHashes",
+          "line": 20,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTeamAPIKeyHashes",
+          "callee": "q.db.Query",
+          "lineNumber": 21
+        },
+        {
+          "caller": "GetTeamAPIKeyHashes",
+          "callee": "rows.Close",
+          "lineNumber": 25
+        },
+        {
+          "caller": "GetTeamAPIKeyHashes",
+          "callee": "rows.Next",
+          "lineNumber": 27
+        },
+        {
+          "caller": "GetTeamAPIKeyHashes",
+          "callee": "rows.Scan",
+          "lineNumber": 29
+        },
+        {
+          "caller": "GetTeamAPIKeyHashes",
+          "callee": "append",
+          "lineNumber": 32
+        },
+        {
+          "caller": "GetTeamAPIKeyHashes",
+          "callee": "rows.Err",
+          "lineNumber": 34
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/get_user_id_from_access_token.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 24,
+      "nonEmptyLines": 19,
+      "functions": [
+        {
+          "name": "GetUserIDFromAccessToken",
+          "startLine": 19,
+          "endLine": 24,
+          "params": [
+            "ctx",
+            "hashedtoken"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetUserIDFromAccessToken",
+          "line": 19,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetUserIDFromAccessToken",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 20
+        },
+        {
+          "caller": "GetUserIDFromAccessToken",
+          "callee": "row.Scan",
+          "lineNumber": 22
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/get_user_identities_by_subjects.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 50,
+      "nonEmptyLines": 43,
+      "functions": [
+        {
+          "name": "GetUserIdentitiesBySubjects",
+          "startLine": 32,
+          "endLine": 50,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetUserIdentitiesBySubjectsParams",
+          "startLine": 21,
+          "endLine": 24,
+          "methods": [],
+          "properties": [
+            "OidcIss",
+            "OidcSubs"
+          ]
+        },
+        {
+          "name": "GetUserIdentitiesBySubjectsRow",
+          "startLine": 26,
+          "endLine": 30,
+          "methods": [],
+          "properties": [
+            "OidcIss",
+            "OidcSub",
+            "UserID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetUserIdentitiesBySubjectsParams",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "GetUserIdentitiesBySubjectsRow",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "GetUserIdentitiesBySubjects",
+          "line": 32,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetUserIdentitiesBySubjects",
+          "callee": "q.db.Query",
+          "lineNumber": 33
+        },
+        {
+          "caller": "GetUserIdentitiesBySubjects",
+          "callee": "rows.Close",
+          "lineNumber": 37
+        },
+        {
+          "caller": "GetUserIdentitiesBySubjects",
+          "callee": "rows.Next",
+          "lineNumber": 39
+        },
+        {
+          "caller": "GetUserIdentitiesBySubjects",
+          "callee": "rows.Scan",
+          "lineNumber": 41
+        },
+        {
+          "caller": "GetUserIdentitiesBySubjects",
+          "callee": "append",
+          "lineNumber": 44
+        },
+        {
+          "caller": "GetUserIdentitiesBySubjects",
+          "callee": "rows.Err",
+          "lineNumber": 46
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/get_user_identities_by_user_ids.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 50,
+      "nonEmptyLines": 43,
+      "functions": [
+        {
+          "name": "GetUserIdentitiesByUserIDs",
+          "startLine": 32,
+          "endLine": 50,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetUserIdentitiesByUserIDsParams",
+          "startLine": 21,
+          "endLine": 24,
+          "methods": [],
+          "properties": [
+            "OidcIss",
+            "UserIds"
+          ]
+        },
+        {
+          "name": "GetUserIdentitiesByUserIDsRow",
+          "startLine": 26,
+          "endLine": 30,
+          "methods": [],
+          "properties": [
+            "OidcIss",
+            "OidcSub",
+            "UserID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetUserIdentitiesByUserIDsParams",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "GetUserIdentitiesByUserIDsRow",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "GetUserIdentitiesByUserIDs",
+          "line": 32,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetUserIdentitiesByUserIDs",
+          "callee": "q.db.Query",
+          "lineNumber": 33
+        },
+        {
+          "caller": "GetUserIdentitiesByUserIDs",
+          "callee": "rows.Close",
+          "lineNumber": 37
+        },
+        {
+          "caller": "GetUserIdentitiesByUserIDs",
+          "callee": "rows.Next",
+          "lineNumber": 39
+        },
+        {
+          "caller": "GetUserIdentitiesByUserIDs",
+          "callee": "rows.Scan",
+          "lineNumber": 41
+        },
+        {
+          "caller": "GetUserIdentitiesByUserIDs",
+          "callee": "append",
+          "lineNumber": 44
+        },
+        {
+          "caller": "GetUserIdentitiesByUserIDs",
+          "callee": "rows.Err",
+          "lineNumber": 46
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/get_user_identity.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 46,
+      "nonEmptyLines": 39,
+      "functions": [
+        {
+          "name": "GetUserIdentity",
+          "startLine": 35,
+          "endLine": 46,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetUserIdentityParams",
+          "startLine": 22,
+          "endLine": 25,
+          "methods": [],
+          "properties": [
+            "OidcIss",
+            "OidcSub"
+          ]
+        },
+        {
+          "name": "GetUserIdentityRow",
+          "startLine": 27,
+          "endLine": 33,
+          "methods": [],
+          "properties": [
+            "OidcIss",
+            "OidcSub",
+            "UserID",
+            "CreatedAt",
+            "UpdatedAt"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetUserIdentityParams",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "GetUserIdentityRow",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "GetUserIdentity",
+          "line": 35,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetUserIdentity",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 36
+        },
+        {
+          "caller": "GetUserIdentity",
+          "callee": "row.Scan",
+          "lineNumber": 38
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/lock_public_user_for_update.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 25,
+      "nonEmptyLines": 20,
+      "functions": [
+        {
+          "name": "LockPublicUserForUpdate",
+          "startLine": 21,
+          "endLine": 25,
+          "params": [
+            "ctx",
+            "id"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "LockPublicUserForUpdate",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "LockPublicUserForUpdate",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 22
+        },
+        {
+          "caller": "LockPublicUserForUpdate",
+          "callee": "row.Scan",
+          "lineNumber": 23
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/models.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 51,
+      "nonEmptyLines": 45,
+      "classes": [
+        {
+          "name": "Team",
+          "startLine": 13,
+          "endLine": 25,
+          "methods": [],
+          "properties": [
+            "ID",
+            "CreatedAt",
+            "IsBlocked",
+            "Name",
+            "Tier",
+            "Email",
+            "IsBanned",
+            "BlockedReason",
+            "ClusterID",
+            "SandboxSchedulingLabels",
+            "Slug"
+          ]
+        },
+        {
+          "name": "TeamApiKey",
+          "startLine": 27,
+          "endLine": 41,
+          "methods": [],
+          "properties": [
+            "CreatedAt",
+            "TeamID",
+            "UpdatedAt",
+            "Name",
+            "LastUsed",
+            "CreatedBy",
+            "ID",
+            "ApiKeyHash",
+            "ApiKeyPrefix",
+            "ApiKeyLength",
+            "ApiKeyMaskPrefix",
+            "ApiKeyMaskSuffix"
+          ]
+        },
+        {
+          "name": "TeamLimit",
+          "startLine": 43,
+          "endLine": 51,
+          "methods": [],
+          "properties": [
+            "ID",
+            "MaxLengthHours",
+            "ConcurrentSandboxes",
+            "ConcurrentTemplateBuilds",
+            "MaxVcpu",
+            "MaxRamMb",
+            "DiskMb"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Team",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "TeamApiKey",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "TeamLimit",
+          "line": 43,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 0,
+        "classCount": 3
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/team_creation_guard.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 103,
+      "nonEmptyLines": 97,
+      "functions": [
+        {
+          "name": "GetTeamsWithUsersTeamsWithTierForUpdate",
+          "startLine": 65,
+          "endLine": 103,
+          "params": [
+            "ctx",
+            "userID"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetTeamsWithUsersTeamsWithTierForUpdateRow",
+          "startLine": 43,
+          "endLine": 63,
+          "methods": [],
+          "properties": [
+            "ID",
+            "CreatedAt",
+            "IsBlocked",
+            "Name",
+            "Tier",
+            "Email",
+            "IsBanned",
+            "BlockedReason",
+            "ClusterID",
+            "SandboxSchedulingLabels",
+            "Slug",
+            "IsDefault",
+            "ID_2",
+            "MaxLengthHours",
+            "ConcurrentSandboxes",
+            "ConcurrentTemplateBuilds",
+            "MaxVcpu",
+            "MaxRamMb",
+            "DiskMb"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTeamsWithUsersTeamsWithTierForUpdateRow",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamsWithUsersTeamsWithTierForUpdate",
+          "line": 65,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTeamsWithUsersTeamsWithTierForUpdate",
+          "callee": "q.db.Query",
+          "lineNumber": 66
+        },
+        {
+          "caller": "GetTeamsWithUsersTeamsWithTierForUpdate",
+          "callee": "rows.Close",
+          "lineNumber": 70
+        },
+        {
+          "caller": "GetTeamsWithUsersTeamsWithTierForUpdate",
+          "callee": "rows.Next",
+          "lineNumber": 72
+        },
+        {
+          "caller": "GetTeamsWithUsersTeamsWithTierForUpdate",
+          "callee": "rows.Scan",
+          "lineNumber": 74
+        },
+        {
+          "caller": "GetTeamsWithUsersTeamsWithTierForUpdate",
+          "callee": "append",
+          "lineNumber": 97
+        },
+        {
+          "caller": "GetTeamsWithUsersTeamsWithTierForUpdate",
+          "callee": "rows.Err",
+          "lineNumber": 99
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/team_lifecycle.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 143,
+      "nonEmptyLines": 130,
+      "functions": [
+        {
+          "name": "CreateTeam",
+          "startLine": 45,
+          "endLine": 68,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "CreateTeamMembership",
+          "startLine": 87,
+          "endLine": 95,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        },
+        {
+          "name": "DeleteTeamByID",
+          "startLine": 102,
+          "endLine": 105,
+          "params": [
+            "ctx",
+            "id"
+          ]
+        },
+        {
+          "name": "GetDefaultTeamByUserID",
+          "startLine": 126,
+          "endLine": 143,
+          "params": [
+            "ctx",
+            "userID"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CreateTeamParams",
+          "startLine": 37,
+          "endLine": 43,
+          "methods": [],
+          "properties": [
+            "Name",
+            "Tier",
+            "Email",
+            "IsBlocked",
+            "BlockedReason"
+          ]
+        },
+        {
+          "name": "CreateTeamMembershipParams",
+          "startLine": 80,
+          "endLine": 85,
+          "methods": [],
+          "properties": [
+            "UserID",
+            "TeamID",
+            "IsDefault",
+            "AddedBy"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreateTeamParams",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "CreateTeam",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "CreateTeamMembershipParams",
+          "line": 80,
+          "isDefault": false
+        },
+        {
+          "name": "CreateTeamMembership",
+          "line": 87,
+          "isDefault": false
+        },
+        {
+          "name": "DeleteTeamByID",
+          "line": 102,
+          "isDefault": false
+        },
+        {
+          "name": "GetDefaultTeamByUserID",
+          "line": 126,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CreateTeam",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 46
+        },
+        {
+          "caller": "CreateTeam",
+          "callee": "row.Scan",
+          "lineNumber": 54
+        },
+        {
+          "caller": "CreateTeamMembership",
+          "callee": "q.db.Exec",
+          "lineNumber": 88
+        },
+        {
+          "caller": "DeleteTeamByID",
+          "callee": "q.db.Exec",
+          "lineNumber": 103
+        },
+        {
+          "caller": "GetDefaultTeamByUserID",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 127
+        },
+        {
+          "caller": "GetDefaultTeamByUserID",
+          "callee": "row.Scan",
+          "lineNumber": 129
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 6,
+        "functionCount": 4,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/teams_usersteams_join.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 57,
+      "nonEmptyLines": 51,
+      "functions": [
+        {
+          "name": "GetTeamsWithUsersTeams",
+          "startLine": 26,
+          "endLine": 57,
+          "params": [
+            "ctx",
+            "userID"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GetTeamsWithUsersTeamsRow",
+          "startLine": 21,
+          "endLine": 24,
+          "methods": [],
+          "properties": [
+            "Team",
+            "IsDefault"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTeamsWithUsersTeamsRow",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamsWithUsersTeams",
+          "line": 26,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTeamsWithUsersTeams",
+          "callee": "q.db.Query",
+          "lineNumber": 27
+        },
+        {
+          "caller": "GetTeamsWithUsersTeams",
+          "callee": "rows.Close",
+          "lineNumber": 31
+        },
+        {
+          "caller": "GetTeamsWithUsersTeams",
+          "callee": "rows.Next",
+          "lineNumber": 33
+        },
+        {
+          "caller": "GetTeamsWithUsersTeams",
+          "callee": "rows.Scan",
+          "lineNumber": 35
+        },
+        {
+          "caller": "GetTeamsWithUsersTeams",
+          "callee": "append",
+          "lineNumber": 51
+        },
+        {
+          "caller": "GetTeamsWithUsersTeams",
+          "callee": "rows.Err",
+          "lineNumber": 53
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/update_last_time_used.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 21,
+      "nonEmptyLines": 17,
+      "functions": [
+        {
+          "name": "UpdateLastTimeUsed",
+          "startLine": 18,
+          "endLine": 21,
+          "params": [
+            "ctx",
+            "apiKeyHash"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UpdateLastTimeUsed",
+          "line": 18,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "UpdateLastTimeUsed",
+          "callee": "q.db.Exec",
+          "lineNumber": 19
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/update_team_api_key.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 37,
+      "nonEmptyLines": 31,
+      "functions": [
+        {
+          "name": "UpdateTeamApiKey",
+          "startLine": 27,
+          "endLine": 37,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "UpdateTeamApiKeyParams",
+          "startLine": 20,
+          "endLine": 25,
+          "methods": [],
+          "properties": [
+            "Name",
+            "UpdatedAt",
+            "ID",
+            "TeamID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UpdateTeamApiKeyParams",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateTeamApiKey",
+          "line": 27,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "UpdateTeamApiKey",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 28
+        },
+        {
+          "caller": "UpdateTeamApiKey",
+          "callee": "row.Scan",
+          "lineNumber": 35
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/upsert_public_identity.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 34,
+      "nonEmptyLines": 28,
+      "functions": [
+        {
+          "name": "UpsertPublicIdentity",
+          "startLine": 29,
+          "endLine": 34,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "UpsertPublicIdentityParams",
+          "startLine": 23,
+          "endLine": 27,
+          "methods": [],
+          "properties": [
+            "OidcIss",
+            "OidcSub",
+            "UserID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UpsertPublicIdentityParams",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "UpsertPublicIdentity",
+          "line": 29,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "UpsertPublicIdentity",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 30
+        },
+        {
+          "caller": "UpsertPublicIdentity",
+          "callee": "row.Scan",
+          "lineNumber": 32
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/pkg/auth/queries/upsert_public_user.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 24,
+      "nonEmptyLines": 19,
+      "functions": [
+        {
+          "name": "UpsertPublicUser",
+          "startLine": 21,
+          "endLine": 24,
+          "params": [
+            "ctx",
+            "id"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UpsertPublicUser",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "UpsertPublicUser",
+          "callee": "q.db.Exec",
+          "lineNumber": 22
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/pkg/builds/machine_info.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 17,
+      "nonEmptyLines": 15,
+      "functions": [
+        {
+          "name": "ToMachineInfo",
+          "startLine": 9,
+          "endLine": 17,
+          "params": [
+            "build"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ToMachineInfo",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "ToMachineInfo",
+          "callee": "utils.FromPtr",
+          "lineNumber": 11
+        },
+        {
+          "caller": "ToMachineInfo",
+          "callee": "utils.FromPtr",
+          "lineNumber": 12
+        },
+        {
+          "caller": "ToMachineInfo",
+          "callee": "utils.FromPtr",
+          "lineNumber": 13
+        },
+        {
+          "caller": "ToMachineInfo",
+          "callee": "utils.FromPtr",
+          "lineNumber": 14
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/pkg/dashboard/queries/check_ready_template_tag_exists.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 33,
+      "nonEmptyLines": 28,
+      "functions": [
+        {
+          "name": "CheckReadyTemplateTagExists",
+          "startLine": 28,
+          "endLine": 33,
+          "params": [
+            "ctx",
+            "arg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CheckReadyTemplateTagExistsParams",
+          "startLine": 23,
+          "endLine": 26,
+          "methods": [],
+          "properties": [
+            "TemplateID",
+            "Tag"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CheckReadyTemplateTagExistsParams",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "CheckReadyTemplateTagExists",
+          "line": 28,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CheckReadyTemplateTagExists",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 29
+        },
+        {
+          "caller": "CheckReadyTemplateTagExists",
+          "callee": "row.Scan",
+          "lineNumber": 31
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/db/pkg/dashboard/queries/count_template_tags.sql.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 25,
+      "nonEmptyLines": 21,
+      "functions": [
+        {
+          "name": "CountTemplateTags",
+          "startLine": 20,
+          "endLine": 25,
+          "params": [
+            "ctx",
+            "templateID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CountTemplateTags",
+          "line": 20,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CountTemplateTags",
+          "callee": "q.db.QueryRow",
+          "lineNumber": 21
+        },
+        {
+          "caller": "CountTemplateTags",
+          "callee": "row.Scan",
+          "lineNumber": 23
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/db/pkg/dashboard/queries/db.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 32,
+      "nonEmptyLines": 25,
+      "functions": [
+        {
+          "name": "New",
+          "startLine": 20,
+          "endLine": 22,
+          "params": [
+            "db"
+          ]
+        },
+        {
+          "name": "WithTx",
+          "startLine": 28,
+          "endLine": 32,
+          "params": [
+            "tx"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "DBTX",
+          "startLine": 14,
+          "endLine": 18,
+          "methods": [
+            "Exec",
+            "Query",
+            "QueryRow"
+          ],
+          "properties": []
+        },
+        {
+          "name": "Queries",
+          "startLine": 24,
+          "endLine": 26,
+          "methods": [
+            "WithTx"
+          ],
+          "properties": [
+            "db"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DBTX",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "New",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "Queries",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "WithTx",
+          "line": 28,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 2,
+        "classCount": 2
+      }
+    }
+  ]
+}

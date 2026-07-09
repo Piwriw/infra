@@ -1,0 +1,339 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/clickhouse/pkg/batcher/batcher.go",
+      "type": "file",
+      "name": "batcher.go",
+      "filePath": "packages/clickhouse/pkg/batcher/batcher.go",
+      "summary": "通用的泛型批量处理器（generic Batcher），按 MaxBatchSize 或 MaxDelay 触发批量刷新，并通过 OpenTelemetry 暴露队列长度、刷新时延等指标。它是 clickhouse 包内所有事件/统计批量写入 ClickHouse 的基础设施。",
+      "tags": ["utility", "batcher", "buffering", "telemetry", "data-pipeline"],
+      "complexity": "complex",
+      "languageNotes": "使用 Go 泛型（type parameter T），通过 channel + sync.RWMutex 实现并发安全的入队与刷新，使用 ticker 实现基于时间的刷新策略。"
+    },
+    {
+      "id": "file:packages/clickhouse/pkg/batcher/batcher_test.go",
+      "type": "file",
+      "name": "batcher_test.go",
+      "filePath": "packages/clickhouse/pkg/batcher/batcher_test.go",
+      "summary": "针对 Batcher 的单元测试，覆盖 Start/Stop、重复启动/停止、队列满丢弃、MaxBatchSize/MaxDelay 触发、并发 Push 及队列容量等场景。包含被生产代码（events/hoststats delivery）复用的测试辅助构造逻辑。",
+      "tags": ["test", "batcher", "concurrency", "unit-test"],
+      "complexity": "complex",
+      "languageNotes": "使用 t.Parallel 进行并行测试，wait group「wg.Go」与 atomic 计数器验证并发 Push 行为。"
+    },
+    {
+      "id": "file:packages/clickhouse/pkg/events/delivery.go",
+      "type": "file",
+      "name": "delivery.go",
+      "filePath": "packages/clickhouse/pkg/events/delivery.go",
+      "summary": "sandbox 事件（sandbox events）的 ClickHouse 投递层。基于 Batcher 聚合事件并通过 prepared batch 批量插入 ClickHouse，同时提供受 feature flag 控制的 GatedClickhouseDelivery 包装器以做开关。",
+      "tags": ["service", "clickhouse", "batcher", "data-pipeline", "feature-flags"],
+      "complexity": "complex",
+      "languageNotes": "实现 Publish/Close 接口；通过 trace.WithAttributes 在 batchInserter 上开启 OTel span 记录每次批量插入。"
+    },
+    {
+      "id": "file:packages/clickhouse/pkg/hoststats/delivery.go",
+      "type": "file",
+      "name": "delivery.go",
+      "filePath": "packages/clickhouse/pkg/hoststats/delivery.go",
+      "summary": "宿主机统计（host stats）的 ClickHouse 投递层，结构与 events/delivery.go 平行：使用 Batcher 聚合统计条目并执行批量 INSERT，配合 feature flag 控制写入开关。",
+      "tags": ["service", "clickhouse", "batcher", "data-pipeline", "feature-flags"],
+      "complexity": "complex",
+      "languageNotes": "与 events/delivery.go 共用 ClickhouseDelivery/GatedClickhouseDelivery 命名模式，方法集为 Push/Close。"
+    },
+
+    {
+      "id": "class:packages/clickhouse/pkg/batcher/batcher.go:Batcher",
+      "type": "class",
+      "name": "Batcher",
+      "filePath": "packages/clickhouse/pkg/batcher/batcher.go",
+      "lineRange": [42, 67],
+      "summary": "泛型批处理器核心类型，持有处理函数、批大小/延迟/队列容量配置与同步原语（channel、RWMutex、done channel）。",
+      "tags": ["data-model", "batcher", "generic", "core"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/clickhouse/pkg/batcher/batcher.go:BatcherOptions",
+      "type": "class",
+      "name": "BatcherOptions",
+      "filePath": "packages/clickhouse/pkg/batcher/batcher.go",
+      "lineRange": [75, 95],
+      "summary": "NewBatcher 的配置结构体，包含 Name、MaxBatchSize、MaxDelay、QueueSize 与 ErrorHandler。",
+      "tags": ["data-model", "config", "options"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/batcher/batcher.go:NewBatcher",
+      "type": "function",
+      "name": "NewBatcher",
+      "filePath": "packages/clickhouse/pkg/batcher/batcher.go",
+      "lineRange": [98, 126],
+      "summary": "构造函数，依据 BatcherOptions 校验参数、应用默认值，并以 batcher 名称作为 OTel 属性初始化 Batcher 实例。",
+      "tags": ["factory", "constructor", "batcher"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/batcher/batcher.go:Start",
+      "type": "function",
+      "name": "Start",
+      "filePath": "packages/clickhouse/pkg/batcher/batcher.go",
+      "lineRange": [129, 147],
+      "summary": "启动后台 goroutine 处理批量任务，初始化 channel 与 done channel，重复启动返回 ErrBatcherAlreadyStarted。",
+      "tags": ["lifecycle", "batcher", "goroutine"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/batcher/batcher.go:Stop",
+      "type": "function",
+      "name": "Stop",
+      "filePath": "packages/clickhouse/pkg/batcher/batcher.go",
+      "lineRange": [150, 165],
+      "summary": "关闭入队 channel 并等待后台 goroutine 处理完队列剩余项后退出，重复停止返回 ErrBatcherNotStarted。",
+      "tags": ["lifecycle", "batcher", "shutdown"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/batcher/batcher.go:Push",
+      "type": "function",
+      "name": "Push",
+      "filePath": "packages/clickhouse/pkg/batcher/batcher.go",
+      "lineRange": [169, 187],
+      "summary": "向队列中追加一个待处理项，队列满时记录丢弃计数并返回 ErrBatcherQueueFull。",
+      "tags": ["api", "enqueue", "batcher"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/batcher/batcher.go:processBatches",
+      "type": "function",
+      "name": "processBatches",
+      "filePath": "packages/clickhouse/pkg/batcher/batcher.go",
+      "lineRange": [194, 243],
+      "summary": "后台 goroutine 的核心循环：根据 ticker（MaxDelay）或累积数量（MaxBatchSize）触发 BatcherFunc 刷新，并记录每次刷新的批量大小、等待与执行时延指标。",
+      "tags": ["event-loop", "flush", "telemetry", "core"],
+      "complexity": "complex"
+    },
+
+    {
+      "id": "function:packages/clickhouse/pkg/batcher/batcher_test.go:testBatcherPushMaxDelay",
+      "type": "function",
+      "name": "testBatcherPushMaxDelay",
+      "filePath": "packages/clickhouse/pkg/batcher/batcher_test.go",
+      "lineRange": [220, 265],
+      "summary": "参数化测试辅助：验证给定数量的 item 在 MaxDelay 内被刷新，并断言刷新耗时与期望延迟的偏差。",
+      "tags": ["test", "helper", "validation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/batcher/batcher_test.go:testBatcherPushMaxBatchSize",
+      "type": "function",
+      "name": "testBatcherPushMaxBatchSize",
+      "filePath": "packages/clickhouse/pkg/batcher/batcher_test.go",
+      "lineRange": [267, 310],
+      "summary": "参数化测试辅助：验证达到 MaxBatchSize 时立即触发刷新，断言每个 batch 的项目数等于配置上限。",
+      "tags": ["test", "helper", "validation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/batcher/batcher_test.go:TestBatcherConcurrentPush",
+      "type": "function",
+      "name": "TestBatcherConcurrentPush",
+      "filePath": "packages/clickhouse/pkg/batcher/batcher_test.go",
+      "lineRange": [126, 160],
+      "summary": "并发测试：多个 goroutine 同时 Push 后，验证每个 item 恰好被处理一次（原子计数）。",
+      "tags": ["test", "concurrency", "validation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/batcher/batcher_test.go:TestBatcherQueueSize",
+      "type": "function",
+      "name": "TestBatcherQueueSize",
+      "filePath": "packages/clickhouse/pkg/batcher/batcher_test.go",
+      "lineRange": [162, 218],
+      "summary": "验证队列满后 Push 返回 ErrBatcherQueueFull，并在停止/未启动状态下的行为符合预期。",
+      "tags": ["test", "queue", "validation"],
+      "complexity": "moderate"
+    },
+
+    {
+      "id": "class:packages/clickhouse/pkg/events/delivery.go:ClickhouseDelivery",
+      "type": "class",
+      "name": "ClickhouseDelivery",
+      "filePath": "packages/clickhouse/pkg/events/delivery.go",
+      "lineRange": [51, 54],
+      "summary": "sandbox 事件的实际投递实现，封装 Batcher 与 ClickHouse 连接，对外暴露 Publish/Close 与私有 batchInserter。",
+      "tags": ["data-model", "service", "clickhouse"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/clickhouse/pkg/events/delivery.go:GatedClickhouseDelivery",
+      "type": "class",
+      "name": "GatedClickhouseDelivery",
+      "filePath": "packages/clickhouse/pkg/events/delivery.go",
+      "lineRange": [56, 60],
+      "summary": "feature flag 受控的包装器，运行时根据 BoolFlag 决定是否将事件转发给被包装的 ClickhouseDelivery。",
+      "tags": ["data-model", "feature-flags", "wrapper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/events/delivery.go:NewDefaultClickhouseSandboxEventsDelivery",
+      "type": "function",
+      "name": "NewDefaultClickhouseSandboxEventsDelivery",
+      "filePath": "packages/clickhouse/pkg/events/delivery.go",
+      "lineRange": [66, 84],
+      "summary": "从 feature flag 读取 MaxBatchSize/MaxDelay/QueueSize 默认值并构造（含 Gated 包装的）默认 sandbox 事件投递实例。",
+      "tags": ["factory", "feature-flags", "constructor"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/events/delivery.go:NewClickhouseSandboxEventsDelivery",
+      "type": "function",
+      "name": "NewClickhouseSandboxEventsDelivery",
+      "filePath": "packages/clickhouse/pkg/events/delivery.go",
+      "lineRange": [90, 104],
+      "summary": "依据 Options 构造 Batcher、调用 batcher.Start 并返回就绪的 ClickhouseDelivery 实例。",
+      "tags": ["factory", "constructor", "batcher"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/events/delivery.go:Publish",
+      "type": "function",
+      "name": "ClickhouseDelivery.Publish",
+      "filePath": "packages/clickhouse/pkg/events/delivery.go",
+      "lineRange": [106, 136],
+      "summary": "ClickhouseDelivery 的 Publish：将事件 JSON 序列化后 Push 进 batcher，由 batcher 异步批量写入。",
+      "tags": ["api-handler", "publish", "serialization"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/events/delivery.go:batchInserter",
+      "type": "function",
+      "name": "batchInserter",
+      "filePath": "packages/clickhouse/pkg/events/delivery.go",
+      "lineRange": [151, 195],
+      "summary": "BatcherFunc 回调：在 OTel span 内 PrepareBatch、Append 所有事件并 Send，失败时通过 span.RecordError 上报并返回错误。",
+      "tags": ["callback", "clickhouse", "batch-insert", "telemetry"],
+      "complexity": "complex"
+    },
+
+    {
+      "id": "class:packages/clickhouse/pkg/hoststats/delivery.go:ClickhouseDelivery",
+      "type": "class",
+      "name": "ClickhouseDelivery",
+      "filePath": "packages/clickhouse/pkg/hoststats/delivery.go",
+      "lineRange": [43, 46],
+      "summary": "host stats 的实际投递实现，结构与 events 包同名类一致，对外暴露 Push/Close 与私有 batchInserter。",
+      "tags": ["data-model", "service", "clickhouse"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/clickhouse/pkg/hoststats/delivery.go:GatedClickhouseDelivery",
+      "type": "class",
+      "name": "GatedClickhouseDelivery",
+      "filePath": "packages/clickhouse/pkg/hoststats/delivery.go",
+      "lineRange": [48, 52],
+      "summary": "feature flag 受控的 host stats 投递包装器，依据 BoolFlag 决定是否转发 Push 调用。",
+      "tags": ["data-model", "feature-flags", "wrapper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/hoststats/delivery.go:NewDefaultClickhouseHostStatsDelivery",
+      "type": "function",
+      "name": "NewDefaultClickhouseHostStatsDelivery",
+      "filePath": "packages/clickhouse/pkg/hoststats/delivery.go",
+      "lineRange": [58, 79],
+      "summary": "从 feature flag 读取批处理参数并构造（含 Gated 包装的）默认 host stats 投递实例。",
+      "tags": ["factory", "feature-flags", "constructor"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/hoststats/delivery.go:NewClickhouseHostStatsDelivery",
+      "type": "function",
+      "name": "NewClickhouseHostStatsDelivery",
+      "filePath": "packages/clickhouse/pkg/hoststats/delivery.go",
+      "lineRange": [85, 103],
+      "summary": "依据 Options 构造 host stats Batcher、调用 batcher.Start 并返回就绪的 ClickhouseDelivery。",
+      "tags": ["factory", "constructor", "batcher"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/hoststats/delivery.go:Push",
+      "type": "function",
+      "name": "ClickhouseDelivery.Push",
+      "filePath": "packages/clickhouse/pkg/hoststats/delivery.go",
+      "lineRange": [105, 107],
+      "summary": "ClickhouseDelivery 的 Push：直接将 stat 转发至 batcher.Push。",
+      "tags": ["api-handler", "push", "enqueue"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/clickhouse/pkg/hoststats/delivery.go:batchInserter",
+      "type": "function",
+      "name": "batchInserter",
+      "filePath": "packages/clickhouse/pkg/hoststats/delivery.go",
+      "lineRange": [122, 173],
+      "summary": "BatcherFunc 回调：在 OTel span 内 PrepareBatch、Append 所有 host stats 并 Send，与 events 包内的 batchInserter 结构对应。",
+      "tags": ["callback", "clickhouse", "batch-insert", "telemetry"],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher.go", "target": "class:packages/clickhouse/pkg/batcher/batcher.go:Batcher", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher.go", "target": "class:packages/clickhouse/pkg/batcher/batcher.go:BatcherOptions", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher.go", "target": "function:packages/clickhouse/pkg/batcher/batcher.go:NewBatcher", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher.go", "target": "function:packages/clickhouse/pkg/batcher/batcher.go:Start", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher.go", "target": "function:packages/clickhouse/pkg/batcher/batcher.go:Stop", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher.go", "target": "function:packages/clickhouse/pkg/batcher/batcher.go:Push", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher.go", "target": "function:packages/clickhouse/pkg/batcher/batcher.go:processBatches", "type": "contains", "direction": "forward", "weight": 1.0 },
+
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher.go", "target": "class:packages/clickhouse/pkg/batcher/batcher.go:Batcher", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher.go", "target": "class:packages/clickhouse/pkg/batcher/batcher.go:BatcherOptions", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher.go", "target": "function:packages/clickhouse/pkg/batcher/batcher.go:NewBatcher", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher.go", "target": "function:packages/clickhouse/pkg/batcher/batcher.go:Start", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher.go", "target": "function:packages/clickhouse/pkg/batcher/batcher.go:Stop", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher.go", "target": "function:packages/clickhouse/pkg/batcher/batcher.go:Push", "type": "exports", "direction": "forward", "weight": 0.8 },
+
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher.go", "target": "file:packages/clickhouse/pkg/batcher/batcher_test.go", "type": "tested_by", "direction": "forward", "weight": 0.5 },
+
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher_test.go", "target": "function:packages/clickhouse/pkg/batcher/batcher_test.go:testBatcherPushMaxDelay", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher_test.go", "target": "function:packages/clickhouse/pkg/batcher/batcher_test.go:testBatcherPushMaxBatchSize", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher_test.go", "target": "function:packages/clickhouse/pkg/batcher/batcher_test.go:TestBatcherConcurrentPush", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/batcher/batcher_test.go", "target": "function:packages/clickhouse/pkg/batcher/batcher_test.go:TestBatcherQueueSize", "type": "contains", "direction": "forward", "weight": 1.0 },
+
+    { "source": "file:packages/clickhouse/pkg/events/delivery.go", "target": "file:packages/clickhouse/pkg/batcher/batcher.go", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:packages/clickhouse/pkg/events/delivery.go", "target": "file:packages/clickhouse/pkg/batcher/batcher_test.go", "type": "imports", "direction": "forward", "weight": 0.7 },
+
+    { "source": "file:packages/clickhouse/pkg/events/delivery.go", "target": "class:packages/clickhouse/pkg/events/delivery.go:ClickhouseDelivery", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/events/delivery.go", "target": "class:packages/clickhouse/pkg/events/delivery.go:GatedClickhouseDelivery", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/events/delivery.go", "target": "function:packages/clickhouse/pkg/events/delivery.go:NewDefaultClickhouseSandboxEventsDelivery", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/events/delivery.go", "target": "function:packages/clickhouse/pkg/events/delivery.go:NewClickhouseSandboxEventsDelivery", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/events/delivery.go", "target": "function:packages/clickhouse/pkg/events/delivery.go:Publish", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/events/delivery.go", "target": "function:packages/clickhouse/pkg/events/delivery.go:batchInserter", "type": "contains", "direction": "forward", "weight": 1.0 },
+
+    { "source": "file:packages/clickhouse/pkg/events/delivery.go", "target": "class:packages/clickhouse/pkg/events/delivery.go:ClickhouseDelivery", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:packages/clickhouse/pkg/events/delivery.go", "target": "class:packages/clickhouse/pkg/events/delivery.go:GatedClickhouseDelivery", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:packages/clickhouse/pkg/events/delivery.go", "target": "function:packages/clickhouse/pkg/events/delivery.go:NewDefaultClickhouseSandboxEventsDelivery", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:packages/clickhouse/pkg/events/delivery.go", "target": "function:packages/clickhouse/pkg/events/delivery.go:NewClickhouseSandboxEventsDelivery", "type": "exports", "direction": "forward", "weight": 0.8 },
+
+    { "source": "function:packages/clickhouse/pkg/events/delivery.go:NewClickhouseSandboxEventsDelivery", "target": "function:packages/clickhouse/pkg/batcher/batcher.go:NewBatcher", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:packages/clickhouse/pkg/events/delivery.go:Publish", "target": "function:packages/clickhouse/pkg/batcher/batcher.go:Push", "type": "calls", "direction": "forward", "weight": 0.8 },
+
+    { "source": "file:packages/clickhouse/pkg/hoststats/delivery.go", "target": "file:packages/clickhouse/pkg/batcher/batcher.go", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:packages/clickhouse/pkg/hoststats/delivery.go", "target": "file:packages/clickhouse/pkg/batcher/batcher_test.go", "type": "imports", "direction": "forward", "weight": 0.7 },
+
+    { "source": "file:packages/clickhouse/pkg/hoststats/delivery.go", "target": "class:packages/clickhouse/pkg/hoststats/delivery.go:ClickhouseDelivery", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/hoststats/delivery.go", "target": "class:packages/clickhouse/pkg/hoststats/delivery.go:GatedClickhouseDelivery", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/hoststats/delivery.go", "target": "function:packages/clickhouse/pkg/hoststats/delivery.go:NewDefaultClickhouseHostStatsDelivery", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/hoststats/delivery.go", "target": "function:packages/clickhouse/pkg/hoststats/delivery.go:NewClickhouseHostStatsDelivery", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/hoststats/delivery.go", "target": "function:packages/clickhouse/pkg/hoststats/delivery.go:Push", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:packages/clickhouse/pkg/hoststats/delivery.go", "target": "function:packages/clickhouse/pkg/hoststats/delivery.go:batchInserter", "type": "contains", "direction": "forward", "weight": 1.0 },
+
+    { "source": "file:packages/clickhouse/pkg/hoststats/delivery.go", "target": "class:packages/clickhouse/pkg/hoststats/delivery.go:ClickhouseDelivery", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:packages/clickhouse/pkg/hoststats/delivery.go", "target": "class:packages/clickhouse/pkg/hoststats/delivery.go:GatedClickhouseDelivery", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:packages/clickhouse/pkg/hoststats/delivery.go", "target": "function:packages/clickhouse/pkg/hoststats/delivery.go:NewDefaultClickhouseHostStatsDelivery", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:packages/clickhouse/pkg/hoststats/delivery.go", "target": "function:packages/clickhouse/pkg/hoststats/delivery.go:NewClickhouseHostStatsDelivery", "type": "exports", "direction": "forward", "weight": 0.8 },
+
+    { "source": "function:packages/clickhouse/pkg/hoststats/delivery.go:NewClickhouseHostStatsDelivery", "target": "function:packages/clickhouse/pkg/batcher/batcher.go:NewBatcher", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:packages/clickhouse/pkg/hoststats/delivery.go:Push", "target": "function:packages/clickhouse/pkg/batcher/batcher.go:Push", "type": "calls", "direction": "forward", "weight": 0.8 },
+
+    { "source": "file:packages/clickhouse/pkg/hoststats/delivery.go", "target": "file:packages/clickhouse/pkg/events/delivery.go", "type": "related", "direction": "forward", "weight": 0.5 }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "nodes": [
+    {
+      "id": "file:iac/provider-aws/modules/cloudflare/main.tf",
+      "type": "file",
+      "name": "main.tf",
+      "filePath": "iac/provider-aws/modules/cloudflare/main.tf",
+      "summary": "Cloudflare Terraform 模块主文件，定义 AWS Secrets Manager 资源用于存储 Cloudflare API Token，并提供初始空 Token 与版本读取 data source。",
+      "tags": ["infrastructure", "deployment", "aws", "secrets", "cloudflare"],
+      "complexity": "simple",
+      "languageNotes": "使用 lifecycle.ignore_changes 防止初始空 Token 被后续变更覆盖。"
+    },
+    {
+      "id": "file:iac/provider-aws/modules/cloudflare/outputs.tf",
+      "type": "file",
+      "name": "outputs.tf",
+      "filePath": "iac/provider-aws/modules/cloudflare/outputs.tf",
+      "summary": "Cloudflare 模块输出文件，解码 secret_string JSON 并导出嵌套结构供上层模块读取 TOKEN 字段。",
+      "tags": ["infrastructure", "deployment", "output", "terraform"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:iac/provider-aws/modules/cloudflare/variables.tf",
+      "type": "file",
+      "name": "variables.tf",
+      "filePath": "iac/provider-aws/modules/cloudflare/variables.tf",
+      "summary": "Cloudflare 模块变量定义文件，仅声明一个字符串类型的 prefix 变量用于资源命名前缀。",
+      "tags": ["infrastructure", "configuration", "terraform", "variable"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/cloudflare/main.tf:aws_secretsmanager_secret.cloudflare",
+      "type": "resource",
+      "name": "aws_secretsmanager_secret.cloudflare",
+      "filePath": "iac/provider-aws/modules/cloudflare/main.tf",
+      "summary": "AWS Secrets Manager 中创建的 Cloudflare 密钥条目，名称以 prefix 变量作为前缀以便区分环境。",
+      "tags": ["aws", "secrets-manager", "cloudflare"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/cloudflare/main.tf:aws_secretsmanager_secret_version.cloudflare_initial",
+      "type": "resource",
+      "name": "aws_secretsmanager_secret_version.cloudflare_initial",
+      "filePath": "iac/provider-aws/modules/cloudflare/main.tf",
+      "summary": "为 Cloudflare 密钥写入初始空 TOKEN 的版本，并使用 lifecycle.ignore_changes 阻止后续对 secret_string 的覆盖以保留外部注入的真实 Token。",
+      "tags": ["aws", "secrets-manager", "lifecycle", "placeholder"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/provider-aws/modules/cloudflare/main.tf:data.aws_secretsmanager_secret_version.cloudflare",
+      "type": "resource",
+      "name": "data.aws_secretsmanager_secret_version.cloudflare",
+      "filePath": "iac/provider-aws/modules/cloudflare/main.tf",
+      "summary": "读取 Cloudflare 密钥当前 AWSCURRENT 版本的数据源，依赖初始版本资源确保数据可用。",
+      "tags": ["aws", "secrets-manager", "data-source"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:iac/provider-aws/modules/cloudflare/main.tf",
+      "target": "resource:iac/provider-aws/modules/cloudflare/main.tf:aws_secretsmanager_secret.cloudflare",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/modules/cloudflare/main.tf",
+      "target": "resource:iac/provider-aws/modules/cloudflare/main.tf:aws_secretsmanager_secret_version.cloudflare_initial",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:iac/provider-aws/modules/cloudflare/main.tf",
+      "target": "resource:iac/provider-aws/modules/cloudflare/main.tf:data.aws_secretsmanager_secret_version.cloudflare",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/cloudflare/main.tf:aws_secretsmanager_secret_version.cloudflare_initial",
+      "target": "resource:iac/provider-aws/modules/cloudflare/main.tf:aws_secretsmanager_secret.cloudflare",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/cloudflare/main.tf:data.aws_secretsmanager_secret_version.cloudflare",
+      "target": "resource:iac/provider-aws/modules/cloudflare/main.tf:aws_secretsmanager_secret_version.cloudflare_initial",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/provider-aws/modules/cloudflare/main.tf:data.aws_secretsmanager_secret_version.cloudflare",
+      "target": "resource:iac/provider-aws/modules/cloudflare/main.tf:aws_secretsmanager_secret.cloudflare",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-aws/modules/cloudflare/outputs.tf",
+      "target": "resource:iac/provider-aws/modules/cloudflare/main.tf:data.aws_secretsmanager_secret_version.cloudflare",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:iac/provider-aws/modules/cloudflare/main.tf",
+      "target": "file:iac/provider-aws/modules/cloudflare/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

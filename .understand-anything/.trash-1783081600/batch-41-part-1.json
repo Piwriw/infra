@@ -1,0 +1,1170 @@
+{
+  "nodes": [
+    {
+      "id": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "type": "file",
+      "name": "signatures_test.go",
+      "filePath": "tests/integration/internal/tests/envd/signatures_test.go",
+      "summary": "覆盖 envd 文件下载签名授权的多种场景：禁用/启用签名、过期 token、签名与路径不匹配等。",
+      "tags": [
+        "test",
+        "integration",
+        "e2e",
+        "envd"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "type": "file",
+      "name": "sandbox_entropy_test.go",
+      "filePath": "tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "summary": "验证沙箱内硬件熵设备（/dev/hwrng 等）可用性的集成测试。",
+      "tags": [
+        "test",
+        "integration",
+        "e2e",
+        "orchestrator"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/team_test.go",
+      "type": "file",
+      "name": "team_test.go",
+      "filePath": "tests/integration/internal/tests/team_test.go",
+      "summary": "覆盖团队维度的访问控制：被封禁（banned）与被阻塞（blocked）团队调用 API 时的错误响应测试。",
+      "tags": [
+        "test",
+        "integration",
+        "e2e",
+        "api"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "file",
+      "name": "sandbox.go",
+      "filePath": "tests/integration/internal/utils/sandbox.go",
+      "summary": "集成测试共享工具：基于信号量限制并发沙箱数，提供沙箱配置构造器（SandboxConfig + functional options）与 Setup/Teardown 生命周期管理。",
+      "tags": [
+        "test",
+        "utility",
+        "integration",
+        "sandbox"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/utils/template.go",
+      "type": "file",
+      "name": "template.go",
+      "filePath": "tests/integration/internal/utils/template.go",
+      "summary": "集成测试共享工具：模板构建（BuildTemplate）流程，包含请求发起、轮询构建完成、日志处理、超时与默认资源规格。",
+      "tags": [
+        "test",
+        "utility",
+        "integration",
+        "template"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/utils/user.go",
+      "type": "file",
+      "name": "user.go",
+      "filePath": "tests/integration/internal/utils/user.go",
+      "summary": "集成测试共享工具：在 auth 数据库创建测试用户并在测试结束时清理。",
+      "tags": [
+        "test",
+        "utility",
+        "integration",
+        "user"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/envd/signatures_test.go:TestDownloadFileWhenAuthIsDisabled",
+      "type": "function",
+      "name": "TestDownloadFileWhenAuthIsDisabled",
+      "filePath": "tests/integration/internal/tests/envd/signatures_test.go",
+      "lineRange": [
+        20,
+        54
+      ],
+      "summary": "验证禁用授权时可无需签名直接下载文件。",
+      "tags": [
+        "test",
+        "signature",
+        "download"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/envd/signatures_test.go:TestDownloadFileWithoutSigningWhenAuthIsEnabled",
+      "type": "function",
+      "name": "TestDownloadFileWithoutSigningWhenAuthIsEnabled",
+      "filePath": "tests/integration/internal/tests/envd/signatures_test.go",
+      "lineRange": [
+        56,
+        97
+      ],
+      "summary": "验证启用授权但未签名时下载请求应被拒绝。",
+      "tags": [
+        "test",
+        "signature",
+        "download"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/envd/signatures_test.go:TestDownloadFileWithSigningWhenAuthIsEnabled",
+      "type": "function",
+      "name": "TestDownloadFileWithSigningWhenAuthIsEnabled",
+      "filePath": "tests/integration/internal/tests/envd/signatures_test.go",
+      "lineRange": [
+        99,
+        141
+      ],
+      "summary": "验证启用授权且签名有效时下载请求应成功。",
+      "tags": [
+        "test",
+        "signature",
+        "download"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/envd/signatures_test.go:TestDownloadWithAlreadyExpiredToken",
+      "type": "function",
+      "name": "TestDownloadWithAlreadyExpiredToken",
+      "filePath": "tests/integration/internal/tests/envd/signatures_test.go",
+      "lineRange": [
+        143,
+        175
+      ],
+      "summary": "验证签名令牌已过期时下载请求被拒绝。",
+      "tags": [
+        "test",
+        "signature",
+        "token-expiry"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/envd/signatures_test.go:TestDownloadWithHealthyToken",
+      "type": "function",
+      "name": "TestDownloadWithHealthyToken",
+      "filePath": "tests/integration/internal/tests/envd/signatures_test.go",
+      "lineRange": [
+        177,
+        209
+      ],
+      "summary": "验证签名令牌有效时下载请求成功。",
+      "tags": [
+        "test",
+        "signature",
+        "download"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/envd/signatures_test.go:TestAccessWithNotCorrespondingSignatureAndSignatureExpiration",
+      "type": "function",
+      "name": "TestAccessWithNotCorrespondingSignatureAndSignatureExpiration",
+      "filePath": "tests/integration/internal/tests/envd/signatures_test.go",
+      "lineRange": [
+        211,
+        243
+      ],
+      "summary": "验证签名路径与签名不匹配时访问被拒绝。",
+      "tags": [
+        "test",
+        "signature",
+        "mismatch"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/envd/signatures_test.go:generateSignature",
+      "type": "function",
+      "name": "generateSignature",
+      "filePath": "tests/integration/internal/tests/envd/signatures_test.go",
+      "lineRange": [
+        245,
+        256
+      ],
+      "summary": "辅助函数：根据路径、用户、操作、过期时间与访问令牌生成签名。",
+      "tags": [
+        "test",
+        "signature",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go:TestHardwareEntropyDeviceAvailability",
+      "type": "function",
+      "name": "TestHardwareEntropyDeviceAvailability",
+      "filePath": "tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "lineRange": [
+        14,
+        38
+      ],
+      "summary": "验证沙箱内硬件熵设备可用并提供随机数据。",
+      "tags": [
+        "test",
+        "entropy",
+        "hardware"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/team_test.go:TestBannedTeam",
+      "type": "function",
+      "name": "TestBannedTeam",
+      "filePath": "tests/integration/internal/tests/team_test.go",
+      "lineRange": [
+        21,
+        46
+      ],
+      "summary": "验证被封禁（banned）团队调用 API 时返回禁止错误。",
+      "tags": [
+        "test",
+        "team",
+        "access-control"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/team_test.go:TestBlockedTeam",
+      "type": "function",
+      "name": "TestBlockedTeam",
+      "filePath": "tests/integration/internal/tests/team_test.go",
+      "lineRange": [
+        61,
+        136
+      ],
+      "summary": "验证被阻塞（blocked）团队调用 API 时返回正确错误响应。",
+      "tags": [
+        "test",
+        "team",
+        "access-control"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/sandbox.go:AcquireSandboxSlot",
+      "type": "function",
+      "name": "AcquireSandboxSlot",
+      "filePath": "tests/integration/internal/utils/sandbox.go",
+      "lineRange": [
+        34,
+        41
+      ],
+      "summary": "基于信号量阻塞获取并发沙箱创建槽位，配合 t.Cleanup 自动释放。",
+      "tags": [
+        "utility",
+        "sandbox",
+        "concurrency"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/sandbox.go:SetupSandboxWithCleanup",
+      "type": "function",
+      "name": "SetupSandboxWithCleanup",
+      "filePath": "tests/integration/internal/utils/sandbox.go",
+      "lineRange": [
+        122,
+        192
+      ],
+      "summary": "创建沙箱并注册 t.Cleanup 自动销毁，是测试最常用的沙箱启动入口。",
+      "tags": [
+        "utility",
+        "sandbox",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/sandbox.go:TeardownSandbox",
+      "type": "function",
+      "name": "TeardownSandbox",
+      "filePath": "tests/integration/internal/utils/sandbox.go",
+      "lineRange": [
+        195,
+        204
+      ],
+      "summary": "通过 orchestrator 客户端销毁指定沙箱。",
+      "tags": [
+        "utility",
+        "sandbox",
+        "lifecycle"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/template.go:BuildTemplate",
+      "type": "function",
+      "name": "BuildTemplate",
+      "filePath": "tests/integration/internal/utils/template.go",
+      "lineRange": [
+        55,
+        87
+      ],
+      "summary": "模板构建高层入口：发起构建并等待完成。",
+      "tags": [
+        "utility",
+        "template",
+        "build"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/template.go:WaitForBuildCompletion",
+      "type": "function",
+      "name": "WaitForBuildCompletion",
+      "filePath": "tests/integration/internal/utils/template.go",
+      "lineRange": [
+        90,
+        152
+      ],
+      "summary": "轮询模板构建状态直到完成或超时，期间可回调日志处理。",
+      "tags": [
+        "utility",
+        "template",
+        "polling"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/template.go:requestTemplateBuild",
+      "type": "function",
+      "name": "requestTemplateBuild",
+      "filePath": "tests/integration/internal/utils/template.go",
+      "lineRange": [
+        155,
+        187
+      ],
+      "summary": "向 API 发起模板构建请求并返回构建 ID。",
+      "tags": [
+        "utility",
+        "template",
+        "api"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/template.go:startTemplateBuild",
+      "type": "function",
+      "name": "startTemplateBuild",
+      "filePath": "tests/integration/internal/utils/template.go",
+      "lineRange": [
+        190,
+        211
+      ],
+      "summary": "启动模板构建（含构建数据上传）的请求封装。",
+      "tags": [
+        "utility",
+        "template",
+        "api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/template.go:BuildSimpleTemplate",
+      "type": "function",
+      "name": "BuildSimpleTemplate",
+      "filePath": "tests/integration/internal/utils/template.go",
+      "lineRange": [
+        224,
+        236
+      ],
+      "summary": "使用默认资源规格快速构建一个简单模板。",
+      "tags": [
+        "utility",
+        "template",
+        "build"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/user.go:CreateUser",
+      "type": "function",
+      "name": "CreateUser",
+      "filePath": "tests/integration/internal/utils/user.go",
+      "lineRange": [
+        13,
+        35
+      ],
+      "summary": "在 auth 数据库创建测试用户并在测试结束时自动清理。",
+      "tags": [
+        "utility",
+        "user",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:tests/integration/internal/tests/team_test.go:ForbiddenErrorResponse",
+      "type": "class",
+      "name": "ForbiddenErrorResponse",
+      "filePath": "tests/integration/internal/tests/team_test.go",
+      "lineRange": [
+        16,
+        19
+      ],
+      "summary": "用于解析禁止访问错误响应的 JSON 数据模型。",
+      "tags": [
+        "test",
+        "error-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:tests/integration/internal/utils/sandbox.go:SandboxConfig",
+      "type": "class",
+      "name": "SandboxConfig",
+      "filePath": "tests/integration/internal/utils/sandbox.go",
+      "lineRange": [
+        43,
+        53
+      ],
+      "summary": "沙箱创建配置：使用 functional options 链式组装 metadata、timeout、auto-pause 等。",
+      "tags": [
+        "utility",
+        "sandbox",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:tests/integration/internal/utils/template.go:TemplateBuildOptions",
+      "type": "class",
+      "name": "TemplateBuildOptions",
+      "filePath": "tests/integration/internal/utils/template.go",
+      "lineRange": [
+        26,
+        36
+      ],
+      "summary": "模板构建参数集合：名称、CPU、内存、构建数据、超时与日志处理。",
+      "tags": [
+        "utility",
+        "template",
+        "config"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "function:tests/integration/internal/tests/envd/signatures_test.go:TestDownloadFileWhenAuthIsDisabled",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "function:tests/integration/internal/tests/envd/signatures_test.go:TestDownloadFileWhenAuthIsDisabled",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "function:tests/integration/internal/tests/envd/signatures_test.go:TestDownloadFileWithoutSigningWhenAuthIsEnabled",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "function:tests/integration/internal/tests/envd/signatures_test.go:TestDownloadFileWithoutSigningWhenAuthIsEnabled",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "function:tests/integration/internal/tests/envd/signatures_test.go:TestDownloadFileWithSigningWhenAuthIsEnabled",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "function:tests/integration/internal/tests/envd/signatures_test.go:TestDownloadFileWithSigningWhenAuthIsEnabled",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "function:tests/integration/internal/tests/envd/signatures_test.go:TestDownloadWithAlreadyExpiredToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "function:tests/integration/internal/tests/envd/signatures_test.go:TestDownloadWithAlreadyExpiredToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "function:tests/integration/internal/tests/envd/signatures_test.go:TestDownloadWithHealthyToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "function:tests/integration/internal/tests/envd/signatures_test.go:TestDownloadWithHealthyToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "function:tests/integration/internal/tests/envd/signatures_test.go:TestAccessWithNotCorrespondingSignatureAndSignatureExpiration",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "function:tests/integration/internal/tests/envd/signatures_test.go:TestAccessWithNotCorrespondingSignatureAndSignatureExpiration",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "function:tests/integration/internal/tests/envd/signatures_test.go:generateSignature",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "target": "function:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go:TestHardwareEntropyDeviceAvailability",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "target": "function:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go:TestHardwareEntropyDeviceAvailability",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "function:tests/integration/internal/tests/team_test.go:TestBannedTeam",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "function:tests/integration/internal/tests/team_test.go:TestBannedTeam",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "function:tests/integration/internal/tests/team_test.go:TestBlockedTeam",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "function:tests/integration/internal/tests/team_test.go:TestBlockedTeam",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/sandbox.go",
+      "target": "function:tests/integration/internal/utils/sandbox.go:AcquireSandboxSlot",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/sandbox.go",
+      "target": "function:tests/integration/internal/utils/sandbox.go:AcquireSandboxSlot",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/sandbox.go",
+      "target": "function:tests/integration/internal/utils/sandbox.go:SetupSandboxWithCleanup",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/sandbox.go",
+      "target": "function:tests/integration/internal/utils/sandbox.go:SetupSandboxWithCleanup",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/sandbox.go",
+      "target": "function:tests/integration/internal/utils/sandbox.go:TeardownSandbox",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/sandbox.go",
+      "target": "function:tests/integration/internal/utils/sandbox.go:TeardownSandbox",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "function:tests/integration/internal/utils/template.go:BuildTemplate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "function:tests/integration/internal/utils/template.go:BuildTemplate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "function:tests/integration/internal/utils/template.go:WaitForBuildCompletion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "function:tests/integration/internal/utils/template.go:WaitForBuildCompletion",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "function:tests/integration/internal/utils/template.go:requestTemplateBuild",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "function:tests/integration/internal/utils/template.go:startTemplateBuild",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "function:tests/integration/internal/utils/template.go:BuildSimpleTemplate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "function:tests/integration/internal/utils/template.go:BuildSimpleTemplate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/user.go",
+      "target": "function:tests/integration/internal/utils/user.go:CreateUser",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/user.go",
+      "target": "function:tests/integration/internal/utils/user.go:CreateUser",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "class:tests/integration/internal/tests/team_test.go:ForbiddenErrorResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "class:tests/integration/internal/tests/team_test.go:ForbiddenErrorResponse",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/sandbox.go",
+      "target": "class:tests/integration/internal/utils/sandbox.go:SandboxConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/sandbox.go",
+      "target": "class:tests/integration/internal/utils/sandbox.go:SandboxConfig",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "class:tests/integration/internal/utils/template.go:TemplateBuildOptions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "class:tests/integration/internal/utils/template.go:TemplateBuildOptions",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "file:tests/integration/internal/envd/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "file:tests/integration/internal/envd/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "file:tests/integration/internal/envd/types.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/signatures_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_entropy_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/team_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/sandbox.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/sandbox.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/sandbox.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/sandbox.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/sandbox.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/sandbox.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/sandbox.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/template.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/user.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/user.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/user.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/user.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/user.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

@@ -1,0 +1,1985 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 4,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/clickhouse/pkg/batcher/batcher.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 243,
+      "nonEmptyLines": 193,
+      "functions": [
+        {
+          "name": "NewBatcher",
+          "startLine": 98,
+          "endLine": 126,
+          "params": [
+            "fn",
+            "cfg"
+          ]
+        },
+        {
+          "name": "Start",
+          "startLine": 129,
+          "endLine": 147,
+          "params": [
+            "ctx"
+          ]
+        },
+        {
+          "name": "Stop",
+          "startLine": 150,
+          "endLine": 165,
+          "params": []
+        },
+        {
+          "name": "Push",
+          "startLine": 169,
+          "endLine": 187,
+          "params": [
+            "item"
+          ]
+        },
+        {
+          "name": "QueueLen",
+          "startLine": 190,
+          "endLine": 192,
+          "params": []
+        },
+        {
+          "name": "processBatches",
+          "startLine": 194,
+          "endLine": 243,
+          "params": [
+            "ctx"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Batcher",
+          "startLine": 42,
+          "endLine": 67,
+          "methods": [],
+          "properties": [
+            "Func",
+            "MaxBatchSize",
+            "MaxDelay",
+            "QueueSize",
+            "ErrorHandler",
+            "mu",
+            "ch",
+            "doneCh",
+            "started",
+            "attrs"
+          ]
+        },
+        {
+          "name": "BatcherOptions",
+          "startLine": 75,
+          "endLine": 95,
+          "methods": [],
+          "properties": [
+            "Name",
+            "MaxBatchSize",
+            "MaxDelay",
+            "QueueSize",
+            "ErrorHandler"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Batcher",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "BatcherOptions",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "NewBatcher",
+          "line": 98,
+          "isDefault": false
+        },
+        {
+          "name": "Start",
+          "line": 129,
+          "isDefault": false
+        },
+        {
+          "name": "Stop",
+          "line": 150,
+          "isDefault": false
+        },
+        {
+          "name": "Push",
+          "line": 169,
+          "isDefault": false
+        },
+        {
+          "name": "QueueLen",
+          "line": 190,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewBatcher",
+          "callee": "metric.WithAttributeSet",
+          "lineNumber": 106
+        },
+        {
+          "caller": "NewBatcher",
+          "callee": "attribute.NewSet",
+          "lineNumber": 106
+        },
+        {
+          "caller": "NewBatcher",
+          "callee": "attribute.String",
+          "lineNumber": 106
+        },
+        {
+          "caller": "Start",
+          "callee": "b.mu.Lock",
+          "lineNumber": 130
+        },
+        {
+          "caller": "Start",
+          "callee": "b.mu.Unlock",
+          "lineNumber": 131
+        },
+        {
+          "caller": "Start",
+          "callee": "make",
+          "lineNumber": 137
+        },
+        {
+          "caller": "Start",
+          "callee": "make",
+          "lineNumber": 138
+        },
+        {
+          "caller": "Start",
+          "callee": "func() {\n\t\tb.processBatches(ctx)\n\t\tclose(b.doneCh)\n\t}",
+          "lineNumber": 141
+        },
+        {
+          "caller": "Start",
+          "callee": "b.processBatches",
+          "lineNumber": 142
+        },
+        {
+          "caller": "Start",
+          "callee": "close",
+          "lineNumber": 143
+        },
+        {
+          "caller": "Stop",
+          "callee": "b.mu.Lock",
+          "lineNumber": 151
+        },
+        {
+          "caller": "Stop",
+          "callee": "b.mu.Unlock",
+          "lineNumber": 153
+        },
+        {
+          "caller": "Stop",
+          "callee": "close",
+          "lineNumber": 159
+        },
+        {
+          "caller": "Stop",
+          "callee": "b.mu.Unlock",
+          "lineNumber": 160
+        },
+        {
+          "caller": "Push",
+          "callee": "b.mu.RLock",
+          "lineNumber": 170
+        },
+        {
+          "caller": "Push",
+          "callee": "b.mu.RUnlock",
+          "lineNumber": 171
+        },
+        {
+          "caller": "Push",
+          "callee": "mQueueLen.Record",
+          "lineNumber": 179
+        },
+        {
+          "caller": "Push",
+          "callee": "context.Background",
+          "lineNumber": 179
+        },
+        {
+          "caller": "Push",
+          "callee": "int64",
+          "lineNumber": 179
+        },
+        {
+          "caller": "Push",
+          "callee": "len",
+          "lineNumber": 179
+        },
+        {
+          "caller": "Push",
+          "callee": "mItemsDropped.Add",
+          "lineNumber": 183
+        },
+        {
+          "caller": "Push",
+          "callee": "context.Background",
+          "lineNumber": 183
+        },
+        {
+          "caller": "QueueLen",
+          "callee": "len",
+          "lineNumber": 191
+        },
+        {
+          "caller": "processBatches",
+          "callee": "time.NewTicker",
+          "lineNumber": 200
+        },
+        {
+          "caller": "processBatches",
+          "callee": "ticker.Stop",
+          "lineNumber": 201
+        },
+        {
+          "caller": "processBatches",
+          "callee": "len",
+          "lineNumber": 204
+        },
+        {
+          "caller": "processBatches",
+          "callee": "mFlushWaitDuration.Record",
+          "lineNumber": 208
+        },
+        {
+          "caller": "processBatches",
+          "callee": "time.Since(batchStartTime).Milliseconds",
+          "lineNumber": 208
+        },
+        {
+          "caller": "processBatches",
+          "callee": "time.Since",
+          "lineNumber": 208
+        },
+        {
+          "caller": "processBatches",
+          "callee": "time.Now",
+          "lineNumber": 209
+        },
+        {
+          "caller": "processBatches",
+          "callee": "b.Func",
+          "lineNumber": 210
+        },
+        {
+          "caller": "processBatches",
+          "callee": "b.ErrorHandler",
+          "lineNumber": 211
+        },
+        {
+          "caller": "processBatches",
+          "callee": "mFlushBatchSize.Record",
+          "lineNumber": 214
+        },
+        {
+          "caller": "processBatches",
+          "callee": "int64",
+          "lineNumber": 214
+        },
+        {
+          "caller": "processBatches",
+          "callee": "len",
+          "lineNumber": 214
+        },
+        {
+          "caller": "processBatches",
+          "callee": "mFlushDuration.Record",
+          "lineNumber": 215
+        },
+        {
+          "caller": "processBatches",
+          "callee": "time.Since(start).Milliseconds",
+          "lineNumber": 215
+        },
+        {
+          "caller": "processBatches",
+          "callee": "time.Since",
+          "lineNumber": 215
+        },
+        {
+          "caller": "processBatches",
+          "callee": "mQueueLen.Record",
+          "lineNumber": 216
+        },
+        {
+          "caller": "processBatches",
+          "callee": "int64",
+          "lineNumber": 216
+        },
+        {
+          "caller": "processBatches",
+          "callee": "len",
+          "lineNumber": 216
+        },
+        {
+          "caller": "processBatches",
+          "callee": "ticker.Reset",
+          "lineNumber": 219
+        },
+        {
+          "caller": "processBatches",
+          "callee": "flush",
+          "lineNumber": 226
+        },
+        {
+          "caller": "processBatches",
+          "callee": "len",
+          "lineNumber": 231
+        },
+        {
+          "caller": "processBatches",
+          "callee": "time.Now",
+          "lineNumber": 232
+        },
+        {
+          "caller": "processBatches",
+          "callee": "append",
+          "lineNumber": 235
+        },
+        {
+          "caller": "processBatches",
+          "callee": "len",
+          "lineNumber": 236
+        },
+        {
+          "caller": "processBatches",
+          "callee": "flush",
+          "lineNumber": 237
+        },
+        {
+          "caller": "processBatches",
+          "callee": "flush",
+          "lineNumber": 240
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 7,
+        "functionCount": 6,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/clickhouse/pkg/batcher/batcher_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 310,
+      "nonEmptyLines": 284,
+      "functions": [
+        {
+          "name": "TestBatcherStartStop",
+          "startLine": 12,
+          "endLine": 26,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestBatcherPushNotStarted",
+          "startLine": 28,
+          "endLine": 37,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestBatcherStopNotStarted",
+          "startLine": 39,
+          "endLine": 48,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestBatcherDoubleStop",
+          "startLine": 50,
+          "endLine": 65,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestBatcherDoubleStart",
+          "startLine": 67,
+          "endLine": 79,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestBatcherPushStop",
+          "startLine": 81,
+          "endLine": 107,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestBatcherPushMaxBatchSize",
+          "startLine": 109,
+          "endLine": 117,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestBatcherPushMaxDelay",
+          "startLine": 119,
+          "endLine": 124,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestBatcherConcurrentPush",
+          "startLine": 126,
+          "endLine": 160,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestBatcherQueueSize",
+          "startLine": 162,
+          "endLine": 218,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "testBatcherPushMaxDelay",
+          "startLine": 220,
+          "endLine": 265,
+          "params": [
+            "t",
+            "itemsCount",
+            "maxDelay"
+          ]
+        },
+        {
+          "name": "testBatcherPushMaxBatchSize",
+          "startLine": 267,
+          "endLine": 310,
+          "params": [
+            "t",
+            "itemsCount",
+            "batchSize"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestBatcherStartStop",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "TestBatcherPushNotStarted",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "TestBatcherStopNotStarted",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "TestBatcherDoubleStop",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "TestBatcherDoubleStart",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "TestBatcherPushStop",
+          "line": 81,
+          "isDefault": false
+        },
+        {
+          "name": "TestBatcherPushMaxBatchSize",
+          "line": 109,
+          "isDefault": false
+        },
+        {
+          "name": "TestBatcherPushMaxDelay",
+          "line": 119,
+          "isDefault": false
+        },
+        {
+          "name": "TestBatcherConcurrentPush",
+          "line": 126,
+          "isDefault": false
+        },
+        {
+          "name": "TestBatcherQueueSize",
+          "line": 162,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestBatcherStartStop",
+          "callee": "t.Parallel",
+          "lineNumber": 13
+        },
+        {
+          "caller": "TestBatcherStartStop",
+          "callee": "NewBatcher[int]",
+          "lineNumber": 14
+        },
+        {
+          "caller": "TestBatcherStartStop",
+          "callee": "t.Fatal",
+          "lineNumber": 16
+        },
+        {
+          "caller": "TestBatcherStartStop",
+          "callee": "b.Start",
+          "lineNumber": 19
+        },
+        {
+          "caller": "TestBatcherStartStop",
+          "callee": "t.Context",
+          "lineNumber": 19
+        },
+        {
+          "caller": "TestBatcherStartStop",
+          "callee": "t.Fatal",
+          "lineNumber": 20
+        },
+        {
+          "caller": "TestBatcherStartStop",
+          "callee": "b.Stop",
+          "lineNumber": 22
+        },
+        {
+          "caller": "TestBatcherStartStop",
+          "callee": "t.Fatal",
+          "lineNumber": 23
+        },
+        {
+          "caller": "TestBatcherPushNotStarted",
+          "callee": "t.Parallel",
+          "lineNumber": 29
+        },
+        {
+          "caller": "TestBatcherPushNotStarted",
+          "callee": "NewBatcher[int]",
+          "lineNumber": 30
+        },
+        {
+          "caller": "TestBatcherPushNotStarted",
+          "callee": "t.Fatal",
+          "lineNumber": 32
+        },
+        {
+          "caller": "TestBatcherPushNotStarted",
+          "callee": "b.Push",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestBatcherPushNotStarted",
+          "callee": "errors.Is",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestBatcherPushNotStarted",
+          "callee": "t.Fatalf",
+          "lineNumber": 35
+        },
+        {
+          "caller": "TestBatcherStopNotStarted",
+          "callee": "t.Parallel",
+          "lineNumber": 40
+        },
+        {
+          "caller": "TestBatcherStopNotStarted",
+          "callee": "NewBatcher[int]",
+          "lineNumber": 41
+        },
+        {
+          "caller": "TestBatcherStopNotStarted",
+          "callee": "t.Fatal",
+          "lineNumber": 43
+        },
+        {
+          "caller": "TestBatcherStopNotStarted",
+          "callee": "b.Stop",
+          "lineNumber": 45
+        },
+        {
+          "caller": "TestBatcherStopNotStarted",
+          "callee": "errors.Is",
+          "lineNumber": 45
+        },
+        {
+          "caller": "TestBatcherStopNotStarted",
+          "callee": "t.Fatalf",
+          "lineNumber": 46
+        },
+        {
+          "caller": "TestBatcherDoubleStop",
+          "callee": "t.Parallel",
+          "lineNumber": 51
+        },
+        {
+          "caller": "TestBatcherDoubleStop",
+          "callee": "NewBatcher[int]",
+          "lineNumber": 52
+        },
+        {
+          "caller": "TestBatcherDoubleStop",
+          "callee": "t.Fatal",
+          "lineNumber": 54
+        },
+        {
+          "caller": "TestBatcherDoubleStop",
+          "callee": "b.Start",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TestBatcherDoubleStop",
+          "callee": "t.Context",
+          "lineNumber": 56
+        },
+        {
+          "caller": "TestBatcherDoubleStop",
+          "callee": "t.Fatal",
+          "lineNumber": 57
+        },
+        {
+          "caller": "TestBatcherDoubleStop",
+          "callee": "b.Stop",
+          "lineNumber": 59
+        },
+        {
+          "caller": "TestBatcherDoubleStop",
+          "callee": "t.Fatal",
+          "lineNumber": 60
+        },
+        {
+          "caller": "TestBatcherDoubleStop",
+          "callee": "b.Stop",
+          "lineNumber": 62
+        },
+        {
+          "caller": "TestBatcherDoubleStop",
+          "callee": "errors.Is",
+          "lineNumber": 62
+        },
+        {
+          "caller": "TestBatcherDoubleStop",
+          "callee": "t.Fatalf",
+          "lineNumber": 63
+        },
+        {
+          "caller": "TestBatcherDoubleStart",
+          "callee": "t.Parallel",
+          "lineNumber": 68
+        },
+        {
+          "caller": "TestBatcherDoubleStart",
+          "callee": "NewBatcher[int]",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestBatcherDoubleStart",
+          "callee": "t.Fatal",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TestBatcherDoubleStart",
+          "callee": "b.Start",
+          "lineNumber": 73
+        },
+        {
+          "caller": "TestBatcherDoubleStart",
+          "callee": "t.Context",
+          "lineNumber": 73
+        },
+        {
+          "caller": "TestBatcherDoubleStart",
+          "callee": "t.Fatal",
+          "lineNumber": 74
+        },
+        {
+          "caller": "TestBatcherDoubleStart",
+          "callee": "b.Start",
+          "lineNumber": 76
+        },
+        {
+          "caller": "TestBatcherDoubleStart",
+          "callee": "t.Context",
+          "lineNumber": 76
+        },
+        {
+          "caller": "TestBatcherDoubleStart",
+          "callee": "errors.Is",
+          "lineNumber": 76
+        },
+        {
+          "caller": "TestBatcherDoubleStart",
+          "callee": "t.Fatalf",
+          "lineNumber": 77
+        },
+        {
+          "caller": "TestBatcherPushStop",
+          "callee": "t.Parallel",
+          "lineNumber": 82
+        },
+        {
+          "caller": "TestBatcherPushStop",
+          "callee": "NewBatcher[int]",
+          "lineNumber": 84
+        },
+        {
+          "caller": "TestBatcherPushStop",
+          "callee": "len",
+          "lineNumber": 85
+        },
+        {
+          "caller": "TestBatcherPushStop",
+          "callee": "t.Fatal",
+          "lineNumber": 90
+        },
+        {
+          "caller": "TestBatcherPushStop",
+          "callee": "b.Start",
+          "lineNumber": 92
+        },
+        {
+          "caller": "TestBatcherPushStop",
+          "callee": "t.Context",
+          "lineNumber": 92
+        },
+        {
+          "caller": "TestBatcherPushStop",
+          "callee": "t.Fatal",
+          "lineNumber": 93
+        },
+        {
+          "caller": "TestBatcherPushStop",
+          "callee": "b.Push",
+          "lineNumber": 96
+        },
+        {
+          "caller": "TestBatcherPushStop",
+          "callee": "t.Fatalf",
+          "lineNumber": 97
+        },
+        {
+          "caller": "TestBatcherPushStop",
+          "callee": "b.Stop",
+          "lineNumber": 100
+        },
+        {
+          "caller": "TestBatcherPushStop",
+          "callee": "t.Fatal",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestBatcherPushStop",
+          "callee": "t.Fatalf",
+          "lineNumber": 105
+        },
+        {
+          "caller": "TestBatcherPushMaxBatchSize",
+          "callee": "t.Parallel",
+          "lineNumber": 110
+        },
+        {
+          "caller": "TestBatcherPushMaxBatchSize",
+          "callee": "testBatcherPushMaxBatchSize",
+          "lineNumber": 111
+        },
+        {
+          "caller": "TestBatcherPushMaxBatchSize",
+          "callee": "testBatcherPushMaxBatchSize",
+          "lineNumber": 112
+        },
+        {
+          "caller": "TestBatcherPushMaxBatchSize",
+          "callee": "testBatcherPushMaxBatchSize",
+          "lineNumber": 113
+        },
+        {
+          "caller": "TestBatcherPushMaxBatchSize",
+          "callee": "testBatcherPushMaxBatchSize",
+          "lineNumber": 114
+        },
+        {
+          "caller": "TestBatcherPushMaxBatchSize",
+          "callee": "testBatcherPushMaxBatchSize",
+          "lineNumber": 115
+        },
+        {
+          "caller": "TestBatcherPushMaxBatchSize",
+          "callee": "testBatcherPushMaxBatchSize",
+          "lineNumber": 116
+        },
+        {
+          "caller": "TestBatcherPushMaxDelay",
+          "callee": "t.Parallel",
+          "lineNumber": 120
+        },
+        {
+          "caller": "TestBatcherPushMaxDelay",
+          "callee": "testBatcherPushMaxDelay",
+          "lineNumber": 121
+        },
+        {
+          "caller": "TestBatcherPushMaxDelay",
+          "callee": "testBatcherPushMaxDelay",
+          "lineNumber": 122
+        },
+        {
+          "caller": "TestBatcherPushMaxDelay",
+          "callee": "testBatcherPushMaxDelay",
+          "lineNumber": 123
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "t.Parallel",
+          "lineNumber": 127
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "uint32",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "NewBatcher[uint32]",
+          "lineNumber": 129
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "atomic.AddUint32",
+          "lineNumber": 131
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "t.Fatal",
+          "lineNumber": 137
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "b.Start",
+          "lineNumber": 139
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "t.Context",
+          "lineNumber": 139
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "t.Fatal",
+          "lineNumber": 140
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "uint32",
+          "lineNumber": 143
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "wg.Go",
+          "lineNumber": 145
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "b.Push",
+          "lineNumber": 147
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "uint32",
+          "lineNumber": 147
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "time.Sleep",
+          "lineNumber": 148
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "atomic.AddUint32",
+          "lineNumber": 149
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "uint32",
+          "lineNumber": 149
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "wg.Wait",
+          "lineNumber": 153
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "b.Stop",
+          "lineNumber": 154
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "t.Fatal",
+          "lineNumber": 155
+        },
+        {
+          "caller": "TestBatcherConcurrentPush",
+          "callee": "t.Fatalf",
+          "lineNumber": 158
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "t.Parallel",
+          "lineNumber": 163
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "make",
+          "lineNumber": 164
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "NewBatcher[int]",
+          "lineNumber": 166
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "len",
+          "lineNumber": 168
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "t.Fatal",
+          "lineNumber": 177
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "b.Start",
+          "lineNumber": 179
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "t.Context",
+          "lineNumber": 179
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "t.Fatal",
+          "lineNumber": 180
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "b.Push",
+          "lineNumber": 183
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "t.Fatalf",
+          "lineNumber": 184
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "time.Sleep",
+          "lineNumber": 187
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "b.Push",
+          "lineNumber": 189
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "t.Fatalf",
+          "lineNumber": 190
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "b.QueueLen",
+          "lineNumber": 193
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "t.Fatalf",
+          "lineNumber": 194
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "b.QueueLen",
+          "lineNumber": 194
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "b.Push",
+          "lineNumber": 199
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "errors.Is",
+          "lineNumber": 199
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "t.Fatalf",
+          "lineNumber": 200
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "close",
+          "lineNumber": 204
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "time.Sleep",
+          "lineNumber": 205
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "b.Push",
+          "lineNumber": 207
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "t.Fatalf",
+          "lineNumber": 208
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "b.Stop",
+          "lineNumber": 211
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "t.Fatal",
+          "lineNumber": 212
+        },
+        {
+          "caller": "TestBatcherQueueSize",
+          "callee": "t.Fatalf",
+          "lineNumber": 216
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "t.Helper",
+          "lineNumber": 221
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "time.Now",
+          "lineNumber": 223
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "NewBatcher[int]",
+          "lineNumber": 226
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "time.Since",
+          "lineNumber": 227
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "t.Fatalf",
+          "lineNumber": 228
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "time.Since",
+          "lineNumber": 229
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "time.Now",
+          "lineNumber": 231
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "len",
+          "lineNumber": 232
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "t.Fatal",
+          "lineNumber": 241
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "b.Start",
+          "lineNumber": 243
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "t.Context",
+          "lineNumber": 243
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "t.Fatal",
+          "lineNumber": 244
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "b.Push",
+          "lineNumber": 247
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "t.Fatalf",
+          "lineNumber": 248
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "time.Sleep",
+          "lineNumber": 250
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "b.Stop",
+          "lineNumber": 252
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "t.Fatal",
+          "lineNumber": 253
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "maxDelay.Seconds",
+          "lineNumber": 256
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "int",
+          "lineNumber": 257
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "float64",
+          "lineNumber": 257
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "t.Fatalf",
+          "lineNumber": 259
+        },
+        {
+          "caller": "testBatcherPushMaxDelay",
+          "callee": "t.Fatalf",
+          "lineNumber": 263
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "t.Helper",
+          "lineNumber": 268
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "NewBatcher[int]",
+          "lineNumber": 272
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "len",
+          "lineNumber": 273
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "t.Fatalf",
+          "lineNumber": 274
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "len",
+          "lineNumber": 274
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "len",
+          "lineNumber": 276
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "t.Fatalf",
+          "lineNumber": 277
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "len",
+          "lineNumber": 279
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "t.Fatal",
+          "lineNumber": 288
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "b.Start",
+          "lineNumber": 290
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "t.Context",
+          "lineNumber": 290
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "t.Fatal",
+          "lineNumber": 291
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "b.Push",
+          "lineNumber": 294
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "t.Fatalf",
+          "lineNumber": 295
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "b.Stop",
+          "lineNumber": 298
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "t.Fatal",
+          "lineNumber": 299
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "t.Fatalf",
+          "lineNumber": 304
+        },
+        {
+          "caller": "testBatcherPushMaxBatchSize",
+          "callee": "t.Fatalf",
+          "lineNumber": 308
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 10,
+        "functionCount": 12,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/clickhouse/pkg/events/delivery.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 195,
+      "nonEmptyLines": 161,
+      "functions": [
+        {
+          "name": "NewDefaultClickhouseSandboxEventsDelivery",
+          "startLine": 66,
+          "endLine": 84,
+          "params": [
+            "ctx",
+            "conn",
+            "featureFlags",
+            "batcherName"
+          ]
+        },
+        {
+          "name": "NewGatedDelivery",
+          "startLine": 86,
+          "endLine": 88,
+          "params": [
+            "inner",
+            "featureFlags"
+          ]
+        },
+        {
+          "name": "NewClickhouseSandboxEventsDelivery",
+          "startLine": 90,
+          "endLine": 104,
+          "params": [
+            "ctx",
+            "conn",
+            "opts"
+          ]
+        },
+        {
+          "name": "Publish",
+          "startLine": 106,
+          "endLine": 136,
+          "params": [
+            "_",
+            "_",
+            "event"
+          ]
+        },
+        {
+          "name": "Publish",
+          "startLine": 138,
+          "endLine": 144,
+          "params": [
+            "ctx",
+            "key",
+            "event"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 147,
+          "endLine": 149,
+          "params": [
+            "_"
+          ]
+        },
+        {
+          "name": "batchInserter",
+          "startLine": 151,
+          "endLine": 195,
+          "params": [
+            "ctx",
+            "events"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ClickhouseDelivery",
+          "startLine": 51,
+          "endLine": 54,
+          "methods": [
+            "Publish",
+            "Close",
+            "batchInserter"
+          ],
+          "properties": [
+            "batcher",
+            "conn"
+          ]
+        },
+        {
+          "name": "GatedClickhouseDelivery",
+          "startLine": 56,
+          "endLine": 60,
+          "methods": [
+            "Publish"
+          ],
+          "properties": [
+            "ff"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ClickhouseDelivery",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "GatedClickhouseDelivery",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "NewDefaultClickhouseSandboxEventsDelivery",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "NewGatedDelivery",
+          "line": 86,
+          "isDefault": false
+        },
+        {
+          "name": "NewClickhouseSandboxEventsDelivery",
+          "line": 90,
+          "isDefault": false
+        },
+        {
+          "name": "Publish",
+          "line": 106,
+          "isDefault": false
+        },
+        {
+          "name": "Publish",
+          "line": 138,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 147,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewDefaultClickhouseSandboxEventsDelivery",
+          "callee": "featureFlags.IntFlag",
+          "lineNumber": 67
+        },
+        {
+          "caller": "NewDefaultClickhouseSandboxEventsDelivery",
+          "callee": "time.Duration",
+          "lineNumber": 69
+        },
+        {
+          "caller": "NewDefaultClickhouseSandboxEventsDelivery",
+          "callee": "featureFlags.IntFlag",
+          "lineNumber": 69
+        },
+        {
+          "caller": "NewDefaultClickhouseSandboxEventsDelivery",
+          "callee": "featureFlags.IntFlag",
+          "lineNumber": 71
+        },
+        {
+          "caller": "NewDefaultClickhouseSandboxEventsDelivery",
+          "callee": "NewClickhouseSandboxEventsDelivery",
+          "lineNumber": 73
+        },
+        {
+          "caller": "NewDefaultClickhouseSandboxEventsDelivery",
+          "callee": "logger.L().Error",
+          "lineNumber": 80
+        },
+        {
+          "caller": "NewDefaultClickhouseSandboxEventsDelivery",
+          "callee": "logger.L",
+          "lineNumber": 80
+        },
+        {
+          "caller": "NewDefaultClickhouseSandboxEventsDelivery",
+          "callee": "zap.Error",
+          "lineNumber": 80
+        },
+        {
+          "caller": "NewClickhouseSandboxEventsDelivery",
+          "callee": "batcher.NewBatcher",
+          "lineNumber": 94
+        },
+        {
+          "caller": "NewClickhouseSandboxEventsDelivery",
+          "callee": "fmt.Errorf",
+          "lineNumber": 96
+        },
+        {
+          "caller": "NewClickhouseSandboxEventsDelivery",
+          "callee": "delivery.batcher.Start",
+          "lineNumber": 99
+        },
+        {
+          "caller": "NewClickhouseSandboxEventsDelivery",
+          "callee": "fmt.Errorf",
+          "lineNumber": 100
+        },
+        {
+          "caller": "Publish",
+          "callee": "json.Marshal",
+          "lineNumber": 107
+        },
+        {
+          "caller": "Publish",
+          "callee": "string",
+          "lineNumber": 112
+        },
+        {
+          "caller": "Publish",
+          "callee": "c.batcher.Push",
+          "lineNumber": 122
+        },
+        {
+          "caller": "Publish",
+          "callee": "c.ff.BoolFlag",
+          "lineNumber": 139
+        },
+        {
+          "caller": "Publish",
+          "callee": "c.ClickhouseDelivery.Publish",
+          "lineNumber": 140
+        },
+        {
+          "caller": "Close",
+          "callee": "c.batcher.Stop",
+          "lineNumber": 148
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "trace.WithAttributes",
+          "lineNumber": 152
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "attribute.Int",
+          "lineNumber": 152
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "len",
+          "lineNumber": 152
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "tracer.Start",
+          "lineNumber": 153
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "span.End",
+          "lineNumber": 154
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "c.conn.PrepareBatch",
+          "lineNumber": 156
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "driver.WithReleaseConnection",
+          "lineNumber": 156
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "span.RecordError",
+          "lineNumber": 158
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "span.SetStatus",
+          "lineNumber": 159
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "fmt.Errorf",
+          "lineNumber": 161
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "batch.Close",
+          "lineNumber": 163
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "batch.Append",
+          "lineNumber": 166
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "span.RecordError",
+          "lineNumber": 180
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "span.SetStatus",
+          "lineNumber": 181
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "fmt.Errorf",
+          "lineNumber": 183
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "len",
+          "lineNumber": 183
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "batch.Send",
+          "lineNumber": 187
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "span.RecordError",
+          "lineNumber": 188
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "span.SetStatus",
+          "lineNumber": 189
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "fmt.Errorf",
+          "lineNumber": 191
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "len",
+          "lineNumber": 191
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 8,
+        "functionCount": 7,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "packages/clickhouse/pkg/hoststats/delivery.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 173,
+      "nonEmptyLines": 145,
+      "functions": [
+        {
+          "name": "NewDefaultClickhouseHostStatsDelivery",
+          "startLine": 58,
+          "endLine": 79,
+          "params": [
+            "ctx",
+            "conn",
+            "featureFlags",
+            "batcherName"
+          ]
+        },
+        {
+          "name": "NewGatedDelivery",
+          "startLine": 81,
+          "endLine": 83,
+          "params": [
+            "inner",
+            "featureFlags"
+          ]
+        },
+        {
+          "name": "NewClickhouseHostStatsDelivery",
+          "startLine": 85,
+          "endLine": 103,
+          "params": [
+            "ctx",
+            "conn",
+            "opts"
+          ]
+        },
+        {
+          "name": "Push",
+          "startLine": 105,
+          "endLine": 107,
+          "params": [
+            "stat"
+          ]
+        },
+        {
+          "name": "Push",
+          "startLine": 109,
+          "endLine": 115,
+          "params": [
+            "stat"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 118,
+          "endLine": 120,
+          "params": [
+            "_"
+          ]
+        },
+        {
+          "name": "batchInserter",
+          "startLine": 122,
+          "endLine": 173,
+          "params": [
+            "ctx",
+            "stats"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ClickhouseDelivery",
+          "startLine": 43,
+          "endLine": 46,
+          "methods": [
+            "Push",
+            "Close",
+            "batchInserter"
+          ],
+          "properties": [
+            "batcher",
+            "conn"
+          ]
+        },
+        {
+          "name": "GatedClickhouseDelivery",
+          "startLine": 48,
+          "endLine": 52,
+          "methods": [
+            "Push"
+          ],
+          "properties": [
+            "ff"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ClickhouseDelivery",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "GatedClickhouseDelivery",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "NewDefaultClickhouseHostStatsDelivery",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "NewGatedDelivery",
+          "line": 81,
+          "isDefault": false
+        },
+        {
+          "name": "NewClickhouseHostStatsDelivery",
+          "line": 85,
+          "isDefault": false
+        },
+        {
+          "name": "Push",
+          "line": 105,
+          "isDefault": false
+        },
+        {
+          "name": "Push",
+          "line": 109,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 118,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewDefaultClickhouseHostStatsDelivery",
+          "callee": "featureFlags.IntFlag",
+          "lineNumber": 64
+        },
+        {
+          "caller": "NewDefaultClickhouseHostStatsDelivery",
+          "callee": "time.Duration",
+          "lineNumber": 65
+        },
+        {
+          "caller": "NewDefaultClickhouseHostStatsDelivery",
+          "callee": "featureFlags.IntFlag",
+          "lineNumber": 65
+        },
+        {
+          "caller": "NewDefaultClickhouseHostStatsDelivery",
+          "callee": "featureFlags.IntFlag",
+          "lineNumber": 66
+        },
+        {
+          "caller": "NewDefaultClickhouseHostStatsDelivery",
+          "callee": "NewClickhouseHostStatsDelivery",
+          "lineNumber": 68
+        },
+        {
+          "caller": "NewDefaultClickhouseHostStatsDelivery",
+          "callee": "logger.L().Error",
+          "lineNumber": 75
+        },
+        {
+          "caller": "NewDefaultClickhouseHostStatsDelivery",
+          "callee": "logger.L",
+          "lineNumber": 75
+        },
+        {
+          "caller": "NewDefaultClickhouseHostStatsDelivery",
+          "callee": "zap.Error",
+          "lineNumber": 75
+        },
+        {
+          "caller": "NewClickhouseHostStatsDelivery",
+          "callee": "batcher.NewBatcher",
+          "lineNumber": 93
+        },
+        {
+          "caller": "NewClickhouseHostStatsDelivery",
+          "callee": "fmt.Errorf",
+          "lineNumber": 95
+        },
+        {
+          "caller": "NewClickhouseHostStatsDelivery",
+          "callee": "delivery.batcher.Start",
+          "lineNumber": 98
+        },
+        {
+          "caller": "NewClickhouseHostStatsDelivery",
+          "callee": "fmt.Errorf",
+          "lineNumber": 99
+        },
+        {
+          "caller": "Push",
+          "callee": "c.batcher.Push",
+          "lineNumber": 106
+        },
+        {
+          "caller": "Push",
+          "callee": "c.ff.BoolFlag",
+          "lineNumber": 110
+        },
+        {
+          "caller": "Push",
+          "callee": "context.Background",
+          "lineNumber": 110
+        },
+        {
+          "caller": "Push",
+          "callee": "c.ClickhouseDelivery.Push",
+          "lineNumber": 111
+        },
+        {
+          "caller": "Close",
+          "callee": "c.batcher.Stop",
+          "lineNumber": 119
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "trace.WithAttributes",
+          "lineNumber": 123
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "attribute.Int",
+          "lineNumber": 123
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "len",
+          "lineNumber": 123
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "tracer.Start",
+          "lineNumber": 124
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "span.End",
+          "lineNumber": 125
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "c.conn.PrepareBatch",
+          "lineNumber": 127
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "driver.WithReleaseConnection",
+          "lineNumber": 127
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "span.RecordError",
+          "lineNumber": 129
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "span.SetStatus",
+          "lineNumber": 130
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "fmt.Errorf",
+          "lineNumber": 132
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "batch.Close",
+          "lineNumber": 134
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "batch.Append",
+          "lineNumber": 137
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "span.RecordError",
+          "lineNumber": 158
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "span.SetStatus",
+          "lineNumber": 159
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "fmt.Errorf",
+          "lineNumber": 161
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "len",
+          "lineNumber": 161
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "batch.Send",
+          "lineNumber": 165
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "span.RecordError",
+          "lineNumber": 166
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "span.SetStatus",
+          "lineNumber": 167
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "fmt.Errorf",
+          "lineNumber": 169
+        },
+        {
+          "caller": "batchInserter",
+          "callee": "len",
+          "lineNumber": 169
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 8,
+        "functionCount": 7,
+        "classCount": 2
+      }
+    }
+  ]
+}

@@ -1,0 +1,446 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/shared/pkg/grpc/orchestrator/chunks.pb.go",
+      "type": "file",
+      "name": "chunks.pb.go",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/chunks.pb.go",
+      "summary": "由 protoc-gen-go 从 chunks.proto 自动生成的 Go 消息类型，定义构建产物分片读取（GetBuildFileSize/GetBuildFileExists/ReadAtBuildSeekable/GetBuildBlob）所需的请求/响应结构以及用于缓存对等节点路由的 PeerAvailability。",
+      "tags": ["protobuf", "code-generation", "grpc-types", "build-cache", "data-model"],
+      "complexity": "complex",
+      "languageNotes": "纯 protobuf 生成代码，包含 9 个消息类型与 67 个 getter/序列化方法。"
+    },
+    {
+      "id": "file:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go",
+      "type": "file",
+      "name": "chunks_grpc.pb.go",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go",
+      "summary": "由 protoc-gen-go-grpc 生成的 gRPC 客户端/服务端桩代码，定义 ChunkService 的客户端构造器、服务端接口及四个 RPC（GetBuildFileSize、GetBuildFileExists、ReadAtBuildSeekable、GetBuildBlob）的方法处理器。",
+      "tags": ["grpc", "code-generation", "service-definition", "client", "server"],
+      "complexity": "moderate",
+      "languageNotes": "标准 protoc-gen-go-grpc 输出，包含 Client/Server 接口、Unimplemented 嵌入实现与服务注册函数。"
+    },
+    {
+      "id": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkserviceclient.go",
+      "type": "file",
+      "name": "mockchunkserviceclient.go",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/mocks/mockchunkserviceclient.go",
+      "summary": "由 mockery 生成的 ChunkServiceClient gRPC 客户端 mock，为四个 RPC 方法提供 EXPECT/Run/Return 链式 API，供单元测试断言调用参数与返回值。",
+      "tags": ["test", "mock", "grpc-client", "mockery", "test-double"],
+      "complexity": "complex",
+      "languageNotes": "mockery 风格：每个方法生成 *_Call 结构体与 Expecter 模式。"
+    },
+    {
+      "id": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobclient.go",
+      "type": "file",
+      "name": "mockchunkservicegetbuildblobclient.go",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobclient.go",
+      "summary": "GetBuildBlob 流式 RPC 客户端 stream mock，提供 CloseSend/Context/Header/Recv/RecvMsg/SendMsg/Trailer 等 stream 接口方法的 mockery 断言 API。",
+      "tags": ["test", "mock", "grpc-stream", "mockery", "test-double"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobserver.go",
+      "type": "file",
+      "name": "mockchunkservicegetbuildblobserver.go",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobserver.go",
+      "summary": "GetBuildBlob 流式 RPC 服务端 stream mock，覆盖 Context/SetHeader/SendHeader/SetTrailer/Send/SendMsg/RecvMsg 等服务端 stream 接口，用于测试服务端实现逻辑。",
+      "tags": ["test", "mock", "grpc-stream", "mockery", "test-double"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableclient.go",
+      "type": "file",
+      "name": "mockchunkservicereadatbuildseekableclient.go",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableclient.go",
+      "summary": "ReadAtBuildSeekable 流式 RPC 客户端 stream mock，覆盖完整 stream 接口方法以支持对构建产物可寻址读取的客户端侧单元测试。",
+      "tags": ["test", "mock", "grpc-stream", "mockery", "test-double"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableserver.go",
+      "type": "file",
+      "name": "mockchunkservicereadatbuildseekableserver.go",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableserver.go",
+      "summary": "ReadAtBuildSeekable 流式 RPC 服务端 stream mock，用于测试 orchestrator 服务端实现可寻址读取逻辑时的 stream 接口行为。",
+      "tags": ["test", "mock", "grpc-stream", "mockery", "test-double"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go",
+      "type": "file",
+      "name": "orchestrator.pb.go",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go",
+      "summary": "由 orchestrator.proto 生成的核心消息类型，定义沙箱生命周期（Create/Update/List/Delete/Pause/Checkpoint）、沙箱配置（SandboxConfig、网络/挂载/调度元数据）等 orchestrator 主导协议的数据结构。",
+      "tags": ["protobuf", "code-generation", "grpc-types", "sandbox-lifecycle", "data-model"],
+      "complexity": "complex",
+      "languageNotes": "项目最大的生成文件之一，22 个消息类型与 194 个方法，覆盖沙箱全量配置字段。"
+    },
+    {
+      "id": "file:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go",
+      "type": "file",
+      "name": "orchestrator_grpc.pb.go",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go",
+      "summary": "SandboxService 的 gRPC 客户端/服务端桩代码，定义 Create/Update/List/Delete/Pause/Checkpoint/ListCachedBuilds 七个 RPC 的接口、客户端实现与服务端处理器注册。",
+      "tags": ["grpc", "code-generation", "service-definition", "sandbox-lifecycle", "client"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/grpc/orchestrator/volume.pb.go",
+      "type": "file",
+      "name": "volume.pb.go",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/volume.pb.go",
+      "summary": "由 volume.proto 生成的消息类型，定义持久化卷（Volume）操作的全部数据结构：卷/条目信息、用户错误码、目录与文件的流式创建/读取协议，以及路径统计与更新请求。",
+      "tags": ["protobuf", "code-generation", "grpc-types", "volume", "data-model"],
+      "complexity": "complex",
+      "languageNotes": "包含流式上传/下载的 oneof 包装消息（GetFileResponse_*、CreateFileRequest_*）。"
+    },
+    {
+      "id": "file:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go",
+      "type": "file",
+      "name": "volume_grpc.pb.go",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go",
+      "summary": "VolumeService 的 gRPC 客户端/服务端桩代码，定义 CreateVolume/DeleteVolume/CreateDir/ListDir/CreateFile/GetFile/DeletePath/StatPath/UpdatePath 九个卷文件系统操作的 RPC 接口与处理器。",
+      "tags": ["grpc", "code-generation", "service-definition", "volume", "client"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/grpc/template-manager/template-manager.pb.go",
+      "type": "file",
+      "name": "template-manager.pb.go",
+      "filePath": "packages/shared/pkg/grpc/template-manager/template-manager.pb.go",
+      "summary": "由 template-manager.proto 生成的消息类型，定义模板构建/状态/删除请求与响应、初始化层文件上传、模板步骤（TemplateStep）、来源镜像注册（AWS/GCP/General）及模板来源（FromImage/FromTemplate）等 oneof 数据结构。",
+      "tags": ["protobuf", "code-generation", "grpc-types", "template-manager", "data-model"],
+      "complexity": "complex",
+      "languageNotes": "包含两个 oneof（FromImageRegistry.Type 与 TemplateConfig.Source），导入 orchestrator 包以复用部分类型。"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/chunks.pb.go:PeerAvailability",
+      "type": "class",
+      "name": "PeerAvailability",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/chunks.pb.go",
+      "lineRange": [40, 80],
+      "summary": "Protobuf 消息类型，携带每个响应附带的缓存对等节点路由决策（not_available / use_storage 标志），由客户端用于决定向哪个节点请求文件。",
+      "tags": ["protobuf-message", "peer-routing", "build-cache", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/chunks.pb.go:GetBuildBlobRequest",
+      "type": "class",
+      "name": "GetBuildBlobRequest",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/chunks.pb.go",
+      "lineRange": [426, 481],
+      "summary": "GetBuildBlob RPC 的请求消息，包含 build_id 与可选的镜像分片定位信息。",
+      "tags": ["protobuf-message", "request", "build-cache", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go:ChunkServiceClient",
+      "type": "class",
+      "name": "ChunkServiceClient",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go",
+      "lineRange": [31, 40],
+      "summary": "ChunkService 的 gRPC 客户端接口，声明 GetBuildFileSize、GetBuildFileExists、ReadAtBuildSeekable、GetBuildBlob 四个用于读取构建产物的方法。",
+      "tags": ["grpc-client", "interface", "service-definition", "build-cache"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go:ChunkServiceServer",
+      "type": "class",
+      "name": "ChunkServiceServer",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go",
+      "lineRange": [111, 127],
+      "summary": "ChunkService 的 gRPC 服务端接口，需由 orchestrator 实现以提供构建产物分片读取能力。",
+      "tags": ["grpc-server", "interface", "service-definition", "build-cache"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkserviceclient.go:MockChunkServiceClient",
+      "type": "class",
+      "name": "MockChunkServiceClient",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/mocks/mockchunkserviceclient.go",
+      "lineRange": [25, 60],
+      "summary": "实现 ChunkServiceClient 接口的 mockery mock，存储期望调用并返回预设响应，用于沙箱/构建相关的单元测试。",
+      "tags": ["mock", "test-double", "grpc-client", "mockery"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobclient.go:MockChunkService_GetBuildBlobClient",
+      "type": "class",
+      "name": "MockChunkService_GetBuildBlobClient",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobclient.go",
+      "lineRange": [25, 60],
+      "summary": "GetBuildBlob 流式 RPC 客户端 stream 的 mockery mock，支持对 CloseSend/Recv/SendMsg 等 stream 方法的期望与返回值预设。",
+      "tags": ["mock", "test-double", "grpc-stream", "mockery"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobserver.go:MockChunkService_GetBuildBlobServer",
+      "type": "class",
+      "name": "MockChunkService_GetBuildBlobServer",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobserver.go",
+      "lineRange": [25, 60],
+      "summary": "GetBuildBlob 流式 RPC 服务端 stream 的 mockery mock，支持 SetHeader/Send/RecvMsg 等方法的行为模拟。",
+      "tags": ["mock", "test-double", "grpc-stream", "mockery"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableclient.go:MockChunkService_ReadAtBuildSeekableClient",
+      "type": "class",
+      "name": "MockChunkService_ReadAtBuildSeekableClient",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableclient.go",
+      "lineRange": [25, 60],
+      "summary": "ReadAtBuildSeekable 流式 RPC 客户端 stream 的 mockery mock。",
+      "tags": ["mock", "test-double", "grpc-stream", "mockery"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableserver.go:MockChunkService_ReadAtBuildSeekableServer",
+      "type": "class",
+      "name": "MockChunkService_ReadAtBuildSeekableServer",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableserver.go",
+      "lineRange": [25, 60],
+      "summary": "ReadAtBuildSeekable 流式 RPC 服务端 stream 的 mockery mock。",
+      "tags": ["mock", "test-double", "grpc-stream", "mockery"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go:SandboxConfig",
+      "type": "class",
+      "name": "SandboxConfig",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go",
+      "lineRange": [25, 275],
+      "summary": "核心沙箱配置消息，包含 template_id、build_id、kernel/firecracker 版本、huge pages、envd 版本、环境变量、元数据及别名等创建沙箱所需的全部字段。",
+      "tags": ["protobuf-message", "sandbox", "data-model", "configuration"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go:SandboxNetworkConfig",
+      "type": "class",
+      "name": "SandboxNetworkConfig",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go",
+      "lineRange": [404, 458],
+      "summary": "沙箱网络配置消息，封装出入站流量规则、允许 CIDR 列表与 ingress token。",
+      "tags": ["protobuf-message", "networking", "sandbox", "data-model"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go:SandboxCreateRequest",
+      "type": "class",
+      "name": "SandboxCreateRequest",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go",
+      "lineRange": [751, 813],
+      "summary": "SandboxService.Create RPC 的请求消息，封装 SandboxConfig 与客户端 ID。",
+      "tags": ["protobuf-message", "request", "sandbox-lifecycle", "data-model"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go:SandboxCheckpointRequest",
+      "type": "class",
+      "name": "SandboxCheckpointRequest",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go",
+      "lineRange": [1229, 1294],
+      "summary": "SandboxService.Checkpoint RPC 的请求消息，携带 sandbox_id 与检查点相关元数据，用于 Firecracker 快照操作。",
+      "tags": ["protobuf-message", "request", "checkpoint", "sandbox-lifecycle"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go:SandboxServiceClient",
+      "type": "class",
+      "name": "SandboxServiceClient",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go",
+      "lineRange": [35, 43],
+      "summary": "SandboxService 的 gRPC 客户端接口，声明沙箱生命周期 RPC（Create/Update/List/Delete/Pause/Checkpoint/ListCachedBuilds）。",
+      "tags": ["grpc-client", "interface", "sandbox-lifecycle", "service-definition"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go:SandboxServiceServer",
+      "type": "class",
+      "name": "SandboxServiceServer",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go",
+      "lineRange": [126, 141],
+      "summary": "SandboxService 的 gRPC 服务端接口，需由 orchestrator 实现以提供沙箱生命周期管理能力。",
+      "tags": ["grpc-server", "interface", "sandbox-lifecycle", "service-definition"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/volume.pb.go:VolumeInfo",
+      "type": "class",
+      "name": "VolumeInfo",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/volume.pb.go",
+      "lineRange": [137, 199],
+      "summary": "持久化卷的核心元数据消息，描述 volume_id、所有者、创建/访问时间等卷属性。",
+      "tags": ["protobuf-message", "volume", "data-model"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/volume.pb.go:EntryInfo",
+      "type": "class",
+      "name": "EntryInfo",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/volume.pb.go",
+      "lineRange": [200, 260],
+      "summary": "卷内文件/目录条目的元数据消息，含名称、大小、修改时间与是否目录标志。",
+      "tags": ["protobuf-message", "volume", "data-model", "filesystem"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/volume.pb.go:UserError",
+      "type": "class",
+      "name": "UserError",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/volume.pb.go",
+      "lineRange": [375, 437],
+      "summary": "面向用户的错误消息，携带 UserErrorCode 枚举与可读消息，用于卷操作失败时向客户端返回结构化错误。",
+      "tags": ["protobuf-message", "error-handling", "volume", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go:VolumeServiceClient",
+      "type": "class",
+      "name": "VolumeServiceClient",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go",
+      "lineRange": [36, 50],
+      "summary": "VolumeService 的 gRPC 客户端接口，声明卷与文件系统相关的全部 RPC 方法。",
+      "tags": ["grpc-client", "interface", "volume", "service-definition"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go:VolumeServiceServer",
+      "type": "class",
+      "name": "VolumeServiceServer",
+      "filePath": "packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go",
+      "lineRange": [165, 186],
+      "summary": "VolumeService 的 gRPC 服务端接口，需由 orchestrator 实现以提供持久化卷文件系统操作。",
+      "tags": ["grpc-server", "interface", "volume", "service-definition"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/template-manager/template-manager.pb.go:TemplateConfig",
+      "type": "class",
+      "name": "TemplateConfig",
+      "filePath": "packages/shared/pkg/grpc/template-manager/template-manager.pb.go",
+      "lineRange": [680, 865],
+      "summary": "模板配置核心消息，包含 template_id、别名、构建参数，并以 oneof 描述来源（FromImage 镜像或 FromTemplate 已有模板）。",
+      "tags": ["protobuf-message", "template-manager", "data-model", "configuration"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/template-manager/template-manager.pb.go:TemplateBuildMetadata",
+      "type": "class",
+      "name": "TemplateBuildMetadata",
+      "filePath": "packages/shared/pkg/grpc/template-manager/template-manager.pb.go",
+      "lineRange": [1104, 1186],
+      "summary": "模板构建的元数据消息，包含 rootfs 大小键、内核与 Firecracker 版本等信息。",
+      "tags": ["protobuf-message", "template-manager", "build-metadata", "data-model"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/grpc/template-manager/template-manager.pb.go:TemplateStatusRequest",
+      "type": "class",
+      "name": "TemplateStatusRequest",
+      "filePath": "packages/shared/pkg/grpc/template-manager/template-manager.pb.go",
+      "lineRange": [945, 1048],
+      "summary": "模板状态查询请求消息，包含 template_id 与可选 build_id 过滤字段。",
+      "tags": ["protobuf-message", "request", "template-manager", "data-model"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/chunks.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/chunks.pb.go:PeerAvailability", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/chunks.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/chunks.pb.go:GetBuildBlobRequest", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/chunks.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/chunks.pb.go:PeerAvailability", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/chunks.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/chunks.pb.go:GetBuildBlobRequest", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go:ChunkServiceClient", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go:ChunkServiceServer", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go:ChunkServiceClient", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go:ChunkServiceServer", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go", "target": "file:packages/shared/pkg/grpc/orchestrator/chunks.pb.go", "type": "depends_on", "direction": "forward", "weight": 0.6},
+
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkserviceclient.go", "target": "class:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkserviceclient.go:MockChunkServiceClient", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkserviceclient.go", "target": "class:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkserviceclient.go:MockChunkServiceClient", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkserviceclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkserviceclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/chunks.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkserviceclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkserviceclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkserviceclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkserviceclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/volume.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobclient.go", "target": "class:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobclient.go:MockChunkService_GetBuildBlobClient", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobclient.go", "target": "class:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobclient.go:MockChunkService_GetBuildBlobClient", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/chunks.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/volume.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobserver.go", "target": "class:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobserver.go:MockChunkService_GetBuildBlobServer", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobserver.go", "target": "class:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobserver.go:MockChunkService_GetBuildBlobServer", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobserver.go", "target": "file:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobserver.go", "target": "file:packages/shared/pkg/grpc/orchestrator/chunks.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobserver.go", "target": "file:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobserver.go", "target": "file:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobserver.go", "target": "file:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicegetbuildblobserver.go", "target": "file:packages/shared/pkg/grpc/orchestrator/volume.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableclient.go", "target": "class:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableclient.go:MockChunkService_ReadAtBuildSeekableClient", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableclient.go", "target": "class:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableclient.go:MockChunkService_ReadAtBuildSeekableClient", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/chunks.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableclient.go", "target": "file:packages/shared/pkg/grpc/orchestrator/volume.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableserver.go", "target": "class:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableserver.go:MockChunkService_ReadAtBuildSeekableServer", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableserver.go", "target": "class:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableserver.go:MockChunkService_ReadAtBuildSeekableServer", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableserver.go", "target": "file:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableserver.go", "target": "file:packages/shared/pkg/grpc/orchestrator/chunks.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableserver.go", "target": "file:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableserver.go", "target": "file:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableserver.go", "target": "file:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/mocks/mockchunkservicereadatbuildseekableserver.go", "target": "file:packages/shared/pkg/grpc/orchestrator/volume.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go:SandboxConfig", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go:SandboxNetworkConfig", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go:SandboxCreateRequest", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go:SandboxCheckpointRequest", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go:SandboxConfig", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go:SandboxNetworkConfig", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go:SandboxCreateRequest", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go:SandboxCheckpointRequest", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go:SandboxServiceClient", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go:SandboxServiceServer", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go:SandboxServiceClient", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go:SandboxServiceServer", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go", "target": "file:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go", "type": "depends_on", "direction": "forward", "weight": 0.6},
+
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/volume.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/volume.pb.go:VolumeInfo", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/volume.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/volume.pb.go:EntryInfo", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/volume.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/volume.pb.go:UserError", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/volume.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/volume.pb.go:VolumeInfo", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/volume.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/volume.pb.go:EntryInfo", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/volume.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/volume.pb.go:UserError", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go:VolumeServiceClient", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go:VolumeServiceServer", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go:VolumeServiceClient", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go", "target": "class:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go:VolumeServiceServer", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go", "target": "file:packages/shared/pkg/grpc/orchestrator/volume.pb.go", "type": "depends_on", "direction": "forward", "weight": 0.6},
+
+    {"source": "file:packages/shared/pkg/grpc/template-manager/template-manager.pb.go", "target": "class:packages/shared/pkg/grpc/template-manager/template-manager.pb.go:TemplateConfig", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/template-manager/template-manager.pb.go", "target": "class:packages/shared/pkg/grpc/template-manager/template-manager.pb.go:TemplateBuildMetadata", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/template-manager/template-manager.pb.go", "target": "class:packages/shared/pkg/grpc/template-manager/template-manager.pb.go:TemplateStatusRequest", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:packages/shared/pkg/grpc/template-manager/template-manager.pb.go", "target": "class:packages/shared/pkg/grpc/template-manager/template-manager.pb.go:TemplateConfig", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/template-manager/template-manager.pb.go", "target": "class:packages/shared/pkg/grpc/template-manager/template-manager.pb.go:TemplateBuildMetadata", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/template-manager/template-manager.pb.go", "target": "class:packages/shared/pkg/grpc/template-manager/template-manager.pb.go:TemplateStatusRequest", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:packages/shared/pkg/grpc/template-manager/template-manager.pb.go", "target": "file:packages/shared/pkg/grpc/orchestrator/chunks_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/template-manager/template-manager.pb.go", "target": "file:packages/shared/pkg/grpc/orchestrator/chunks.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/template-manager/template-manager.pb.go", "target": "file:packages/shared/pkg/grpc/orchestrator/orchestrator_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/template-manager/template-manager.pb.go", "target": "file:packages/shared/pkg/grpc/orchestrator/orchestrator.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/template-manager/template-manager.pb.go", "target": "file:packages/shared/pkg/grpc/orchestrator/volume_grpc.pb.go", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:packages/shared/pkg/grpc/template-manager/template-manager.pb.go", "target": "file:packages/shared/pkg/grpc/orchestrator/volume.pb.go", "type": "imports", "direction": "forward", "weight": 0.7}
+  ]
+}

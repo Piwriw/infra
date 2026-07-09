@@ -1,0 +1,2681 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 13,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/auth/pkg/auth/auth_store.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 106,
+      "nonEmptyLines": 80,
+      "functions": [
+        {
+          "name": "newAuthStore",
+          "startLine": 25,
+          "endLine": 27,
+          "params": [
+            "authDB"
+          ]
+        },
+        {
+          "name": "GetTeamByHashedAPIKey",
+          "startLine": 29,
+          "endLine": 54,
+          "params": [
+            "ctx",
+            "hashedKey"
+          ]
+        },
+        {
+          "name": "GetTeamByID",
+          "startLine": 56,
+          "endLine": 72,
+          "params": [
+            "ctx",
+            "teamID"
+          ]
+        },
+        {
+          "name": "GetTeamByIDAndUserID",
+          "startLine": 74,
+          "endLine": 98,
+          "params": [
+            "ctx",
+            "userID",
+            "teamID"
+          ]
+        },
+        {
+          "name": "GetUserIDByHashedAccessToken",
+          "startLine": 100,
+          "endLine": 102,
+          "params": [
+            "ctx",
+            "hashedToken"
+          ]
+        },
+        {
+          "name": "GetTeamAPIKeyHashes",
+          "startLine": 104,
+          "endLine": 106,
+          "params": [
+            "ctx",
+            "teamID"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "authStoreImpl",
+          "startLine": 19,
+          "endLine": 21,
+          "methods": [
+            "GetTeamByHashedAPIKey",
+            "GetTeamByID",
+            "GetTeamByIDAndUserID",
+            "GetUserIDByHashedAccessToken",
+            "GetTeamAPIKeyHashes"
+          ],
+          "properties": [
+            "authDB"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetTeamByHashedAPIKey",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamByID",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamByIDAndUserID",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "GetUserIDByHashedAccessToken",
+          "line": 100,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamAPIKeyHashes",
+          "line": 104,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "GetTeamByHashedAPIKey",
+          "callee": "tracer.Start",
+          "lineNumber": 30
+        },
+        {
+          "caller": "GetTeamByHashedAPIKey",
+          "callee": "span.End",
+          "lineNumber": 31
+        },
+        {
+          "caller": "GetTeamByHashedAPIKey",
+          "callee": "s.authDB.Read.GetTeamWithTierByAPIKey",
+          "lineNumber": 33
+        },
+        {
+          "caller": "GetTeamByHashedAPIKey",
+          "callee": "fmt.Errorf",
+          "lineNumber": 35
+        },
+        {
+          "caller": "GetTeamByHashedAPIKey",
+          "callee": "CheckTeamBanned",
+          "lineNumber": 38
+        },
+        {
+          "caller": "GetTeamByHashedAPIKey",
+          "callee": "func() {\n\t\t// Run the update in a separate context to avoid an extra latency\n\t\tctx := context.WithoutCancel(ctx)\n\t\tupdateErr := s.authDB.Write.UpdateLastTimeUsed(ctx, hashedKey)\n\t\tif updateErr != nil {\n\t\t\tlogger.L().Error(ctx, \"failed to update last time used\", zap.Error(updateErr))\n\t\t}\n\t}",
+          "lineNumber": 42
+        },
+        {
+          "caller": "GetTeamByHashedAPIKey",
+          "callee": "context.WithoutCancel",
+          "lineNumber": 44
+        },
+        {
+          "caller": "GetTeamByHashedAPIKey",
+          "callee": "s.authDB.Write.UpdateLastTimeUsed",
+          "lineNumber": 45
+        },
+        {
+          "caller": "GetTeamByHashedAPIKey",
+          "callee": "logger.L().Error",
+          "lineNumber": 47
+        },
+        {
+          "caller": "GetTeamByHashedAPIKey",
+          "callee": "logger.L",
+          "lineNumber": 47
+        },
+        {
+          "caller": "GetTeamByHashedAPIKey",
+          "callee": "zap.Error",
+          "lineNumber": 47
+        },
+        {
+          "caller": "GetTeamByHashedAPIKey",
+          "callee": "types.NewTeam",
+          "lineNumber": 51
+        },
+        {
+          "caller": "GetTeamByID",
+          "callee": "tracer.Start",
+          "lineNumber": 57
+        },
+        {
+          "caller": "GetTeamByID",
+          "callee": "span.End",
+          "lineNumber": 58
+        },
+        {
+          "caller": "GetTeamByID",
+          "callee": "s.authDB.Read.GetTeamWithTierByTeamID",
+          "lineNumber": 60
+        },
+        {
+          "caller": "GetTeamByID",
+          "callee": "fmt.Errorf",
+          "lineNumber": 62
+        },
+        {
+          "caller": "GetTeamByID",
+          "callee": "CheckTeamBanned",
+          "lineNumber": 65
+        },
+        {
+          "caller": "GetTeamByID",
+          "callee": "types.NewTeam",
+          "lineNumber": 69
+        },
+        {
+          "caller": "GetTeamByIDAndUserID",
+          "callee": "tracer.Start",
+          "lineNumber": 75
+        },
+        {
+          "caller": "GetTeamByIDAndUserID",
+          "callee": "span.End",
+          "lineNumber": 76
+        },
+        {
+          "caller": "GetTeamByIDAndUserID",
+          "callee": "uuid.Parse",
+          "lineNumber": 78
+        },
+        {
+          "caller": "GetTeamByIDAndUserID",
+          "callee": "fmt.Errorf",
+          "lineNumber": 80
+        },
+        {
+          "caller": "GetTeamByIDAndUserID",
+          "callee": "s.authDB.Read.GetTeamWithTierByTeamAndUser",
+          "lineNumber": 83
+        },
+        {
+          "caller": "GetTeamByIDAndUserID",
+          "callee": "fmt.Errorf",
+          "lineNumber": 88
+        },
+        {
+          "caller": "GetTeamByIDAndUserID",
+          "callee": "CheckTeamBanned",
+          "lineNumber": 91
+        },
+        {
+          "caller": "GetTeamByIDAndUserID",
+          "callee": "types.NewTeam",
+          "lineNumber": 95
+        },
+        {
+          "caller": "GetUserIDByHashedAccessToken",
+          "callee": "s.authDB.Read.GetUserIDFromAccessToken",
+          "lineNumber": 101
+        },
+        {
+          "caller": "GetTeamAPIKeyHashes",
+          "callee": "s.authDB.Read.GetTeamAPIKeyHashes",
+          "lineNumber": 105
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 5,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/cache.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 52,
+      "nonEmptyLines": 42,
+      "functions": [
+        {
+          "name": "newAuthCache",
+          "startLine": 27,
+          "endLine": 37,
+          "params": [
+            "redisClient"
+          ]
+        },
+        {
+          "name": "GetOrSet",
+          "startLine": 40,
+          "endLine": 42,
+          "params": [
+            "ctx",
+            "key",
+            "dataCallback"
+          ]
+        },
+        {
+          "name": "Invalidate",
+          "startLine": 45,
+          "endLine": 47,
+          "params": [
+            "ctx",
+            "key"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 50,
+          "endLine": 52,
+          "params": [
+            "ctx"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "authCache",
+          "startLine": 22,
+          "endLine": 24,
+          "methods": [
+            "GetOrSet",
+            "Invalidate",
+            "Close"
+          ],
+          "properties": [
+            "cache"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetOrSet",
+          "line": 40,
+          "isDefault": false
+        },
+        {
+          "name": "Invalidate",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 50,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "newAuthCache",
+          "callee": "cache.NewRedisCache",
+          "lineNumber": 29
+        },
+        {
+          "caller": "GetOrSet",
+          "callee": "c.cache.GetOrSet",
+          "lineNumber": 41
+        },
+        {
+          "caller": "Invalidate",
+          "callee": "c.cache.Delete",
+          "lineNumber": 46
+        },
+        {
+          "caller": "Close",
+          "callee": "c.cache.Close",
+          "lineNumber": 51
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 3,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/gin.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 68,
+      "nonEmptyLines": 51,
+      "functions": [
+        {
+          "name": "setUserID",
+          "startLine": 15,
+          "endLine": 17,
+          "params": [
+            "c",
+            "userID"
+          ]
+        },
+        {
+          "name": "GetUserID",
+          "startLine": 19,
+          "endLine": 21,
+          "params": [
+            "c"
+          ]
+        },
+        {
+          "name": "MustGetUserID",
+          "startLine": 23,
+          "endLine": 30,
+          "params": [
+            "c"
+          ]
+        },
+        {
+          "name": "setTeamInfo",
+          "startLine": 32,
+          "endLine": 34,
+          "params": [
+            "c",
+            "t"
+          ]
+        },
+        {
+          "name": "MustGetTeamInfo",
+          "startLine": 36,
+          "endLine": 43,
+          "params": [
+            "c"
+          ]
+        },
+        {
+          "name": "MustGetTeamID",
+          "startLine": 45,
+          "endLine": 47,
+          "params": [
+            "c"
+          ]
+        },
+        {
+          "name": "GetTeamInfo",
+          "startLine": 49,
+          "endLine": 51,
+          "params": [
+            "c"
+          ]
+        },
+        {
+          "name": "setInGinContext",
+          "startLine": 53,
+          "endLine": 55,
+          "params": [
+            "c",
+            "key",
+            "value"
+          ]
+        },
+        {
+          "name": "getFromGinContextSafely",
+          "startLine": 57,
+          "endLine": 68,
+          "params": [
+            "c",
+            "contextKey"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "GetUserID",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "MustGetUserID",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "MustGetTeamInfo",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "MustGetTeamID",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamInfo",
+          "line": 49,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "setUserID",
+          "callee": "setInGinContext",
+          "lineNumber": 16
+        },
+        {
+          "caller": "GetUserID",
+          "callee": "getFromGinContextSafely",
+          "lineNumber": 20
+        },
+        {
+          "caller": "MustGetUserID",
+          "callee": "GetUserID",
+          "lineNumber": 24
+        },
+        {
+          "caller": "MustGetUserID",
+          "callee": "panic",
+          "lineNumber": 26
+        },
+        {
+          "caller": "setTeamInfo",
+          "callee": "setInGinContext",
+          "lineNumber": 33
+        },
+        {
+          "caller": "MustGetTeamInfo",
+          "callee": "GetTeamInfo",
+          "lineNumber": 37
+        },
+        {
+          "caller": "MustGetTeamInfo",
+          "callee": "panic",
+          "lineNumber": 39
+        },
+        {
+          "caller": "MustGetTeamID",
+          "callee": "MustGetTeamInfo",
+          "lineNumber": 46
+        },
+        {
+          "caller": "GetTeamInfo",
+          "callee": "getFromGinContextSafely",
+          "lineNumber": 50
+        },
+        {
+          "caller": "setInGinContext",
+          "callee": "c.Set",
+          "lineNumber": 54
+        },
+        {
+          "caller": "getFromGinContextSafely",
+          "callee": "c.Get",
+          "lineNumber": 60
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 5,
+        "functionCount": 9,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/middleware.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 248,
+      "nonEmptyLines": 210,
+      "functions": [
+        {
+          "name": "getHeaderKeysFromRequest",
+          "startLine": 49,
+          "endLine": 64,
+          "params": [
+            "req"
+          ]
+        },
+        {
+          "name": "Authenticate",
+          "startLine": 67,
+          "endLine": 111,
+          "params": [
+            "ctx",
+            "ginCtx",
+            "input"
+          ]
+        },
+        {
+          "name": "SecuritySchemeName",
+          "startLine": 114,
+          "endLine": 116,
+          "params": []
+        },
+        {
+          "name": "adminValidationFunction",
+          "startLine": 118,
+          "endLine": 130,
+          "params": [
+            "adminToken"
+          ]
+        },
+        {
+          "name": "NewApiKeyAuthenticator",
+          "startLine": 133,
+          "endLine": 144,
+          "params": [
+            "validationFunc"
+          ]
+        },
+        {
+          "name": "NewAccessTokenAuthenticator",
+          "startLine": 147,
+          "endLine": 159,
+          "params": [
+            "validationFunc"
+          ]
+        },
+        {
+          "name": "NewAuthProviderBearerAuthenticator",
+          "startLine": 162,
+          "endLine": 173,
+          "params": [
+            "validationFunc"
+          ]
+        },
+        {
+          "name": "NewAuthProviderTeamAuthenticator",
+          "startLine": 176,
+          "endLine": 186,
+          "params": [
+            "validationFunc"
+          ]
+        },
+        {
+          "name": "NewAdminApiKeyAuthenticator",
+          "startLine": 189,
+          "endLine": 191,
+          "params": [
+            "adminToken"
+          ]
+        },
+        {
+          "name": "newAdminApiKeyAuthenticator",
+          "startLine": 193,
+          "endLine": 202,
+          "params": [
+            "schemeName",
+            "adminToken"
+          ]
+        },
+        {
+          "name": "NewAdminTeamAuthenticator",
+          "startLine": 205,
+          "endLine": 207,
+          "params": [
+            "validationFunc"
+          ]
+        },
+        {
+          "name": "newAdminTeamAuthenticator",
+          "startLine": 209,
+          "endLine": 222,
+          "params": [
+            "schemeName",
+            "validationFunc"
+          ]
+        },
+        {
+          "name": "CreateAuthenticationFunc",
+          "startLine": 225,
+          "endLine": 248,
+          "params": [
+            "authenticators",
+            "preAuthHook"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "headerKey",
+          "startLine": 27,
+          "endLine": 31,
+          "methods": [],
+          "properties": [
+            "name",
+            "prefix",
+            "removePrefix"
+          ]
+        },
+        {
+          "name": "Authenticator",
+          "startLine": 34,
+          "endLine": 37,
+          "methods": [
+            "Authenticate",
+            "SecuritySchemeName"
+          ],
+          "properties": []
+        },
+        {
+          "name": "commonAuthenticator",
+          "startLine": 40,
+          "endLine": 46,
+          "methods": [],
+          "properties": [
+            "schemeName",
+            "header",
+            "validationFunc",
+            "setContextFunc",
+            "errorMessage"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Authenticator",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "Authenticate",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "SecuritySchemeName",
+          "line": 114,
+          "isDefault": false
+        },
+        {
+          "name": "NewApiKeyAuthenticator",
+          "line": 133,
+          "isDefault": false
+        },
+        {
+          "name": "NewAccessTokenAuthenticator",
+          "line": 147,
+          "isDefault": false
+        },
+        {
+          "name": "NewAuthProviderBearerAuthenticator",
+          "line": 162,
+          "isDefault": false
+        },
+        {
+          "name": "NewAuthProviderTeamAuthenticator",
+          "line": 176,
+          "isDefault": false
+        },
+        {
+          "name": "NewAdminApiKeyAuthenticator",
+          "line": 189,
+          "isDefault": false
+        },
+        {
+          "name": "NewAdminTeamAuthenticator",
+          "line": 205,
+          "isDefault": false
+        },
+        {
+          "name": "CreateAuthenticationFunc",
+          "line": 225,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getHeaderKeysFromRequest",
+          "callee": "req.Header.Get",
+          "lineNumber": 50
+        },
+        {
+          "caller": "getHeaderKeysFromRequest",
+          "callee": "strings.TrimSpace",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getHeaderKeysFromRequest",
+          "callee": "strings.TrimPrefix",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getHeaderKeysFromRequest",
+          "callee": "strings.HasPrefix",
+          "lineNumber": 59
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "a.getHeaderKeysFromRequest",
+          "lineNumber": 68
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "telemetry.ReportEvent",
+          "lineNumber": 70
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "attribute.String",
+          "lineNumber": 71
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "attribute.String",
+          "lineNumber": 72
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "err.Error",
+          "lineNumber": 72
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "ginCtx.Status",
+          "lineNumber": 77
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "telemetry.ReportEvent",
+          "lineNumber": 82
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "a.validationFunc",
+          "lineNumber": 84
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "telemetry.ReportError",
+          "lineNumber": 86
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "attribute.String",
+          "lineNumber": 89
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "attribute.Int",
+          "lineNumber": 90
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "attribute.String",
+          "lineNumber": 91
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "http.StatusText",
+          "lineNumber": 91
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "ginCtx.Status",
+          "lineNumber": 94
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "errors.As",
+          "lineNumber": 97
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "fmt.Errorf",
+          "lineNumber": 101
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "telemetry.ReportEvent",
+          "lineNumber": 104
+        },
+        {
+          "caller": "Authenticate",
+          "callee": "a.setContextFunc",
+          "lineNumber": 107
+        },
+        {
+          "caller": "adminValidationFunction",
+          "callee": "subtle.ConstantTimeCompare",
+          "lineNumber": 120
+        },
+        {
+          "caller": "adminValidationFunction",
+          "callee": "errors.New",
+          "lineNumber": 123
+        },
+        {
+          "caller": "NewAdminApiKeyAuthenticator",
+          "callee": "newAdminApiKeyAuthenticator",
+          "lineNumber": 190
+        },
+        {
+          "caller": "newAdminApiKeyAuthenticator",
+          "callee": "adminValidationFunction",
+          "lineNumber": 199
+        },
+        {
+          "caller": "NewAdminTeamAuthenticator",
+          "callee": "newAdminTeamAuthenticator",
+          "lineNumber": 206
+        },
+        {
+          "caller": "CreateAuthenticationFunc",
+          "callee": "middleware.GetGinContext",
+          "lineNumber": 230
+        },
+        {
+          "caller": "CreateAuthenticationFunc",
+          "callee": "preAuthHook",
+          "lineNumber": 233
+        },
+        {
+          "caller": "CreateAuthenticationFunc",
+          "callee": "tracer.Start",
+          "lineNumber": 236
+        },
+        {
+          "caller": "CreateAuthenticationFunc",
+          "callee": "ginCtx.Request.Context",
+          "lineNumber": 236
+        },
+        {
+          "caller": "CreateAuthenticationFunc",
+          "callee": "span.End",
+          "lineNumber": 237
+        },
+        {
+          "caller": "CreateAuthenticationFunc",
+          "callee": "validator.SecuritySchemeName",
+          "lineNumber": 240
+        },
+        {
+          "caller": "CreateAuthenticationFunc",
+          "callee": "validator.Authenticate",
+          "lineNumber": 242
+        },
+        {
+          "caller": "CreateAuthenticationFunc",
+          "callee": "fmt.Errorf",
+          "lineNumber": 246
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 10,
+        "functionCount": 13,
+        "classCount": 3
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/middleware_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 80,
+      "nonEmptyLines": 63,
+      "functions": [
+        {
+          "name": "TestAdminValidationFunction",
+          "startLine": 18,
+          "endLine": 37,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "startLine": 39,
+          "endLine": 80,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestAdminValidationFunction",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "line": 39,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestAdminValidationFunction",
+          "callee": "t.Parallel",
+          "lineNumber": 19
+        },
+        {
+          "caller": "TestAdminValidationFunction",
+          "callee": "adminValidationFunction",
+          "lineNumber": 21
+        },
+        {
+          "caller": "TestAdminValidationFunction",
+          "callee": "t.Run",
+          "lineNumber": 23
+        },
+        {
+          "caller": "TestAdminValidationFunction",
+          "callee": "t.Parallel",
+          "lineNumber": 24
+        },
+        {
+          "caller": "TestAdminValidationFunction",
+          "callee": "validate",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestAdminValidationFunction",
+          "callee": "t.Context",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TestAdminValidationFunction",
+          "callee": "require.Nil",
+          "lineNumber": 27
+        },
+        {
+          "caller": "TestAdminValidationFunction",
+          "callee": "t.Run",
+          "lineNumber": 30
+        },
+        {
+          "caller": "TestAdminValidationFunction",
+          "callee": "t.Parallel",
+          "lineNumber": 31
+        },
+        {
+          "caller": "TestAdminValidationFunction",
+          "callee": "validate",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestAdminValidationFunction",
+          "callee": "t.Context",
+          "lineNumber": 33
+        },
+        {
+          "caller": "TestAdminValidationFunction",
+          "callee": "require.NotNil",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestAdminValidationFunction",
+          "callee": "require.Equal",
+          "lineNumber": 35
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "t.Parallel",
+          "lineNumber": 40
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "context.Background",
+          "lineNumber": 42
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "uuid.New",
+          "lineNumber": 43
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "types.NewTeam",
+          "lineNumber": 44
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "httptest.NewRequestWithContext",
+          "lineNumber": 46
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "req.Header.Set",
+          "lineNumber": 47
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "teamID.String",
+          "lineNumber": 47
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "gin.CreateTestContext",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "httptest.NewRecorder",
+          "lineNumber": 49
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "NewAdminTeamAuthenticator",
+          "lineNumber": 50
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "teamID.String",
+          "lineNumber": 51
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "authenticator.SecuritySchemeName",
+          "lineNumber": 61
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "t.Fatalf",
+          "lineNumber": 62
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "authenticator.Authenticate",
+          "lineNumber": 65
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "t.Fatalf",
+          "lineNumber": 69
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "GetTeamInfo",
+          "lineNumber": 72
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "t.Fatalf",
+          "lineNumber": 74
+        },
+        {
+          "caller": "TestAdminTeamAuthenticatorSetsTeamContext",
+          "callee": "t.Errorf",
+          "lineNumber": 78
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/service.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 287,
+      "nonEmptyLines": 247,
+      "functions": [
+        {
+          "name": "NewAuthService",
+          "startLine": 58,
+          "endLine": 90,
+          "params": [
+            "ctx",
+            "redisClient",
+            "authDB",
+            "providerConfig",
+            "httpClient"
+          ]
+        },
+        {
+          "name": "ValidateAPIKey",
+          "startLine": 93,
+          "endLine": 130,
+          "params": [
+            "ctx",
+            "ginCtx",
+            "apiKey"
+          ]
+        },
+        {
+          "name": "GetTeamByID",
+          "startLine": 133,
+          "endLine": 137,
+          "params": [
+            "ctx",
+            "teamID"
+          ]
+        },
+        {
+          "name": "ValidateAccessToken",
+          "startLine": 140,
+          "endLine": 166,
+          "params": [
+            "ctx",
+            "ginCtx",
+            "accessToken"
+          ]
+        },
+        {
+          "name": "ValidateAuthProviderToken",
+          "startLine": 174,
+          "endLine": 184,
+          "params": [
+            "ctx",
+            "ginCtx",
+            "token"
+          ]
+        },
+        {
+          "name": "validateJWTWithProvider",
+          "startLine": 186,
+          "endLine": 210,
+          "params": [
+            "ctx",
+            "ginCtx",
+            "v",
+            "token",
+            "tokenSource"
+          ]
+        },
+        {
+          "name": "ValidateAuthProviderTeam",
+          "startLine": 213,
+          "endLine": 252,
+          "params": [
+            "ctx",
+            "ginCtx",
+            "teamID"
+          ]
+        },
+        {
+          "name": "InvalidateTeamMemberCache",
+          "startLine": 256,
+          "endLine": 258,
+          "params": [
+            "ctx",
+            "userID",
+            "teamID"
+          ]
+        },
+        {
+          "name": "InvalidateTeamCache",
+          "startLine": 261,
+          "endLine": 274,
+          "params": [
+            "ctx",
+            "teamID"
+          ]
+        },
+        {
+          "name": "teamMemberCacheKey",
+          "startLine": 276,
+          "endLine": 278,
+          "params": [
+            "userID",
+            "teamID"
+          ]
+        },
+        {
+          "name": "teamCacheKey",
+          "startLine": 280,
+          "endLine": 282,
+          "params": [
+            "teamID"
+          ]
+        },
+        {
+          "name": "Close",
+          "startLine": 285,
+          "endLine": 287,
+          "params": [
+            "ctx"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "authStore",
+          "startLine": 21,
+          "endLine": 27,
+          "methods": [
+            "GetTeamByHashedAPIKey",
+            "GetTeamByID",
+            "GetTeamByIDAndUserID",
+            "GetUserIDByHashedAccessToken",
+            "GetTeamAPIKeyHashes"
+          ],
+          "properties": []
+        },
+        {
+          "name": "Service",
+          "startLine": 32,
+          "endLine": 41,
+          "methods": [
+            "ValidateAPIKey",
+            "ValidateAccessToken",
+            "ValidateAuthProviderToken",
+            "ValidateAuthProviderTeam",
+            "GetTeamByID",
+            "InvalidateTeamMemberCache",
+            "InvalidateTeamCache",
+            "Close"
+          ],
+          "properties": []
+        },
+        {
+          "name": "authService",
+          "startLine": 44,
+          "endLine": 48,
+          "methods": [
+            "ValidateAPIKey",
+            "GetTeamByID",
+            "ValidateAccessToken",
+            "ValidateAuthProviderToken",
+            "validateJWTWithProvider",
+            "ValidateAuthProviderTeam",
+            "InvalidateTeamMemberCache",
+            "InvalidateTeamCache",
+            "Close"
+          ],
+          "properties": [
+            "store",
+            "teamCache",
+            "authProviderVerifier"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Service",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "NewAuthService",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "ValidateAPIKey",
+          "line": 93,
+          "isDefault": false
+        },
+        {
+          "name": "GetTeamByID",
+          "line": 133,
+          "isDefault": false
+        },
+        {
+          "name": "ValidateAccessToken",
+          "line": 140,
+          "isDefault": false
+        },
+        {
+          "name": "ValidateAuthProviderToken",
+          "line": 174,
+          "isDefault": false
+        },
+        {
+          "name": "ValidateAuthProviderTeam",
+          "line": 213,
+          "isDefault": false
+        },
+        {
+          "name": "InvalidateTeamMemberCache",
+          "line": 256,
+          "isDefault": false
+        },
+        {
+          "name": "InvalidateTeamCache",
+          "line": 261,
+          "isDefault": false
+        },
+        {
+          "name": "Close",
+          "line": 285,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NewAuthService",
+          "callee": "errors.New",
+          "lineNumber": 66
+        },
+        {
+          "caller": "NewAuthService",
+          "callee": "errors.New",
+          "lineNumber": 69
+        },
+        {
+          "caller": "NewAuthService",
+          "callee": "errors.New",
+          "lineNumber": 72
+        },
+        {
+          "caller": "NewAuthService",
+          "callee": "newAuthCache",
+          "lineNumber": 75
+        },
+        {
+          "caller": "NewAuthService",
+          "callee": "newAuthStore",
+          "lineNumber": 76
+        },
+        {
+          "caller": "NewAuthService",
+          "callee": "newAuthIdentityLookup",
+          "lineNumber": 79
+        },
+        {
+          "caller": "NewAuthService",
+          "callee": "NewVerifier",
+          "lineNumber": 80
+        },
+        {
+          "caller": "NewAuthService",
+          "callee": "fmt.Errorf",
+          "lineNumber": 82
+        },
+        {
+          "caller": "ValidateAPIKey",
+          "callee": "keys.VerifyKey",
+          "lineNumber": 94
+        },
+        {
+          "caller": "ValidateAPIKey",
+          "callee": "fmt.Errorf",
+          "lineNumber": 97
+        },
+        {
+          "caller": "ValidateAPIKey",
+          "callee": "s.teamCache.GetOrSet",
+          "lineNumber": 103
+        },
+        {
+          "caller": "ValidateAPIKey",
+          "callee": "s.store.GetTeamByHashedAPIKey",
+          "lineNumber": 104
+        },
+        {
+          "caller": "ValidateAPIKey",
+          "callee": "errors.As",
+          "lineNumber": 108
+        },
+        {
+          "caller": "ValidateAPIKey",
+          "callee": "err.Error",
+          "lineNumber": 111
+        },
+        {
+          "caller": "ValidateAPIKey",
+          "callee": "fmt.Errorf",
+          "lineNumber": 117
+        },
+        {
+          "caller": "ValidateAPIKey",
+          "callee": "telemetry.SetAttributes",
+          "lineNumber": 124
+        },
+        {
+          "caller": "ValidateAPIKey",
+          "callee": "ginCtx.Request.Context",
+          "lineNumber": 124
+        },
+        {
+          "caller": "ValidateAPIKey",
+          "callee": "telemetry.WithMaskedAPIKey",
+          "lineNumber": 125
+        },
+        {
+          "caller": "ValidateAPIKey",
+          "callee": "keys.MaskToken",
+          "lineNumber": 125
+        },
+        {
+          "caller": "ValidateAPIKey",
+          "callee": "telemetry.WithTeamID",
+          "lineNumber": 126
+        },
+        {
+          "caller": "ValidateAPIKey",
+          "callee": "result.TeamID",
+          "lineNumber": 126
+        },
+        {
+          "caller": "GetTeamByID",
+          "callee": "s.teamCache.GetOrSet",
+          "lineNumber": 134
+        },
+        {
+          "caller": "GetTeamByID",
+          "callee": "teamCacheKey",
+          "lineNumber": 134
+        },
+        {
+          "caller": "GetTeamByID",
+          "callee": "s.store.GetTeamByID",
+          "lineNumber": 135
+        },
+        {
+          "caller": "ValidateAccessToken",
+          "callee": "keys.VerifyKey",
+          "lineNumber": 141
+        },
+        {
+          "caller": "ValidateAccessToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 144
+        },
+        {
+          "caller": "ValidateAccessToken",
+          "callee": "s.store.GetUserIDByHashedAccessToken",
+          "lineNumber": 150
+        },
+        {
+          "caller": "ValidateAccessToken",
+          "callee": "fmt.Errorf",
+          "lineNumber": 153
+        },
+        {
+          "caller": "ValidateAccessToken",
+          "callee": "telemetry.SetAttributes",
+          "lineNumber": 160
+        },
+        {
+          "caller": "ValidateAccessToken",
+          "callee": "ginCtx.Request.Context",
+          "lineNumber": 160
+        },
+        {
+          "caller": "ValidateAccessToken",
+          "callee": "telemetry.WithMaskedAccessToken",
+          "lineNumber": 161
+        },
+        {
+          "caller": "ValidateAccessToken",
+          "callee": "keys.MaskToken",
+          "lineNumber": 161
+        },
+        {
+          "caller": "ValidateAccessToken",
+          "callee": "telemetry.WithUserID",
+          "lineNumber": 162
+        },
+        {
+          "caller": "ValidateAccessToken",
+          "callee": "userID.String",
+          "lineNumber": 162
+        },
+        {
+          "caller": "ValidateAuthProviderToken",
+          "callee": "errors.New",
+          "lineNumber": 177
+        },
+        {
+          "caller": "ValidateAuthProviderToken",
+          "callee": "s.validateJWTWithProvider",
+          "lineNumber": 183
+        },
+        {
+          "caller": "validateJWTWithProvider",
+          "callee": "v.Verify",
+          "lineNumber": 187
+        },
+        {
+          "caller": "validateJWTWithProvider",
+          "callee": "fmt.Errorf",
+          "lineNumber": 198
+        },
+        {
+          "caller": "validateJWTWithProvider",
+          "callee": "telemetry.SetAttributes",
+          "lineNumber": 205
+        },
+        {
+          "caller": "validateJWTWithProvider",
+          "callee": "ginCtx.Request.Context",
+          "lineNumber": 205
+        },
+        {
+          "caller": "validateJWTWithProvider",
+          "callee": "telemetry.WithUserID",
+          "lineNumber": 206
+        },
+        {
+          "caller": "validateJWTWithProvider",
+          "callee": "userID.String",
+          "lineNumber": 206
+        },
+        {
+          "caller": "ValidateAuthProviderTeam",
+          "callee": "GetUserID",
+          "lineNumber": 214
+        },
+        {
+          "caller": "ValidateAuthProviderTeam",
+          "callee": "errors.New",
+          "lineNumber": 217
+        },
+        {
+          "caller": "ValidateAuthProviderTeam",
+          "callee": "teamMemberCacheKey",
+          "lineNumber": 223
+        },
+        {
+          "caller": "ValidateAuthProviderTeam",
+          "callee": "s.teamCache.GetOrSet",
+          "lineNumber": 225
+        },
+        {
+          "caller": "ValidateAuthProviderTeam",
+          "callee": "s.store.GetTeamByIDAndUserID",
+          "lineNumber": 226
+        },
+        {
+          "caller": "ValidateAuthProviderTeam",
+          "callee": "errors.As",
+          "lineNumber": 230
+        },
+        {
+          "caller": "ValidateAuthProviderTeam",
+          "callee": "fmt.Errorf",
+          "lineNumber": 232
+        },
+        {
+          "caller": "ValidateAuthProviderTeam",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 233
+        },
+        {
+          "caller": "ValidateAuthProviderTeam",
+          "callee": "err.Error",
+          "lineNumber": 233
+        },
+        {
+          "caller": "ValidateAuthProviderTeam",
+          "callee": "fmt.Errorf",
+          "lineNumber": 239
+        },
+        {
+          "caller": "ValidateAuthProviderTeam",
+          "callee": "telemetry.SetAttributes",
+          "lineNumber": 246
+        },
+        {
+          "caller": "ValidateAuthProviderTeam",
+          "callee": "ginCtx.Request.Context",
+          "lineNumber": 246
+        },
+        {
+          "caller": "ValidateAuthProviderTeam",
+          "callee": "telemetry.WithUserID",
+          "lineNumber": 247
+        },
+        {
+          "caller": "ValidateAuthProviderTeam",
+          "callee": "userID.String",
+          "lineNumber": 247
+        },
+        {
+          "caller": "ValidateAuthProviderTeam",
+          "callee": "telemetry.WithTeamID",
+          "lineNumber": 248
+        },
+        {
+          "caller": "ValidateAuthProviderTeam",
+          "callee": "result.TeamID",
+          "lineNumber": 248
+        },
+        {
+          "caller": "InvalidateTeamMemberCache",
+          "callee": "s.teamCache.Invalidate",
+          "lineNumber": 257
+        },
+        {
+          "caller": "InvalidateTeamMemberCache",
+          "callee": "teamMemberCacheKey",
+          "lineNumber": 257
+        },
+        {
+          "caller": "InvalidateTeamCache",
+          "callee": "s.teamCache.Invalidate",
+          "lineNumber": 262
+        },
+        {
+          "caller": "InvalidateTeamCache",
+          "callee": "teamCacheKey",
+          "lineNumber": 262
+        },
+        {
+          "caller": "InvalidateTeamCache",
+          "callee": "s.store.GetTeamAPIKeyHashes",
+          "lineNumber": 264
+        },
+        {
+          "caller": "InvalidateTeamCache",
+          "callee": "fmt.Errorf",
+          "lineNumber": 266
+        },
+        {
+          "caller": "InvalidateTeamCache",
+          "callee": "s.teamCache.Invalidate",
+          "lineNumber": 270
+        },
+        {
+          "caller": "teamMemberCacheKey",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 277
+        },
+        {
+          "caller": "teamMemberCacheKey",
+          "callee": "userID.String",
+          "lineNumber": 277
+        },
+        {
+          "caller": "teamMemberCacheKey",
+          "callee": "strings.ToLower",
+          "lineNumber": 277
+        },
+        {
+          "caller": "teamCacheKey",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 281
+        },
+        {
+          "caller": "teamCacheKey",
+          "callee": "teamID.String",
+          "lineNumber": 281
+        },
+        {
+          "caller": "Close",
+          "callee": "s.teamCache.Close",
+          "lineNumber": 286
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 10,
+        "functionCount": 12,
+        "classCount": 3
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/team_middleware.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 77,
+      "nonEmptyLines": 59,
+      "functions": [
+        {
+          "name": "Allows",
+          "startLine": 18,
+          "endLine": 26,
+          "params": [
+            "c"
+          ]
+        },
+        {
+          "name": "CheckBlockedTeamForRoute",
+          "startLine": 30,
+          "endLine": 41,
+          "params": [
+            "c",
+            "team",
+            "allowlist"
+          ]
+        },
+        {
+          "name": "CheckTeamAccess",
+          "startLine": 45,
+          "endLine": 55,
+          "params": [
+            "c",
+            "team",
+            "allowlist"
+          ]
+        },
+        {
+          "name": "EnforceBlockedTeam",
+          "startLine": 59,
+          "endLine": 77,
+          "params": [
+            "allowlist"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Allows",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "CheckBlockedTeamForRoute",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "CheckTeamAccess",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "EnforceBlockedTeam",
+          "line": 59,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Allows",
+          "callee": "c.FullPath",
+          "lineNumber": 23
+        },
+        {
+          "caller": "CheckBlockedTeamForRoute",
+          "callee": "CheckTeamBlocked",
+          "lineNumber": 31
+        },
+        {
+          "caller": "CheckBlockedTeamForRoute",
+          "callee": "allowlist.Allows",
+          "lineNumber": 36
+        },
+        {
+          "caller": "CheckTeamAccess",
+          "callee": "CheckTeamBanned",
+          "lineNumber": 50
+        },
+        {
+          "caller": "CheckTeamAccess",
+          "callee": "CheckBlockedTeamForRoute",
+          "lineNumber": 54
+        },
+        {
+          "caller": "EnforceBlockedTeam",
+          "callee": "GetTeamInfo",
+          "lineNumber": 61
+        },
+        {
+          "caller": "EnforceBlockedTeam",
+          "callee": "c.Next",
+          "lineNumber": 63
+        },
+        {
+          "caller": "EnforceBlockedTeam",
+          "callee": "CheckBlockedTeamForRoute",
+          "lineNumber": 68
+        },
+        {
+          "caller": "EnforceBlockedTeam",
+          "callee": "apierrors.SendAPIStoreError",
+          "lineNumber": 69
+        },
+        {
+          "caller": "EnforceBlockedTeam",
+          "callee": "err.Error",
+          "lineNumber": 69
+        },
+        {
+          "caller": "EnforceBlockedTeam",
+          "callee": "c.Abort",
+          "lineNumber": 70
+        },
+        {
+          "caller": "EnforceBlockedTeam",
+          "callee": "c.Next",
+          "lineNumber": 75
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 4,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/team_middleware_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 292,
+      "nonEmptyLines": 250,
+      "functions": [
+        {
+          "name": "TestEnforceBlockedTeam",
+          "startLine": 17,
+          "endLine": 100,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestEnforceBlockedTeam_AllowlistParameterization",
+          "startLine": 102,
+          "endLine": 118,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestCheckTeamAccess",
+          "startLine": 120,
+          "endLine": 217,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "runCheckTeamAccess",
+          "startLine": 219,
+          "endLine": 237,
+          "params": [
+            "t",
+            "allowlist",
+            "method",
+            "fullPath",
+            "team"
+          ]
+        },
+        {
+          "name": "runEnforceBlockedTeam",
+          "startLine": 239,
+          "endLine": 266,
+          "params": [
+            "t",
+            "allowlist",
+            "method",
+            "fullPath",
+            "team"
+          ]
+        },
+        {
+          "name": "concretePath",
+          "startLine": 270,
+          "endLine": 292,
+          "params": [
+            "pattern"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestEnforceBlockedTeam",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "TestEnforceBlockedTeam_AllowlistParameterization",
+          "line": 102,
+          "isDefault": false
+        },
+        {
+          "name": "TestCheckTeamAccess",
+          "line": 120,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestEnforceBlockedTeam",
+          "callee": "t.Parallel",
+          "lineNumber": 18
+        },
+        {
+          "caller": "TestEnforceBlockedTeam",
+          "callee": "types.NewTeam",
+          "lineNumber": 47
+        },
+        {
+          "caller": "TestEnforceBlockedTeam",
+          "callee": "types.NewTeam",
+          "lineNumber": 55
+        },
+        {
+          "caller": "TestEnforceBlockedTeam",
+          "callee": "types.NewTeam",
+          "lineNumber": 63
+        },
+        {
+          "caller": "TestEnforceBlockedTeam",
+          "callee": "types.NewTeam",
+          "lineNumber": 71
+        },
+        {
+          "caller": "TestEnforceBlockedTeam",
+          "callee": "types.NewTeam",
+          "lineNumber": 80
+        },
+        {
+          "caller": "TestEnforceBlockedTeam",
+          "callee": "t.Run",
+          "lineNumber": 88
+        },
+        {
+          "caller": "TestEnforceBlockedTeam",
+          "callee": "t.Parallel",
+          "lineNumber": 89
+        },
+        {
+          "caller": "TestEnforceBlockedTeam",
+          "callee": "runEnforceBlockedTeam",
+          "lineNumber": 91
+        },
+        {
+          "caller": "TestEnforceBlockedTeam",
+          "callee": "assert.Equal",
+          "lineNumber": 93
+        },
+        {
+          "caller": "TestEnforceBlockedTeam",
+          "callee": "assert.Equal",
+          "lineNumber": 94
+        },
+        {
+          "caller": "TestEnforceBlockedTeam",
+          "callee": "assert.Contains",
+          "lineNumber": 96
+        },
+        {
+          "caller": "TestEnforceBlockedTeam",
+          "callee": "w.Body.String",
+          "lineNumber": 96
+        },
+        {
+          "caller": "TestEnforceBlockedTeam_AllowlistParameterization",
+          "callee": "t.Parallel",
+          "lineNumber": 103
+        },
+        {
+          "caller": "TestEnforceBlockedTeam_AllowlistParameterization",
+          "callee": "types.NewTeam",
+          "lineNumber": 105
+        },
+        {
+          "caller": "TestEnforceBlockedTeam_AllowlistParameterization",
+          "callee": "runEnforceBlockedTeam",
+          "lineNumber": 111
+        },
+        {
+          "caller": "TestEnforceBlockedTeam_AllowlistParameterization",
+          "callee": "require.True",
+          "lineNumber": 112
+        },
+        {
+          "caller": "TestEnforceBlockedTeam_AllowlistParameterization",
+          "callee": "assert.Equal",
+          "lineNumber": 113
+        },
+        {
+          "caller": "TestEnforceBlockedTeam_AllowlistParameterization",
+          "callee": "runEnforceBlockedTeam",
+          "lineNumber": 115
+        },
+        {
+          "caller": "TestEnforceBlockedTeam_AllowlistParameterization",
+          "callee": "require.False",
+          "lineNumber": 116
+        },
+        {
+          "caller": "TestEnforceBlockedTeam_AllowlistParameterization",
+          "callee": "assert.Equal",
+          "lineNumber": 117
+        },
+        {
+          "caller": "TestCheckTeamAccess",
+          "callee": "t.Parallel",
+          "lineNumber": 121
+        },
+        {
+          "caller": "TestCheckTeamAccess",
+          "callee": "types.NewTeam",
+          "lineNumber": 128
+        },
+        {
+          "caller": "TestCheckTeamAccess",
+          "callee": "types.NewTeam",
+          "lineNumber": 129
+        },
+        {
+          "caller": "TestCheckTeamAccess",
+          "callee": "types.NewTeam",
+          "lineNumber": 130
+        },
+        {
+          "caller": "TestCheckTeamAccess",
+          "callee": "types.NewTeam",
+          "lineNumber": 131
+        },
+        {
+          "caller": "TestCheckTeamAccess",
+          "callee": "t.Helper",
+          "lineNumber": 134
+        },
+        {
+          "caller": "TestCheckTeamAccess",
+          "callee": "require.ErrorAs",
+          "lineNumber": 137
+        },
+        {
+          "caller": "TestCheckTeamAccess",
+          "callee": "t.Helper",
+          "lineNumber": 140
+        },
+        {
+          "caller": "TestCheckTeamAccess",
+          "callee": "require.ErrorAs",
+          "lineNumber": 143
+        },
+        {
+          "caller": "TestCheckTeamAccess",
+          "callee": "t.Run",
+          "lineNumber": 202
+        },
+        {
+          "caller": "TestCheckTeamAccess",
+          "callee": "t.Parallel",
+          "lineNumber": 203
+        },
+        {
+          "caller": "TestCheckTeamAccess",
+          "callee": "runCheckTeamAccess",
+          "lineNumber": 205
+        },
+        {
+          "caller": "TestCheckTeamAccess",
+          "callee": "assert.NoError",
+          "lineNumber": 208
+        },
+        {
+          "caller": "TestCheckTeamAccess",
+          "callee": "require.Error",
+          "lineNumber": 213
+        },
+        {
+          "caller": "TestCheckTeamAccess",
+          "callee": "tc.wantErrAs",
+          "lineNumber": 214
+        },
+        {
+          "caller": "runCheckTeamAccess",
+          "callee": "t.Helper",
+          "lineNumber": 225
+        },
+        {
+          "caller": "runCheckTeamAccess",
+          "callee": "gin.New",
+          "lineNumber": 229
+        },
+        {
+          "caller": "runCheckTeamAccess",
+          "callee": "r.Handle",
+          "lineNumber": 230
+        },
+        {
+          "caller": "runCheckTeamAccess",
+          "callee": "CheckTeamAccess",
+          "lineNumber": 231
+        },
+        {
+          "caller": "runCheckTeamAccess",
+          "callee": "r.ServeHTTP",
+          "lineNumber": 234
+        },
+        {
+          "caller": "runCheckTeamAccess",
+          "callee": "httptest.NewRecorder",
+          "lineNumber": 234
+        },
+        {
+          "caller": "runCheckTeamAccess",
+          "callee": "httptest.NewRequestWithContext",
+          "lineNumber": 234
+        },
+        {
+          "caller": "runCheckTeamAccess",
+          "callee": "t.Context",
+          "lineNumber": 234
+        },
+        {
+          "caller": "runCheckTeamAccess",
+          "callee": "concretePath",
+          "lineNumber": 234
+        },
+        {
+          "caller": "runEnforceBlockedTeam",
+          "callee": "t.Helper",
+          "lineNumber": 245
+        },
+        {
+          "caller": "runEnforceBlockedTeam",
+          "callee": "gin.New",
+          "lineNumber": 249
+        },
+        {
+          "caller": "runEnforceBlockedTeam",
+          "callee": "r.Handle",
+          "lineNumber": 250
+        },
+        {
+          "caller": "runEnforceBlockedTeam",
+          "callee": "SetTeamInfoForTest",
+          "lineNumber": 252
+        },
+        {
+          "caller": "runEnforceBlockedTeam",
+          "callee": "EnforceBlockedTeam(allowlist)",
+          "lineNumber": 254
+        },
+        {
+          "caller": "runEnforceBlockedTeam",
+          "callee": "EnforceBlockedTeam",
+          "lineNumber": 254
+        },
+        {
+          "caller": "runEnforceBlockedTeam",
+          "callee": "c.IsAborted",
+          "lineNumber": 255
+        },
+        {
+          "caller": "runEnforceBlockedTeam",
+          "callee": "c.Status",
+          "lineNumber": 257
+        },
+        {
+          "caller": "runEnforceBlockedTeam",
+          "callee": "httptest.NewRecorder",
+          "lineNumber": 261
+        },
+        {
+          "caller": "runEnforceBlockedTeam",
+          "callee": "httptest.NewRequestWithContext",
+          "lineNumber": 262
+        },
+        {
+          "caller": "runEnforceBlockedTeam",
+          "callee": "t.Context",
+          "lineNumber": 262
+        },
+        {
+          "caller": "runEnforceBlockedTeam",
+          "callee": "concretePath",
+          "lineNumber": 262
+        },
+        {
+          "caller": "runEnforceBlockedTeam",
+          "callee": "r.ServeHTTP",
+          "lineNumber": 263
+        },
+        {
+          "caller": "concretePath",
+          "callee": "b.Grow",
+          "lineNumber": 272
+        },
+        {
+          "caller": "concretePath",
+          "callee": "len",
+          "lineNumber": 272
+        },
+        {
+          "caller": "concretePath",
+          "callee": "len",
+          "lineNumber": 275
+        },
+        {
+          "caller": "concretePath",
+          "callee": "b.WriteByte",
+          "lineNumber": 277
+        },
+        {
+          "caller": "concretePath",
+          "callee": "len",
+          "lineNumber": 280
+        },
+        {
+          "caller": "concretePath",
+          "callee": "b.WriteByte",
+          "lineNumber": 287
+        },
+        {
+          "caller": "concretePath",
+          "callee": "b.String",
+          "lineNumber": 291
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 3,
+        "functionCount": 6,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/team_state.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 39,
+      "nonEmptyLines": 32,
+      "functions": [
+        {
+          "name": "CheckTeamBanned",
+          "startLine": 13,
+          "endLine": 19,
+          "params": [
+            "team"
+          ]
+        },
+        {
+          "name": "CheckTeamBlocked",
+          "startLine": 28,
+          "endLine": 39,
+          "params": [
+            "team"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CheckTeamBanned",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "CheckTeamBlocked",
+          "line": 28,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "CheckTeamBlocked",
+          "callee": "fmt.Sprintf",
+          "lineNumber": 35
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/team_state_test.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 113,
+      "nonEmptyLines": 97,
+      "functions": [
+        {
+          "name": "TestCheckTeamBanned",
+          "startLine": 13,
+          "endLine": 48,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "TestCheckTeamBlocked",
+          "startLine": 50,
+          "endLine": 113,
+          "params": [
+            "t"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TestCheckTeamBanned",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "TestCheckTeamBlocked",
+          "line": 50,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TestCheckTeamBanned",
+          "callee": "t.Parallel",
+          "lineNumber": 14
+        },
+        {
+          "caller": "TestCheckTeamBanned",
+          "callee": "t.Run",
+          "lineNumber": 34
+        },
+        {
+          "caller": "TestCheckTeamBanned",
+          "callee": "t.Parallel",
+          "lineNumber": 35
+        },
+        {
+          "caller": "TestCheckTeamBanned",
+          "callee": "CheckTeamBanned",
+          "lineNumber": 37
+        },
+        {
+          "caller": "TestCheckTeamBanned",
+          "callee": "assert.NoError",
+          "lineNumber": 39
+        },
+        {
+          "caller": "TestCheckTeamBanned",
+          "callee": "assert.ErrorAs",
+          "lineNumber": 45
+        },
+        {
+          "caller": "TestCheckTeamBlocked",
+          "callee": "t.Parallel",
+          "lineNumber": 51
+        },
+        {
+          "caller": "TestCheckTeamBlocked",
+          "callee": "types.NewTeam",
+          "lineNumber": 74
+        },
+        {
+          "caller": "TestCheckTeamBlocked",
+          "callee": "types.NewTeam",
+          "lineNumber": 79
+        },
+        {
+          "caller": "TestCheckTeamBlocked",
+          "callee": "types.NewTeam",
+          "lineNumber": 85
+        },
+        {
+          "caller": "TestCheckTeamBlocked",
+          "callee": "types.NewTeam",
+          "lineNumber": 91
+        },
+        {
+          "caller": "TestCheckTeamBlocked",
+          "callee": "t.Run",
+          "lineNumber": 98
+        },
+        {
+          "caller": "TestCheckTeamBlocked",
+          "callee": "t.Parallel",
+          "lineNumber": 99
+        },
+        {
+          "caller": "TestCheckTeamBlocked",
+          "callee": "CheckTeamBlocked",
+          "lineNumber": 101
+        },
+        {
+          "caller": "TestCheckTeamBlocked",
+          "callee": "assert.NoError",
+          "lineNumber": 103
+        },
+        {
+          "caller": "TestCheckTeamBlocked",
+          "callee": "require.ErrorAs",
+          "lineNumber": 109
+        },
+        {
+          "caller": "TestCheckTeamBlocked",
+          "callee": "assert.Contains",
+          "lineNumber": 110
+        },
+        {
+          "caller": "TestCheckTeamBlocked",
+          "callee": "err.Error",
+          "lineNumber": 110
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/auth/pkg/auth/testing.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 24,
+      "nonEmptyLines": 17,
+      "functions": [
+        {
+          "name": "SetUserIDForTest",
+          "startLine": 13,
+          "endLine": 17,
+          "params": [
+            "t",
+            "c",
+            "userID"
+          ]
+        },
+        {
+          "name": "SetTeamInfoForTest",
+          "startLine": 20,
+          "endLine": 24,
+          "params": [
+            "t",
+            "c",
+            "team"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "SetUserIDForTest",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "SetTeamInfoForTest",
+          "line": 20,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "SetUserIDForTest",
+          "callee": "t.Helper",
+          "lineNumber": 14
+        },
+        {
+          "caller": "SetUserIDForTest",
+          "callee": "setUserID",
+          "lineNumber": 16
+        },
+        {
+          "caller": "SetTeamInfoForTest",
+          "callee": "t.Helper",
+          "lineNumber": 21
+        },
+        {
+          "caller": "SetTeamInfoForTest",
+          "callee": "setTeamInfo",
+          "lineNumber": 23
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/auth/pkg/types/limits.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 11,
+      "nonEmptyLines": 9,
+      "classes": [
+        {
+          "name": "TeamLimits",
+          "startLine": 3,
+          "endLine": 11,
+          "methods": [],
+          "properties": [
+            "SandboxConcurrency",
+            "BuildConcurrency",
+            "MaxLengthHours",
+            "MaxVcpu",
+            "MaxRamMb",
+            "DiskMb"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TeamLimits",
+          "line": 3,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/auth/pkg/types/teams.go",
+      "language": "go",
+      "fileCategory": "code",
+      "totalLines": 44,
+      "nonEmptyLines": 36,
+      "functions": [
+        {
+          "name": "TeamID",
+          "startLine": 13,
+          "endLine": 15,
+          "params": []
+        },
+        {
+          "name": "newTeamLimits",
+          "startLine": 17,
+          "endLine": 28,
+          "params": [
+            "teamLimits"
+          ]
+        },
+        {
+          "name": "NewTeam",
+          "startLine": 30,
+          "endLine": 38,
+          "params": [
+            "team",
+            "teamLimits"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Team",
+          "startLine": 7,
+          "endLine": 11,
+          "methods": [
+            "TeamID"
+          ],
+          "properties": [
+            "Limits"
+          ]
+        },
+        {
+          "name": "TeamWithDefault",
+          "startLine": 40,
+          "endLine": 44,
+          "methods": [],
+          "properties": [
+            "IsDefault"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Team",
+          "line": 7,
+          "isDefault": false
+        },
+        {
+          "name": "TeamID",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "NewTeam",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "TeamWithDefault",
+          "line": 40,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "TeamID",
+          "callee": "t.Team.ID.String",
+          "lineNumber": 14
+        },
+        {
+          "caller": "newTeamLimits",
+          "callee": "int64",
+          "lineNumber": 21
+        },
+        {
+          "caller": "newTeamLimits",
+          "callee": "int64",
+          "lineNumber": 22
+        },
+        {
+          "caller": "newTeamLimits",
+          "callee": "int64",
+          "lineNumber": 24
+        },
+        {
+          "caller": "newTeamLimits",
+          "callee": "int64",
+          "lineNumber": 25
+        },
+        {
+          "caller": "newTeamLimits",
+          "callee": "int64",
+          "lineNumber": 26
+        },
+        {
+          "caller": "NewTeam",
+          "callee": "newTeamLimits",
+          "lineNumber": 36
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 2
+      }
+    }
+  ]
+}

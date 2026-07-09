@@ -1,0 +1,69 @@
+{
+  "nodes": [
+    {
+      "id": "service:packages/dashboard-api/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "packages/dashboard-api/Dockerfile",
+      "summary": "多阶段 Dockerfile，先基于 golang:1.26.3-alpine 构建器分别下载各 Go workspace 模块依赖并执行 make build，再以 alpine 3.22 作为极简运行时镜像启动 dashboard-api 二进制。",
+      "tags": ["containerization", "infrastructure", "deployment", "multi-stage-build", "go-workspace"],
+      "complexity": "moderate",
+      "languageNotes": "采用多阶段构建：builder 阶段利用 --mount=type=cache 缓存 Go build cache，并按 shared/clickhouse/db/auth/dashboard-api 模块顺序预拷贝 go.mod/go.sum 以最大化层缓存命中；运行阶段仅 COPY 编译产物到裸 alpine 镜像。"
+    },
+    {
+      "id": "service:packages/dashboard-api/Dockerfile:builder",
+      "type": "service",
+      "name": "builder",
+      "filePath": "packages/dashboard-api/Dockerfile",
+      "summary": "基于 golang:1.26.3-alpine 的构建阶段，依次下载 shared、clickhouse、db、auth、dashboard-api 五个 Go 模块依赖，拷贝源码后通过 make build 生成 dashboard-api 二进制。",
+      "tags": ["containerization", "build-stage", "go-module-cache", "make-build"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "service:packages/dashboard-api/Dockerfile:alpine",
+      "type": "service",
+      "name": "alpine",
+      "filePath": "packages/dashboard-api/Dockerfile",
+      "summary": "基于 alpine:3.22 的运行阶段，仅从 builder 阶段拷贝编译好的 dashboard-api 二进制并以 ENTRYPOINT 启动，产出最小化的生产镜像。",
+      "tags": ["containerization", "runtime-stage", "minimal-image", "alpine"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:packages/dashboard-api/Dockerfile",
+      "target": "service:packages/dashboard-api/Dockerfile:builder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/dashboard-api/Dockerfile",
+      "target": "service:packages/dashboard-api/Dockerfile:alpine",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:packages/dashboard-api/Dockerfile:alpine",
+      "target": "service:packages/dashboard-api/Dockerfile:builder",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:packages/dashboard-api/Dockerfile",
+      "target": "file:packages/dashboard-api/main.go",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "service:packages/dashboard-api/Dockerfile",
+      "target": "file:packages/dashboard-api/Makefile",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

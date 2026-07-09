@@ -1,0 +1,71 @@
+{
+  "nodes": [
+    {
+      "id": "resource:iac/modules/job-ingress/main.tf",
+      "type": "resource",
+      "name": "main.tf",
+      "filePath": "iac/modules/job-ingress/main.tf",
+      "summary": "Terraform 模块入口,声明 traefik 配置模板并通过 nomad_job 资源部署 Traefik 反向代理 Ingress 作业到 Nomad 集群。",
+      "tags": ["infrastructure", "terraform", "nomad", "ingress", "deployment"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:iac/modules/job-ingress/readme.md",
+      "type": "document",
+      "name": "readme.md",
+      "filePath": "iac/modules/job-ingress/readme.md",
+      "summary": "模块说明文档,提供通过 gcloud SSH 端口转发访问 Traefik Dashboard 的简短步骤。",
+      "tags": ["documentation", "dashboard", "ingress", "ssh"],
+      "complexity": "simple"
+    },
+    {
+      "id": "resource:iac/modules/job-ingress/variables.tf",
+      "type": "resource",
+      "name": "variables.tf",
+      "filePath": "iac/modules/job-ingress/variables.tf",
+      "summary": "定义 Traefik Ingress 模块的全部输入变量,包括 Nomad/Consul 连接信息、端口、节点池、Ingress 副本与资源限制以及 Traefik 动态配置文件映射。",
+      "tags": ["infrastructure", "terraform", "configuration", "variables", "ingress"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "resource:iac/modules/job-ingress/main.tf:nomad_job.ingress",
+      "type": "resource",
+      "name": "nomad_job.ingress",
+      "filePath": "iac/modules/job-ingress/main.tf",
+      "lineRange": [17, 32],
+      "summary": "声明 nomad_job.ingress 资源,通过 templatefile 渲染 ingress.hcl 作业规约并将 Traefik 部署到 Nomad 集群。",
+      "tags": ["nomad-job", "traefik", "ingress", "resource"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "resource:iac/modules/job-ingress/main.tf",
+      "target": "resource:iac/modules/job-ingress/variables.tf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "resource:iac/modules/job-ingress/main.tf",
+      "target": "resource:iac/modules/job-ingress/main.tf:nomad_job.ingress",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "document:iac/modules/job-ingress/readme.md",
+      "target": "resource:iac/modules/job-ingress/main.tf",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:iac/modules/job-ingress/readme.md",
+      "target": "resource:iac/modules/job-ingress/variables.tf",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

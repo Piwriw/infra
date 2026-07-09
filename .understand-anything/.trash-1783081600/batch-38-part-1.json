@@ -1,0 +1,1422 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/envd/internal/services/process/handler/cgroupfd_linux.go",
+      "type": "file",
+      "name": "cgroupfd_linux.go",
+      "filePath": "packages/envd/internal/services/process/handler/cgroupfd_linux.go",
+      "summary": "Linux 平台构建约束下的辅助文件,提供 applyCgroupFD 的 Linux 实现,用于在子进程启动前应用 cgroup 文件描述符。",
+      "tags": [
+        "platform-specific",
+        "linux",
+        "cgroup",
+        "build-tag"
+      ],
+      "complexity": "simple",
+      "languageNotes": "使用 //go:build linux 构建约束实现平台分支。"
+    },
+    {
+      "id": "file:packages/envd/internal/services/process/handler/cgroupfd_other.go",
+      "type": "file",
+      "name": "cgroupfd_other.go",
+      "filePath": "packages/envd/internal/services/process/handler/cgroupfd_other.go",
+      "summary": "非 Linux 平台的占位实现,提供空的 applyCgroupFD 函数以满足编译期兼容性。",
+      "tags": [
+        "platform-specific",
+        "build-tag",
+        "stub",
+        "cgroup"
+      ],
+      "complexity": "simple",
+      "languageNotes": "使用 //go:build !linux 构建约束与 Linux 版本配对。"
+    },
+    {
+      "id": "file:packages/envd/internal/services/process/handler/handler.go",
+      "type": "file",
+      "name": "handler.go",
+      "filePath": "packages/envd/internal/services/process/handler/handler.go",
+      "summary": "进程处理核心,封装进程的创建、启动、等待、信号、TTY 调整与 stdin/stdout/stderr 多路复用逻辑,通过 cgroup 管理器隔离资源。",
+      "tags": [
+        "process-management",
+        "core",
+        "api-handler",
+        "tty",
+        "cgroup"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Handler 结构体聚合 TTY、cmd、上下文取消、stdout/stderr 缓冲与多个 channel 事件。"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/handler.go:New",
+      "type": "function",
+      "name": "New",
+      "filePath": "packages/envd/internal/services/process/handler/handler.go",
+      "lineRange": [
+        92,
+        338
+      ],
+      "summary": "构造新的进程 Handler,负责解析请求中的用户、命令、环境变量、cgroup 与 TTY 配置,创建子进程并为输出/事件流建立多路复用 channel。",
+      "tags": [
+        "factory",
+        "process-management",
+        "initialization",
+        "cgroup"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/handler.go:Start",
+      "type": "function",
+      "name": "Start",
+      "filePath": "packages/envd/internal/services/process/handler/handler.go",
+      "lineRange": [
+        427,
+        445
+      ],
+      "summary": "启动已构造的子进程,在请求超时控制下开始读取 stdin/stdout/stderr 并发出事件流。",
+      "tags": [
+        "process-management",
+        "lifecycle",
+        "api-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/handler.go:Wait",
+      "type": "function",
+      "name": "Wait",
+      "filePath": "packages/envd/internal/services/process/handler/handler.go",
+      "lineRange": [
+        447,
+        487
+      ],
+      "summary": "阻塞等待子进程退出,收集退出状态与错误,关闭输出 channel 并将最终结果通过 DataEvent/EndEvent 传递给订阅者。",
+      "tags": [
+        "process-management",
+        "lifecycle",
+        "event-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/handler.go:WriteStdin",
+      "type": "function",
+      "name": "WriteStdin",
+      "filePath": "packages/envd/internal/services/process/handler/handler.go",
+      "lineRange": [
+        372,
+        390
+      ],
+      "summary": "向子进程的标准输入写入数据,使用互斥锁串行化以保证并发写入安全。",
+      "tags": [
+        "stdin",
+        "process-management",
+        "io"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/handler.go:CloseStdin",
+      "type": "function",
+      "name": "CloseStdin",
+      "filePath": "packages/envd/internal/services/process/handler/handler.go",
+      "lineRange": [
+        394,
+        412
+      ],
+      "summary": "关闭子进程的标准输入管道,处理 TTY 与非 TTY 模式差异以正确发送 EOF。",
+      "tags": [
+        "stdin",
+        "process-management",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/handler.go:SendSignal",
+      "type": "function",
+      "name": "SendSignal",
+      "filePath": "packages/envd/internal/services/process/handler/handler.go",
+      "lineRange": [
+        352,
+        362
+      ],
+      "summary": "向子进程发送 POSIX 信号(如 SIGTERM、SIGKILL)。",
+      "tags": [
+        "signal",
+        "process-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/handler.go:ResizeTty",
+      "type": "function",
+      "name": "ResizeTty",
+      "filePath": "packages/envd/internal/services/process/handler/handler.go",
+      "lineRange": [
+        364,
+        370
+      ],
+      "summary": "调整子进程 TTY 的窗口大小以适配客户端终端尺寸。",
+      "tags": [
+        "tty",
+        "process-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/handler.go:WriteTty",
+      "type": "function",
+      "name": "WriteTty",
+      "filePath": "packages/envd/internal/services/process/handler/handler.go",
+      "lineRange": [
+        414,
+        425
+      ],
+      "summary": "向子进程的 TTY 控制端写入原始字节,用于交互式终端输入。",
+      "tags": [
+        "tty",
+        "io",
+        "process-management"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/handler.go:getProcType",
+      "type": "function",
+      "name": "getProcType",
+      "filePath": "packages/envd/internal/services/process/handler/handler.go",
+      "lineRange": [
+        340,
+        350
+      ],
+      "summary": "依据请求判定进程类型(Init/LongRunning/Regular 等),用于 cgroup 分类与默认值处理。",
+      "tags": [
+        "validation",
+        "process-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/handler.go:currentNice",
+      "type": "function",
+      "name": "currentNice",
+      "filePath": "packages/envd/internal/services/process/handler/handler.go",
+      "lineRange": [
+        82,
+        90
+      ],
+      "summary": "读取当前进程的 nice 值,用于为子进程继承 CPU 调度优先级。",
+      "tags": [
+        "utility",
+        "process-management",
+        "scheduling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/envd/internal/services/process/handler/handler.go:Handler",
+      "type": "class",
+      "name": "Handler",
+      "filePath": "packages/envd/internal/services/process/handler/handler.go",
+      "lineRange": [
+        45,
+        68
+      ],
+      "summary": "封装单个子进程的运行时状态,包含命令配置、TTY、stdin 互斥锁、stdout/stderr 缓冲、cgroup 取消上下文与事件 channel。",
+      "tags": [
+        "data-model",
+        "process-management",
+        "core"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/envd/internal/services/process/handler/handler.go:ProcessExit",
+      "type": "class",
+      "name": "ProcessExit",
+      "filePath": "packages/envd/internal/services/process/handler/handler.go",
+      "lineRange": [
+        38,
+        43
+      ],
+      "summary": "描述子进程退出结果的数据结构,携带错误、退出状态、是否退出与退出码。",
+      "tags": [
+        "data-model",
+        "process-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "type": "file",
+      "name": "multiplex.go",
+      "filePath": "packages/envd/internal/services/process/handler/multiplex.go",
+      "summary": "提供 MultiplexedChannel 抽象,将单一源 channel 的输出扇出(fork)给多个订阅者,处理订阅者退出与源关闭的清理。",
+      "tags": [
+        "utility",
+        "concurrency",
+        "channel-multiplex",
+        "fan-out"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "使用 sync.Mutex 配合 channel 与 Once 实现无泄漏的多订阅者模型。"
+    },
+    {
+      "id": "class:packages/envd/internal/services/process/handler/multiplex.go:MultiplexedChannel",
+      "type": "class",
+      "name": "MultiplexedChannel",
+      "filePath": "packages/envd/internal/services/process/handler/multiplex.go",
+      "lineRange": [
+        12,
+        18
+      ],
+      "summary": "封装一个源 channel 与若干订阅者的多路复用器,提供 Fork、HasSubscribers 与取消能力。",
+      "tags": [
+        "concurrency",
+        "data-model",
+        "channel-multiplex"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/multiplex.go:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "packages/envd/internal/services/process/handler/multiplex.go",
+      "lineRange": [
+        55,
+        85
+      ],
+      "summary": "后台 goroutine,从 Source channel 读取消息并广播给所有活跃订阅者,处理源关闭与上下文取消。",
+      "tags": [
+        "concurrency",
+        "event-handler",
+        "channel-multiplex"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/multiplex.go:Fork",
+      "type": "function",
+      "name": "Fork",
+      "filePath": "packages/envd/internal/services/process/handler/multiplex.go",
+      "lineRange": [
+        105,
+        134
+      ],
+      "summary": "创建一个新的订阅者 channel,从源 channel 复制后续消息;若源已关闭则返回已关闭的 channel。",
+      "tags": [
+        "concurrency",
+        "channel-multiplex",
+        "fan-out"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/multiplex.go:HasSubscribers",
+      "type": "function",
+      "name": "HasSubscribers",
+      "filePath": "packages/envd/internal/services/process/handler/multiplex.go",
+      "lineRange": [
+        88,
+        99
+      ],
+      "summary": "报告当前 MultiplexedChannel 是否仍存在活跃订阅者,用于空闲判定与资源回收。",
+      "tags": [
+        "concurrency",
+        "utility",
+        "channel-multiplex"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/multiplex.go:NewMultiplexedChannel",
+      "type": "function",
+      "name": "NewMultiplexedChannel",
+      "filePath": "packages/envd/internal/services/process/handler/multiplex.go",
+      "lineRange": [
+        43,
+        51
+      ],
+      "summary": "构造一个新的 MultiplexedChannel,初始化内部互斥锁、订阅者集合与取消函数,并启动后台 run goroutine。",
+      "tags": [
+        "factory",
+        "concurrency",
+        "channel-multiplex"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/multiplex.go:cancel",
+      "type": "function",
+      "name": "cancel",
+      "filePath": "packages/envd/internal/services/process/handler/multiplex.go",
+      "lineRange": [
+        27,
+        31
+      ],
+      "summary": "触发 MultiplexedChannel 的内部取消函数,关闭后台 goroutine 与所有订阅者。",
+      "tags": [
+        "concurrency",
+        "lifecycle",
+        "channel-multiplex"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/multiplex.go:isCancelled",
+      "type": "function",
+      "name": "isCancelled",
+      "filePath": "packages/envd/internal/services/process/handler/multiplex.go",
+      "lineRange": [
+        34,
+        41
+      ],
+      "summary": "查询 MultiplexedChannel 的取消上下文是否已经触发。",
+      "tags": [
+        "concurrency",
+        "utility",
+        "channel-multiplex"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/handler/multiplex.go:remove",
+      "type": "function",
+      "name": "remove",
+      "filePath": "packages/envd/internal/services/process/handler/multiplex.go",
+      "lineRange": [
+        137,
+        152
+      ],
+      "summary": "从订阅者集合中移除指定的 subscriber,清理其 channel 并在源已关闭且无订阅者时触发整体取消。",
+      "tags": [
+        "concurrency",
+        "lifecycle",
+        "channel-multiplex"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/envd/internal/services/process/handler/multiplex_test.go",
+      "type": "file",
+      "name": "multiplex_test.go",
+      "filePath": "packages/envd/internal/services/process/handler/multiplex_test.go",
+      "summary": "MultiplexedChannel 的并发测试套件,覆盖基本扇出、订阅者泄漏、饥饿、取消幂等、源关闭传播与 goroutine 泄漏检测。",
+      "tags": [
+        "test",
+        "concurrency",
+        "channel-multiplex",
+        "goroutine-leak"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/envd/internal/services/process/input.go",
+      "type": "file",
+      "name": "input.go",
+      "filePath": "packages/envd/internal/services/process/input.go",
+      "summary": "实现进程输入相关的 Connect RPC 处理器,支持单次 SendInput、流式 StreamInput 与 CloseStdin,将客户端输入路由至对应 Handler。",
+      "tags": [
+        "api-handler",
+        "connect-rpc",
+        "stdin",
+        "input-streaming"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/input.go:handleInput",
+      "type": "function",
+      "name": "handleInput",
+      "filePath": "packages/envd/internal/services/process/input.go",
+      "lineRange": [
+        14,
+        33
+      ],
+      "summary": "共享辅助函数,将单条 stdin 输入请求写入目标进程的 Handler,处理错误与日志记录。",
+      "tags": [
+        "stdin",
+        "api-handler",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/input.go:streamInputHandler",
+      "type": "function",
+      "name": "streamInputHandler",
+      "filePath": "packages/envd/internal/services/process/input.go",
+      "lineRange": [
+        53,
+        84
+      ],
+      "summary": "处理来自客户端的流式 stdin 请求循环,逐条写入目标进程,并在流结束或上下文取消时关闭 stdin。",
+      "tags": [
+        "stdin",
+        "input-streaming",
+        "api-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/input.go:SendInput",
+      "type": "function",
+      "name": "SendInput",
+      "filePath": "packages/envd/internal/services/process/input.go",
+      "lineRange": [
+        35,
+        47
+      ],
+      "summary": "Connect RPC Unary 处理器,接收单条 stdin 输入并转发至目标进程。",
+      "tags": [
+        "api-handler",
+        "connect-rpc",
+        "stdin"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/input.go:StreamInput",
+      "type": "function",
+      "name": "StreamInput",
+      "filePath": "packages/envd/internal/services/process/input.go",
+      "lineRange": [
+        49,
+        51
+      ],
+      "summary": "Connect RPC 流式输入端点入口,委托给 streamInputHandler 处理。",
+      "tags": [
+        "api-handler",
+        "connect-rpc",
+        "input-streaming"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/input.go:CloseStdin",
+      "type": "function",
+      "name": "CloseStdin",
+      "filePath": "packages/envd/internal/services/process/input.go",
+      "lineRange": [
+        86,
+        100
+      ],
+      "summary": "Connect RPC 处理器,关闭指定进程的 stdin,触发子进程读取 EOF。",
+      "tags": [
+        "api-handler",
+        "stdin",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/envd/internal/services/process/list.go",
+      "type": "file",
+      "name": "list.go",
+      "filePath": "packages/envd/internal/services/process/list.go",
+      "summary": "实现 List Connect RPC 处理器,枚举当前 Service 跟踪的所有进程并返回其元数据。",
+      "tags": [
+        "api-handler",
+        "connect-rpc",
+        "process-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/list.go:List",
+      "type": "function",
+      "name": "List",
+      "filePath": "packages/envd/internal/services/process/list.go",
+      "lineRange": [
+        12,
+        28
+      ],
+      "summary": "Connect RPC List 处理器,从 Service 中收集所有进程信息并组装响应。",
+      "tags": [
+        "api-handler",
+        "connect-rpc"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/envd/internal/services/process/service.go",
+      "type": "file",
+      "name": "service.go",
+      "filePath": "packages/envd/internal/services/process/service.go",
+      "summary": "进程服务的注册中心,持有所有活跃进程 Handler、默认值与 cgroup 管理器,并通过 Connect RPC handler 注册各端点。",
+      "tags": [
+        "service",
+        "registry",
+        "process-management",
+        "connect-rpc"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/envd/internal/services/process/service.go:Service",
+      "type": "class",
+      "name": "Service",
+      "filePath": "packages/envd/internal/services/process/service.go",
+      "lineRange": [
+        19,
+        24
+      ],
+      "summary": "进程服务核心结构体,聚合进程表、logger、Defaults 与 cgroup Manager,实现 Connect RPC Service 接口。",
+      "tags": [
+        "service",
+        "data-model",
+        "registry"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/service.go:Handle",
+      "type": "function",
+      "name": "Handle",
+      "filePath": "packages/envd/internal/services/process/service.go",
+      "lineRange": [
+        35,
+        45
+      ],
+      "summary": "创建 Service 实例,并将所有进程相关 Connect RPC 处理器注册到给定 server 上。",
+      "tags": [
+        "service",
+        "connect-rpc",
+        "registration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/service.go:newService",
+      "type": "function",
+      "name": "newService",
+      "filePath": "packages/envd/internal/services/process/service.go",
+      "lineRange": [
+        26,
+        33
+      ],
+      "summary": "Service 私有构造函数,初始化进程表、logger、默认值与 cgroup 管理器。",
+      "tags": [
+        "factory",
+        "service",
+        "initialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/service.go:getProcess",
+      "type": "function",
+      "name": "getProcess",
+      "filePath": "packages/envd/internal/services/process/service.go",
+      "lineRange": [
+        47,
+        84
+      ],
+      "summary": "依据 ProcessSelector 从 Service 中查找匹配的 Handler,处理未找到、权限校验等错误路径。",
+      "tags": [
+        "service",
+        "process-management",
+        "lookup"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/envd/internal/services/process/signal.go",
+      "type": "file",
+      "name": "signal.go",
+      "filePath": "packages/envd/internal/services/process/signal.go",
+      "summary": "实现 SendSignal Connect RPC 处理器,将客户端请求的 POSIX 信号转发至目标进程。",
+      "tags": [
+        "api-handler",
+        "connect-rpc",
+        "signal",
+        "process-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/envd/internal/services/process/signal.go:SendSignal",
+      "type": "function",
+      "name": "SendSignal",
+      "filePath": "packages/envd/internal/services/process/signal.go",
+      "lineRange": [
+        13,
+        38
+      ],
+      "summary": "Connect RPC 处理器,通过 getProcess 定位目标进程并调用 Handler.SendSignal 转发信号。",
+      "tags": [
+        "api-handler",
+        "connect-rpc",
+        "signal"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "file:packages/envd/internal/execcontext/context.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "file:packages/envd/internal/permissions/authenticate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "file:packages/envd/internal/permissions/keepalive.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "file:packages/envd/internal/permissions/path.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "file:packages/envd/internal/permissions/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "file:packages/envd/internal/services/cgroups/cgroup2_stub.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "file:packages/envd/internal/services/cgroups/cgroup2_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "file:packages/envd/internal/services/cgroups/cgroup2.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "file:packages/envd/internal/services/cgroups/iface.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "file:packages/envd/internal/services/cgroups/noop.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "file:packages/envd/internal/services/spec/process/process.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "file:packages/envd/internal/logs/interceptor.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "file:packages/envd/internal/logs/logger.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "file:packages/envd/internal/services/process/handler/cgroupfd_linux.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "file:packages/envd/internal/services/process/handler/cgroupfd_other.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "file:packages/envd/internal/services/process/handler/handler.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "file:packages/envd/internal/services/process/handler/multiplex_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "file:packages/envd/internal/services/spec/process/process.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/list.go",
+      "target": "file:packages/envd/internal/services/process/handler/cgroupfd_linux.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/list.go",
+      "target": "file:packages/envd/internal/services/process/handler/cgroupfd_other.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/list.go",
+      "target": "file:packages/envd/internal/services/process/handler/handler.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/list.go",
+      "target": "file:packages/envd/internal/services/process/handler/multiplex_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/list.go",
+      "target": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/list.go",
+      "target": "file:packages/envd/internal/services/spec/process/process.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/execcontext/context.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/logs/interceptor.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/logs/logger.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/cgroups/cgroup2_stub.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/cgroups/cgroup2_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/cgroups/cgroup2.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/cgroups/iface.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/cgroups/noop.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/process/handler/cgroupfd_linux.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/process/handler/cgroupfd_other.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/process/handler/handler.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/process/handler/multiplex_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/spec/process/process.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/spec/process/processconnect/process.connect.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/utils/atomic_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/utils/atomic.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/utils/envvars_test.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/utils/envvars.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/utils/map.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/utils/multipart.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/utils/rfsnotify.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/signal.go",
+      "target": "file:packages/envd/internal/services/spec/process/process.pb.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "class:packages/envd/internal/services/process/handler/handler.go:Handler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "class:packages/envd/internal/services/process/handler/handler.go:ProcessExit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:New",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:Start",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:Wait",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:WriteStdin",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:CloseStdin",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:SendSignal",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:ResizeTty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:WriteTty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:getProcType",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:currentNice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "class:packages/envd/internal/services/process/handler/handler.go:Handler",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "class:packages/envd/internal/services/process/handler/handler.go:ProcessExit",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:New",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:Start",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:Wait",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:WriteStdin",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:CloseStdin",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:SendSignal",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:ResizeTty",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/handler.go",
+      "target": "function:packages/envd/internal/services/process/handler/handler.go:WriteTty",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "target": "class:packages/envd/internal/services/process/handler/multiplex.go:MultiplexedChannel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "target": "function:packages/envd/internal/services/process/handler/multiplex.go:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "target": "function:packages/envd/internal/services/process/handler/multiplex.go:Fork",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "target": "function:packages/envd/internal/services/process/handler/multiplex.go:HasSubscribers",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "target": "function:packages/envd/internal/services/process/handler/multiplex.go:NewMultiplexedChannel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "target": "function:packages/envd/internal/services/process/handler/multiplex.go:cancel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "target": "function:packages/envd/internal/services/process/handler/multiplex.go:isCancelled",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "target": "function:packages/envd/internal/services/process/handler/multiplex.go:remove",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "target": "class:packages/envd/internal/services/process/handler/multiplex.go:MultiplexedChannel",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "target": "function:packages/envd/internal/services/process/handler/multiplex.go:NewMultiplexedChannel",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "target": "function:packages/envd/internal/services/process/handler/multiplex.go:HasSubscribers",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "target": "function:packages/envd/internal/services/process/handler/multiplex.go:Fork",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/handler/multiplex_test.go",
+      "target": "file:packages/envd/internal/services/process/handler/multiplex.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "function:packages/envd/internal/services/process/input.go:handleInput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "function:packages/envd/internal/services/process/input.go:streamInputHandler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "function:packages/envd/internal/services/process/input.go:SendInput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "function:packages/envd/internal/services/process/input.go:StreamInput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "function:packages/envd/internal/services/process/input.go:CloseStdin",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "function:packages/envd/internal/services/process/input.go:SendInput",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "function:packages/envd/internal/services/process/input.go:StreamInput",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "function:packages/envd/internal/services/process/input.go:CloseStdin",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/input.go",
+      "target": "file:packages/envd/internal/services/process/handler/handler.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/list.go",
+      "target": "function:packages/envd/internal/services/process/list.go:List",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/list.go",
+      "target": "function:packages/envd/internal/services/process/list.go:List",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/list.go",
+      "target": "file:packages/envd/internal/services/process/handler/handler.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "class:packages/envd/internal/services/process/service.go:Service",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "function:packages/envd/internal/services/process/service.go:Handle",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "function:packages/envd/internal/services/process/service.go:newService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "function:packages/envd/internal/services/process/service.go:getProcess",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "class:packages/envd/internal/services/process/service.go:Service",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "function:packages/envd/internal/services/process/service.go:Handle",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/process/handler/handler.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/process/input.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/process/list.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/process/signal.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/process/start.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/service.go",
+      "target": "file:packages/envd/internal/services/process/update.go",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/signal.go",
+      "target": "function:packages/envd/internal/services/process/signal.go:SendSignal",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/envd/internal/services/process/signal.go",
+      "target": "function:packages/envd/internal/services/process/signal.go:SendSignal",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

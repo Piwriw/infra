@@ -1,0 +1,316 @@
+{
+  "nodes": [
+    {
+      "id": "config:.dockerignore",
+      "type": "config",
+      "name": ".dockerignore",
+      "filePath": ".dockerignore",
+      "summary": "Docker 构建忽略列表，指定在构建镜像时不发送到 Docker 守护进程的本地文件与目录（如 .git、.env、构建产物等），以减小镜像上下文体积。",
+      "tags": ["containerization", "build-system", "configuration", "docker"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.env.aws.template",
+      "type": "config",
+      "name": ".env.aws.template",
+      "filePath": ".env.aws.template",
+      "summary": "AWS 部署环境变量模板，提供 AWS 自托管场景下所需的密钥、区域、集群与数据库等配置项的占位符，复制为 .env.aws 即可使用。",
+      "tags": ["configuration", "deployment", "aws", "environment", "template"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.env.gcp.template",
+      "type": "config",
+      "name": ".env.gcp.template",
+      "filePath": ".env.gcp.template",
+      "summary": "GCP 部署环境变量主模板，涵盖项目 ID、区域、数据库、Redis、ClickHouse、Nomad、GCS 存储桶、LaunchDarkly 特性开关等全部自托管所需的 165 行配置项。",
+      "tags": ["configuration", "deployment", "gcp", "environment", "template", "infrastructure"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:.golangci.yml",
+      "type": "config",
+      "name": ".golangci.yml",
+      "filePath": ".golangci.yml",
+      "summary": "golangci-lint 配置文件（v1.62），声明格式化器（gofmt、goimports、gofumpt）、启用大量 linter（errcheck、go vet、revive、gocyclo、bodyclose 等），并定义构建标签与超时等运行选项。",
+      "tags": ["configuration", "linting", "golang", "build-system", "code-quality"],
+      "complexity": "moderate",
+      "languageNotes": "包含 run.skip-build-dirs、issues.exclude-rules 等高级字段，覆盖整个 Go workspace。"
+    },
+    {
+      "id": "config:.mockery.yaml",
+      "type": "config",
+      "name": ".mockery.yaml",
+      "filePath": ".mockery.yaml",
+      "summary": "mockery v3 配置，定义 packages 段中所有 Go 包的接口 mock 生成规则（dir、structname、filename、outpkg、mock-tags），用于在测试中替换真实依赖。",
+      "tags": ["configuration", "testing", "golang", "code-generation", "mocking"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:.release-please-manifest.json",
+      "type": "config",
+      "name": ".release-please-manifest.json",
+      "filePath": ".release-please-manifest.json",
+      "summary": "release-please 发布版本清单，记录 packages/docker-reverse-proxy 当前发布版本号，由 release-please GitHub Action 自动维护。",
+      "tags": ["configuration", "release-management", "ci-cd", "automation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:AGENTS.md",
+      "type": "document",
+      "name": "AGENTS.md",
+      "filePath": "AGENTS.md",
+      "summary": "面向 AI 代码评审代理（如 Codex、Claude）的评审指南文档，明确评审范围仅限 packages/ 下的代码、测试、Makefile、文档与 IaC，并约束禁止修改 .env.* 等。",
+      "tags": ["documentation", "code-review", "ai-agent", "guidelines"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:CLAUDE.md",
+      "type": "document",
+      "name": "CLAUDE.md",
+      "filePath": "CLAUDE.md",
+      "summary": "Claude Code 的项目向导文件，全面描述 E2B 基础设施的架构（API、Orchestrator、Envd、Client Proxy、Shared）、常用 make 命令、代码生成、测试、数据库迁移、可观测性、自托管与调试方式，是开发者上手主入口。",
+      "tags": ["documentation", "entry-point", "architecture", "onboarding", "overview"],
+      "complexity": "complex",
+      "languageNotes": "包含 29 个层级的章节，涵盖从本地开发到生产部署的完整工作流。"
+    },
+    {
+      "id": "document:CONTRIBUTING.md",
+      "type": "document",
+      "name": "CONTRIBUTING.md",
+      "filePath": "CONTRIBUTING.md",
+      "summary": "E2B Infrastructure 贡献指南，要求贡献者先开 issue、说明欢迎的 PR 类型、列出 unlikely 合并的事项，并给出开发环境与 PR 提交流程以及行为准则链接。",
+      "tags": ["documentation", "contributing", "guidelines", "community"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:DEV-LOCAL.md",
+      "type": "document",
+      "name": "DEV-LOCAL.md",
+      "filePath": "DEV-LOCAL.md",
+      "summary": "本地开发详尽指南（262 行），覆盖系统准备、自定义 Firecracker 与内核下载、本地基础设施（Postgres/Redis/ClickHouse/Grafana 全栈）、基础模板构建、客户端配置以及常见问题排查（/dev/kvm、端口冲突、sudo、huge pages 等）。",
+      "tags": ["documentation", "local-development", "onboarding", "troubleshooting", "guide"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:DEV.md",
+      "type": "document",
+      "name": "DEV.md",
+      "filePath": "DEV.md",
+      "summary": "精简的远程开发说明，链接到 DEV-LOCAL.md 的本地开发指引，并说明如何通过 GCP 进行 VSCode Remote-SSH 调试，作为短入口引导。",
+      "tags": ["documentation", "remote-development", "vscode", "guide"],
+      "complexity": "simple"
+    },
+    {
+      "id": "pipeline:Makefile",
+      "type": "pipeline",
+      "name": "Makefile",
+      "filePath": "Makefile",
+      "summary": "项目根 Makefile，定义 40+ 个编排目标（gcloud 登录、terraform init/plan/apply、build-and-upload、生成代码、数据库迁移、测试、本地栈启动、SSH 连接 orchestrator 等），是部署与本地开发的统一入口。",
+      "tags": ["ci-cd", "build-system", "deployment", "orchestration", "infrastructure"],
+      "complexity": "complex",
+      "languageNotes": "通过 .PHONY 与多目录 make -C 调用串联 API、Orchestrator、DB 等子包的构建。"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "项目顶层 README，简要说明 E2B Infrastructure 是 E2B 开源云平台的后端、列出项目用途，并指向 CONTRIBUTING.md 与 self-host.md 进行下一步操作。",
+      "tags": ["documentation", "entry-point", "overview", "readme"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:codecov.yml",
+      "type": "config",
+      "name": "codecov.yml",
+      "filePath": "codecov.yml",
+      "summary": "Codecov 覆盖率配置，定义覆盖率状态阈值、PR 评论布局、按 flag（api、orchestrator 等）划分的 flag_management 与 component_management，并指定忽略路径列表。",
+      "tags": ["configuration", "code-coverage", "ci-cd", "testing", "monitoring"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:redocly.yaml",
+      "type": "config",
+      "name": "redocly.yaml",
+      "filePath": "redocly.yaml",
+      "summary": "Redocly（OpenAPI）配置，继承 recommended 规则集，启用 docs-preview 插件，并自定义 OperationId 与 tag 排序等 lint 规则，用于校验 spec/openapi.yml。",
+      "tags": ["configuration", "openapi", "linting", "api-schema", "documentation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:release-please-config.json",
+      "type": "config",
+      "name": "release-please-config.json",
+      "filePath": "release-please-config.json",
+      "summary": "release-please 主配置，声明 bootstrap-path、separate-pull-requests、include-component-in-tag，并列出 packages/docker-reverse-proxy 等子包的发布路径与 changelog-type。",
+      "tags": ["configuration", "release-management", "ci-cd", "automation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:self-host.md",
+      "type": "document",
+      "name": "self-host.md",
+      "filePath": "self-host.md",
+      "summary": "E2B 自托管完整指南（240 行），覆盖 GCP 与 AWS 两种云的先决条件、步骤、架构图、常见问题，并包含集群交互（SDK/CLI）、任务监控、Firecracker/UFFD 源码编译与 Make 命令速查表。",
+      "tags": ["documentation", "self-hosting", "deployment", "gcp", "aws", "infrastructure"],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:.dockerignore",
+      "target": "pipeline:Makefile",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:.env.aws.template",
+      "target": "document:self-host.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:.env.gcp.template",
+      "target": "document:self-host.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:.env.gcp.template",
+      "target": "pipeline:Makefile",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:.env.aws.template",
+      "target": "pipeline:Makefile",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:.golangci.yml",
+      "target": "pipeline:Makefile",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:.mockery.yaml",
+      "target": "pipeline:Makefile",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:codecov.yml",
+      "target": "pipeline:Makefile",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:release-please-config.json",
+      "target": "config:.release-please-manifest.json",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:.release-please-manifest.json",
+      "target": "config:release-please-config.json",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:CONTRIBUTING.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:self-host.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "pipeline:Makefile",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:DEV-LOCAL.md",
+      "target": "pipeline:Makefile",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:DEV.md",
+      "target": "document:DEV-LOCAL.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CONTRIBUTING.md",
+      "target": "document:DEV-LOCAL.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:self-host.md",
+      "target": "pipeline:Makefile",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:self-host.md",
+      "target": "config:.env.gcp.template",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:self-host.md",
+      "target": "config:.env.aws.template",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "document:DEV-LOCAL.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "document:self-host.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:AGENTS.md",
+      "target": "document:CONTRIBUTING.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

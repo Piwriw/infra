@@ -1,0 +1,2055 @@
+{
+  "nodes": [
+    {
+      "id": "file:packages/shared/pkg/keys/key.go",
+      "type": "file",
+      "name": "key.go",
+      "filePath": "packages/shared/pkg/keys/key.go",
+      "summary": "提供 API 密钥的生成、哈希、脱敏显示与验证能力，统一管理带前缀的 Key 标识符（Key、MaskedIdentifier），供鉴权层与日志展示使用。",
+      "tags": [
+        "utility",
+        "security",
+        "api-key",
+        "hashing",
+        "masking"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/keys/key.go:Key",
+      "type": "class",
+      "name": "Key",
+      "filePath": "packages/shared/pkg/keys/key.go",
+      "lineRange": [
+        20,
+        24
+      ],
+      "summary": "表示一个带前缀的 API 密钥对象，包含原始值、哈希值与脱敏显示。",
+      "tags": [
+        "data-model",
+        "api-key"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/keys/key.go:MaskedIdentifier",
+      "type": "class",
+      "name": "MaskedIdentifier",
+      "filePath": "packages/shared/pkg/keys/key.go",
+      "lineRange": [
+        26,
+        31
+      ],
+      "summary": "对外展示用的脱敏标识符，保留前缀和首尾片段以辅助识别。",
+      "tags": [
+        "data-model",
+        "masking"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/keys/key.go:MaskKey",
+      "type": "function",
+      "name": "MaskKey",
+      "filePath": "packages/shared/pkg/keys/key.go",
+      "lineRange": [
+        34,
+        64
+      ],
+      "summary": "根据前缀与值生成长度受限的脱敏标识符，并对长度异常做校验。",
+      "tags": [
+        "utility",
+        "validation",
+        "masking"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/keys/key.go:GenerateKey",
+      "type": "function",
+      "name": "GenerateKey",
+      "filePath": "packages/shared/pkg/keys/key.go",
+      "lineRange": [
+        66,
+        86
+      ],
+      "summary": "生成带前缀的随机 API 密钥，包含原始值、哈希值与脱敏表示。",
+      "tags": [
+        "factory",
+        "api-key",
+        "hashing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/keys/key.go:MaskToken",
+      "type": "function",
+      "name": "MaskToken",
+      "filePath": "packages/shared/pkg/keys/key.go",
+      "lineRange": [
+        90,
+        98
+      ],
+      "summary": "为已携带前缀的 token 字符串构造 MaskedIdentifier 输出。",
+      "tags": [
+        "utility",
+        "masking"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/keys/key.go:VerifyKey",
+      "type": "function",
+      "name": "VerifyKey",
+      "filePath": "packages/shared/pkg/keys/key.go",
+      "lineRange": [
+        100,
+        112
+      ],
+      "summary": "校验输入密钥的前缀与十六进制哈希格式是否匹配。",
+      "tags": [
+        "validation",
+        "api-key"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/keys/sha256_test.go",
+      "type": "file",
+      "name": "sha256_test.go",
+      "filePath": "packages/shared/pkg/keys/sha256_test.go",
+      "summary": "Sha256Hashing 哈希器的单元测试，验证输出格式与前缀拼接。",
+      "tags": [
+        "test",
+        "hashing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/keys/sha256.go",
+      "type": "file",
+      "name": "sha256.go",
+      "filePath": "packages/shared/pkg/keys/sha256.go",
+      "summary": "实现 Sha256Hashing 接口，提供 SHA-256 摘要的 base64 编码与可带前缀的两种哈希方法。",
+      "tags": [
+        "hashing",
+        "crypto",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/keys/sha256.go:Sha256Hashing",
+      "type": "class",
+      "name": "Sha256Hashing",
+      "filePath": "packages/shared/pkg/keys/sha256.go",
+      "lineRange": [
+        9,
+        9
+      ],
+      "summary": "空结构体，承载 SHA-256 哈希行为。",
+      "tags": [
+        "data-model",
+        "hashing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/keys/sha256.go:NewSHA256Hashing",
+      "type": "function",
+      "name": "NewSHA256Hashing",
+      "filePath": "packages/shared/pkg/keys/sha256.go",
+      "lineRange": [
+        11,
+        13
+      ],
+      "summary": "构造一个 Sha256Hashing 实例。",
+      "tags": [
+        "factory",
+        "hashing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/keys/sha256.go:Hash",
+      "type": "function",
+      "name": "Hash",
+      "filePath": "packages/shared/pkg/keys/sha256.go",
+      "lineRange": [
+        15,
+        24
+      ],
+      "summary": "对输入字符串做 SHA-256 摘要后以 base64 编码，并在前缀为空时省略前缀。",
+      "tags": [
+        "hashing",
+        "encoding"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/keys/sha256.go:HashWithoutPrefix",
+      "type": "function",
+      "name": "HashWithoutPrefix",
+      "filePath": "packages/shared/pkg/keys/sha256.go",
+      "lineRange": [
+        26,
+        30
+      ],
+      "summary": "返回不带前缀的纯 SHA-256 base64 编码结果。",
+      "tags": [
+        "hashing",
+        "encoding"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/keys/sha512.go",
+      "type": "file",
+      "name": "sha512.go",
+      "filePath": "packages/shared/pkg/keys/sha512.go",
+      "summary": "为 access token 提供基于 SHA-512 的十六进制摘要工具，包含字符串与字节两种入口。",
+      "tags": [
+        "hashing",
+        "crypto",
+        "access-token"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/keys/sha512.go:HashAccessToken",
+      "type": "function",
+      "name": "HashAccessToken",
+      "filePath": "packages/shared/pkg/keys/sha512.go",
+      "lineRange": [
+        9,
+        13
+      ],
+      "summary": "对字符串 token 计算 SHA-512 并以十六进制编码返回。",
+      "tags": [
+        "hashing",
+        "access-token"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/keys/sha512.go:HashAccessTokenBytes",
+      "type": "function",
+      "name": "HashAccessTokenBytes",
+      "filePath": "packages/shared/pkg/keys/sha512.go",
+      "lineRange": [
+        16,
+        20
+      ],
+      "summary": "对字节切片形式的 token 做 SHA-512 并以十六进制字符串返回。",
+      "tags": [
+        "hashing",
+        "access-token"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/logs/loki/loki_test.go",
+      "type": "file",
+      "name": "loki_test.go",
+      "filePath": "packages/shared/pkg/logs/loki/loki_test.go",
+      "summary": "测试 Loki 日志响应映射的方向排序与时序稳定性，验证行顺序、计数与方向标注。",
+      "tags": [
+        "test",
+        "logging",
+        "loki"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/machineinfo/machine_info_test.go",
+      "type": "file",
+      "name": "machine_info_test.go",
+      "filePath": "packages/shared/pkg/machineinfo/machine_info_test.go",
+      "summary": "针对 IsCompatibleWith 与 IsExactMatch 的子测试表驱动测试，覆盖各 CPU 家族与变体的匹配规则。",
+      "tags": [
+        "test",
+        "machineinfo",
+        "cpu"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/middleware/otel/metrics/config.go",
+      "type": "file",
+      "name": "config.go",
+      "filePath": "packages/shared/pkg/middleware/otel/metrics/config.go",
+      "summary": "定义 OTEL 指标中间件的配置结构体与默认值，控制 in-flight、duration、size 记录开关。",
+      "tags": [
+        "middleware",
+        "otel",
+        "metrics",
+        "configuration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/middleware/otel/metrics/config.go:config",
+      "type": "class",
+      "name": "config",
+      "filePath": "packages/shared/pkg/middleware/otel/metrics/config.go",
+      "lineRange": [
+        10,
+        17
+      ],
+      "summary": "OTEL 指标中间件的内部配置，记录各类指标开关、attributes 与自定义 recorder。",
+      "tags": [
+        "data-model",
+        "configuration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/middleware/otel/metrics/option.go",
+      "type": "file",
+      "name": "option.go",
+      "filePath": "packages/shared/pkg/middleware/otel/metrics/option.go",
+      "summary": "提供 OTEL metrics 中间件的功能选项模式，封装 attributes、recorder 与各类指标开关。",
+      "tags": [
+        "middleware",
+        "otel",
+        "options-pattern"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/middleware/otel/metrics/option.go:Option",
+      "type": "class",
+      "name": "Option",
+      "filePath": "packages/shared/pkg/middleware/otel/metrics/option.go",
+      "lineRange": [
+        10,
+        12
+      ],
+      "summary": "Option 函数式接口类型，对 config 施加行为变更。",
+      "tags": [
+        "interface",
+        "options-pattern"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithAttributes",
+      "type": "function",
+      "name": "WithAttributes",
+      "filePath": "packages/shared/pkg/middleware/otel/metrics/option.go",
+      "lineRange": [
+        22,
+        26
+      ],
+      "summary": "注入额外的 OTEL 属性键值对到所有指标。",
+      "tags": [
+        "options-pattern",
+        "attributes"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithRecordInFlightDisabled",
+      "type": "function",
+      "name": "WithRecordInFlightDisabled",
+      "filePath": "packages/shared/pkg/middleware/otel/metrics/option.go",
+      "lineRange": [
+        30,
+        34
+      ],
+      "summary": "关闭 in-flight 指标记录。",
+      "tags": [
+        "options-pattern",
+        "metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithRecordDurationDisabled",
+      "type": "function",
+      "name": "WithRecordDurationDisabled",
+      "filePath": "packages/shared/pkg/middleware/otel/metrics/option.go",
+      "lineRange": [
+        38,
+        42
+      ],
+      "summary": "关闭 duration 指标记录。",
+      "tags": [
+        "options-pattern",
+        "metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithRecordSizeDisabled",
+      "type": "function",
+      "name": "WithRecordSizeDisabled",
+      "filePath": "packages/shared/pkg/middleware/otel/metrics/option.go",
+      "lineRange": [
+        46,
+        50
+      ],
+      "summary": "关闭 size 指标记录。",
+      "tags": [
+        "options-pattern",
+        "metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithRecorder",
+      "type": "function",
+      "name": "WithRecorder",
+      "filePath": "packages/shared/pkg/middleware/otel/metrics/option.go",
+      "lineRange": [
+        54,
+        58
+      ],
+      "summary": "注入自定义 Recorder 实现。",
+      "tags": [
+        "options-pattern",
+        "recorder"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithShouldRecordFunc",
+      "type": "function",
+      "name": "WithShouldRecordFunc",
+      "filePath": "packages/shared/pkg/middleware/otel/metrics/option.go",
+      "lineRange": [
+        62,
+        66
+      ],
+      "summary": "注入一个判断函数，决定请求是否需要记录指标。",
+      "tags": [
+        "options-pattern",
+        "filter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/middleware/otel/metrics/otelrecorder.go",
+      "type": "file",
+      "name": "otelrecorder.go",
+      "filePath": "packages/shared/pkg/middleware/otel/metrics/otelrecorder.go",
+      "summary": "实现 Recorder 接口的 otelRecorder，将 HTTP 请求耗时记录到 OTel 直方图。",
+      "tags": [
+        "middleware",
+        "otel",
+        "metrics",
+        "recorder"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/middleware/otel/metrics/otelrecorder.go:otelRecorder",
+      "type": "class",
+      "name": "otelRecorder",
+      "filePath": "packages/shared/pkg/middleware/otel/metrics/otelrecorder.go",
+      "lineRange": [
+        14,
+        16
+      ],
+      "summary": "包装 Float64Histogram 的 OTel recorder，用于上报 HTTP 请求 duration 指标。",
+      "tags": [
+        "data-model",
+        "otel"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/middleware/otel/metrics/otelrecorder.go:GetRecorder",
+      "type": "function",
+      "name": "GetRecorder",
+      "filePath": "packages/shared/pkg/middleware/otel/metrics/otelrecorder.go",
+      "lineRange": [
+        18,
+        37
+      ],
+      "summary": "根据 MeterProvider 与指标前缀创建一个 otelRecorder，绑定 totalDuration 直方图。",
+      "tags": [
+        "factory",
+        "otel",
+        "metrics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/middleware/otel/metrics/otelrecorder.go:ObserveHTTPRequestDuration",
+      "type": "function",
+      "name": "ObserveHTTPRequestDuration",
+      "filePath": "packages/shared/pkg/middleware/otel/metrics/otelrecorder.go",
+      "lineRange": [
+        40,
+        42
+      ],
+      "summary": "记录一次 HTTP 请求的耗时观测到直方图。",
+      "tags": [
+        "otel",
+        "metrics",
+        "recorder"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/middleware/otel/metrics/recorder.go",
+      "type": "file",
+      "name": "recorder.go",
+      "filePath": "packages/shared/pkg/middleware/otel/metrics/recorder.go",
+      "summary": "定义 OTEL 中间件使用的 Recorder 接口规范。",
+      "tags": [
+        "middleware",
+        "otel",
+        "interface"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/middleware/otel/metrics/recorder.go:Recorder",
+      "type": "class",
+      "name": "Recorder",
+      "filePath": "packages/shared/pkg/middleware/otel/metrics/recorder.go",
+      "lineRange": [
+        10,
+        13
+      ],
+      "summary": "Recorder 接口声明：实现 ObserveHTTPRequestDuration 即可对接指标中间件。",
+      "tags": [
+        "interface",
+        "metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/proxy/errors.go",
+      "type": "file",
+      "name": "errors.go",
+      "filePath": "packages/shared/pkg/proxy/errors.go",
+      "summary": "集中定义客户端代理层使用的所有 sentinel 错误类型，覆盖沙箱未找到、恢复权限、过渡中、流量访问令牌、资源耗尽等场景。",
+      "tags": [
+        "error-handling",
+        "proxy",
+        "api-errors"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/proxy/errors.go:InvalidSandboxPortError",
+      "type": "class",
+      "name": "InvalidSandboxPortError",
+      "filePath": "packages/shared/pkg/proxy/errors.go",
+      "lineRange": [
+        12,
+        15
+      ],
+      "summary": "表示请求端口无效的错误，可通过 Unwrap 解包底层错误。",
+      "tags": [
+        "error-type",
+        "proxy"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/proxy/errors.go:SandboxNotFoundError",
+      "type": "class",
+      "name": "SandboxNotFoundError",
+      "filePath": "packages/shared/pkg/proxy/errors.go",
+      "lineRange": [
+        25,
+        27
+      ],
+      "summary": "表示目标沙箱 ID 在代理注册表中找不到的错误。",
+      "tags": [
+        "error-type",
+        "sandbox"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/proxy/errors.go:SandboxResumePermissionDeniedError",
+      "type": "class",
+      "name": "SandboxResumePermissionDeniedError",
+      "filePath": "packages/shared/pkg/proxy/errors.go",
+      "lineRange": [
+        39,
+        41
+      ],
+      "summary": "表示沙箱恢复请求被拒绝的错误。",
+      "tags": [
+        "error-type",
+        "permission"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/proxy/errors.go:SandboxStillTransitioningError",
+      "type": "class",
+      "name": "SandboxStillTransitioningError",
+      "filePath": "packages/shared/pkg/proxy/errors.go",
+      "lineRange": [
+        53,
+        55
+      ],
+      "summary": "表示沙箱仍在状态转换中的错误。",
+      "tags": [
+        "error-type",
+        "sandbox"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/proxy/errors.go:MissingTrafficAccessTokenError",
+      "type": "class",
+      "name": "MissingTrafficAccessTokenError",
+      "filePath": "packages/shared/pkg/proxy/errors.go",
+      "lineRange": [
+        67,
+        70
+      ],
+      "summary": "表示代理请求缺少流量访问令牌头的错误。",
+      "tags": [
+        "error-type",
+        "auth"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/proxy/errors.go:InvalidTrafficAccessTokenError",
+      "type": "class",
+      "name": "InvalidTrafficAccessTokenError",
+      "filePath": "packages/shared/pkg/proxy/errors.go",
+      "lineRange": [
+        83,
+        86
+      ],
+      "summary": "表示代理请求流量访问令牌无效的错误。",
+      "tags": [
+        "error-type",
+        "auth"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/proxy/errors.go:SandboxResourceExhaustedError",
+      "type": "class",
+      "name": "SandboxResourceExhaustedError",
+      "filePath": "packages/shared/pkg/proxy/errors.go",
+      "lineRange": [
+        99,
+        102
+      ],
+      "summary": "表示沙箱资源已耗尽（含原因信息）的错误。",
+      "tags": [
+        "error-type",
+        "sandbox"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/proxy/host_test.go",
+      "type": "file",
+      "name": "host_test.go",
+      "filePath": "packages/shared/pkg/proxy/host_test.go",
+      "summary": "针对 GetTargetFromRequest 的子测试覆盖：解析各种 Host/SandboxId/Port 组合并断言错误类型映射。",
+      "tags": [
+        "test",
+        "proxy",
+        "routing"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/retry/retry_test.go",
+      "type": "file",
+      "name": "retry_test.go",
+      "filePath": "packages/shared/pkg/retry/retry_test.go",
+      "summary": "覆盖 retry.Do 的多种场景：重试成功、预算耗尽、per-attempt 超时、父 ctx 取消、不可重试、回调等。",
+      "tags": [
+        "test",
+        "retry",
+        "resilience"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/retry/retry.go",
+      "type": "file",
+      "name": "retry.go",
+      "filePath": "packages/shared/pkg/retry/retry.go",
+      "summary": "实现带总预算、per-attempt 超时与指数退避的 Do 重试循环，配合 Policy 配置与 onRetry 回调。",
+      "tags": [
+        "utility",
+        "retry",
+        "resilience"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:packages/shared/pkg/retry/retry.go:Policy",
+      "type": "class",
+      "name": "Policy",
+      "filePath": "packages/shared/pkg/retry/retry.go",
+      "lineRange": [
+        15,
+        29
+      ],
+      "summary": "配置 Do 的总预算、per-attempt 超时、初始/最大退避及倍数。",
+      "tags": [
+        "data-model",
+        "configuration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/retry/retry.go:Do",
+      "type": "function",
+      "name": "Do",
+      "filePath": "packages/shared/pkg/retry/retry.go",
+      "lineRange": [
+        42,
+        83
+      ],
+      "summary": "在 budget context 下执行 fn，按 retryable 判定与 backoff 退避进行重试，并在取消或预算耗尽时通过 stopError 终止。",
+      "tags": [
+        "resilience",
+        "retry",
+        "concurrency"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/sandbox-catalog/catalog.go",
+      "type": "file",
+      "name": "catalog.go",
+      "filePath": "packages/shared/pkg/sandbox-catalog/catalog.go",
+      "summary": "声明沙箱目录接口（SandboxInfo、SandboxesCatalog），抽象沙箱元数据存储与查询。",
+      "tags": [
+        "interface",
+        "sandbox",
+        "data-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/sandbox-catalog/catalog.go:SandboxInfo",
+      "type": "class",
+      "name": "SandboxInfo",
+      "filePath": "packages/shared/pkg/sandbox-catalog/catalog.go",
+      "lineRange": [
+        11,
+        18
+      ],
+      "summary": "描述单个沙箱的元数据：orchestrator id/ip、execution id、启动时间与最长存活小时。",
+      "tags": [
+        "data-model",
+        "sandbox"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:packages/shared/pkg/sandbox-catalog/catalog.go:SandboxesCatalog",
+      "type": "class",
+      "name": "SandboxesCatalog",
+      "filePath": "packages/shared/pkg/sandbox-catalog/catalog.go",
+      "lineRange": [
+        20,
+        25
+      ],
+      "summary": "沙箱目录的抽象接口，提供 Get/Store/Delete/Close。",
+      "tags": [
+        "interface",
+        "sandbox"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/sandbox-network/byop_test.go",
+      "type": "file",
+      "name": "byop_test.go",
+      "filePath": "packages/shared/pkg/sandbox-network/byop_test.go",
+      "summary": "针对 BYOP（Bring Your Own Proxy）出口代理校验的子测试集，覆盖格式、内部端点、凭据长度、不可变性等。",
+      "tags": [
+        "test",
+        "network",
+        "validation",
+        "egress"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/sandbox-network/firewall_test.go",
+      "type": "file",
+      "name": "firewall_test.go",
+      "filePath": "packages/shared/pkg/sandbox-network/firewall_test.go",
+      "summary": "测试 IsSpecifiedIPOrCIDR 与 AddressStringToCIDR 的子测试，验证 CIDR/IP 解析与边界条件。",
+      "tags": [
+        "test",
+        "firewall",
+        "network"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/header/block.go",
+      "type": "file",
+      "name": "block.go",
+      "filePath": "packages/shared/pkg/storage/header/block.go",
+      "summary": "提供块大小相关的工具：块索引、块偏移、块总数、块偏移数组等纯函数。",
+      "tags": [
+        "utility",
+        "storage",
+        "math"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/block.go:TotalBlocks",
+      "type": "function",
+      "name": "TotalBlocks",
+      "filePath": "packages/shared/pkg/storage/header/block.go",
+      "lineRange": [
+        3,
+        5
+      ],
+      "summary": "计算覆盖 size 所需的 blockSize 块数（向上取整）。",
+      "tags": [
+        "utility",
+        "math"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/block.go:BlocksOffsets",
+      "type": "function",
+      "name": "BlocksOffsets",
+      "filePath": "packages/shared/pkg/storage/header/block.go",
+      "lineRange": [
+        7,
+        15
+      ],
+      "summary": "返回所有块在大小为 size 的区间内的起始偏移列表。",
+      "tags": [
+        "utility",
+        "math"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/block.go:BlockIdx",
+      "type": "function",
+      "name": "BlockIdx",
+      "filePath": "packages/shared/pkg/storage/header/block.go",
+      "lineRange": [
+        18,
+        20
+      ],
+      "summary": "计算偏移 off 所属的块下标。",
+      "tags": [
+        "utility",
+        "math"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/block.go:BlockCeilIdx",
+      "type": "function",
+      "name": "BlockCeilIdx",
+      "filePath": "packages/shared/pkg/storage/header/block.go",
+      "lineRange": [
+        23,
+        25
+      ],
+      "summary": "计算偏移 off 向上取整后的块下标。",
+      "tags": [
+        "utility",
+        "math"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/block.go:BlockOffset",
+      "type": "function",
+      "name": "BlockOffset",
+      "filePath": "packages/shared/pkg/storage/header/block.go",
+      "lineRange": [
+        27,
+        29
+      ],
+      "summary": "计算给定块下标 idx 在大小为 blockSize 的区间中的起始偏移。",
+      "tags": [
+        "utility",
+        "math"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/header/compact_test.go",
+      "type": "file",
+      "name": "compact_test.go",
+      "filePath": "packages/shared/pkg/storage/header/compact_test.go",
+      "summary": "Mapping 与 NewHeader 的单元测试，覆盖对齐、循环、SearchOffset、Validate 等行为。",
+      "tags": [
+        "test",
+        "storage",
+        "compact"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/header/compact.go",
+      "type": "file",
+      "name": "compact.go",
+      "filePath": "packages/shared/pkg/storage/header/compact.go",
+      "summary": "实现 compact 格式的 Mapping：按构建/存储列压缩块地址区间，提供 Len/At/All/Slice/Validate/SearchOffset 等方法。",
+      "tags": [
+        "storage",
+        "compact",
+        "data-structure"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/header/compact.go:Mapping",
+      "type": "class",
+      "name": "Mapping",
+      "filePath": "packages/shared/pkg/storage/header/compact.go",
+      "lineRange": [
+        18,
+        25
+      ],
+      "summary": "compact 格式的 mapping 结构，按 builds/offsets/lengths/storage/buildIdx 列压缩存储。",
+      "tags": [
+        "data-model",
+        "storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/compact.go:NewMapping",
+      "type": "function",
+      "name": "NewMapping",
+      "filePath": "packages/shared/pkg/storage/header/compact.go",
+      "lineRange": [
+        42,
+        103
+      ],
+      "summary": "从源数据构建并验证 compact mapping，处理对齐、长度与 ID 范围。",
+      "tags": [
+        "factory",
+        "storage",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/compact.go:Validate",
+      "type": "function",
+      "name": "Validate",
+      "filePath": "packages/shared/pkg/storage/header/compact.go",
+      "lineRange": [
+        206,
+        234
+      ],
+      "summary": "校验 mapping 在 size/blockSize 下的区间一致性与连续性。",
+      "tags": [
+        "validation",
+        "storage"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/compact.go:SearchOffset",
+      "type": "function",
+      "name": "SearchOffset",
+      "filePath": "packages/shared/pkg/storage/header/compact.go",
+      "lineRange": [
+        240,
+        256
+      ],
+      "summary": "在 mapping 中二分查找某 offset 所属构建的区间下标。",
+      "tags": [
+        "algorithm",
+        "search",
+        "storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/header/diff_test.go",
+      "type": "file",
+      "name": "diff_test.go",
+      "filePath": "packages/shared/pkg/storage/header/diff_test.go",
+      "summary": "IsZero 函数在 nil/空/非零缓冲上的单元测试。",
+      "tags": [
+        "test",
+        "storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/header/diff.go",
+      "type": "file",
+      "name": "diff.go",
+      "filePath": "packages/shared/pkg/storage/header/diff.go",
+      "summary": "为 header 存储提供 IsZero 工具函数，判断字节缓冲是否全为零或为空。",
+      "tags": [
+        "utility",
+        "storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/diff.go:IsZero",
+      "type": "function",
+      "name": "IsZero",
+      "filePath": "packages/shared/pkg/storage/header/diff.go",
+      "lineRange": [
+        24,
+        37
+      ],
+      "summary": "判断字节缓冲是否为空或所有字节为 0。",
+      "tags": [
+        "utility",
+        "bytes"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/header/inspect.go",
+      "type": "file",
+      "name": "inspect.go",
+      "filePath": "packages/shared/pkg/storage/header/inspect.go",
+      "summary": "提供 mapping 集合的格式化、可视化、校验与相等比较工具，辅助调试和验证 storage header。",
+      "tags": [
+        "storage",
+        "utility",
+        "debugging"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/inspect.go:Format",
+      "type": "function",
+      "name": "Format",
+      "filePath": "packages/shared/pkg/storage/header/inspect.go",
+      "lineRange": [
+        15,
+        24
+      ],
+      "summary": "将 mapping 渲染为人类可读的字符串（含 buildId）。",
+      "tags": [
+        "formatting",
+        "debugging"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/inspect.go:Layers",
+      "type": "function",
+      "name": "Layers",
+      "filePath": "packages/shared/pkg/storage/header/inspect.go",
+      "lineRange": [
+        33,
+        41
+      ],
+      "summary": "提取一组 mapping 中出现过的 build 列表。",
+      "tags": [
+        "utility",
+        "storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/inspect.go:Visualize",
+      "type": "function",
+      "name": "Visualize",
+      "filePath": "packages/shared/pkg/storage/header/inspect.go",
+      "lineRange": [
+        47,
+        81
+      ],
+      "summary": "将 mapping 列表可视化为按列对齐的字符画（按构建分组、底层与顶层分组）。",
+      "tags": [
+        "debugging",
+        "visualization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/inspect.go:ValidateMappings",
+      "type": "function",
+      "name": "ValidateMappings",
+      "filePath": "packages/shared/pkg/storage/header/inspect.go",
+      "lineRange": [
+        88,
+        112
+      ],
+      "summary": "对一组 mapping 做集合级校验：单调递增、跨边界、最后一层覆盖完整。",
+      "tags": [
+        "validation",
+        "storage"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/inspect.go:Equal",
+      "type": "function",
+      "name": "Equal",
+      "filePath": "packages/shared/pkg/storage/header/inspect.go",
+      "lineRange": [
+        114,
+        116
+      ],
+      "summary": "判断单个 mapping 与另一 mapping 是否相等。",
+      "tags": [
+        "comparison",
+        "storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/inspect.go:SliceEqual",
+      "type": "function",
+      "name": "SliceEqual",
+      "filePath": "packages/shared/pkg/storage/header/inspect.go",
+      "lineRange": [
+        118,
+        130
+      ],
+      "summary": "判断两个 mapping 切片是否完全相等。",
+      "tags": [
+        "comparison",
+        "storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/header/mapping_test.go",
+      "type": "file",
+      "name": "mapping_test.go",
+      "filePath": "packages/shared/pkg/storage/header/mapping_test.go",
+      "summary": "覆盖 MergeMappings 与 NormalizeMappings 的子测试集合：包含去除空、合并相邻 build id、跨存储间隙、分割等场景。",
+      "tags": [
+        "test",
+        "storage",
+        "mapping"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:packages/shared/pkg/storage/header/mapping.go",
+      "type": "file",
+      "name": "mapping.go",
+      "filePath": "packages/shared/pkg/storage/header/mapping.go",
+      "summary": "提供 BuildMap 结构与 CreateMapping、MergeMappings、NormalizeMappings 三个核心工具，用于协调 base 与 diff mapping 的合并与规整。",
+      "tags": [
+        "storage",
+        "mapping",
+        "merge"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:packages/shared/pkg/storage/header/mapping.go:BuildMap",
+      "type": "class",
+      "name": "BuildMap",
+      "filePath": "packages/shared/pkg/storage/header/mapping.go",
+      "lineRange": [
+        14,
+        20
+      ],
+      "summary": "描述单个构建块映射：offset/length/buildId/buildStorageOffset。",
+      "tags": [
+        "data-model",
+        "storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/mapping.go:CreateMapping",
+      "type": "function",
+      "name": "CreateMapping",
+      "filePath": "packages/shared/pkg/storage/header/mapping.go",
+      "lineRange": [
+        22,
+        44
+      ],
+      "summary": "根据 dirty ranges 与 blockSize 创建 BuildMap 序列。",
+      "tags": [
+        "factory",
+        "storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/mapping.go:MergeMappings",
+      "type": "function",
+      "name": "MergeMappings",
+      "filePath": "packages/shared/pkg/storage/header/mapping.go",
+      "lineRange": [
+        52,
+        205
+      ],
+      "summary": "合并 base 与 diff 两个 mapping 集合，正确处理无重叠、内含、外延重叠等拓扑并保持 buildId 优先。",
+      "tags": [
+        "algorithm",
+        "merge",
+        "storage"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:packages/shared/pkg/storage/header/mapping.go:NormalizeMappings",
+      "type": "function",
+      "name": "NormalizeMappings",
+      "filePath": "packages/shared/pkg/storage/header/mapping.go",
+      "lineRange": [
+        219,
+        243
+      ],
+      "summary": "规整化 mapping 集合：合并相邻同 buildId 段，过滤空段，不修改输入。",
+      "tags": [
+        "algorithm",
+        "normalization",
+        "storage"
+      ],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:packages/shared/pkg/keys/key.go",
+      "target": "class:packages/shared/pkg/keys/key.go:Key",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/key.go",
+      "target": "class:packages/shared/pkg/keys/key.go:Key",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/key.go",
+      "target": "class:packages/shared/pkg/keys/key.go:MaskedIdentifier",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/key.go",
+      "target": "class:packages/shared/pkg/keys/key.go:MaskedIdentifier",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/key.go",
+      "target": "function:packages/shared/pkg/keys/key.go:MaskKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/key.go",
+      "target": "function:packages/shared/pkg/keys/key.go:MaskKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/key.go",
+      "target": "function:packages/shared/pkg/keys/key.go:GenerateKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/key.go",
+      "target": "function:packages/shared/pkg/keys/key.go:GenerateKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/key.go",
+      "target": "function:packages/shared/pkg/keys/key.go:MaskToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/key.go",
+      "target": "function:packages/shared/pkg/keys/key.go:MaskToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/key.go",
+      "target": "function:packages/shared/pkg/keys/key.go:VerifyKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/key.go",
+      "target": "function:packages/shared/pkg/keys/key.go:VerifyKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/sha256.go",
+      "target": "class:packages/shared/pkg/keys/sha256.go:Sha256Hashing",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/sha256.go",
+      "target": "class:packages/shared/pkg/keys/sha256.go:Sha256Hashing",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/sha256.go",
+      "target": "function:packages/shared/pkg/keys/sha256.go:NewSHA256Hashing",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/sha256.go",
+      "target": "function:packages/shared/pkg/keys/sha256.go:NewSHA256Hashing",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/sha256.go",
+      "target": "function:packages/shared/pkg/keys/sha256.go:Hash",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/sha256.go",
+      "target": "function:packages/shared/pkg/keys/sha256.go:Hash",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/sha256.go",
+      "target": "function:packages/shared/pkg/keys/sha256.go:HashWithoutPrefix",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/sha256.go",
+      "target": "function:packages/shared/pkg/keys/sha256.go:HashWithoutPrefix",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/sha512.go",
+      "target": "function:packages/shared/pkg/keys/sha512.go:HashAccessToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/sha512.go",
+      "target": "function:packages/shared/pkg/keys/sha512.go:HashAccessToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/sha512.go",
+      "target": "function:packages/shared/pkg/keys/sha512.go:HashAccessTokenBytes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/sha512.go",
+      "target": "function:packages/shared/pkg/keys/sha512.go:HashAccessTokenBytes",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/config.go",
+      "target": "class:packages/shared/pkg/middleware/otel/metrics/config.go:config",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/option.go",
+      "target": "class:packages/shared/pkg/middleware/otel/metrics/option.go:Option",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/option.go",
+      "target": "class:packages/shared/pkg/middleware/otel/metrics/option.go:Option",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/option.go",
+      "target": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithAttributes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/option.go",
+      "target": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithAttributes",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/option.go",
+      "target": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithRecordInFlightDisabled",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/option.go",
+      "target": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithRecordInFlightDisabled",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/option.go",
+      "target": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithRecordDurationDisabled",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/option.go",
+      "target": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithRecordDurationDisabled",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/option.go",
+      "target": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithRecordSizeDisabled",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/option.go",
+      "target": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithRecordSizeDisabled",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/option.go",
+      "target": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithRecorder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/option.go",
+      "target": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithRecorder",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/option.go",
+      "target": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithShouldRecordFunc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/option.go",
+      "target": "function:packages/shared/pkg/middleware/otel/metrics/option.go:WithShouldRecordFunc",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/otelrecorder.go",
+      "target": "class:packages/shared/pkg/middleware/otel/metrics/otelrecorder.go:otelRecorder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/otelrecorder.go",
+      "target": "function:packages/shared/pkg/middleware/otel/metrics/otelrecorder.go:GetRecorder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/otelrecorder.go",
+      "target": "function:packages/shared/pkg/middleware/otel/metrics/otelrecorder.go:GetRecorder",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/otelrecorder.go",
+      "target": "function:packages/shared/pkg/middleware/otel/metrics/otelrecorder.go:ObserveHTTPRequestDuration",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/otelrecorder.go",
+      "target": "function:packages/shared/pkg/middleware/otel/metrics/otelrecorder.go:ObserveHTTPRequestDuration",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/recorder.go",
+      "target": "class:packages/shared/pkg/middleware/otel/metrics/recorder.go:Recorder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/recorder.go",
+      "target": "class:packages/shared/pkg/middleware/otel/metrics/recorder.go:Recorder",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/proxy/errors.go",
+      "target": "class:packages/shared/pkg/proxy/errors.go:InvalidSandboxPortError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/proxy/errors.go",
+      "target": "class:packages/shared/pkg/proxy/errors.go:InvalidSandboxPortError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/proxy/errors.go",
+      "target": "class:packages/shared/pkg/proxy/errors.go:SandboxNotFoundError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/proxy/errors.go",
+      "target": "class:packages/shared/pkg/proxy/errors.go:SandboxNotFoundError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/proxy/errors.go",
+      "target": "class:packages/shared/pkg/proxy/errors.go:SandboxResumePermissionDeniedError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/proxy/errors.go",
+      "target": "class:packages/shared/pkg/proxy/errors.go:SandboxResumePermissionDeniedError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/proxy/errors.go",
+      "target": "class:packages/shared/pkg/proxy/errors.go:SandboxStillTransitioningError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/proxy/errors.go",
+      "target": "class:packages/shared/pkg/proxy/errors.go:SandboxStillTransitioningError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/proxy/errors.go",
+      "target": "class:packages/shared/pkg/proxy/errors.go:MissingTrafficAccessTokenError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/proxy/errors.go",
+      "target": "class:packages/shared/pkg/proxy/errors.go:MissingTrafficAccessTokenError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/proxy/errors.go",
+      "target": "class:packages/shared/pkg/proxy/errors.go:InvalidTrafficAccessTokenError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/proxy/errors.go",
+      "target": "class:packages/shared/pkg/proxy/errors.go:InvalidTrafficAccessTokenError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/proxy/errors.go",
+      "target": "class:packages/shared/pkg/proxy/errors.go:SandboxResourceExhaustedError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/proxy/errors.go",
+      "target": "class:packages/shared/pkg/proxy/errors.go:SandboxResourceExhaustedError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/retry/retry.go",
+      "target": "class:packages/shared/pkg/retry/retry.go:Policy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/retry/retry.go",
+      "target": "class:packages/shared/pkg/retry/retry.go:Policy",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/retry/retry.go",
+      "target": "function:packages/shared/pkg/retry/retry.go:Do",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/retry/retry.go",
+      "target": "function:packages/shared/pkg/retry/retry.go:Do",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/sandbox-catalog/catalog.go",
+      "target": "class:packages/shared/pkg/sandbox-catalog/catalog.go:SandboxInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/sandbox-catalog/catalog.go",
+      "target": "class:packages/shared/pkg/sandbox-catalog/catalog.go:SandboxInfo",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/sandbox-catalog/catalog.go",
+      "target": "class:packages/shared/pkg/sandbox-catalog/catalog.go:SandboxesCatalog",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/sandbox-catalog/catalog.go",
+      "target": "class:packages/shared/pkg/sandbox-catalog/catalog.go:SandboxesCatalog",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/block.go",
+      "target": "function:packages/shared/pkg/storage/header/block.go:TotalBlocks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/block.go",
+      "target": "function:packages/shared/pkg/storage/header/block.go:TotalBlocks",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/block.go",
+      "target": "function:packages/shared/pkg/storage/header/block.go:BlocksOffsets",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/block.go",
+      "target": "function:packages/shared/pkg/storage/header/block.go:BlocksOffsets",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/block.go",
+      "target": "function:packages/shared/pkg/storage/header/block.go:BlockIdx",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/block.go",
+      "target": "function:packages/shared/pkg/storage/header/block.go:BlockIdx",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/block.go",
+      "target": "function:packages/shared/pkg/storage/header/block.go:BlockCeilIdx",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/block.go",
+      "target": "function:packages/shared/pkg/storage/header/block.go:BlockCeilIdx",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/block.go",
+      "target": "function:packages/shared/pkg/storage/header/block.go:BlockOffset",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/block.go",
+      "target": "function:packages/shared/pkg/storage/header/block.go:BlockOffset",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/compact.go",
+      "target": "class:packages/shared/pkg/storage/header/compact.go:Mapping",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/compact.go",
+      "target": "class:packages/shared/pkg/storage/header/compact.go:Mapping",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/compact.go",
+      "target": "function:packages/shared/pkg/storage/header/compact.go:NewMapping",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/compact.go",
+      "target": "function:packages/shared/pkg/storage/header/compact.go:NewMapping",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/compact.go",
+      "target": "function:packages/shared/pkg/storage/header/compact.go:Validate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/compact.go",
+      "target": "function:packages/shared/pkg/storage/header/compact.go:Validate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/compact.go",
+      "target": "function:packages/shared/pkg/storage/header/compact.go:SearchOffset",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/compact.go",
+      "target": "function:packages/shared/pkg/storage/header/compact.go:SearchOffset",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/diff.go",
+      "target": "function:packages/shared/pkg/storage/header/diff.go:IsZero",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/diff.go",
+      "target": "function:packages/shared/pkg/storage/header/diff.go:IsZero",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/inspect.go",
+      "target": "function:packages/shared/pkg/storage/header/inspect.go:Format",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/inspect.go",
+      "target": "function:packages/shared/pkg/storage/header/inspect.go:Format",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/inspect.go",
+      "target": "function:packages/shared/pkg/storage/header/inspect.go:Layers",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/inspect.go",
+      "target": "function:packages/shared/pkg/storage/header/inspect.go:Layers",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/inspect.go",
+      "target": "function:packages/shared/pkg/storage/header/inspect.go:Visualize",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/inspect.go",
+      "target": "function:packages/shared/pkg/storage/header/inspect.go:Visualize",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/inspect.go",
+      "target": "function:packages/shared/pkg/storage/header/inspect.go:ValidateMappings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/inspect.go",
+      "target": "function:packages/shared/pkg/storage/header/inspect.go:ValidateMappings",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/inspect.go",
+      "target": "function:packages/shared/pkg/storage/header/inspect.go:SliceEqual",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/inspect.go",
+      "target": "function:packages/shared/pkg/storage/header/inspect.go:SliceEqual",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/inspect.go",
+      "target": "function:packages/shared/pkg/storage/header/inspect.go:SliceEqual",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/inspect.go",
+      "target": "function:packages/shared/pkg/storage/header/inspect.go:SliceEqual",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/mapping.go",
+      "target": "class:packages/shared/pkg/storage/header/mapping.go:BuildMap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/mapping.go",
+      "target": "class:packages/shared/pkg/storage/header/mapping.go:BuildMap",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/mapping.go",
+      "target": "function:packages/shared/pkg/storage/header/mapping.go:CreateMapping",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/mapping.go",
+      "target": "function:packages/shared/pkg/storage/header/mapping.go:CreateMapping",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/mapping.go",
+      "target": "function:packages/shared/pkg/storage/header/mapping.go:MergeMappings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/mapping.go",
+      "target": "function:packages/shared/pkg/storage/header/mapping.go:MergeMappings",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/mapping.go",
+      "target": "function:packages/shared/pkg/storage/header/mapping.go:NormalizeMappings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/mapping.go",
+      "target": "function:packages/shared/pkg/storage/header/mapping.go:NormalizeMappings",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/keys/sha256.go",
+      "target": "file:packages/shared/pkg/keys/sha256_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/proxy/errors.go",
+      "target": "file:packages/shared/pkg/proxy/host_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/retry/retry.go",
+      "target": "file:packages/shared/pkg/retry/retry_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/sandbox-network",
+      "target": "file:packages/shared/pkg/sandbox-network/byop_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/sandbox-network",
+      "target": "file:packages/shared/pkg/sandbox-network/firewall_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/compact.go",
+      "target": "file:packages/shared/pkg/storage/header/compact_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/diff.go",
+      "target": "file:packages/shared/pkg/storage/header/diff_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/mapping.go",
+      "target": "file:packages/shared/pkg/storage/header/mapping_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/inspect.go",
+      "target": "file:packages/shared/pkg/storage/header/mapping_test.go",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:packages/shared/pkg/storage/header/compact.go",
+      "target": "function:packages/shared/pkg/storage/header/inspect.go:ValidateMappings",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/shared/pkg/middleware/otel/metrics/otelrecorder.go",
+      "target": "class:packages/shared/pkg/middleware/otel/metrics/recorder.go:Recorder",
+      "type": "implements",
+      "direction": "forward",
+      "weight": 0.9
+    }
+  ]
+}

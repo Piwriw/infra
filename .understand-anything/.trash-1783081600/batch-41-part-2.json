@@ -1,0 +1,1191 @@
+{
+  "nodes": [
+    {
+      "id": "file:tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "type": "file",
+      "name": "localhost_bind_test.go",
+      "filePath": "tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "summary": "验证沙箱内进程绑定 localhost 后只能从沙箱内部访问、外部不可达的行为。",
+      "tags": [
+        "test",
+        "integration",
+        "e2e",
+        "envd"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "type": "file",
+      "name": "sandbox_memory_integrity_test.go",
+      "filePath": "tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "summary": "验证沙箱在多次 pause/resume 后内存内容完整性的集成测试。",
+      "tags": [
+        "test",
+        "integration",
+        "e2e",
+        "orchestrator"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/orchestrator/sandbox_object_not_found_test.go",
+      "type": "file",
+      "name": "sandbox_object_not_found_test.go",
+      "filePath": "tests/integration/internal/tests/orchestrator/sandbox_object_not_found_test.go",
+      "summary": "验证访问不存在的沙箱对象时返回正确错误响应的集成测试。",
+      "tags": [
+        "test",
+        "integration",
+        "e2e",
+        "orchestrator"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "type": "file",
+      "name": "auto_resume_test.go",
+      "filePath": "tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "summary": "覆盖 client-proxy 沙箱自动恢复（auto-resume）行为：通过 exec、proxy 触发、缺失标志位、超时及初始超时等多种用例。",
+      "tags": [
+        "test",
+        "integration",
+        "e2e",
+        "client-proxy"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "type": "file",
+      "name": "sandbox_not_found_test.go",
+      "filePath": "tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "summary": "验证访问不存在的沙箱时 client-proxy 返回 404 的集成测试。",
+      "tags": [
+        "test",
+        "integration",
+        "e2e",
+        "client-proxy"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/utils/process.go",
+      "type": "file",
+      "name": "process.go",
+      "filePath": "tests/integration/internal/utils/process.go",
+      "summary": "集成测试共享工具：封装 envd 进程执行（exec）的多种变体——按用户、按工作目录、按 root，以及同步获取标准输出。",
+      "tags": [
+        "test",
+        "utility",
+        "integration",
+        "process"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/integration/internal/utils/request.go",
+      "type": "file",
+      "name": "request.go",
+      "filePath": "tests/integration/internal/utils/request.go",
+      "summary": "集成测试共享工具：构造经 client-proxy 转发的 HTTP 请求（带端口与沙箱 ID），并轮询等待指定 HTTP 状态码。",
+      "tags": [
+        "test",
+        "utility",
+        "integration",
+        "http"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/envd/localhost_bind_test.go:TestBindLocalhost",
+      "type": "function",
+      "name": "TestBindLocalhost",
+      "filePath": "tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "lineRange": [
+        19,
+        89
+      ],
+      "summary": "验证沙箱内进程绑定 localhost 后仅沙箱内部可访问、外部不可达。",
+      "tags": [
+        "test",
+        "networking",
+        "localhost"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go:TestSandboxMemoryIntegrity",
+      "type": "function",
+      "name": "TestSandboxMemoryIntegrity",
+      "filePath": "tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "lineRange": [
+        19,
+        186
+      ],
+      "summary": "验证沙箱经过多次 pause/resume 后内存内容保持完整。",
+      "tags": [
+        "test",
+        "memory",
+        "pause-resume"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/orchestrator/sandbox_object_not_found_test.go:TestSandboxObjectNotFound",
+      "type": "function",
+      "name": "TestSandboxObjectNotFound",
+      "filePath": "tests/integration/internal/tests/orchestrator/sandbox_object_not_found_test.go",
+      "lineRange": [
+        18,
+        75
+      ],
+      "summary": "验证访问不存在的沙箱对象时返回 not found 错误。",
+      "tags": [
+        "test",
+        "error-handling"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:startHTTPServerInSandbox",
+      "type": "function",
+      "name": "startHTTPServerInSandbox",
+      "filePath": "tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "lineRange": [
+        20,
+        44
+      ],
+      "summary": "辅助函数：在沙箱内启动 HTTP 服务器以备后续测试。",
+      "tags": [
+        "test",
+        "helper",
+        "http"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxAutoResumeViaExec",
+      "type": "function",
+      "name": "TestSandboxAutoResumeViaExec",
+      "filePath": "tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "lineRange": [
+        46,
+        77
+      ],
+      "summary": "验证通过 exec 触发已暂停沙箱的 auto-resume。",
+      "tags": [
+        "test",
+        "auto-resume",
+        "exec"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxAutoResumeViaProxy",
+      "type": "function",
+      "name": "TestSandboxAutoResumeViaProxy",
+      "filePath": "tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "lineRange": [
+        79,
+        126
+      ],
+      "summary": "验证通过 client-proxy 请求触发已暂停沙箱的 auto-resume。",
+      "tags": [
+        "test",
+        "auto-resume",
+        "client-proxy"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxNoAutoResumeViaProxyWithoutFlag",
+      "type": "function",
+      "name": "TestSandboxNoAutoResumeViaProxyWithoutFlag",
+      "filePath": "tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "lineRange": [
+        128,
+        174
+      ],
+      "summary": "验证未启用 auto-resume 标志位时 proxy 请求不会自动恢复沙箱。",
+      "tags": [
+        "test",
+        "auto-resume",
+        "client-proxy"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxAutoResumeWithoutExplicitTimeoutUsesMinimumTimeout",
+      "type": "function",
+      "name": "TestSandboxAutoResumeWithoutExplicitTimeoutUsesMinimumTimeout",
+      "filePath": "tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "lineRange": [
+        176,
+        223
+      ],
+      "summary": "验证未显式指定超时时 auto-resume 使用最小超时。",
+      "tags": [
+        "test",
+        "auto-resume",
+        "timeout"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxAutoResumeUsesInitialTimeoutNotUpdatedTimeout",
+      "type": "function",
+      "name": "TestSandboxAutoResumeUsesInitialTimeoutNotUpdatedTimeout",
+      "filePath": "tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "lineRange": [
+        225,
+        275
+      ],
+      "summary": "验证 auto-resume 使用初始超时而非后续更新的超时值。",
+      "tags": [
+        "test",
+        "auto-resume",
+        "timeout"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxNoAutoResumeWithoutFlag",
+      "type": "function",
+      "name": "TestSandboxNoAutoResumeWithoutFlag",
+      "filePath": "tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "lineRange": [
+        277,
+        310
+      ],
+      "summary": "验证未启用 auto-resume 标志位时不会触发自动恢复。",
+      "tags": [
+        "test",
+        "auto-resume"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/tests/proxies/sandbox_not_found_test.go:TestSandboxNotFound",
+      "type": "function",
+      "name": "TestSandboxNotFound",
+      "filePath": "tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "lineRange": [
+        21,
+        71
+      ],
+      "summary": "验证访问不存在的沙箱时 client-proxy 返回 404。",
+      "tags": [
+        "test",
+        "client-proxy",
+        "error-handling"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/process.go:ExecCommand",
+      "type": "function",
+      "name": "ExecCommand",
+      "filePath": "tests/integration/internal/utils/process.go",
+      "lineRange": [
+        16,
+        20
+      ],
+      "summary": "以默认用户身份在沙箱内同步执行命令。",
+      "tags": [
+        "utility",
+        "process",
+        "exec"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/process.go:ExecCommandWithCwd",
+      "type": "function",
+      "name": "ExecCommandWithCwd",
+      "filePath": "tests/integration/internal/utils/process.go",
+      "lineRange": [
+        22,
+        26
+      ],
+      "summary": "在沙箱内指定工作目录下执行命令。",
+      "tags": [
+        "utility",
+        "process",
+        "exec"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/process.go:ExecCommandAsRoot",
+      "type": "function",
+      "name": "ExecCommandAsRoot",
+      "filePath": "tests/integration/internal/utils/process.go",
+      "lineRange": [
+        28,
+        32
+      ],
+      "summary": "以 root 身份在沙箱内执行命令。",
+      "tags": [
+        "utility",
+        "process",
+        "exec"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/process.go:ExecCommandAsRootWithOutput",
+      "type": "function",
+      "name": "ExecCommandAsRootWithOutput",
+      "filePath": "tests/integration/internal/utils/process.go",
+      "lineRange": [
+        34,
+        38
+      ],
+      "summary": "以 root 身份执行命令并捕获标准输出。",
+      "tags": [
+        "utility",
+        "process",
+        "exec"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/process.go:ExecCommandAsDefaultUserWithOutput",
+      "type": "function",
+      "name": "ExecCommandAsDefaultUserWithOutput",
+      "filePath": "tests/integration/internal/utils/process.go",
+      "lineRange": [
+        44,
+        48
+      ],
+      "summary": "以默认用户身份执行命令并捕获输出（不显式发送 user 字段）。",
+      "tags": [
+        "utility",
+        "process",
+        "exec"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/process.go:ExecCommandWithOptions",
+      "type": "function",
+      "name": "ExecCommandWithOptions",
+      "filePath": "tests/integration/internal/utils/process.go",
+      "lineRange": [
+        50,
+        56
+      ],
+      "summary": "使用完整选项（cwd、user）在沙箱内执行命令的统一入口。",
+      "tags": [
+        "utility",
+        "process",
+        "exec"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/process.go:ExecCommandWithOutput",
+      "type": "function",
+      "name": "ExecCommandWithOutput",
+      "filePath": "tests/integration/internal/utils/process.go",
+      "lineRange": [
+        58,
+        136
+      ],
+      "summary": "底层实现：通过 envd 进程 RPC 执行命令、收集 stdout/stderr 与退出码。",
+      "tags": [
+        "utility",
+        "process",
+        "exec"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/request.go:NewRequest",
+      "type": "function",
+      "name": "NewRequest",
+      "filePath": "tests/integration/internal/utils/request.go",
+      "lineRange": [
+        18,
+        59
+      ],
+      "summary": "构造经 client-proxy 转发到指定沙箱端口的 HTTP 请求。",
+      "tags": [
+        "utility",
+        "http",
+        "client-proxy"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/integration/internal/utils/request.go:WaitForStatus",
+      "type": "function",
+      "name": "WaitForStatus",
+      "filePath": "tests/integration/internal/utils/request.go",
+      "lineRange": [
+        61,
+        93
+      ],
+      "summary": "轮询 URL 直到响应状态码匹配期望值或超时。",
+      "tags": [
+        "utility",
+        "http",
+        "polling"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "target": "function:tests/integration/internal/tests/envd/localhost_bind_test.go:TestBindLocalhost",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "target": "function:tests/integration/internal/tests/envd/localhost_bind_test.go:TestBindLocalhost",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "target": "function:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go:TestSandboxMemoryIntegrity",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "target": "function:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go:TestSandboxMemoryIntegrity",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_object_not_found_test.go",
+      "target": "function:tests/integration/internal/tests/orchestrator/sandbox_object_not_found_test.go:TestSandboxObjectNotFound",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_object_not_found_test.go",
+      "target": "function:tests/integration/internal/tests/orchestrator/sandbox_object_not_found_test.go:TestSandboxObjectNotFound",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:startHTTPServerInSandbox",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxAutoResumeViaExec",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxAutoResumeViaExec",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxAutoResumeViaProxy",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxAutoResumeViaProxy",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxNoAutoResumeViaProxyWithoutFlag",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxNoAutoResumeViaProxyWithoutFlag",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxAutoResumeWithoutExplicitTimeoutUsesMinimumTimeout",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxAutoResumeWithoutExplicitTimeoutUsesMinimumTimeout",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxAutoResumeUsesInitialTimeoutNotUpdatedTimeout",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxAutoResumeUsesInitialTimeoutNotUpdatedTimeout",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxNoAutoResumeWithoutFlag",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/auto_resume_test.go:TestSandboxNoAutoResumeWithoutFlag",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/sandbox_not_found_test.go:TestSandboxNotFound",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "target": "function:tests/integration/internal/tests/proxies/sandbox_not_found_test.go:TestSandboxNotFound",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "function:tests/integration/internal/utils/process.go:ExecCommand",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "function:tests/integration/internal/utils/process.go:ExecCommand",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "function:tests/integration/internal/utils/process.go:ExecCommandWithCwd",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "function:tests/integration/internal/utils/process.go:ExecCommandWithCwd",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "function:tests/integration/internal/utils/process.go:ExecCommandAsRoot",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "function:tests/integration/internal/utils/process.go:ExecCommandAsRoot",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "function:tests/integration/internal/utils/process.go:ExecCommandAsRootWithOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "function:tests/integration/internal/utils/process.go:ExecCommandAsRootWithOutput",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "function:tests/integration/internal/utils/process.go:ExecCommandAsDefaultUserWithOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "function:tests/integration/internal/utils/process.go:ExecCommandAsDefaultUserWithOutput",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "function:tests/integration/internal/utils/process.go:ExecCommandWithOptions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "function:tests/integration/internal/utils/process.go:ExecCommandWithOptions",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "function:tests/integration/internal/utils/process.go:ExecCommandWithOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "function:tests/integration/internal/utils/process.go:ExecCommandWithOutput",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/request.go",
+      "target": "function:tests/integration/internal/utils/request.go:NewRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/request.go",
+      "target": "function:tests/integration/internal/utils/request.go:NewRequest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/utils/request.go",
+      "target": "function:tests/integration/internal/utils/request.go:WaitForStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/integration/internal/utils/request.go",
+      "target": "function:tests/integration/internal/utils/request.go:WaitForStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/envd/localhost_bind_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_memory_integrity_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_object_not_found_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_object_not_found_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_object_not_found_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_object_not_found_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/orchestrator/sandbox_object_not_found_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/auto_resume_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "target": "file:tests/integration/internal/utils/filesystem.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "target": "file:tests/integration/internal/utils/process.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "target": "file:tests/integration/internal/utils/request.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "target": "file:tests/integration/internal/utils/sandbox.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "target": "file:tests/integration/internal/utils/team.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "target": "file:tests/integration/internal/utils/template.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/tests/proxies/sandbox_not_found_test.go",
+      "target": "file:tests/integration/internal/utils/user.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "file:tests/integration/internal/setup/api_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "file:tests/integration/internal/setup/constants.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "file:tests/integration/internal/setup/db_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "file:tests/integration/internal/setup/envd_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/process.go",
+      "target": "file:tests/integration/internal/setup/orchestrator_client.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/request.go",
+      "target": "file:tests/integration/internal/api/generate.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/integration/internal/utils/request.go",
+      "target": "file:tests/integration/internal/api/generated.go",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}
