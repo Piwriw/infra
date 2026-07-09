@@ -119,8 +119,6 @@ var (
 	TemplateFeatureFlag                 = NewBoolFlag("use-nfs-for-templates", env.IsDevelopment())
 	EnableWriteThroughCacheFlag         = NewBoolFlag("write-to-cache-on-writes", false)
 	UseNFSCacheForBuildingTemplatesFlag = NewBoolFlag("use-nfs-for-building-templates", env.IsDevelopment())
-	BestOfKCanFitFlag                   = NewBoolFlag("best-of-k-can-fit", true)
-	BestOfKTooManyStartingFlag          = NewBoolFlag("best-of-k-too-many-starting", false)
 	CreateStorageCacheSpansFlag         = NewBoolFlag("create-storage-cache-spans", env.IsDevelopment())
 	OrchAcceptsCombinedHostFlag         = NewBoolFlag("orch-accepts-combined-host", false)
 
@@ -214,6 +212,13 @@ var (
 	// re-pulling the snapshot onto yet another node.
 	ResumeOriginNodeRemapFlag = NewBoolFlag("resume-origin-node-remap", false)
 
+	// ExpirationIndexHealerFlag enables the API's Redis expiration index healer
+	// loop, which re-adds sandboxes missing from the global expiration ZSET
+	// (a missing member is never seen by the evictor and would live forever).
+	// Checked on every heal tick, so it can be toggled without a redeploy.
+	// On by default; acts as a kill switch if a heal pass misbehaves.
+	ExpirationIndexHealerFlag = NewBoolFlag("expiration-index-healer", true)
+
 	// DisableE2BAccessTokenProvisioningFlag stops POST /access-tokens from issuing
 	// new E2B access tokens (sk_e2b_) once enabled. E2B_ACCESS_TOKEN is deprecated
 	// in favor of E2B_API_KEY; the CLI now authenticates via Hydra JWTs. Off by
@@ -263,9 +268,10 @@ func NewIntFlag(name string, fallback int) IntFlag {
 }
 
 var (
-	MaxSandboxesPerNode           = NewIntFlag("max-sandboxes-per-node", 200)
-	GcloudConcurrentUploadLimit   = NewIntFlag("gcloud-concurrent-upload-limit", 8)
-	GcloudMaxTasks                = NewIntFlag("gcloud-max-tasks", 16)
+	MaxSandboxesPerNode = NewIntFlag("max-sandboxes-per-node", 200)
+	// The LD keys keep the legacy "gcloud-" prefix, but the limits apply to uploads on all storage providers.
+	StorageConcurrentUploadLimit  = NewIntFlag("gcloud-concurrent-upload-limit", 8)
+	StorageMaxUploadTasks         = NewIntFlag("gcloud-max-tasks", 16)
 	ClickhouseBatcherMaxBatchSize = NewIntFlag("clickhouse-batcher-max-batch-size", 100)
 	ClickhouseBatcherMaxDelay     = NewIntFlag("clickhouse-batcher-max-delay", 1000) // 1s in milliseconds
 	ClickhouseBatcherQueueSize    = NewIntFlag("clickhouse-batcher-queue-size", 1000)
