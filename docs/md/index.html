@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E2B Infrastructure 文档索引 · docs/md</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11/styles/github-dark.min.css">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-side: #0a0e14;
+    --bg-card: #161b22;
+    --bg-hover: #1f262e;
+    --bg-render: #0d1117;
+    --border: #30363d;
+    --border-soft: #21262d;
+    --text: #c9d1d9;
+    --text-muted: #8b949e;
+    --text-strong: #f0f6fc;
+    --accent: #58a6ff;
+    --accent-soft: rgba(88, 166, 255, 0.1);
+    --green: #3fb950;
+    --yellow: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --orange: #f0883e;
+    --sidebar-w: 320px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #ffffff;
+      --bg-side: #f6f8fa;
+      --bg-card: #f6f8fa;
+      --bg-hover: #eaeef2;
+      --bg-render: #ffffff;
+      --border: #d0d7de;
+      --border-soft: #e4e7eb;
+      --text: #1f2328;
+      --text-muted: #636c76;
+      --text-strong: #24292f;
+      --accent: #0969da;
+      --accent-soft: rgba(9, 105, 218, 0.1);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* ============ Sidebar ============ */
+  aside {
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    background: var(--bg-side);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+  }
+  aside .brand {
+    padding: 20px 18px 14px;
+    border-bottom: 1px solid var(--border-soft);
+    position: sticky;
+    top: 0;
+    background: var(--bg-side);
+    z-index: 10;
+  }
+  aside .brand h1 {
+    font-size: 16px;
+    margin: 0 0 2px;
+    color: var(--text-strong);
+    font-weight: 700;
+  }
+  aside .brand a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 13px;
+  }
+  aside .brand .stat {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-top: 6px;
+  }
+  aside .layer-group {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  aside .layer-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px 4px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  aside .layer-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  aside .layer-1 .layer-dot { background: var(--accent); }
+  aside .layer-2 .layer-dot { background: var(--green); }
+  aside .layer-3 .layer-dot { background: var(--yellow); }
+  aside .layer-4 .layer-dot { background: var(--purple); }
+  aside .layer-5 .layer-dot { background: var(--orange); }
+  aside .layer-6 .layer-dot { background: var(--red); }
+
+  aside a.doc-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 18px 6px 28px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 13px;
+    border-left: 2px solid transparent;
+    transition: background 0.1s, border-color 0.1s;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  aside a.doc-link:hover {
+    background: var(--bg-hover);
+  }
+  aside a.doc-link.active {
+    background: var(--accent-soft);
+    border-left-color: var(--accent);
+    color: var(--accent);
+  }
+  aside a.doc-link .order {
+    color: var(--text-muted);
+    font-size: 11px;
+    min-width: 20px;
+  }
+  aside a.doc-link.active .order { color: var(--accent); }
+
+  /* ============ Main ============ */
+  main {
+    flex: 1;
+    overflow-y: auto;
+    height: 100vh;
+    position: relative;
+  }
+  .topbar {
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 5;
+    backdrop-filter: blur(8px);
+  }
+  .breadcrumb {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .breadcrumb a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .breadcrumb .sep { margin: 0 6px; opacity: 0.5; }
+  .breadcrumb .current { color: var(--text-strong); }
+
+  .topbar-actions {
+    display: flex;
+    gap: 6px;
+  }
+  .btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .btn:hover { background: var(--bg-hover); border-color: var(--accent); }
+
+  /* ============ Render area ============ */
+  .render {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 32px 32px 96px;
+  }
+
+  /* Homepage view */
+  .home h2 {
+    font-size: 22px;
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .home h2 .layer-tag {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+  .home .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 12px;
+  }
+  .home .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .home .card::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    opacity: 0.7;
+  }
+  .home .card.l1::before { background: var(--accent); }
+  .home .card.l2::before { background: var(--green); }
+  .home .card.l3::before { background: var(--yellow); }
+  .home .card.l4::before { background: var(--purple); }
+  .home .card.l5::before { background: var(--orange); }
+  .home .card.l6::before { background: var(--red); }
+  .home .card:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .home .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .home .card-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .home .card-desc {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .home .paths {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .home .path {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .home .path-title {
+    font-weight: 600;
+    margin: 0 0 6px;
+    color: var(--text-strong);
+    font-size: 14px;
+  }
+  .home .path-flow {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+  .home .path-flow .arrow { color: var(--accent); }
+  .home .dep-graph {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    line-height: 1.55;
+    white-space: pre;
+  }
+
+  /* Markdown render */
+  .md .anchor { margin-left: 6px; opacity: 0; color: var(--accent); text-decoration: none; font-size: 0.85em; }
+  .md h1:hover .anchor, .md h2:hover .anchor, .md h3:hover .anchor, .md h4:hover .anchor { opacity: 1; }
+  .md h1 {
+    font-size: 28px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-top: 0;
+    color: var(--text-strong);
+    font-weight: 700;
+  }
+  .md h2 {
+    font-size: 22px;
+    margin-top: 36px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-soft);
+    color: var(--text-strong);
+  }
+  .md h3 { font-size: 18px; margin-top: 28px; color: var(--text-strong); }
+  .md h4 { font-size: 15px; margin-top: 22px; color: var(--text-strong); }
+  .md p { margin: 14px 0; }
+  .md a { color: var(--accent); text-decoration: none; }
+  .md a:hover { text-decoration: underline; }
+  .md ul, .md ol { padding-left: 1.6em; }
+  .md li { margin: 4px 0; }
+  .md blockquote {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 10px 16px;
+    margin: 14px 0;
+    color: var(--text);
+    border-radius: 0 6px 6px 0;
+  }
+  .md blockquote p:first-child { margin-top: 0; }
+  .md blockquote p:last-child { margin-bottom: 0; }
+  .md code {
+    font-family: ui-monospace, SFMono-Regular, "Cascadia Code", Menlo, monospace;
+    background: var(--bg-card);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+    border: 1px solid var(--border-soft);
+  }
+  .md pre {
+    background: #0a0e14;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .md pre code {
+    background: transparent;
+    padding: 0;
+    border: none;
+    font-size: inherit;
+    color: inherit;
+  }
+  .md table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+    font-size: 13px;
+    display: block;
+    overflow-x: auto;
+  }
+  .md th, .md td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+  }
+  .md th { background: var(--bg-card); font-weight: 600; color: var(--text-strong); }
+  .md tr:nth-child(2n) td { background: var(--bg-side); }
+  .md hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+  .md img { max-width: 100%; }
+  .md kbd {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 12px;
+    font-family: ui-monospace, monospace;
+  }
+  .md-source {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .md-source a { color: var(--accent); }
+
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 0;
+    color: var(--text-muted);
+    gap: 12px;
+  }
+  .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-box {
+    background: rgba(248, 81, 73, 0.1);
+    border: 1px solid var(--red);
+    border-radius: 8px;
+    padding: 24px;
+    color: var(--red);
+  }
+
+  /* Mobile */
+  .menu-toggle {
+    display: none;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  @media (max-width: 900px) {
+    body { flex-direction: column; }
+    aside {
+      width: 100%;
+      height: auto;
+      max-height: 50vh;
+      position: relative;
+      display: none;
+    }
+    aside.open { display: block; }
+    .menu-toggle { display: inline-flex; }
+    .render { padding: 20px 16px 80px; }
+  }
+</style>
+</head>
+<body>
+
+<aside id="sidebar">
+  <div class="brand">
+    <h1>E2B Infra 文档</h1>
+    <a href="#" data-route="">docs/md/ 索引</a>
+    <div class="stat">21 篇 · 6 层 · ~29,600 行</div>
+  </div>
+  <!-- sidebar 内容由 JS 生成 -->
+</aside>
+
+<main>
+  <div class="topbar">
+    <button class="menu-toggle" id="menu-toggle">☰</button>
+    <div class="breadcrumb" id="breadcrumb">
+      <a href="#" data-route="">docs/md</a>
+    </div>
+    <div class="topbar-actions">
+      <a class="btn" id="open-raw" href="#">查看原 .md</a>
+      <a class="btn" id="open-github" href="#" target="_blank">GitHub</a>
+    </div>
+  </div>
+  <div class="render" id="render">
+    <!-- 内容由 JS 生成 -->
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11/languages/go.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11/languages/sql.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11/languages/yaml.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11/languages/bash.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11/languages/hcl.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11/languages/protobuf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+// ============ Document catalog ============
+const LAYERS = [
+  {
+    id: 1, name: '全局与基础设施', color: 'blue',
+    docs: [
+      { slug: 'api-module', title: 'api-module', desc: 'API 服务整体架构:Gin 路由、中间件链、OpenAPI 分发器、与 orchestrator gRPC 边界', lines: 2013 },
+      { slug: 'database-schema', title: 'database-schema', desc: '16 张核心表的数据模型、迁移史、索引策略、典型查询', lines: 1457 },
+      { slug: 'clusters-module', title: 'clusters-module', desc: '多集群拓扑:team → cluster 路由、orchestrator 实例发现与健康检查', lines: 1031 },
+    ]
+  },
+  {
+    id: 2, name: '认证与凭证', color: 'green',
+    docs: [
+      { slug: 'auth-module', title: 'auth-module', desc: '认证核心:OIDC Discovery + JWKS、API Key/Access Token/Admin Token、双层缓存、OpenAPI scheme 分发器', lines: 1479 },
+      { slug: 'cli-auth-flow', title: 'cli-auth-flow', desc: 'CLI 登录凭证签发链路:OIDC JWT → access token 签发、gin context 注入', lines: 724 },
+      { slug: 'api-keys-module', title: 'api-keys-module', desc: 'API Key 管理:三层表示(Raw/Hash/Mask)、SHA256 哈希、CRUD、team 绑定', lines: 1192 },
+      { slug: 'access-tokens-module', title: 'access-tokens-module', desc: 'Access Token(deprecated 长期 token):410 禁用路径、CLI 签发链路', lines: 945 },
+      { slug: 'admin-module', title: 'admin-module', desc: 'Admin Token:常量时间比较、internal-only 端点、OIDC Admin Authenticator', lines: 1365 },
+    ]
+  },
+  {
+    id: 3, name: '模板系统', color: 'yellow',
+    docs: [
+      { slug: 'template-module', title: 'template-module', desc: '模板 = 沙箱镜像根:ID 生成、Build 注册/状态机、版本管理、alias 命名空间', lines: 2286 },
+      { slug: 'template-build-flow', title: 'template-build-flow', desc: 'POST /v3/templates → rootfs 落盘的端到端流程:请求 → 注册 → 触发 → 同步状态 → 终态', lines: 1650 },
+      { slug: 'template-tags-module', title: 'template-tags-module', desc: '模板 tag/alias:validation、dedup、与 build 的多对多关系、缓存失效', lines: 1290 },
+    ]
+  },
+  {
+    id: 4, name: '沙箱 (API 与生命周期)', color: 'purple',
+    docs: [
+      { slug: 'sandbox-api-module', title: 'sandbox-api-module', desc: '沙箱 REST 端点:HTTP 入口、请求/响应模型、校验、与 orchestrator 边界', lines: 920 },
+      { slug: 'sandbox-management', title: 'sandbox-management', desc: '沙箱管理(orchestrator 视角):Create/Pause/Resume/Stop/reclaim、timeout', lines: 720 },
+      { slug: 'sandbox-lifecycle', title: 'sandbox-lifecycle', desc: '沙箱端到端:Create → VM 启动 → 网络/NBD/uffd → envd 握手 → pause/resume/kill', lines: 1715 },
+    ]
+  },
+  {
+    id: 5, name: '沙箱底层运行时', color: 'orange',
+    docs: [
+      { slug: 'orchestrator-module', title: 'orchestrator-module', desc: 'Orchestrator 服务:Firecracker microVM、NBD、网络 slot/tap、模板缓存、gRPC', lines: 2136 },
+      { slug: 'node-module', title: 'node-module', desc: '节点池:Instance 抽象、健康状态机、DrainSandboxes、autoscaler、机型兼容性', lines: 1895 },
+      { slug: 'volumes', title: 'volumes', desc: '持久化卷:NFS 后端、本地缓存、双层调度门控、文件流式读写', lines: 983 },
+      { slug: 'snapshots', title: 'snapshots', desc: '快照:auto-pause 持久化、Pause/Resume、P2P checkpoint 分发、缓存 TTL', lines: 820 },
+      { slug: 'envd-module', title: 'envd-module', desc: 'VM 内 daemon(Connect RPC):process/filesystem service、envd 握手、xattr', lines: 2229 },
+    ]
+  },
+  {
+    id: 6, name: '边缘与计量', color: 'red',
+    docs: [
+      { slug: 'client-proxy-module', title: 'client-proxy-module', desc: '边缘代理:公网入口、Consul 发现、paused sandbox 流量调度、Resume、连接池', lines: 1577 },
+      { slug: 'team-metrics-module', title: 'team-metrics-module', desc: '团队用量与计费:OTLP Delta temporality、ClickHouse 查询、gauge/counter 上报', lines: 1182 },
+    ]
+  },
+];
+
+// Flatten all docs (for lookup)
+const ALL_DOCS = [];
+LAYERS.forEach(l => l.docs.forEach((d, i) => {
+  ALL_DOCS.push({ ...d, layer: l.id, layerName: l.name, color: l.color, order: ALL_DOCS.length + 1 });
+}));
+
+// ============ Configure marked ============
+marked.setOptions({
+  gfm: true,
+  breaks: false,
+  headerIds: true,
+  mangle: false,
+  highlight: function(code, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try { return hljs.highlight(code, { language: lang }).value; } catch (e) {}
+    }
+    try { return hljs.highlightAuto(code).value; } catch (e) {}
+    return code;
+  }
+});
+
+// ============ Build sidebar ============
+function buildSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const brand = sidebar.querySelector('.brand');
+
+  // Remove old layer groups
+  sidebar.querySelectorAll('.layer-group').forEach(el => el.remove());
+
+  LAYERS.forEach(layer => {
+    const group = document.createElement('div');
+    group.className = `layer-group layer-${layer.id}`;
+    group.innerHTML = `
+      <div class="layer-title">
+        <span class="layer-dot"></span>
+        <span>L${layer.id} · ${layer.name}</span>
+      </div>
+    `;
+    layer.docs.forEach(doc => {
+      const all = ALL_DOCS.find(d => d.slug === doc.slug);
+      const a = document.createElement('a');
+      a.className = 'doc-link';
+      a.href = `#${doc.slug}`;
+      a.dataset.slug = doc.slug;
+      a.innerHTML = `<span class="order">${all.order}</span><span>${doc.title}</span>`;
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        location.hash = doc.slug;
+        // Close sidebar on mobile
+        sidebar.classList.remove('open');
+      });
+      group.appendChild(a);
+    });
+    sidebar.appendChild(group);
+  });
+}
+
+// ============ Build homepage ============
+function buildHome() {
+  const render = document.getElementById('render');
+  const pathsHTML = `
+    <div class="home">
+      <h2>快捷路径 <span class="layer-tag">QUICK PATHS</span></h2>
+      <div class="paths">
+        <div class="path">
+          <p class="path-title">A. 端到端请求链路</p>
+          <p class="path-flow">
+            client-proxy <span class="arrow">→</span> api <span class="arrow">→</span> auth
+            <span class="arrow">→</span> sandbox-management
+            <span class="arrow">→</span> orchestrator <span class="arrow">→</span> envd
+          </p>
+        </div>
+        <div class="path">
+          <p class="path-title">B. 模板/沙箱业务</p>
+          <p class="path-flow">
+            database-schema <span class="arrow">→</span> template
+            <span class="arrow">→</span> template-tags
+            <span class="arrow">→</span> sandbox-api <span class="arrow">→</span> sandbox-management
+          </p>
+        </div>
+        <div class="path">
+          <p class="path-title">C. 计费与计量</p>
+          <p class="path-flow">
+            api-module <span class="arrow">→</span> team-metrics
+            <span class="arrow">→</span> database-schema
+          </p>
+        </div>
+      </div>
+
+      <h2>依赖关系图 <span class="layer-tag">DEPS</span></h2>
+      <div class="dep-graph">client-proxy-module ──┐
+                      ↓
+api-module ──────► auth-module ──────► api-keys / access-tokens / admin / cli-auth-flow
+        │
+        ├──► clusters-module ───► (路由到对应的 orchestrator 池)
+        │
+        ├──► template-module ──► template-tags-module
+        │         │
+        │         └──► template-build-flow (横切)
+        │
+        ├──► sandbox-api-module ──► sandbox-management
+        │              │                │
+        │              └──► sandbox-lifecycle (横切端到端)
+        │                                │
+        │                                ↓
+        │                   orchestrator-module ──► envd-module
+        │                          ├──► node-module
+        │                          ├──► volumes
+        │                          └──► snapshots
+        │
+        └──► team-metrics-module          ↑
+                                       (所有上述模块都依赖)
+                          database-schema</div>
+    </div>
+  `;
+
+  let cardsHTML = '<div class="home"><h2>所有文档(按层) <span class="layer-tag">CATALOG</span></h2>';
+  LAYERS.forEach(layer => {
+    cardsHTML += `<h3 style="margin-top:24px;color:var(--text-strong);font-size:15px;">L${layer.id} · ${layer.name}</h3>`;
+    cardsHTML += '<div class="grid">';
+    layer.docs.forEach(doc => {
+      const all = ALL_DOCS.find(d => d.slug === doc.slug);
+      cardsHTML += `
+        <a class="card l${layer.id}" href="#${doc.slug}">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+            <span class="card-title">${doc.title}.md</span>
+            <span class="card-meta">${doc.lines} 行</span>
+          </div>
+          <div class="card-desc">${doc.desc}</div>
+          <div class="card-meta">#${all.order} · ${layer.name}</div>
+        </a>
+      `;
+    });
+    cardsHTML += '</div>';
+  });
+  cardsHTML += '</div>';
+
+  render.innerHTML = pathsHTML + cardsHTML;
+
+  // Wire card clicks
+  render.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      location.hash = card.getAttribute('href').slice(1);
+    });
+  });
+
+  // Update breadcrumb
+  document.getElementById('breadcrumb').innerHTML = `<a href="#" data-route="">docs/md</a><span class="sep">/</span><span class="current">索引</span>`;
+  document.getElementById('open-raw').style.display = 'none';
+  document.getElementById('open-github').style.display = 'none';
+}
+
+// ============ Load a doc ============
+async function loadDoc(slug) {
+  const render = document.getElementById('render');
+  const doc = ALL_DOCS.find(d => d.slug === slug);
+  if (!doc) {
+    render.innerHTML = `<div class="error-box"><strong>404</strong> · 未找到文档:${slug}</div>`;
+    return;
+  }
+
+  render.innerHTML = `<div class="loading"><div class="spinner"></div><span>加载 ${slug}.md ...</span></div>`;
+
+  try {
+    const resp = await fetch(`${slug}.md`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const text = await resp.text();
+
+    // marked v12 returns string directly
+    const html = marked.parse(text);
+    const safe = DOMPurify.sanitize(html, {
+      ADD_ATTR: ['id', 'target'],
+    });
+
+    render.innerHTML = `
+      <div class="md-source">
+        <span>📄 <strong>${slug}.md</strong> · ${doc.lines} 行 · L${doc.layer} ${doc.layerName}</span>
+        <span>
+          <a href="${slug}.md" target="_blank">原文件</a> ·
+          <a href="https://github.com/e2b-dev/infra/blob/learn/brain/docs/md/${slug}.md" target="_blank">GitHub</a>
+        </span>
+      </div>
+      <div class="md">${safe}</div>
+    `;
+
+    // Add anchor links to headings
+    render.querySelectorAll('.md h1, .md h2, .md h3, .md h4').forEach(h => {
+      if (!h.id) return;
+      const a = document.createElement('a');
+      a.className = 'anchor';
+      a.href = `#${h.id}`;
+      a.textContent = '#';
+      a.dataset.anchor = '1';
+      h.appendChild(a);
+    });
+
+    // Rewrite internal .md links to use the SPA router
+    render.querySelectorAll('.md a').forEach(a => {
+      const href = a.getAttribute('href');
+      if (!href) return;
+      // Skip external, anchor, and absolute paths
+      if (/^(https?:|mailto:|#|\/)/.test(href)) return;
+      // Match ./foo.md, ../foo.md, foo.md
+      const m = href.match(/^(?:\.?\/|(?:\.\.\/)+)?([a-z0-9-]+)\.md(?:#.*)?$/i);
+      if (m && ALL_DOCS.find(d => d.slug === m[1])) {
+        const hash = m[1];
+        const frag = href.split('#')[1];
+        a.href = '#' + hash + (frag ? `/${frag}` : '');
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          location.hash = '#' + hash + (frag ? `/${frag}` : '');
+        });
+      }
+    });
+
+    // Update top bar
+    document.getElementById('breadcrumb').innerHTML =
+      `<a href="#" data-route="">docs/md</a><span class="sep">/</span><span class="current">${slug}.md</span>`;
+    document.getElementById('open-raw').href = `${slug}.md`;
+    document.getElementById('open-raw').style.display = '';
+    document.getElementById('open-github').href =
+      `https://github.com/e2b-dev/infra/blob/learn/brain/docs/md/${slug}.md`;
+    document.getElementById('open-github').style.display = '';
+
+    // Scroll to top (or to anchor)
+    const [, anchorId] = location.hash.split('/');
+    if (anchorId) {
+      const el = document.getElementById(anchorId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+    }
+    document.querySelector('main').scrollTop = 0;
+  } catch (err) {
+    render.innerHTML = `
+      <div class="error-box">
+        <strong>加载失败</strong> · ${err.message}<br><br>
+        如果你是用 <code>file://</code> 直接打开本文件,fetch 会被浏览器 CORS 拦截。
+        请用 HTTP server 打开,例如在仓库根目录执行:<br>
+        <code>python3 -m http.server 8000</code><br>
+        然后访问 <a href="http://localhost:8000/docs/md/" style="color:#fff;text-decoration:underline;">http://localhost:8000/docs/md/</a>
+      </div>
+    `;
+  }
+}
+
+// ============ Router ============
+function route() {
+  const hash = location.hash.slice(1);
+  // Highlight active link in sidebar
+  document.querySelectorAll('.doc-link').forEach(a => {
+    a.classList.toggle('active', a.dataset.slug === hash);
+  });
+
+  if (!hash) {
+    buildHome();
+    return;
+  }
+  const [slug] = hash.split('/');
+  loadDoc(slug);
+}
+
+// ============ Init ============
+buildSidebar();
+window.addEventListener('hashchange', route);
+
+document.getElementById('menu-toggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+});
+
+// Handle brand link
+document.querySelector('.brand a').addEventListener('click', (e) => {
+  e.preventDefault();
+  location.hash = '';
+});
+
+// Breadcrumb route handler (delegated)
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-route]');
+  if (t) {
+    e.preventDefault();
+    location.hash = '';
+  }
+});
+
+// Initial route
+route();
+</script>
+
+</body>
+</html>
