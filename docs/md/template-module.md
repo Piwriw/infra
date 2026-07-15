@@ -593,9 +593,11 @@ build 时根据 `version` 字段决定走哪个流程:
 - `BuildKernelVersion` — build 用的 kernel 版本
 - `envd_version` — envd 的版本(每次 envd 行为变化都要 bump)
 
-默认值:
-- Kernel: `vmlinux-5.10.186`
-- Firecracker: `v1.7.0-dev_8bb88311`(示例)
+默认值(运行时,见 `packages/shared/pkg/featureflags/flags.go:462, 467-472`):
+- Kernel: `vmlinux-6.1.158`(`DefaultKernelVersion`)
+- Firecracker: `v1.14.1_431f1fc`(`DefaultFirecrackerVersion`,等于 `DefaultFirecrackerV1_14Version`)
+
+> 注:数据库列(`env_builds.kernel_version` 等)在 `20240315165236_create_env_builds.sql` 中的 DEFAULT 仍是 `vmlinux-5.10.186` / `v1.7.0-dev_8bb88311`,但那只是历史遗留的 schema 默认,运行时实际使用上面的 feature flag 默认值。
 
 具体版本定义见 [`packages/fc-versions/`](../../packages/fc-versions/)。
 
@@ -1422,8 +1424,8 @@ func (p Paths) Metadata() string         { return fmt.Sprintf("%s/%s", p.BuildID
   "version": 2,
   "template": {
     "build_id": "...",
-    "kernel_version": "vmlinux-5.10.186",
-    "firecracker_version": "v1.7.0-dev_8bb88311"
+    "kernel_version": "vmlinux-6.1.158",
+    "firecracker_version": "v1.14.1_431f1fc"
   },
   "context": {
     "user": "root",
@@ -1571,7 +1573,7 @@ key = "{templateID}:{tag}"
 
 - TTL = 25 小时
 - eviction 延迟 = 60 秒
-- 文件:[`packages/orchestrator/pkg/template/build/`](../../packages/orchestrator/pkg/template/build/)
+- 文件:[`packages/orchestrator/pkg/sandbox/build/cache.go`](../../packages/orchestrator/pkg/sandbox/build/cache.go)(`DiffStore` struct 定义在 L42)
 
 ### 12.6 Peer-to-Peer Chunk Transfer
 

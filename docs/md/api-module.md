@@ -291,7 +291,7 @@ type Clickhouse interface {
 
 ### 4.2 APIStore — 控制面的"上帝对象"
 
-文件:[`packages/api/internal/handlers/store.go`](../../packages/api/internal/handlers/store.go) (513 行)
+文件:[`packages/api/internal/handlers/store.go`](../../packages/api/internal/handlers/store.go) (464 行)
 
 `APIStore` 实现生成的 `api.ServerInterface`(编译期断言 `var _ api.ServerInterface = (*APIStore)(nil)`,行 65),把所有 REST handler 方法挂在同一个结构上:
 
@@ -594,7 +594,7 @@ Headers:`X-Admin-Token: <token>` + `X-Team-Id: <teamID>`
 2. 通过后到 `NewAdminTeamAuthenticator`:`apiStore.GetTeamFromAdminToken` → `authService.GetTeamByID(teamID)`,带 5min Redis 缓存。
 3. 向 gin ctx 写 `team`(任意 team,因为 admin 已通过)。
 
-> **已知脏代码**:[`store.go:417`](../../packages/api/internal/handlers/store.go) 和 [`store.go:466`](../../packages/api/internal/handlers/store.go) **重复定义了 `GetTeamFromAdminToken`**,两份代码完全相同。这是已知 merge 事故,文档单独标注以提醒读者。
+> `GetTeamFromAdminToken` 只有一处定义([`store.go:417`](../../packages/api/internal/handlers/store.go)),文件总共 464 行。早期文档误以为有重复定义,实际源码已确认唯一。
 
 ### 5.4 Graceful Shutdown
 
@@ -1627,14 +1627,13 @@ LD context kinds(在 [`flags.go`](../../packages/shared/pkg/featureflags/flags.g
 10. **`r.UseRawPath = true`**([`main.go:111`](../../packages/api/main.go)):让 `%2F` 在路径参数里不被切分,template ID 含 `team-slug/my-template` 时必须。
 11. **ClickHouse switching client + LD flag**:不重启在两个 CH cluster 间漂移读流量。
 12. **pprof `init()` wrap `DefaultServeMux`**([`pprof.go:12`](../../packages/shared/pkg/telemetry/pprof.go)):防第三方库 init 注册 pprof 暴露。
-13. **`store.go:417` 和 `:466` 重复定义 `GetTeamFromAdminToken`**:已知脏代码(merge 事故),待清理。
-14. **Nomad `kill_timeout = 150s`** 精确等于 shutdown budget(15s drain + 75s shutdown + 30s cleanup + slack)。
-15. **`api-grpc` 兼容性 service 别名**([`api.hcl:107-119`](../../iac/modules/job-api/jobs/api.hcl)):#2470 重命名后老 client-proxy 还用旧名,等清理。
-16. **`min_healthy_time = 120s`**([`api.hcl:137`](../../iac/modules/job-api/jobs/api.hcl)):GCP LB 直接路由到 MIG node,新 canary node ~60s 才被 admit,短值会零 backend 503。
-17. **`/health` 由 `apiStore.Healthy` 控制,启动时 false**,要等到至少一个 orchestrator node 接入才置 true。
-18. **`expectedMigrationTimestamp` ldflags 注入 + CheckMigrationVersion**:防止 API 跑在过新/过旧 DB schema 上。
-19. **HTTP/2 over H2C**:`httpserver.ConfigureH2C(s)` 必开,Traefik 用 h2c 协议路由 grpc-api。
-20. **Rate limit 完全 LD flag 驱动,无 code-level 默认**:flag null = 完全不限流;FailOpen = Redis 挂了放行。
+13. **Nomad `kill_timeout = 150s`** 精确等于 shutdown budget(15s drain + 75s shutdown + 30s cleanup + slack)。
+14. **`api-grpc` 兼容性 service 别名**([`api.hcl:107-119`](../../iac/modules/job-api/jobs/api.hcl)):#2470 重命名后老 client-proxy 还用旧名,等清理。
+15. **`min_healthy_time = 120s`**([`api.hcl:137`](../../iac/modules/job-api/jobs/api.hcl)):GCP LB 直接路由到 MIG node,新 canary node ~60s 才被 admit,短值会零 backend 503。
+16. **`/health` 由 `apiStore.Healthy` 控制,启动时 false**,要等到至少一个 orchestrator node 接入才置 true。
+17. **`expectedMigrationTimestamp` ldflags 注入 + CheckMigrationVersion**:防止 API 跑在过新/过旧 DB schema 上。
+18. **HTTP/2 over H2C**:`httpserver.ConfigureH2C(s)` 必开,Traefik 用 h2c 协议路由 grpc-api。
+19. **Rate limit 完全 LD flag 驱动,无 code-level 默认**:flag null = 完全不限流;FailOpen = Redis 挂了放行。
 
 ### 13.2 演进历史线索
 

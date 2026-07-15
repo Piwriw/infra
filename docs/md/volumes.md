@@ -300,7 +300,7 @@ service VolumeService {
 ```
 
 **消息设计要点**:
-- `EntryInfo` 包含完整 stat 字段(name/type/path/size/mode/permissions/owner/group/modified_time/symlink_target/metadata)。注意 proto 字段是 `owner/group`(用户/组名),不是 `uid/gid`;另外没有 `created_time/accessed_time`(只有 `modified_time`)
+- `EntryInfo` 字段:`name(1)` / `type(2)` / `path(3)` / `size(4,int64)` / `mode(5,uint32)` / `uid(6,uint32)` / `gid(7,uint32)` / `modified_time(8)` / `symlink_target(9,optional)` / `created_time(10)` / `accessed_time(11)`。**注意 proto 字段是 `uid/gid`(数字 ID),不是 `owner/group`(用户/组名)**;三个时间字段(`modified_time/created_time/accessed_time`)都是 `google.protobuf.Timestamp`
 - `FileType` 枚举:FILE_TYPE_UNSPECIFIED (默认 0) / FILE_TYPE_FILE / FILE_TYPE_DIRECTORY / FILE_TYPE_SYMLINK
 - `UserErrorCode`:UNKNOWN_USER_ERROR_CODE (默认 0) / PATH_NOT_FOUND / PATH_ALREADY_EXISTS / CANNOT_DELETE_ROOT / NOT_SUPPORTED / DEPTH_OUT_OF_RANGE / INVALID_REQUEST
 - `UserError` 同时携带 gRPC code 和建议的 HTTP status,方便 API 透传
@@ -494,13 +494,15 @@ if request.Mode != nil || request.Uid != nil || request.Gid != nil {
 `errors.go`:
 
 ```go
-func newAPIError(ctx, grpcCode, httpStatus, userErrorCode, msg, args) *status.Status {
-    s := status.New(grpcCode, fmt.Sprintf(msg, args...))
-    s.WithDetails(&orchestrator.UserError{
+func newAPIError(ctx, grpcCode, httpStatus, userErrorCode, userErrorMessage, args) *status.Status {
+    message := fmt.Sprintf(userErrorMessage, args...)  // 先格式化
+    s := status.New(grpcCode, message)
+    s, err := s.WithDetails(&orchestrator.UserError{
         Code:        userErrorCode,
-        Message:     msg,
+        Message:     message,    // ← 用已格式化的 message,不是原始 userErrorMessage
         HttpStatus:  httpStatus,
     })
+    // err 处理:失败则记日志,s 保持原状(不带 details)
     return s
 }
 ```

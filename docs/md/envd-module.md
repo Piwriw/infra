@@ -745,7 +745,9 @@ operation ∈ {"read", "write"}
    ├─ GET  /files → "read"
    └─ POST /files → "write"
 
-signature = "v1_" + sha256_hex(signature_string)
+signature = "v1_" + sha256_base64_raw_std(signature_string)
+            # base64.RawStdEncoding (无 padding),不是 hex
+            # 实现:hasher.HashWithoutPrefix → packages/shared/pkg/keys/sha256.go:26-30
 ```
 
 #### 客户端用法
@@ -1065,7 +1067,7 @@ applyCgroupFD(cmd.SysProcAttr, cgroupFD, ok)  // 仅当 ok=true 才启用 CLONE_
 `forward.go:28`:
 
 ```go
-const defaultGatewayIP = "169.254.0.21"
+var defaultGatewayIP = net.IPv4(169, 254, 0, 21)
 ```
 
 这是 microVM 内的 link-local gateway IP,**orchestrator 的 client-proxy 把外部流量 DNAT 到这个 IP**。socat 监听这个 IP 上的端口,把流量桥接到 loopback 上的用户进程。
@@ -1388,15 +1390,21 @@ Connect RPC 拦截器,记录每次 RPC 的:
 
 ```go
 type Metrics struct {
-    CPUCount        int     // cpu.Counts(true)
-    CPUUsedPercent  float64 // cpu.Percent(0, false)
-    
-    MemTotalBytes   uint64  // mem.VirtualMemory().Total
-    MemUsedBytes    uint64  // .Used
-    MemCacheBytes   uint64  // .Cached
-    
-    DiskUsedBytes   uint64  // unix.Statfs("/") 
-    DiskTotalBytes  uint64
+    Timestamp      int64   `json:"ts"`           // Unix UTC
+
+    CPUCount       uint32  `json:"cpu_count"`    // cpu.Counts(true)
+    CPUUsedPercent float32 `json:"cpu_used_pct"` // cpu.Percent,保留 2 位小数
+
+    MemTotal       uint64  `json:"mem_total"`    // mem.VirtualMemory().Total(bytes)
+    MemUsed        uint64  `json:"mem_used"`     // .Used
+    MemCache       uint64  `json:"mem_cache"`    // .Cached
+
+    DiskUsed       uint64  `json:"disk_used"`    // unix.Statfs("/").Bfree
+    DiskTotal      uint64  `json:"disk_total"`
+
+    // Deprecated(待 orchestrator 移除 E2B-2998 后删除)
+    MemTotalMiB    uint64  `json:"mem_total_mib"`
+    MemUsedMiB     uint64  `json:"mem_used_mib"`
 }
 ```
 
