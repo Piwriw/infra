@@ -3,10 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark light">
 <title>E2B Infrastructure 文档索引 · docs/md</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11/styles/github-dark.min.css">
+<script>
+  try {
+    const savedTheme = localStorage.getItem('docs-theme');
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      document.documentElement.dataset.theme = savedTheme;
+    }
+  } catch (e) {}
+</script>
+<link id="highlight-light" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/styles/github.min.css" media="(prefers-color-scheme: light)">
+<link id="highlight-dark" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
 <style>
   :root {
+    color-scheme: dark;
     --bg: #0d1117;
     --bg-side: #0a0e14;
     --bg-card: #161b22;
@@ -24,10 +35,14 @@
     --red: #f85149;
     --purple: #bc8cff;
     --orange: #f0883e;
+    --code-bg: #0a0e14;
+    --code-text: #c9d1d9;
+    --error-bg: rgba(248, 81, 73, 0.1);
     --sidebar-w: 320px;
   }
   @media (prefers-color-scheme: light) {
     :root {
+      color-scheme: light;
       --bg: #ffffff;
       --bg-side: #f6f8fa;
       --bg-card: #f6f8fa;
@@ -40,7 +55,61 @@
       --text-strong: #24292f;
       --accent: #0969da;
       --accent-soft: rgba(9, 105, 218, 0.1);
+      --green: #1a7f37;
+      --yellow: #9a6700;
+      --red: #cf222e;
+      --purple: #8250df;
+      --orange: #bc4c00;
+      --code-bg: #f6f8fa;
+      --code-text: #1f2328;
+      --error-bg: rgba(207, 34, 46, 0.08);
     }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0d1117;
+    --bg-side: #0a0e14;
+    --bg-card: #161b22;
+    --bg-hover: #1f262e;
+    --bg-render: #0d1117;
+    --border: #30363d;
+    --border-soft: #21262d;
+    --text: #c9d1d9;
+    --text-muted: #8b949e;
+    --text-strong: #f0f6fc;
+    --accent: #58a6ff;
+    --accent-soft: rgba(88, 166, 255, 0.1);
+    --green: #3fb950;
+    --yellow: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --orange: #f0883e;
+    --code-bg: #0a0e14;
+    --code-text: #c9d1d9;
+    --error-bg: rgba(248, 81, 73, 0.1);
+  }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --bg: #ffffff;
+    --bg-side: #f6f8fa;
+    --bg-card: #f6f8fa;
+    --bg-hover: #eaeef2;
+    --bg-render: #ffffff;
+    --border: #d0d7de;
+    --border-soft: #e4e7eb;
+    --text: #1f2328;
+    --text-muted: #636c76;
+    --text-strong: #24292f;
+    --accent: #0969da;
+    --accent-soft: rgba(9, 105, 218, 0.1);
+    --green: #1a7f37;
+    --yellow: #9a6700;
+    --red: #cf222e;
+    --purple: #8250df;
+    --orange: #bc4c00;
+    --code-bg: #f6f8fa;
+    --code-text: #1f2328;
+    --error-bg: rgba(207, 34, 46, 0.08);
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; height: 100%; }
@@ -179,6 +248,7 @@
   .topbar-actions {
     display: flex;
     gap: 6px;
+    flex-shrink: 0;
   }
   .btn {
     background: var(--bg-card);
@@ -195,6 +265,26 @@
     gap: 4px;
   }
   .btn:hover { background: var(--bg-hover); border-color: var(--accent); }
+  .btn:focus-visible, .menu-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .icon-btn {
+    width: 32px;
+    height: 30px;
+    padding: 0;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .theme-icon {
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    line-height: 1;
+  }
 
   /* ============ Render area ============ */
   .render {
@@ -354,7 +444,8 @@
     border: 1px solid var(--border-soft);
   }
   .md pre {
-    background: #0a0e14;
+    background: var(--code-bg);
+    color: var(--code-text);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 14px 16px;
@@ -434,12 +525,13 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   .error-box {
-    background: rgba(248, 81, 73, 0.1);
+    background: var(--error-bg);
     border: 1px solid var(--red);
     border-radius: 8px;
     padding: 24px;
     color: var(--red);
   }
+  .error-box a { color: inherit; font-weight: 600; }
 
   /* Mobile */
   .menu-toggle {
@@ -454,6 +546,15 @@
   }
   @media (max-width: 900px) {
     body { flex-direction: column; }
+    .topbar { padding: 10px 16px; gap: 8px; }
+    .breadcrumb {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .btn { padding: 5px 8px; }
+    .icon-btn { padding: 0; }
     aside {
       width: 100%;
       height: auto;
@@ -473,7 +574,7 @@
   <div class="brand">
     <h1>E2B Infra 文档</h1>
     <a href="#" data-route="">docs/md/ 索引</a>
-    <div class="stat">21 篇 · 6 层 · ~29,600 行</div>
+    <div class="stat" id="catalog-stat"></div>
   </div>
   <!-- sidebar 内容由 JS 生成 -->
 </aside>
@@ -485,6 +586,9 @@
       <a href="#" data-route="">docs/md</a>
     </div>
     <div class="topbar-actions">
+      <button class="btn icon-btn" id="theme-toggle" type="button" aria-label="切换主题" title="切换主题">
+        <span class="theme-icon" id="theme-icon" aria-hidden="true">☀</span>
+      </button>
       <a class="btn" id="open-raw" href="#">查看原 .md</a>
       <a class="btn" id="open-github" href="#" target="_blank">GitHub</a>
     </div>
@@ -495,21 +599,49 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/highlight.js@11/highlight.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/highlight.js@11/languages/go.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/highlight.js@11/languages/sql.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/highlight.js@11/languages/yaml.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/highlight.js@11/languages/bash.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/highlight.js@11/languages/hcl.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/highlight.js@11/languages/protobuf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/languages/go.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/languages/sql.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/languages/yaml.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/languages/bash.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/languages/protobuf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
 <script>
+// ============ Theme ============
+const THEME_STORAGE_KEY = 'docs-theme';
+const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+
+function getActiveTheme() {
+  return document.documentElement.dataset.theme || (systemTheme.matches ? 'dark' : 'light');
+}
+
+function syncThemeControl() {
+  const activeTheme = getActiveTheme();
+  const nextTheme = activeTheme === 'dark' ? 'light' : 'dark';
+  const nextThemeLabel = nextTheme === 'dark' ? '深色' : '浅色';
+  const toggle = document.getElementById('theme-toggle');
+
+  document.getElementById('highlight-light').media = activeTheme === 'light' ? 'all' : 'not all';
+  document.getElementById('highlight-dark').media = activeTheme === 'dark' ? 'all' : 'not all';
+  document.getElementById('theme-icon').textContent = activeTheme === 'dark' ? '☀' : '☾';
+  toggle.dataset.theme = activeTheme;
+  toggle.setAttribute('aria-pressed', String(activeTheme === 'dark'));
+  toggle.setAttribute('aria-label', `切换到${nextThemeLabel}主题`);
+  toggle.title = `切换到${nextThemeLabel}主题`;
+}
+
+function setTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  try { localStorage.setItem(THEME_STORAGE_KEY, theme); } catch (e) {}
+  syncThemeControl();
+}
+
 // ============ Document catalog ============
 const LAYERS = [
   {
     id: 1, name: '全局与基础设施', color: 'blue',
     docs: [
-      { slug: 'api-module', title: 'api-module', desc: 'API 服务整体架构:Gin 路由、中间件链、OpenAPI 分发器、与 orchestrator gRPC 边界', lines: 2013 },
+      { slug: 'api-module', title: 'api-module', desc: 'API 服务整体架构:Gin 路由、中间件链、OpenAPI 分发器、与 orchestrator gRPC 边界', lines: 2012 },
       { slug: 'database-schema', title: 'database-schema', desc: '16 张核心表的数据模型、迁移史、索引策略、典型查询', lines: 1457 },
       { slug: 'clusters-module', title: 'clusters-module', desc: '多集群拓扑:team → cluster 路由、orchestrator 实例发现与健康检查', lines: 1031 },
     ]
@@ -527,8 +659,8 @@ const LAYERS = [
   {
     id: 3, name: '模板系统', color: 'yellow',
     docs: [
-      { slug: 'template-module', title: 'template-module', desc: '模板 = 沙箱镜像根:ID 生成、Build 注册/状态机、版本管理、alias 命名空间', lines: 2286 },
-      { slug: 'template-build-flow', title: 'template-build-flow', desc: 'POST /v3/templates → rootfs 落盘的端到端流程:请求 → 注册 → 触发 → 同步状态 → 终态', lines: 1650 },
+      { slug: 'template-module', title: 'template-module', desc: '模板 = 沙箱镜像根:ID 生成、Build 注册/状态机、版本管理、alias 命名空间', lines: 2288 },
+      { slug: 'template-build-flow', title: 'template-build-flow', desc: 'POST /v3/templates → rootfs 落盘的端到端流程:请求 → 注册 → 触发 → 同步状态 → 终态', lines: 1659 },
       { slug: 'template-tags-module', title: 'template-tags-module', desc: '模板 tag/alias:validation、dedup、与 build 的多对多关系、缓存失效', lines: 1290 },
     ]
   },
@@ -537,24 +669,30 @@ const LAYERS = [
     docs: [
       { slug: 'sandbox-api-module', title: 'sandbox-api-module', desc: '沙箱 REST 端点:HTTP 入口、请求/响应模型、校验、与 orchestrator 边界', lines: 920 },
       { slug: 'sandbox-management', title: 'sandbox-management', desc: '沙箱管理(orchestrator 视角):Create/Pause/Resume/Stop/reclaim、timeout', lines: 720 },
-      { slug: 'sandbox-lifecycle', title: 'sandbox-lifecycle', desc: '沙箱端到端:Create → VM 启动 → 网络/NBD/uffd → envd 握手 → pause/resume/kill', lines: 1715 },
+      { slug: 'sandbox-lifecycle', title: 'sandbox-lifecycle', desc: '沙箱端到端:Create → VM 启动 → 网络/NBD/uffd → envd 握手 → pause/resume/kill', lines: 1753 },
+      { slug: 'auto-resume-module', title: 'auto-resume-module', desc: '自动恢复:traffic catalog miss、snapshot 前置条件、Resume 状态机、超时与 token', lines: 1012 },
     ]
   },
   {
     id: 5, name: '沙箱底层运行时', color: 'orange',
     docs: [
       { slug: 'orchestrator-module', title: 'orchestrator-module', desc: 'Orchestrator 服务:Firecracker microVM、NBD、网络 slot/tap、模板缓存、gRPC', lines: 2136 },
+      { slug: 'hyperloop-api-module', title: 'hyperloop-api-module', desc: 'Sandbox 内部 HTTP 通道:源 IP 身份、/me、日志 payload 防伪、collector 转发', lines: 666 },
       { slug: 'node-module', title: 'node-module', desc: '节点池:Instance 抽象、健康状态机、DrainSandboxes、autoscaler、机型兼容性', lines: 1895 },
       { slug: 'volumes', title: 'volumes', desc: '持久化卷:NFS 后端、本地缓存、双层调度门控、文件流式读写', lines: 983 },
       { slug: 'snapshots', title: 'snapshots', desc: '快照:auto-pause 持久化、Pause/Resume、P2P checkpoint 分发、缓存 TTL', lines: 820 },
-      { slug: 'envd-module', title: 'envd-module', desc: 'VM 内 daemon(Connect RPC):process/filesystem service、envd 握手、xattr', lines: 2229 },
+      { slug: 'envd-module', title: 'envd-module', desc: 'VM 内 daemon(Connect RPC):process/filesystem service、envd 握手、xattr', lines: 2237 },
+      { slug: 'envd-api-module', title: 'envd-api-module', desc: 'envd REST ServerInterface:初始化、文件传输、鉴权、指标与 pause freeze/thaw 协议', lines: 909 },
     ]
   },
   {
     id: 6, name: '边缘与计量', color: 'red',
     docs: [
+      { slug: 'sandbox-traffic-routing', title: 'sandbox-traffic-routing', desc: 'Sandbox 流量路由:Client-Proxy、Orchestrator Proxy、host 解析、token 与 auto-resume', lines: 1097 },
       { slug: 'client-proxy-module', title: 'client-proxy-module', desc: '边缘代理:公网入口、Consul 发现、paused sandbox 流量调度、Resume、连接池', lines: 1577 },
+      { slug: 'edge-api-module', title: 'edge-api-module', desc: '远端 cluster HTTP 契约:service discovery、sandbox logs/metrics、build logs、兼容性', lines: 648 },
       { slug: 'team-metrics-module', title: 'team-metrics-module', desc: '团队用量与计费:OTLP Delta temporality、ClickHouse 查询、gauge/counter 上报', lines: 1182 },
+      { slug: 'sandbox-metrics-tz-verification', title: 'sandbox-metrics-tz-verification', desc: 'ClickHouse sandbox metrics 时区问题的可复现实验与参数时区修复验证', lines: 264 },
     ]
   },
 ];
@@ -565,20 +703,41 @@ LAYERS.forEach(l => l.docs.forEach((d, i) => {
   ALL_DOCS.push({ ...d, layer: l.id, layerName: l.name, color: l.color, order: ALL_DOCS.length + 1 });
 }));
 
+document.getElementById('catalog-stat').textContent =
+  `${ALL_DOCS.length} 篇 · ${LAYERS.length} 层 · ~${Math.round(ALL_DOCS.reduce((sum, doc) => sum + doc.lines, 0) / 100) * 100} 行`;
+
 // ============ Configure marked ============
 marked.setOptions({
   gfm: true,
   breaks: false,
   headerIds: true,
-  mangle: false,
-  highlight: function(code, lang) {
-    if (lang && hljs.getLanguage(lang)) {
-      try { return hljs.highlight(code, { language: lang }).value; } catch (e) {}
-    }
-    try { return hljs.highlightAuto(code).value; } catch (e) {}
-    return code;
-  }
+  mangle: false
 });
+
+function highlightCodeBlocks(root) {
+  const escapeHtml = value => value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+  root.querySelectorAll('.md pre code').forEach(block => {
+    const languageClass = Array.from(block.classList).find(name => name.startsWith('language-'));
+    const language = languageClass ? languageClass.slice('language-'.length) : '';
+    const source = block.textContent;
+    let highlighted = escapeHtml(source);
+
+    try {
+      highlighted = language && hljs.getLanguage(language)
+        ? hljs.highlight(source, { language, ignoreIllegals: true }).value
+        : hljs.highlightAuto(source).value;
+    } catch (e) {}
+
+    block.innerHTML = highlighted;
+    block.classList.add('hljs');
+  });
+}
 
 // ============ Build sidebar ============
 function buildSidebar() {
@@ -628,7 +787,7 @@ function buildHome() {
           <p class="path-flow">
             client-proxy <span class="arrow">→</span> api <span class="arrow">→</span> auth
             <span class="arrow">→</span> sandbox-management
-            <span class="arrow">→</span> orchestrator <span class="arrow">→</span> envd
+            <span class="arrow">→</span> orchestrator <span class="arrow">→</span> envd-api
           </p>
         </div>
         <div class="path">
@@ -664,7 +823,7 @@ api-module ──────► auth-module ──────► api-keys / ac
         │              └──► sandbox-lifecycle (横切端到端)
         │                                │
         │                                ↓
-        │                   orchestrator-module ──► envd-module
+        │                   orchestrator-module ──► envd-api-module ──► envd-module
         │                          ├──► node-module
         │                          ├──► volumes
         │                          └──► snapshots
@@ -745,9 +904,21 @@ async function loadDoc(slug) {
       <div class="md">${safe}</div>
     `;
 
-    // Add anchor links to headings
+    highlightCodeBlocks(render);
+
+    // marked v12 no longer generates heading IDs; add GitHub-style slugs for TOC links.
+    const headingSlugs = new Map();
     render.querySelectorAll('.md h1, .md h2, .md h3, .md h4').forEach(h => {
-      if (!h.id) return;
+      const base = h.textContent
+        .trim()
+        .toLowerCase()
+        .replace(/[^\p{L}\p{N}_\-\s]/gu, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-') || 'section';
+      const duplicate = headingSlugs.get(base) || 0;
+      headingSlugs.set(base, duplicate + 1);
+      h.id = duplicate ? `${base}-${duplicate}` : base;
+
       const a = document.createElement('a');
       a.className = 'anchor';
       a.href = `#${h.id}`;
@@ -760,8 +931,18 @@ async function loadDoc(slug) {
     render.querySelectorAll('.md a').forEach(a => {
       const href = a.getAttribute('href');
       if (!href) return;
-      // Skip external, anchor, and absolute paths
-      if (/^(https?:|mailto:|#|\/)/.test(href)) return;
+      if (href.startsWith('#')) {
+        const anchor = href.slice(1);
+        if (!anchor) return;
+        a.href = `#${slug}/${anchor}`;
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          location.hash = `${slug}/${anchor}`;
+        });
+        return;
+      }
+      // Skip external and absolute paths
+      if (/^(https?:|mailto:|\/)/.test(href)) return;
       // Match ./foo.md, ../foo.md, foo.md
       const m = href.match(/^(?:\.?\/|(?:\.\.\/)+)?([a-z0-9-]+)\.md(?:#.*)?$/i);
       if (m && ALL_DOCS.find(d => d.slug === m[1])) {
@@ -785,7 +966,8 @@ async function loadDoc(slug) {
     document.getElementById('open-github').style.display = '';
 
     // Scroll to top (or to anchor)
-    const [, anchorId] = location.hash.split('/');
+    const [, encodedAnchorId] = location.hash.split('/');
+    const anchorId = encodedAnchorId ? decodeURIComponent(encodedAnchorId) : '';
     if (anchorId) {
       const el = document.getElementById(anchorId);
       if (el) {
@@ -801,7 +983,7 @@ async function loadDoc(slug) {
         如果你是用 <code>file://</code> 直接打开本文件,fetch 会被浏览器 CORS 拦截。
         请用 HTTP server 打开,例如在仓库根目录执行:<br>
         <code>python3 -m http.server 8000</code><br>
-        然后访问 <a href="http://localhost:8000/docs/md/" style="color:#fff;text-decoration:underline;">http://localhost:8000/docs/md/</a>
+        然后访问 <a href="http://localhost:8000/docs/md/">http://localhost:8000/docs/md/</a>
       </div>
     `;
   }
@@ -810,20 +992,33 @@ async function loadDoc(slug) {
 // ============ Router ============
 function route() {
   const hash = location.hash.slice(1);
+  const [slug] = hash.split('/');
   // Highlight active link in sidebar
   document.querySelectorAll('.doc-link').forEach(a => {
-    a.classList.toggle('active', a.dataset.slug === hash);
+    a.classList.toggle('active', a.dataset.slug === slug);
   });
 
   if (!hash) {
     buildHome();
     return;
   }
-  const [slug] = hash.split('/');
   loadDoc(slug);
 }
 
 // ============ Init ============
+syncThemeControl();
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  setTheme(getActiveTheme() === 'dark' ? 'light' : 'dark');
+});
+const handleSystemThemeChange = () => {
+  if (!document.documentElement.dataset.theme) syncThemeControl();
+};
+if (typeof systemTheme.addEventListener === 'function') {
+  systemTheme.addEventListener('change', handleSystemThemeChange);
+} else {
+  systemTheme.addListener(handleSystemThemeChange);
+}
+
 buildSidebar();
 window.addEventListener('hashchange', route);
 
