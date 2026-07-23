@@ -36,7 +36,7 @@
   - [5.3 POST /nodes/{nodeID} — 节点状态覆盖](#53-post-nodesnodeid--节点状态覆盖)
   - [5.4 POST /admin/teams/{teamID}/sandboxes/kill — 批量杀团队沙箱](#54-post-adminteamsbyteamidsandboxeskill--批量杀团队沙箱)
   - [5.5 POST /admin/teams/{teamID}/builds/cancel — 批量取消团队构建](#55-post-adminteamsbyteamidbuildscancel--批量取消团队构建)
-  - [5.6 POST /admin/teams/{teamID}/api-keys — 创建团队 API Key](#56-post-adminteamsbyteamidapi-keys--创建团队-api-key)
+  - [5.6 POST /admin/teams/{teamID}/api-keys — 创建团队 API Key](#56-post-adminteamsteamidapi-keys--创建团队-api-key)
   - [5.7 DELETE /admin/teams/{teamID}/api-keys/{apiKeyID} — 删除团队 API Key](#57-delete-adminteamsbyteamidapi-keysapikeyid--删除团队-api-key)
 - [六、关键流程时序图](#六关键流程时序图)
   - [6.1 批量杀团队沙箱](#61-批量杀团队沙箱)
@@ -216,7 +216,7 @@ func (a *APIStore) GetTeamFromAdminToken(ctx context.Context, _ *gin.Context, te
 }
 ```
 
-> ⚠️ 注意 `GetTeamFromAdminToken` **不检查 `blocked` 状态**——只检查 `banned`。`blocked` 检查是 handler 内部主动做的(详见 [5.6](#56-post-adminteamsbyteamidapi-keys--创建-team-api-key))。
+> ⚠️ 注意 `GetTeamFromAdminToken` **不检查 `blocked` 状态**——只检查 `banned`。`blocked` 检查是 handler 内部主动做的(详见 [5.6](#56-post-adminteamsteamidapi-keys--创建团队-api-key))。
 
 ### 2.3 三类特权操作
 

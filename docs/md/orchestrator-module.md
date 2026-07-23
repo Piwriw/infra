@@ -11,13 +11,13 @@
 0. [一句话定位](#0-一句话定位)
 1. [模块在整体架构中的位置](#1-模块在整体架构中的位置)
 2. [目录结构与职责](#2-目录结构与职责)
-3. [启动流程](#3-启动流程-main--factoriesrun--run)
+3. [启动流程](#3-启动流程-maingo--factoriesrun--run)
 4. [配置体系](#4-配置体系)
 5. [gRPC 接口全景](#5-grpc-接口全景)
-6. [沙箱核心状态机](#6-沙箱核心状态机-pkg-sandbox-sandbox-go)
+6. [沙箱核心状态机](#6-沙箱核心状态机-pkgsandboxsandboxgo-1838-行)
 7. [Firecracker 子系统](#7-firecracker-子系统-pkg-sandbox-fc-)
 8. [块设备与 NBD 协议](#8-块设备与-nbd-协议)
-9. [网络子系统](#9-网络子系统-pkg-sandbox-network-)
+9. [网络子系统](#9-网络子系统-pkgsandboxnetwork-2340-行)
 10. [模板缓存与 P2P](#10-模板缓存与-p2p-pkg-sandbox-template-)
 11. [cgroup 资源管控](#11-cgroup-资源管控-pkg-sandbox-cgroup-)
 12. [Pause / Checkpoint 数据流](#12-pause--checkpoint-数据流)
@@ -422,8 +422,8 @@ type EgressFactory func(ctx context.Context, deps *Deps) (*EgressSetup, error)
 | `TemplatesDir` | `TEMPLATES_DIR` | `${ORCHESTRATOR_BASE_PATH}/build-templates` | |
 | `DefaultCacheDir` | `DEFAULT_CACHE_DIR` | `${ORCHESTRATOR_BASE_PATH}/build` | build 缓存 |
 | `Provider` | `PROVIDER` | `gcp` | `gcp` 或 `aws` |
-| `StorageConfig` | 嵌套 | | 见 [storage 配置](#storage-配置) |
-| `NetworkConfig` | 嵌套 | | 见 [网络配置](#网络配置) |
+| `StorageConfig` | 嵌套 | | 对象存储配置由 shared storage provider 解析 |
+| `NetworkConfig` | 嵌套 | | 见 [网络配置](#网络配置-networkpoolgo60-87) |
 
 #### `Config` (cfg/model.go:79-107) - Orchestrator 运行时
 
@@ -1657,7 +1657,7 @@ orchestrator 二进制由 Nomad `raw_exec` 启动, 无 kill_timeout 配置 (与 
 |----------|------|------|
 | `clean-nfs-cache` | null | NFS cache 清理配置 |
 | `rate-limit-config` | null | 按 team/route 覆盖速率限制 |
-| `memfile-diff-dedup` | 见 [§8.4](#84-pkgsandboxblock--) | memfile diff 去重配置 |
+| `memfile-diff-dedup` | 见 [§8.4](#84-pkgsandboxblock---块缓存与去重) | memfile diff 去重配置 |
 | `guest-pause-reclaim` | null | `ReclaimConfig` (sync/drop_caches/compact_memory/fstrim 超时) |
 | `free-page-hinting-config` | null | FPH 配置 + pause/build drain 超时 |
 

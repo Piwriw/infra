@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="E2B Infrastructure 核心组件与端到端链路学习站">
+  <title>E2B Infra Core Atlas</title>
+  <script>
+    try {
+      const theme = localStorage.getItem('e2b-atlas-theme');
+      if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+    } catch (_) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link id="hl-light" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/styles/github.min.css">
+  <link id="hl-dark" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/styles/github-dark.min.css" disabled>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" id="skip-link" href="#content" data-skip-content>跳到正文</a>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="学习目录" aria-hidden="true" inert>
+      <div class="brand-block">
+        <button class="brand" type="button" data-route-home aria-label="返回项目地图">
+          <span class="brand-mark" aria-hidden="true">E2B</span>
+          <span>
+            <strong>INFRA CORE</strong>
+            <small>源码学习图谱</small>
+          </span>
+        </button>
+        <button class="icon-button sidebar-close" id="sidebar-close" type="button" aria-label="关闭目录" title="关闭目录">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <div class="progress-block" id="progress-block">
+        <div class="progress-copy">
+          <span>核心课程</span>
+          <strong id="progress-label">0 / 14</strong>
+        </div>
+        <div class="progress-track" aria-hidden="true"><span id="progress-bar"></span></div>
+      </div>
+
+      <nav class="course-nav" id="course-nav"></nav>
+
+      <div class="sidebar-footer">
+        <button class="sidebar-action" id="deep-dive-toggle" type="button">
+          <i data-lucide="library"></i>
+          <span>专题资料库</span>
+          <span class="sidebar-count" id="deep-count">0</span>
+        </button>
+        <button class="sidebar-action" id="theme-toggle" type="button">
+          <i data-lucide="sun-moon"></i>
+          <span>切换主题</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+    <section class="workspace">
+      <header class="topbar">
+        <button class="icon-button menu-button" id="menu-button" type="button" aria-label="打开目录" aria-controls="sidebar" aria-expanded="false" title="打开目录">
+          <i data-lucide="panel-left"></i>
+        </button>
+        <div class="breadcrumb" id="breadcrumb" aria-label="当前位置"></div>
+        <button class="search-trigger" id="search-trigger" type="button" aria-label="搜索组件、链路或源码概念" title="搜索组件、链路或源码概念">
+          <i data-lucide="search"></i>
+          <span>搜索组件、链路或源码概念</span>
+        </button>
+        <div class="topbar-actions">
+          <button class="icon-button" type="button" data-route-home aria-label="打开系统地图" title="系统地图">
+            <i data-lucide="network"></i>
+          </button>
+          <a class="icon-button is-hidden" id="raw-link" href="#" target="_blank" rel="noreferrer" aria-label="打开 Markdown 原文" title="Markdown 原文">
+            <i data-lucide="file-text"></i>
+          </a>
+          <a class="icon-button" href="https://github.com/e2b-dev/infra" target="_blank" rel="noreferrer" aria-label="打开 GitHub 仓库" title="GitHub 仓库">
+            <i data-lucide="github"></i>
+          </a>
+        </div>
+      </header>
+
+      <div class="content-grid">
+        <main class="main-content" id="content" tabindex="0">
+          <div class="page-render" id="page-render" aria-live="polite"></div>
+        </main>
+        <aside class="context-rail" id="context-rail" aria-label="文档目录"></aside>
+      </div>
+    </section>
+  </div>
+
+  <dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title">
+    <div class="search-panel">
+      <div class="search-input-row">
+        <i data-lucide="search"></i>
+        <input id="search-input" type="search" role="combobox" autocomplete="off" placeholder="输入组件、链路、协议或源码路径" aria-labelledby="search-title" aria-autocomplete="list" aria-controls="search-results" aria-expanded="true">
+        <button class="icon-button" id="search-close" type="button" aria-label="关闭搜索" title="关闭搜索">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <h2 class="sr-only" id="search-title">搜索学习资料</h2>
+      <div class="search-status" id="search-status" role="status" aria-live="polite"></div>
+      <div class="search-results" id="search-results" role="listbox" aria-label="搜索结果"></div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <noscript>
+    <div class="noscript-message">
+      <strong>此学习站需要 JavaScript。</strong>
+      <a href="components/00-overview.md">直接阅读项目全景文档</a>
+    </div>
+  </noscript>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/highlight.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/languages/go.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/languages/sql.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/languages/yaml.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/languages/bash.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/languages/protobuf.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script defer src="catalog.js"></script>
+  <script defer src="app.js"></script>
+</body>
+</html>
