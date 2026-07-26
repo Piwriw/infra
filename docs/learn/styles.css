@@ -271,6 +271,22 @@ a:hover {
   stroke-width: 1.8;
 }
 
+[data-theme-toggle] svg {
+  animation: theme-icon-in 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes theme-icon-in {
+  from {
+    opacity: 0.45;
+    transform: rotate(-18deg) scale(0.82);
+  }
+
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+
 .sidebar-close {
   display: none;
 }
@@ -362,6 +378,17 @@ a:hover {
   border-left-color: var(--accent);
   background: var(--accent-soft);
   color: var(--ink);
+}
+
+.course-link.is-chapter {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-quiet);
+}
+
+.course-link.is-chapter .course-index,
+.course-link.is-chapter .course-title {
+  color: var(--accent-strong);
 }
 
 .course-index {
@@ -1107,6 +1134,22 @@ a:hover {
   background: var(--surface);
 }
 
+.curriculum-item.is-chapter {
+  box-shadow: inset 3px 0 0 var(--accent);
+  background: var(--accent-soft);
+}
+
+.curriculum-item.is-chapter .curriculum-name::after {
+  display: block;
+  margin-top: 3px;
+  color: var(--accent-strong);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  content: "Source chapter";
+}
+
 .curriculum-order,
 .curriculum-time {
   color: var(--ink-faint);
@@ -1158,6 +1201,11 @@ a:hover {
 .doc-header {
   padding-bottom: 28px;
   border-bottom: 1px solid var(--line);
+}
+
+.document-page.is-source-chapter .doc-header {
+  padding-top: 24px;
+  border-top: 3px solid var(--accent);
 }
 
 .doc-kind {
@@ -1922,7 +1970,7 @@ a:hover {
     font-size: 12px;
   }
 
-  .topbar-actions .icon-button:first-child {
+  .topbar-actions .map-button {
     display: none;
   }
 

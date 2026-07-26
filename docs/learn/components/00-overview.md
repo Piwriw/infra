@@ -180,6 +180,7 @@ OpenAPI 与 protobuf 是跨组件边界。字段编号、认证 scheme、错误�
 | 4 | [DB](04-db.md) | 业务事实如何建模与迁移？ |
 | 5 | [Client Proxy](05-client-proxy.md) | 沙箱端口流量怎样寻址？ |
 | 6 | [Orchestrator](06-orchestrator.md) | 一台节点怎样管理 microVM？ |
+| 6A | [Orchestrator 源码专章](../../md/orchestrator-module.md) | 启动、运行、快照和清理如何按模块协作？ |
 | 7 | [Envd](07-envd.md) | VM 内部怎样执行进程与文件操作？ |
 | 8 | [Shared](08-shared.md) | 跨服务契约和基础能力放在哪里？ |
 | 9 | [ClickHouse](09-clickhouse.md) | 高频指标和事件怎样写入与查询？ |

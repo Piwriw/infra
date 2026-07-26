@@ -150,9 +150,12 @@ Delete -> live.Get -> MarkStopping -> 立即返回
 | 9 | `packages/orchestrator/pkg/proxy/proxy.go` | 看节点 ingress、鉴权与连接隔离 |
 | 10 | `packages/orchestrator/pkg/sandbox/fc/process.go` | 最后下钻 Firecracker API 交互 |
 
-## 8. 相关深挖
+## 8. 下一章：源码专章
 
-- [Orchestrator 模块详解](../../md/orchestrator-module.md)
+[Orchestrator 运行原理与源码专章](../../md/orchestrator-module.md) 按启动装配、RPC、生命周期、Firecracker、存储与内存、网络、快照和关停模块继续下钻。建议先完成本篇总览，再进入专章沿五条真实调用链阅读源码。
+
+## 9. 相关深挖
+
 - [Sandbox 生命周期详解](../../md/sandbox-lifecycle.md)
 - [Sandbox 管理机制](../../md/sandbox-management.md)
 - [Sandbox 流量路由详解](../../md/sandbox-traffic-routing.md)

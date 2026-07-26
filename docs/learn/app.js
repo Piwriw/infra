@@ -37,7 +37,7 @@
     progressBar: document.getElementById('progress-bar'),
     deepCount: document.getElementById('deep-count'),
     libraryButton: document.getElementById('deep-dive-toggle'),
-    themeButton: document.getElementById('theme-toggle'),
+    themeButtons: [...document.querySelectorAll('[data-theme-toggle]')],
     menuButton: document.getElementById('menu-button'),
     sidebarClose: document.getElementById('sidebar-close'),
     sidebarScrim: document.getElementById('sidebar-scrim'),
@@ -74,7 +74,7 @@
     renderNavigation();
     updateProgress();
     elements.deepCount.textContent = String(catalog.deep.length);
-    syncThemeButton();
+    syncThemeButtons();
     syncSidebarState();
     handleRoute();
   }
@@ -166,7 +166,7 @@
       closeSidebar({ restoreFocus: true });
     });
 
-    elements.themeButton.addEventListener('click', toggleTheme);
+    elements.themeButtons.forEach(button => button.addEventListener('click', toggleTheme));
     elements.menuButton.addEventListener('click', openSidebar);
     elements.sidebarClose.addEventListener('click', () => closeSidebar({ restoreFocus: true }));
     elements.sidebarScrim.addEventListener('click', () => closeSidebar({ restoreFocus: true }));
@@ -295,8 +295,8 @@
         <section class="nav-phase">
           <span class="nav-phase-label">${escapeHtml(phase.label)}</span>
           ${docs.map(doc => `
-            <button class="course-link${completed.has(doc.id) ? ' is-complete' : ''}" type="button" data-doc-id="${escapeAttribute(doc.id)}" aria-label="打开 ${escapeAttribute(doc.title)}">
-              <span class="course-index">${String(doc.order).padStart(2, '0')}</span>
+            <button class="course-link${completed.has(doc.id) ? ' is-complete' : ''}${doc.format === 'chapter' ? ' is-chapter' : ''}" type="button" data-doc-id="${escapeAttribute(doc.id)}" aria-label="打开 ${escapeAttribute(doc.title)}">
+              <span class="course-index">${escapeHtml(doc.displayOrder || String(doc.order).padStart(2, '0'))}</span>
               <span class="course-title">${escapeHtml(doc.shortTitle)}</span>
               <span class="course-status" aria-hidden="true"><i data-lucide="check"></i></span>
             </button>
@@ -486,8 +486,8 @@
         <div class="curriculum-phase-title">${escapeHtml(phase.label)}</div>
         <div class="curriculum-list">
           ${docs.map(doc => `
-            <button class="curriculum-item${completed.has(doc.id) ? ' is-complete' : ''}" type="button" data-doc-id="${escapeAttribute(doc.id)}">
-              <span class="curriculum-order">${String(doc.order).padStart(2, '0')}</span>
+            <button class="curriculum-item${completed.has(doc.id) ? ' is-complete' : ''}${doc.format === 'chapter' ? ' is-chapter' : ''}" type="button" data-doc-id="${escapeAttribute(doc.id)}">
+              <span class="curriculum-order">${escapeHtml(doc.displayOrder || String(doc.order).padStart(2, '0'))}</span>
               <span class="curriculum-name">${escapeHtml(doc.shortTitle)}</span>
               <span class="curriculum-summary">${escapeHtml(doc.summary)}</span>
               <span class="curriculum-time">${doc.duration}m</span>
@@ -532,9 +532,9 @@
       const nav = getAdjacentCoreDocs(doc);
 
       elements.page.innerHTML = `
-        <div class="document-page">
+        <div class="document-page${doc.format === 'chapter' ? ' is-source-chapter' : ''}">
           <header class="doc-header">
-            <div class="doc-kind"><span>${doc.kind === 'core' ? 'Core component' : 'Deep dive'}</span><span>${escapeHtml(phaseLabel || '专题')}</span></div>
+            <div class="doc-kind"><span>${doc.format === 'chapter' ? 'Source chapter' : doc.kind === 'core' ? 'Core component' : 'Deep dive'}</span><span>${escapeHtml(phaseLabel || '专题')}</span></div>
             <h1>${escapeHtml(doc.title)}</h1>
             <p class="doc-summary">${escapeHtml(doc.summary)}</p>
             <div class="doc-meta-row">
@@ -672,7 +672,7 @@
         <div class="rail-label"><span>On this page</span><span>${String(headings.length).padStart(2, '0')}</span></div>
         <div class="rail-meta">
           <div class="rail-meta-item"><span>READ</span><strong>${doc.duration} min</strong></div>
-          <div class="rail-meta-item"><span>TYPE</span><strong>${doc.kind === 'core' ? 'CORE' : 'DEEP'}</strong></div>
+          <div class="rail-meta-item"><span>TYPE</span><strong>${doc.format === 'chapter' ? 'CHAPTER' : doc.kind === 'core' ? 'CORE' : 'DEEP'}</strong></div>
         </div>
         <nav class="toc-list" aria-label="本文目录">
           ${headings.map(heading => `<a class="toc-link level-${heading.tagName.slice(1)}" href="${escapeAttribute(buildDocumentHash(doc.id, heading.id))}" data-toc-id="${escapeAttribute(heading.id)}">${escapeHtml(heading.dataset.headingTitle || heading.textContent.replace(/^#/, '').trim())}</a>`).join('')}
@@ -1067,14 +1067,20 @@
     const next = current === 'dark' ? 'light' : 'dark';
     document.documentElement.dataset.theme = next;
     writeText(STORAGE.theme, next);
-    syncThemeButton();
+    syncThemeButtons();
+    showToast(`已切换到${next === 'dark' ? '深色' : '浅色'}主题`);
   }
 
-  function syncThemeButton() {
+  function syncThemeButtons() {
     const current = currentTheme();
     const nextLabel = current === 'dark' ? '切换到浅色主题' : '切换到深色主题';
-    elements.themeButton.innerHTML = `<i data-lucide="${current === 'dark' ? 'sun' : 'moon'}"></i><span>${nextLabel}</span>`;
-    elements.themeButton.title = nextLabel;
+    elements.themeButtons.forEach(button => {
+      const text = button.classList.contains('sidebar-action') ? `<span>${nextLabel}</span>` : '';
+      button.innerHTML = `<i data-lucide="${current === 'dark' ? 'sun' : 'moon'}"></i>${text}`;
+      button.setAttribute('aria-label', nextLabel);
+      button.title = nextLabel;
+      refreshIcons(button);
+    });
     const lightHighlight = document.getElementById('hl-light');
     const darkHighlight = document.getElementById('hl-dark');
     if (lightHighlight && darkHighlight) {
@@ -1083,7 +1089,6 @@
     }
     const identityImage = document.getElementById('identity-image');
     if (identityImage) identityImage.src = current === 'dark' ? '../../readme-assets/infra-dark.png' : '../../readme-assets/infra-light.png';
-    refreshIcons(elements.themeButton);
   }
 
   function currentTheme() {

@@ -92,6 +92,21 @@ window.LEARNING_CATALOG = (() => {
       codeRoot: 'packages/orchestrator'
     },
     {
+      id: 'orchestrator-deep',
+      order: 6.5,
+      displayOrder: '6A',
+      title: 'Orchestrator 专章：节点运行原理与源码解析',
+      shortTitle: 'Orchestrator 专章',
+      phase: 'runtime',
+      path: '../md/orchestrator-module.md',
+      sourcePath: 'docs/md/orchestrator-module.md',
+      summary: '按启动装配、RPC、生命周期、存储、网络、快照和关停模块深读节点运行时。',
+      duration: 55,
+      tags: ['节点运行时', '源码导读', 'Firecracker'],
+      codeRoot: 'packages/orchestrator',
+      format: 'chapter'
+    },
+    {
       id: 'envd',
       order: 7,
       title: 'Envd：microVM 内执行平面',
@@ -201,7 +216,6 @@ window.LEARNING_CATALOG = (() => {
     ['sandbox-management', 'Sandbox 管理机制', 'sandbox', '../md/sandbox-management.md', 'docs/md/sandbox-management.md', '创建、暂停、恢复、停止和 timeout。', ['Sandbox', 'Lifecycle']],
     ['sandbox-lifecycle', 'Sandbox 完整生命周期', 'sandbox', '../md/sandbox-lifecycle.md', 'docs/md/sandbox-lifecycle.md', '从选址到 VM 启动、快照、恢复与回收。', ['Sandbox', 'Firecracker']],
     ['auto-resume', 'Auto-resume 透明恢复', 'sandbox', '../md/auto-resume-module.md', 'docs/md/auto-resume-module.md', 'catalog miss 到 Resume 状态机与错误映射。', ['Resume', 'Proxy']],
-    ['orchestrator-deep', 'Orchestrator 深度剖析', 'runtime', '../md/orchestrator-module.md', 'docs/md/orchestrator-module.md', '节点运行时、Firecracker、NBD、网络与缓存。', ['Runtime', 'Firecracker']],
     ['hyperloop-api', 'Hyperloop 内部通道', 'runtime', '../md/hyperloop-api-module.md', 'docs/md/hyperloop-api-module.md', 'sandbox 内部身份、日志与 collector 转发。', ['Hyperloop', 'Internal API']],
     ['node', 'Node 与节点池', 'runtime', '../md/node-module.md', 'docs/md/node-module.md', '实例抽象、健康状态、drain 与 autoscaling。', ['Node', 'Autoscaling']],
     ['volumes', 'Volumes 持久化卷', 'runtime', '../md/volumes.md', 'docs/md/volumes.md', 'NFS 后端、缓存、调度门控和文件操作。', ['Volume', 'NFS']],
@@ -258,7 +272,13 @@ window.LEARNING_CATALOG = (() => {
       id: 'sandbox-life',
       label: '沙箱生命周期',
       description: '沿创建、运行、暂停、恢复与回收读源码。',
-      docs: ['api', 'sandbox-api', 'sandbox-lifecycle', 'orchestrator', 'snapshots', 'envd']
+      docs: ['api', 'sandbox-api', 'sandbox-lifecycle', 'orchestrator', 'orchestrator-deep', 'snapshots', 'envd']
+    },
+    {
+      id: 'orchestrator-source',
+      label: 'Orchestrator 源码深读',
+      description: '从跨节点选址进入宿主运行时，再追踪 VM、快照与 guest。',
+      docs: ['orchestrator', 'node', 'orchestrator-deep', 'sandbox-lifecycle', 'snapshots', 'envd-deep']
     },
     {
       id: 'template-path',
