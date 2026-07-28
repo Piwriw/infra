@@ -104,7 +104,8 @@ window.LEARNING_CATALOG = (() => {
       duration: 55,
       tags: ['节点运行时', '源码导读', 'Firecracker'],
       codeRoot: 'packages/orchestrator',
-      format: 'chapter'
+      format: 'chapter',
+      parentId: 'orchestrator'
     },
     {
       id: 'envd',
@@ -218,6 +219,7 @@ window.LEARNING_CATALOG = (() => {
     ['auto-resume', 'Auto-resume 透明恢复', 'sandbox', '../md/auto-resume-module.md', 'docs/md/auto-resume-module.md', 'catalog miss 到 Resume 状态机与错误映射。', ['Resume', 'Proxy']],
     ['hyperloop-api', 'Hyperloop 内部通道', 'runtime', '../md/hyperloop-api-module.md', 'docs/md/hyperloop-api-module.md', 'sandbox 内部身份、日志与 collector 转发。', ['Hyperloop', 'Internal API']],
     ['node', 'Node 与节点池', 'runtime', '../md/node-module.md', 'docs/md/node-module.md', '实例抽象、健康状态、drain 与 autoscaling。', ['Node', 'Autoscaling']],
+    ['node-scheduling', '节点与资源池选择、调度', 'runtime', '../md/node-resource-pool-scheduling.md', 'docs/md/node-resource-pool-scheduling.md', '从 Nomad node pool 到 cluster 边界与 Best-of-K placement 的两层调度。', ['Node', 'Scheduling', 'Best-of-K'], { sidebar: true, phase: 'runtime', order: 6.6, displayOrder: '6B', shortTitle: '节点调度与资源池', parentId: 'orchestrator' }],
     ['volumes', 'Volumes 持久化卷', 'runtime', '../md/volumes.md', 'docs/md/volumes.md', 'NFS 后端、缓存、调度门控和文件操作。', ['Volume', 'NFS']],
     ['snapshots', 'Snapshots 快照系统', 'runtime', '../md/snapshots.md', 'docs/md/snapshots.md', 'pause/resume 产物、分发和缓存 TTL。', ['Snapshot', 'Storage']],
     ['envd-deep', 'Envd 深度剖析', 'runtime', '../md/envd-module.md', 'docs/md/envd-module.md', '进程、文件、cgroup、MMDS 与端口转发。', ['Envd', 'Process']],
@@ -228,7 +230,7 @@ window.LEARNING_CATALOG = (() => {
     ['team-metrics', 'Team Metrics 与计量', 'observability', '../md/team-metrics-module.md', 'docs/md/team-metrics-module.md', '团队用量、OTLP temporality 与 ClickHouse 查询。', ['Metrics', 'Billing']],
     ['clickhouse-deep', 'ClickHouse 包详解', 'observability', '../clickhouse-package.md', 'docs/clickhouse-package.md', '查询接口、事件投递和批处理实现。', ['ClickHouse', 'Events']],
     ['docker-proxy-deep', 'Docker Reverse Proxy 详解', 'operations', '../docker-reverse-proxy.md', 'docs/docker-reverse-proxy.md', 'Registry 协议、token 验证与 Artifact Registry。', ['Registry', 'Proxy']]
-  ].map(([id, title, topic, path, sourcePath, summary, tags], index) => ({
+  ].map(([id, title, topic, path, sourcePath, summary, tags, navigation = {}], index) => ({
     id,
     order: index + 1,
     title,
@@ -239,7 +241,8 @@ window.LEARNING_CATALOG = (() => {
     summary,
     tags,
     duration: 12,
-    kind: 'deep'
+    kind: 'deep',
+    ...navigation
   }));
 
   const phases = [
@@ -272,13 +275,13 @@ window.LEARNING_CATALOG = (() => {
       id: 'sandbox-life',
       label: '沙箱生命周期',
       description: '沿创建、运行、暂停、恢复与回收读源码。',
-      docs: ['api', 'sandbox-api', 'sandbox-lifecycle', 'orchestrator', 'orchestrator-deep', 'snapshots', 'envd']
+      docs: ['api', 'sandbox-api', 'node-scheduling', 'sandbox-lifecycle', 'orchestrator', 'orchestrator-deep', 'snapshots', 'envd']
     },
     {
       id: 'orchestrator-source',
       label: 'Orchestrator 源码深读',
       description: '从跨节点选址进入宿主运行时，再追踪 VM、快照与 guest。',
-      docs: ['orchestrator', 'node', 'orchestrator-deep', 'sandbox-lifecycle', 'snapshots', 'envd-deep']
+      docs: ['orchestrator', 'node', 'node-scheduling', 'orchestrator-deep', 'sandbox-lifecycle', 'snapshots', 'envd-deep']
     },
     {
       id: 'template-path',

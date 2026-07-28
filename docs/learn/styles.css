@@ -374,6 +374,74 @@ a:hover {
   color: var(--ink);
 }
 
+.course-group-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 30px;
+  align-items: stretch;
+}
+
+.course-group-row > .course-link {
+  min-width: 0;
+}
+
+.course-group-toggle {
+  display: grid;
+  min-width: 0;
+  min-height: 42px;
+  place-items: center;
+  padding: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--ink-faint);
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.course-group-toggle:hover {
+  background: var(--surface-quiet);
+  color: var(--ink);
+}
+
+.course-group-toggle svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 1.8;
+  transition: transform 160ms ease;
+}
+
+.course-group.is-expanded .course-group-toggle svg {
+  transform: rotate(90deg);
+}
+
+.course-group.has-active-child .course-group-toggle {
+  color: var(--accent);
+}
+
+.course-children {
+  margin: 2px 0 3px 18px;
+  padding-left: 7px;
+  border-left: 1px solid var(--line);
+}
+
+.course-children .course-link {
+  min-height: 38px;
+  padding-left: 6px;
+}
+
+.course-children .course-link.is-chapter {
+  border-top: 0;
+  border-bottom: 0;
+  background: transparent;
+}
+
+.course-children .course-link.is-chapter:hover {
+  background: var(--surface-quiet);
+}
+
+.course-children .course-link.is-chapter.is-active {
+  background: var(--accent-soft);
+}
+
 .course-link.is-active {
   border-left-color: var(--accent);
   background: var(--accent-soft);

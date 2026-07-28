@@ -55,6 +55,7 @@
     currentDoc: null,
     currentView: 'home',
     activeFlow: catalog.flows[0]?.id,
+    expandedNavGroups: new Set(),
     libraryTopic: 'all',
     focusRouteContent: false,
     hasRenderedRoute: false,
@@ -124,6 +125,13 @@
         navigateToDocument(docTarget.dataset.docId, docTarget.dataset.sectionId || '', { focusContent: true });
         closeSidebar({ restoreFocus: true });
         if (elements.searchDialog.open) elements.searchDialog.close();
+        return;
+      }
+
+      const navGroupToggle = event.target.closest('[data-nav-group-toggle]');
+      if (navGroupToggle) {
+        event.preventDefault();
+        toggleNavigationGroup(navGroupToggle.dataset.navGroupToggle);
         return;
       }
 
@@ -290,17 +298,14 @@
 
   function renderNavigation() {
     elements.nav.innerHTML = catalog.phases.map(phase => {
-      const docs = catalog.core.filter(doc => doc.phase === phase.id);
+      const docs = catalog.all
+        .filter(doc => doc.phase === phase.id && (doc.kind === 'core' || doc.sidebar))
+        .sort((left, right) => left.order - right.order);
+      const topLevelDocs = docs.filter(doc => !doc.parentId);
       return `
         <section class="nav-phase">
           <span class="nav-phase-label">${escapeHtml(phase.label)}</span>
-          ${docs.map(doc => `
-            <button class="course-link${completed.has(doc.id) ? ' is-complete' : ''}${doc.format === 'chapter' ? ' is-chapter' : ''}" type="button" data-doc-id="${escapeAttribute(doc.id)}" aria-label="打开 ${escapeAttribute(doc.title)}">
-              <span class="course-index">${escapeHtml(doc.displayOrder || String(doc.order).padStart(2, '0'))}</span>
-              <span class="course-title">${escapeHtml(doc.shortTitle)}</span>
-              <span class="course-status" aria-hidden="true"><i data-lucide="check"></i></span>
-            </button>
-          `).join('')}
+          ${topLevelDocs.map(doc => renderNavigationItem(doc, docs.filter(child => child.parentId === doc.id))).join('')}
         </section>
       `;
     }).join('');
@@ -308,10 +313,71 @@
     refreshIcons(elements.nav);
   }
 
+  function renderNavigationItem(doc, children) {
+    if (!children.length) return renderCourseLink(doc);
+    const expanded = state.expandedNavGroups.has(doc.id);
+    const childrenId = `course-children-${doc.id}`;
+    const action = expanded ? '收起' : '展开';
+    return `
+      <div class="course-group${expanded ? ' is-expanded' : ''}" data-course-group="${escapeAttribute(doc.id)}">
+        <div class="course-group-row">
+          ${renderCourseLink(doc)}
+          <button class="course-group-toggle" type="button" data-nav-group-toggle="${escapeAttribute(doc.id)}" aria-expanded="${expanded}" aria-controls="${escapeAttribute(childrenId)}" aria-label="${action} ${escapeAttribute(doc.shortTitle)} 子目录" title="${action}子目录">
+            <i data-lucide="chevron-right"></i>
+          </button>
+        </div>
+        <div class="course-children" id="${escapeAttribute(childrenId)}"${expanded ? '' : ' hidden'}>
+          ${children.map(child => renderCourseLink(child, 'is-child')).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderCourseLink(doc, extraClass = '') {
+    return `
+      <button class="course-link${completed.has(doc.id) ? ' is-complete' : ''}${doc.format === 'chapter' ? ' is-chapter' : ''}${extraClass ? ` ${extraClass}` : ''}" type="button" data-doc-id="${escapeAttribute(doc.id)}" aria-label="打开 ${escapeAttribute(doc.title)}">
+        <span class="course-index">${escapeHtml(doc.displayOrder || String(doc.order).padStart(2, '0'))}</span>
+        <span class="course-title">${escapeHtml(doc.shortTitle)}</span>
+        <span class="course-status" aria-hidden="true"><i data-lucide="check"></i></span>
+      </button>
+    `;
+  }
+
+  function toggleNavigationGroup(parentId) {
+    setNavigationGroupExpanded(parentId, !state.expandedNavGroups.has(parentId));
+  }
+
+  function setNavigationGroupExpanded(parentId, expanded) {
+    if (expanded) state.expandedNavGroups.add(parentId);
+    else state.expandedNavGroups.delete(parentId);
+
+    const group = [...elements.nav.querySelectorAll('[data-course-group]')]
+      .find(item => item.dataset.courseGroup === parentId);
+    if (!group) return;
+
+    const toggle = group.querySelector('[data-nav-group-toggle]');
+    const children = group.querySelector('.course-children');
+    const parent = docById.get(parentId);
+    const action = expanded ? '收起' : '展开';
+    group.classList.toggle('is-expanded', expanded);
+    if (children) children.hidden = !expanded;
+    if (toggle) {
+      toggle.setAttribute('aria-expanded', String(expanded));
+      toggle.setAttribute('aria-label', `${action} ${parent?.shortTitle || '课程'} 子目录`);
+      toggle.title = `${action}子目录`;
+    }
+  }
+
   function updateActiveNavigation() {
     elements.nav.querySelectorAll('.course-link').forEach(button => {
       button.classList.toggle('is-active', state.currentView === 'doc' && button.dataset.docId === state.currentDoc?.id);
       button.classList.toggle('is-complete', completed.has(button.dataset.docId));
+    });
+    if (state.currentView === 'doc' && state.currentDoc?.parentId) {
+      setNavigationGroupExpanded(state.currentDoc.parentId, true);
+    }
+    elements.nav.querySelectorAll('[data-course-group]').forEach(group => {
+      group.classList.toggle('has-active-child', Boolean(group.querySelector('.course-children .course-link.is-active')));
     });
     elements.libraryButton.classList.toggle('is-active', state.currentView === 'library');
   }
