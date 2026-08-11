@@ -918,7 +918,7 @@ factories.NewRedisClient(ctx, factories.RedisConfig{...})
 
 ## 八、REST 接口完整索引
 
-### 8.1 全部 endpoint(36 个 path 模板)
+### 8.1 全部 endpoint(45 个 path 模板)
 
 源自 [`spec/openapi.yml`](../../spec/openapi.yml) 行 1996–3782。每个 path 上的 method 与对应 handler 方法在 [`api.gen.go:11391+`](../../packages/api/internal/api/api.gen.go) 的 `ServerInterface` interface 注释里(`(GET /path)` / `(POST /path)`)。
 
@@ -941,6 +941,7 @@ GET    /sandboxes/{sandboxID}/metrics
 
 POST   /sandboxes/{sandboxID}/pause
 POST   /sandboxes/{sandboxID}/resume
+POST   /sandboxes/{sandboxID}/fork             # checkpoint 原 sandbox 后创建 1..100 个新 ID
 POST   /sandboxes/{sandboxID}/connect
 POST   /sandboxes/{sandboxID}/timeout
 PUT    /sandboxes/{sandboxID}/network
@@ -1015,6 +1016,7 @@ GET    /volumes/{volumeID}
 | `sandbox_connect.go` | `PostSandboxesSandboxIDConnect` | `POST /sandboxes/{sandboxID}/connect` |
 | `sandbox_pause.go` | `PostSandboxesSandboxIDPause`、`pauseHandleNotRunningSandbox` | `POST /sandboxes/{sandboxID}/pause` |
 | `sandbox_resume.go` | `PostSandboxesSandboxIDResume` | `POST /sandboxes/{sandboxID}/resume` |
+| `sandbox_fork.go` | `PostSandboxesSandboxIDFork`、`forkHandleNotRunningSandbox` | `POST /sandboxes/{sandboxID}/fork` |
 | `sandbox_refresh.go` | `PostSandboxesSandboxIDRefreshes` | `POST /sandboxes/{sandboxID}/refreshes` |
 | `sandbox_timeout.go` | `PostSandboxesSandboxIDTimeout` | `POST /sandboxes/{sandboxID}/timeout` |
 | `sandbox_network_update.go` | `PutSandboxesSandboxIDNetwork` | `PUT /sandboxes/{sandboxID}/network` |
@@ -1182,6 +1184,7 @@ type Orchestrator struct {
 | `GetSandboxes` | `list_instances.go` | `GetSandboxes` |
 | `KeepAliveFor` | `keep_alive.go` | `PostSandboxesSandboxIDRefreshes` / `.../Timeout` |
 | `HandleExistingSandboxAutoResume` | `autoresume.go` | gRPC `ResumeSandbox` |
+| `CheckpointSandbox` | `checkpoint_instance.go` | `PostSandboxesSandboxIDFork` |
 
 **Sandbox 启动路径**(`create_instance.go`):
 1. handler `PostSandboxes` → `startSandbox` → `startSandboxInternal` → `a.orchestrator.CreateSandbox(ctx, sandboxID, executionID, team, getSandboxData, startTime, endTime, timeout, isResume, creationMeta)`。
@@ -1382,6 +1385,7 @@ LD context kinds(在 [`flags.go`](../../packages/shared/pkg/featureflags/flags.g
 | `resume-origin-node-remap` | false | resume 时重映射到 origin node |
 | `expiration-index-healer` | **true** | 过期索引自愈 |
 | `disable-e2b-access-token-provisioning` | false | 启用后 `POST /access-tokens` 返 410 Gone |
+| `disable-e2b-access-token-auth` | false | 按 user 灰度拒绝 `sk_e2b_` access token;API 与 docker-reverse-proxy 共用 |
 | `clickhouse-write-fanout` | false | CH 写扇出 |
 | `header-v5-write` / `v4-header-for-uncompressed` | false / false | header 版本 |
 | `freeze-user-cgroup` | false | 冻结用户 cgroup |
@@ -1519,6 +1523,7 @@ LD context kinds(在 [`flags.go`](../../packages/shared/pkg/featureflags/flags.g
 | [`packages/api/internal/orchestrator/create_instance.go`](../../packages/api/internal/orchestrator/create_instance.go) | §9.2 |
 | [`packages/api/internal/orchestrator/delete_instance.go`](../../packages/api/internal/orchestrator/delete_instance.go) | §9.2 |
 | [`packages/api/internal/orchestrator/pause_instance.go`](../../packages/api/internal/orchestrator/pause_instance.go) | §9.2 |
+| [`packages/api/internal/orchestrator/checkpoint_instance.go`](../../packages/api/internal/orchestrator/checkpoint_instance.go) | §9.2 |
 | [`packages/api/internal/orchestrator/keep_alive.go`](../../packages/api/internal/orchestrator/keep_alive.go) | §9.2 |
 | [`packages/api/internal/orchestrator/autoresume.go`](../../packages/api/internal/orchestrator/autoresume.go) | §9.2 |
 | [`packages/api/internal/orchestrator/list_instances.go`](../../packages/api/internal/orchestrator/list_instances.go) | §9.2 |
@@ -2009,4 +2014,4 @@ wg.Go(func() { pprofServer.ListenAndServe() })
 
 ---
 
-> 文档版本:2026-07-11。基于 `learn/brain` 分支代码,涵盖 `packages/api/` 全部子系统。后续 API 演进(`POST /v4/templates` 等)请同步更新 §8、§13.2。
+> 文档版本:已同步至 2026.29,涵盖 `packages/api/` 全部子系统。后续 API 演进(`POST /v4/templates` 等)请同步更新 §8、§13.2。

@@ -626,6 +626,10 @@ template := &templatemanagergrpc.TemplateConfig{
 }
 ```
 
+`DiskSizeMB` 在 2026.29 中表示 **user steps 完成后、finalize 开始前希望 rootfs 保留的空闲 MiB**,不是最终 ext4 总大小。`build-ensure-free-disk-space` 开启时,orchestrator 在 `base → user → steps` 之后插入 `resize-disk`,通过 NBD 离线检查并按需扩容 ext4,然后才执行 `finalize → optimize`。ext4 metadata 与 finalize 写入会继续消耗空间,所以最终空闲量可能略低于该目标。
+
+`resize-disk` 只导出变化 block;已经满足目标时也生成 empty-diff,使 phase 仍可按 `source hash + resize-disk + DiskSizeMB` 缓存。该 phase 是 filesystem-only layer,finalize 会从扩容后的 rootfs cold boot。
+
 `HugePages` 来自 `fcversion.New(firecrackerVersion).HasHugePages()`(`:86-89`):基于 fc 版本判断是否支持 hugepages。这是 fc 版本相关特性的开关,比如较新的 fc 版本需要 hugepages 才能正确分配内存。
 
 ### 9.3 `setTemplateSource`:FromImage vs FromTemplate
@@ -1256,6 +1260,7 @@ build (status=waiting, CreatedAt = T0)
 | `BuildFirecrackerVersion` | string | `DEFAULT_FIRECRACKER_VERSION` env | `:482` | RegisterBuild 时 seed 到 env_builds.firecracker_version |
 | `BuildKernelVersion` | string | `DEFAULT_KERNEL_VERSION` env | `:483` | RegisterBuild 时 seed 到 env_builds.kernel_version |
 | `BuildNodeInfo` | JSON | `ldvalue.Null()` | `:486` | 指定偏好的 builder 节点机器配置(CPU arch/family 等)|
+| `BuildEnsureFreeDiskSpace`(`build-ensure-free-disk-space`) | bool | `false` | `flags.go` | 在 user steps 后、finalize 前启用离线 rootfs 空闲空间检查与扩容 |
 
 > 注:`BuildFirecrackerVersion`/`BuildKernelVersion` 标记为 `Deprecated`,见 `register_build.go:42-47` 的 TODO(ENG-3852)。orchestrator 自己解析版本,并通过 `TemplateBuildMetadata` 回报实际使用的版本。
 
@@ -1312,6 +1317,8 @@ type TeamLimits struct {
 | `packages/db/queries/builds/active_template_builds.sql` | `CreateActiveTemplateBuild`, `DeleteActiveTemplateBuild` | — |
 | `packages/db/queries/builds/finish_template_build.sql` | `FinishTemplateBuild`(含 `active_template_builds` 删除)| — |
 | `packages/shared/pkg/grpc/template-manager/` | gRPC stub:`TemplateCreate`, `TemplateBuildDelete`, `TemplateBuildStatus` | — |
+| `packages/orchestrator/pkg/template/build/phases/ensurefreedisk/` | `resize-disk` phase:NBD/ext4 空闲空间计算、扩容与 diff 导出 | — |
+| `packages/orchestrator/pkg/template/build/commands/copy_script.sh` | 目录 COPY 的 Docker merge/overwrite 和 symlink 语义 | — |
 | `spec/openapi.yml` | 端点定义 | `/v3/templates:2736`, `/v2/templates/{tid}/builds/{bid}:3071`, `/templates/{tid}/builds/{bid}/status:3133`, `/templates/{tid}/builds/{bid}/logs:3183`, `/admin/teams/{tid}/builds/cancel:3476` |
 
 ---

@@ -602,12 +602,14 @@ orchestrator 进程启动时调用 `Detect()`,用 gopsutil 读 `/proc/cpuinfo` �
 | [`cfg/model.go`](../../packages/orchestrator/pkg/cfg/model.go) | orchestrator 的所有环境变量 |
 | [`cfg/service.go`](../../packages/orchestrator/pkg/cfg/service.go) | `ServiceType` 枚举 + `GetServices()` 解析 `ORCHESTRATOR_SERVICES` |
 
-#### 6.2.9 Nomad Autoscaler 插件
+#### 6.2.9 Nomad Autoscaler 插件(APM + Target)
 
 | 文件 | 职责 |
 |------|------|
 | [`packages/nomad-nodepool-apm/main.go`](../../packages/nomad-nodepool-apm/main.go) | 自定义 Nomad autoscaler APM 插件,叫 `nomad-nodepool-apm` |
 | [`packages/nomad-nodepool-apm/plugin/plugin.go`](../../packages/nomad-nodepool-apm/plugin/plugin.go) | 插件实现。被 template-manager job 的 scaling policy 引用,让 autoscaler 能根据 node pool 的节点数自动扩缩 template-manager allocation 数量 |
+| [`packages/nomad-nodepool-apm/cmd/nomad-deployment-aware-target/main.go`](../../packages/nomad-nodepool-apm/cmd/nomad-deployment-aware-target/main.go) | 第二个外部二进制 `nomad-deployment-aware-target`,注册 Target plugin |
+| [`packages/nomad-nodepool-apm/target/plugin.go`](../../packages/nomad-nodepool-apm/target/plugin.go) | 在 count 需要变化时处理冲突 deployment,再用最新 Nomad state/CAS 执行 scale |
 
 ---
 
@@ -1180,9 +1182,18 @@ scaling {
 
 **策略**:`pass-through` — 直接把 node count 作为目标 allocation count,让 template-manager allocation 数 = node pool 节点数。
 
-**自定义 APM 插件**:[`packages/nomad-nodepool-apm/`](../../packages/nomad-nodepool-apm/)
+**自定义 plugin package**:[`packages/nomad-nodepool-apm/`](../../packages/nomad-nodepool-apm/)
 
 部署:[`iac/modules/job-template-manager-autoscaler/`](../../iac/modules/job-template-manager-autoscaler/)(部署 nomad-autoscaler job + 插件)
+
+同一 package 现在构建两个外部 plugin。`nomad-nodepool-apm` 仍是 metric source,只统计 `ready + eligible` 的 node;`nomad-deployment-aware-target` 是写侧 Target,用于 Nomad service job 在 rollout 与 autoscaling 冲突时协调扩缩容:
+
+1. durable task-group count 已等于目标时直接 no-op,不会触碰仍在收敛的 deployment。
+2. count 必须变化且存在 active deployment 时,先将冲突 deployment 标为 `failed`,再从 fresh state 重试 scale。
+3. scaled group 必须设置 `auto_revert=false`;否则 fail deployment 会回滚旧 job version,plugin 会拒绝执行。
+4. 以 namespace/job 串行,最多 5 次 fresh-state/CAS retry;dry-run 不写 deployment 或 count。
+
+当前开源 IaC 的 template-manager scaling policy 仍只显式引用 APM;仓库 README 说明 deployment-aware Target 用于 `orchestrator-ee`。不要据此假设本仓库所有 autoscaler policy 已切换到该 Target。
 
 ### 11.3 ListCachedBuilds 与调度
 
@@ -1531,6 +1542,9 @@ message ServiceInfoResponse {
 |------|------|
 | [`packages/nomad-nodepool-apm/main.go`](../../packages/nomad-nodepool-apm/main.go) | 自定义 autoscaler APM |
 | [`packages/nomad-nodepool-apm/plugin/plugin.go`](../../packages/nomad-nodepool-apm/plugin/plugin.go) | 插件实现 |
+| [`packages/nomad-nodepool-apm/cmd/nomad-deployment-aware-target/main.go`](../../packages/nomad-nodepool-apm/cmd/nomad-deployment-aware-target/main.go) | deployment-aware Target plugin 入口 |
+| [`packages/nomad-nodepool-apm/target/plugin.go`](../../packages/nomad-nodepool-apm/target/plugin.go) | deployment 处理、per-job 串行和 bounded CAS retry |
+| [`packages/nomad-nodepool-apm/README.md`](../../packages/nomad-nodepool-apm/README.md) | 两个 plugin 的配置与适用 job |
 
 ### 17.9 IaC
 
@@ -1733,6 +1747,9 @@ drain 不是立即下线,而是:
 2. 检查 scaling policy 是否注册:`nomad scaling-policy list`
 3. 检查 `nomad-nodepool-apm` 插件是否加载
 4. 查看 autoscaler 日志:`nomad alloc-logs <autoscaler_alloc_id>`
+5. 若使用 `nomad-deployment-aware-target`,确认 scaled group 的 `auto_revert=false`;开启时 plugin 会明确拒绝 scale
+6. 检查是否有反复失败的 active deployment 或 `scale reconciliation exhausted` 日志;plugin 只做 5 次 fresh-state/CAS retry
+7. dry-run 不会失败 deployment 或写入 count,不要把无状态变化误判为 plugin 失效
 
 ### 19.8 Hugepages 不足
 
@@ -1887,9 +1904,10 @@ nomad operator api '/v1/jobs/template-manager/scale'
 | Evictor | 驱逐超时 sandbox 的组件 |
 | Edge API | 远程 cluster 的代理入口 |
 | Nomad APM | Autoscaler Plugin 的 metric source |
+| Nomad Target | Autoscaler 的写侧插件;`nomad-deployment-aware-target` 在必要时先失败冲突 rollout,再写 task-group count |
 
 ---
 
-**文档版本**:基于代码库 HEAD(2026-07-10)
+**文档版本**:已同步至 2026.29
 
 **维护**:如有疑问或发现文档过期,请对照 [`packages/api/internal/clusters/`](../../packages/api/internal/clusters/) 和 [`packages/api/internal/orchestrator/`](../../packages/api/internal/orchestrator/) 的最新代码核对。

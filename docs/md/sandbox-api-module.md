@@ -30,7 +30,7 @@
 
 Sandbox 是 E2B 平台的核心资源对象:一个由 Firecracker microVM 提供的隔离执行环境。从 REST 视角看,它的生命周期由 `packages/api/internal/handlers/sandbox_*.go` 中的一系列 `APIStore` 方法驱动:
 
-- **创建/恢复**:`POST /sandboxes`、`POST /sandboxes/{id}/resume`、`POST /sandboxes/{id}/connect`
+- **创建/恢复/派生**:`POST /sandboxes`、`POST /sandboxes/{id}/resume`、`POST /sandboxes/{id}/connect`、`POST /sandboxes/{id}/fork`
 - **状态查询**:`GET /sandboxes`、`GET /v2/sandboxes`、`GET /sandboxes/{id}`
 - **生命周期管理**:`POST /sandboxes/{id}/pause`、`POST /sandboxes/{id}/refreshes`、`POST /sandboxes/{id}/timeout`、`DELETE /sandboxes/{id}`
 - **网络更新**:`PUT /sandboxes/{id}/network`
@@ -87,15 +87,16 @@ E2B 区分 **内部状态**(`sandbox.State`,orchestrator 视角)与 **API 状态
 - **校验**:`utils.ShortID`(`packages/api/internal/utils/split.go:10-26`)允许两种输入——纯 sandboxID,或 `sandboxID-executionID` 复合形式(以 `-` 分隔,最多两段)。它会用 `id.ValidateSandboxID`(regex `^[a-z0-9]+$`)校验 sandboxID 部分。
 - **入参规整**:绝大多数端点先调 `utils.ShortID(sandboxID)` 抽取真正的 sandboxID,失败返回 `400 Invalid sandbox ID`。
 
-### 2.3 三种"启动"语义
+### 2.3 四种"启动"语义
 
-API 层有三个看起来相似的入口,但语义截然不同:
+API 层有四个看起来相似的入口,但语义截然不同:
 
 | 入口 | 何时调用 | 是否新建 sandboxID | 起点 |
 |---|---|---|---|
 | `POST /sandboxes` | 全新创建 | **是**(`i` + 随机串) | 模板 build(rootfs + kernel) |
 | `POST /sandboxes/{id}/resume` | 用户主动恢复已暂停的 sandbox | 否(沿用旧 ID) | 快照(memory 或 filesystem) |
 | `POST /sandboxes/{id}/connect` | "用法像 KeepAlive,实在不行就帮我恢复" | 否 | 优先 Running;否则走 resume 流程 |
+| `POST /sandboxes/{id}/fork` | 从一个运行中的 sandbox 派生一个或多个副本 | **是**(每个 fork 都分配新 ID) | 对原 sandbox 做一次 full-memory checkpoint,所有副本共享该不可变快照 |
 
 `connect` 与 `resume` 的关键差别在于 `connect` 默认 **不强制恢复**:它会先尝试 `KeepAliveFor`(只延长生命),只有当 sandbox 真的不存在时才退化为 resume。`resume` 则是用户明确表达"我要它跑起来"。
 
@@ -223,8 +224,9 @@ API 层有三个看起来相似的入口,但语义截然不同:
 | 13 | GET | `/v2/sandboxes/{sandboxID}/logs` | `GetV2SandboxesSandboxIDLogs` | `sandbox_logs.go:51` | 日志(v2,游标 + 方向) |
 | 14 | GET | `/sandboxes/{sandboxID}/metrics` | `GetSandboxesSandboxIDMetrics` | `sandbox_metrics.go:16` | 单 sandbox 指标 |
 | 15 | GET | `/sandboxes/metrics` | `GetSandboxesMetrics` | `sandboxes_list_metrics.go:68` | 批量指标(最多 100) |
-| 16 | POST | `/sandboxes/{sandboxID}/snapshots` | `PostSandboxesSandboxIDSnapshots` | `snapshot_template_create.go:25` | 从 sandbox 派生新模板 |
-| 17 | POST | `/admin/teams/{teamID}/sandboxes/kill` | `PostAdminTeamsTeamIDSandboxesKill` | `admin_kill_team_sandboxes.go:17` | Admin:批量 kill |
+| 16 | POST | `/sandboxes/{sandboxID}/fork` | `PostSandboxesSandboxIDFork` | `sandbox_fork.go` | checkpoint 一次并派生 1..100 个 sandbox |
+| 17 | POST | `/sandboxes/{sandboxID}/snapshots` | `PostSandboxesSandboxIDSnapshots` | `snapshot_template_create.go:25` | 从 sandbox 派生新模板 |
+| 18 | POST | `/admin/teams/{teamID}/sandboxes/kill` | `PostAdminTeamsTeamIDSandboxesKill` | `admin_kill_team_sandboxes.go:17` | Admin:批量 kill |
 
 > 本文按功能聚类讲解(创建 → 生命周期 → 查询 → 网络 → admin/snapshot),而不是逐条流水账。
 
@@ -596,6 +598,21 @@ invalid mounts:
 
 此端点是「从运行中 sandbox 派生新模板」的入口,通常配合 CI/CD 或调试工作流使用。它返回的 `SnapshotID` 可以直接用作后续 `POST /sandboxes` 的 `templateID`。
 
+### 9.3 Fork 运行中的 Sandbox:`POST /sandboxes/{sandboxID}/fork`(`sandbox_fork.go`)
+
+请求体可省略。`timeout` 是每个新 sandbox 的 TTL,默认 15 秒并受团队 `MaxLengthHours` 限制;`count` 默认 1,必须在 1..100 之间,且必须严格小于团队 sandbox concurrency,因为原 sandbox 会继续占用一个并发 slot。
+
+处理流程:
+
+1. 规整 sandboxID 并校验可选请求体。
+2. 只从当前团队查找运行中的原 sandbox;不存在或跨团队返回 404,已 paused 返回 409 并要求先 resume。
+3. 校验原 sandbox 的 envd 版本满足 snapshot 要求。
+4. `CheckpointSandbox` 在原节点上短暂暂停 VM,创建一次 full-memory snapshot,再以相同 sandboxID 和 executionID 恢复。原 sandbox 的 expiration 和并发 slot 都不变。
+5. 用这份不可变 snapshot 并行启动 `count` 个新 ID。此步骤只刷新原 sandbox 的 snapshot 行,**不会创建 snapshot template**。
+6. 返回 201 和长度恒等于 `count` 的 `[]SandboxForkResult`。每项恰好包含 `sandbox` 或 `error`,所以不同 fork 可以独立成功或失败。
+
+响应语义要分两层理解:非 201 表示在创建任何 fork 之前失败;201 只表示 checkpoint 成功且所有 fork 都已尝试,客户端仍需逐项检查结果。checkpoint 的非法状态返回 409,节点 pause 队列繁忙返回 503,其他内部失败返回 500。
+
 ---
 
 ## 十、关键流程时序图
@@ -680,6 +697,23 @@ AdminClient   APIStore                      orchestrator
   │<────────────│                              │
 ```
 
+### 10.5 Fork:一次 Checkpoint,并行启动多个副本
+
+```
+Client             APIStore                  原 Orchestrator       新 Sandbox
+  │                   │                            │                  │
+  │ POST /fork        │                            │                  │
+  │ {count: N}        │                            │                  │
+  │──────────────────>│ GetSandbox + envd 校验    │                  │
+  │                   │ CheckpointSandbox────────>│ pause/snapshot/  │
+  │                   │                            │ same-ID resume   │
+  │                   │<──────── immutable snapshot                  │
+  │                   │ startSandbox(new ID) ───────────────────────>│ × N 并行
+  │                   │<──────── 每项独立成功或失败 ─────────────────│
+  │ 201 [result × N]  │                            │                  │
+  │<──────────────────│                            │                  │
+```
+
 ---
 
 ## 十一、配置与 Feature Flag
@@ -708,6 +742,7 @@ AdminClient   APIStore                      orchestrator
 | `maxSandboxMetricsCount` | `sandboxes_list_metrics.go:21` | `100` |
 | `minEnvdVersionForNetworkRules` | `sandbox_create.go:399` | `"0.5.13"` |
 | `minEnvdVersionForVolumes` | `sandbox_create.go:401` | `"0.5.14"` |
+| `maxForkCount` | `sandbox_fork.go` | `100` |
 
 ### 11.3 Feature Flag
 
@@ -730,6 +765,7 @@ AdminClient   APIStore                      orchestrator
 | `packages/api/internal/handlers/sandbox_kill.go` | `DeleteSandboxesSandboxID`、`deleteSnapshot` | Kill |
 | `packages/api/internal/handlers/sandbox_pause.go` | `PostSandboxesSandboxIDPause`、`pauseHandleNotRunningSandbox` | Pause + 审计日志 |
 | `packages/api/internal/handlers/sandbox_resume.go` | `PostSandboxesSandboxIDResume`、`buildResumeSandboxData`、`convertDatabaseMountsToOrchestratorMounts` | Resume |
+| `packages/api/internal/handlers/sandbox_fork.go` | `PostSandboxesSandboxIDFork`、`forkHandleNotRunningSandbox` | Fork 请求校验、checkpoint 与逐项结果聚合 |
 | `packages/api/internal/handlers/sandbox_connect.go` | `PostSandboxesSandboxIDConnect` | Connect 双路径 |
 | `packages/api/internal/handlers/sandbox_refresh.go` | `PostSandboxesSandboxIDRefreshes` | Refresh |
 | `packages/api/internal/handlers/sandbox_timeout.go` | `PostSandboxesSandboxIDTimeout` | Timeout 修改 |
@@ -740,6 +776,7 @@ AdminClient   APIStore                      orchestrator
 | `packages/api/internal/handlers/sandboxes_list_metrics.go` | `GetSandboxesMetrics`、`getSandboxesMetrics` | 批量指标 |
 | `packages/api/internal/handlers/snapshot_template_create.go` | `PostSandboxesSandboxIDSnapshots` | 从 sandbox 派生模板 |
 | `packages/api/internal/handlers/admin_kill_team_sandboxes.go` | `PostAdminTeamsTeamIDSandboxesKill` | Admin 批量 kill |
+| `packages/api/internal/orchestrator/checkpoint_instance.go` | `CheckpointSandbox` | 原地 checkpoint、snapshot 行更新与原 sandbox 恢复 |
 | `packages/api/internal/sandbox/sandboxtypes/states.go` | `SandboxTimeoutDefault`、`AutoPauseDefault`、状态枚举 | 常量 |
 | `packages/api/internal/utils/messages.go` | `SandboxNotFoundMsg`、`SandboxChangingStateMsg` | 错误消息模板 |
 | `spec/openapi.yml` | 路径 `/sandboxes*`、`/v2/sandboxes*`、`/admin/teams/{teamID}/sandboxes/kill` | OpenAPI 规范 |
@@ -847,6 +884,10 @@ Sandbox 处于 `StateSnapshotting`(正在生成快照模板)。这种状态下�
 
 **结论**:服务端不主动补全前缀,客户端必须使用完整形式。
 
+### Q13:`POST /sandboxes/{id}/fork` 返回 201,为什么仍有失败项?
+
+Fork 在 checkpoint 成功后并行启动多个 sandbox,每个启动可能因资源或调度问题独立失败。201 表示所有 fork 都已尝试,不是所有 fork 都成功;逐项读取 `sandbox` 或 `error`。若 checkpoint 前就失败,接口会返回非 201,此时一个 fork 也没有尝试。
+
 ---
 
 ## 附录 A:端点速查表
@@ -860,6 +901,7 @@ Sandbox 处于 `StateSnapshotting`(正在生成快照模板)。这种状态下�
 | DELETE | `/sandboxes/{sandboxID}` | — | 204 | — |
 | POST | `/sandboxes/{sandboxID}/pause` | optional(`memory`) | 204 | — |
 | POST | `/sandboxes/{sandboxID}/resume` | `PostSandboxesSandboxIDResumeJSONRequestBody` | 201 `Sandbox` | `timeout`、`autoPause` override |
+| POST | `/sandboxes/{sandboxID}/fork` | optional(`timeout`、`count`) | 201 `[]SandboxForkResult` | `count` 1..100,每项独立成功/失败 |
 | POST | `/sandboxes/{sandboxID}/connect` | `PostSandboxesSandboxIDConnectJSONRequestBody` | 200/201 `Sandbox` | `timeout` |
 | POST | `/sandboxes/{sandboxID}/refreshes` | — | 204 | — |
 | POST | `/sandboxes/{sandboxID}/timeout` | `PostSandboxesSandboxIDTimeoutJSONRequestBody` | 204 | `timeout`(秒) |
@@ -883,6 +925,7 @@ Sandbox 处于 `StateSnapshotting`(正在生成快照模板)。这种状态下�
 | 400 | 网络规则违反 | `When specifying allowed domains in allow out, you must include 'ALL_TRAFFIC' in deny out to block all other traffic.`、`Rule domain "..." is not a valid domain name` |
 | 400 | envd 版本过低 | `... template must be rebuilt. Template envd version is X, must be at least Y` |
 | 400 | timeout 超限 | `Timeout cannot be greater than N hours` |
+| 400 | fork 数量非法或超过并发约束 | `Count must be at least 1`、`Count cannot be greater than 100`、`Count must be lower than ...` |
 | 400 | 无效 sandboxID | `Invalid sandbox ID` |
 | 400 | Volume 错误 | `volume mounts are not enabled`、`volume 'foo' not found`、`path must be absolute` |
 | 401 | auth 缺失/失败 | (由 auth middleware 返回) |
@@ -890,6 +933,8 @@ Sandbox 处于 `StateSnapshotting`(正在生成快照模板)。这种状态下�
 | 403 | team 不允许 transform rules | `Network transform rules are not available for your team.` |
 | 404 | sandbox/快照不存在或 team 不匹配 | `The sandbox was not found. Please ensure the sandbox ID is correct.`(`SandboxNotFoundMsg`) |
 | 409 | 状态转换非法 | `Sandbox 'X' cannot be paused while in 'Y' state`(`InvalidStateTransitionError`)、`already paused`、`already running` |
+| 409 | fork 原 sandbox 已 paused 或正在转换状态 | `... is paused and cannot be forked; resume it first`、`... cannot be forked while in ... state` |
+| 503 | fork checkpoint 时节点 pause 队列已满 | `... node is busy, please retry` |
 | 500 | orchestrator 不可达 / 内部错误 | `Error pausing sandbox`、`Error when getting snapshot` |
 | 502/504 | 上游(Loki/边缘集群)超时 | (透传) |
 
@@ -903,6 +948,7 @@ Sandbox 处于 `StateSnapshotting`(正在生成快照模板)。这种状态下�
 | **Template** | sandbox 的"镜像"(rootfs + kernel + firecracker 版本),由 build 派生 |
 | **Build** | 模板的一次构建产物,带 envd 版本与各类元数据 |
 | **Snapshot** | sandbox 的某个时间点的可恢复状态(内存态或文件系统态) |
+| **Fork** | 对运行中 sandbox 做一次原地 checkpoint,再从同一不可变 snapshot 创建一个或多个新 ID |
 | **Memory snapshot** | 含内存的快照,可热恢复(restore) |
 | **Filesystem-only snapshot** | 仅文件系统的快照,只能 cold boot(reboot) |
 | **envd** | sandbox 内运行的守护进程(Connect RPC),负责进程/文件管理 |

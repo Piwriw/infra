@@ -1,8 +1,8 @@
 # E2B 数据库表字段与关联关系参考
 
-> 数据来源:`packages/db/migrations/` 下 100+ 个 goose 迁移,最新至 `20260702120000_add_events_ttl_days.sql`。
+> 数据来源:`packages/db/migrations/` 下 100+ 个 goose 迁移,已同步至 `20260707193000_user_identities_unique_user_issuer.sql`。
 > 本文档聚焦**每个表的字段作用**与**跨表关联关系**,作为开发参考。整体演进历史与触发器细节见 [`../SCHEMA.md`](../SCHEMA.md)。
-> 已逐表对照迁移文件两轮校对(2026-07-10)。
+> 已按 2026.29 迁移状态校对。
 
 ---
 
@@ -191,7 +191,7 @@ E2B 不用 PostgreSQL ENUM 类型,但下列"事实枚举"由应用层 + 触发�
 ### `user_identities`
 
 - **Schema**:`public`
-- **来源**:`20260515120000_create_user_identities_table.sql`
+- **来源**:`20260515120000_create_user_identities_table.sql`、`20260707193000_user_identities_unique_user_issuer.sql`
 - **角色**:支持同一 user 绑定多个 OIDC 身份(不同 IdP)
 
 | 字段 | 类型 | 作用 |
@@ -204,7 +204,11 @@ E2B 不用 PostgreSQL ENUM 类型,但下列"事实枚举"由应用层 + 触发�
 
 **主键**:(`oidc_iss`, `oidc_sub`)
 **外键**:`user_id → public.users(id) ON UPDATE NO ACTION ON DELETE CASCADE`
-**索引**:`user_identities_user_id_idx (user_id)`
+**索引**:
+- `user_identities_user_id_idx (user_id)`
+- `user_identities_user_id_oidc_iss_idx (user_id, oidc_iss)` UNIQUE — 每个 internal user 在同一 issuer 下最多绑定一个 identity
+
+Dashboard API 的 identity 解析集中在 `packages/dashboard-api/internal/identity/`,provisioning 集中在 `internal/provisioning/`。Issuer 从 `AUTH_PROVIDER_CONFIG` 的 JWT 配置中按 `ORY_SDK_URL` host 匹配,不再依赖独立的 `ORY_ISSUER_URL`。
 
 ---
 
@@ -247,7 +251,7 @@ E2B 不用 PostgreSQL ENUM 类型,但下列"事实枚举"由应用层 + 触发�
 ### `teams`
 
 - **Schema**:`public`
-- **来源**:`20231124185944_create_schemas_and_tables.sql`
+- **来源**:`20231124185944_create_schemas_and_tables.sql`、`20260706120000_add_teams_sso_organization_id.sql`
 - **角色**:租户主体,几乎所有业务数据的归属维度
 
 | 字段 | 类型 | 作用 |
@@ -263,6 +267,8 @@ E2B 不用 PostgreSQL ENUM 类型,但下列"事实枚举"由应用层 + 触发�
 | `cluster_id` | uuid(`20250606213446` 加,可空) | FK → `clusters(id)` 专属集群 |
 | `slug` | text NOT NULL UNIQUE(`20260121175429` 加) | URL 友好标识,由触发器自动生成 |
 | `sandbox_scheduling_labels` | text[] NOT NULL DEFAULT '{}'(`20260309120000` 加) | 调度时附加的节点标签 |
+| `sso_organization_id` | uuid NULL(`20260706120000` 加) | 外部 SSO organization 的逻辑映射 ID;不是本库 FK |
+| `sso_auto_join` | boolean NOT NULL DEFAULT false(同上) | 为 true 时,该 org 成员首次 SSO 登录自动加入此 team |
 
 > **已删除字段**:`is_default`(团队级),`20250106142106` 中 DROP(默认团队语义移到 `users_teams.is_default`)
 
@@ -271,6 +277,7 @@ E2B 不用 PostgreSQL ENUM 类型,但下列"事实枚举"由应用层 + 触发�
 - `cluster_id → clusters(id)`(可空)
 
 **唯一约束**:`teams_slug_unique (slug)`
+**索引**:`teams_sso_organization_id_idx (sso_organization_id) WHERE sso_organization_id IS NOT NULL`。它故意不唯一,同一个 SSO organization 可映射多个 teams。
 **触发器**:`team_slug_trigger`(BEFORE INSERT 自动生成 slug)
 
 **被引用(8 个表)**:`users_teams`、`team_api_keys`、`addons`、`volumes`、`envs`、`snapshots`、`env_builds`(无 FK)、`active_template_builds`
@@ -293,6 +300,8 @@ WHERE ut.user_id = $1 AND t.slug = $2;
 - 一个 user 至少有一个"默认团队"(`users_teams.is_default = true` 由 partial UNIQUE 索引强制)
 - team 删除:**不允许**——所有 FK 都是 NO ACTION/CASCADE,删除会级联砍掉所有模板/快照
 - `cluster_id` 仅 enterprise 客户设置(单租户专属集群)
+- `sso_auto_join=true` 的映射团队会在 org 成员首次 SSO 登录时自动建立 `users_teams` 关系;同一 org 可以一次加入多个 auto-join teams
+- SSO-managed user 不能手工创建 team;`sso_auto_join=false` 的映射团队仍需显式邀请
 
 ---
 
@@ -1152,7 +1161,8 @@ public.users
 
 teams
   ├─→ tiers (tier)
-  └─→ clusters (cluster_id, 可空)
+  ├─→ clusters (cluster_id, 可空)
+  └─→ external SSO organization (sso_organization_id, 逻辑关系,无 FK,可一对多映射 team)
 
 users_teams
   ├─→ public.users (user_id CASCADE, added_by SET NULL)
@@ -1222,6 +1232,13 @@ public.users
                                               └─ active_template_builds (配额)
 ```
 
+**SSO organization → 自动团队成员关系**:
+```
+external SSO organization
+  └─ teams.sso_organization_id (可映射多个 team)
+       └─ sso_auto_join=true ─→ users_teams (首次 SSO 登录时创建)
+```
+
 **模板 → 快照 → 快照模板**:
 ```
 envs (source='template')
@@ -1270,6 +1287,8 @@ WHERE id=$build_id AND team_id IS NULL
 | **唯一性 partial** | `addons_idempotency_key_uidx (idempotency_key) WHERE idempotency_key IS NOT NULL` | 幂等创建 |
 | **唯一性 partial** | `users_teams_user_id_is_default_idx (user_id) WHERE is_default = true` | 每用户仅一个默认团队 |
 | **唯一性 partial** | `clusters_auth_org_id_idx (auth_org_id) WHERE auth_org_id IS NOT NULL` | 集群 OIDC 组织 ID 唯一 |
+| **非唯一 partial** | `teams_sso_organization_id_idx (sso_organization_id) WHERE sso_organization_id IS NOT NULL` | 查找一个 SSO org 映射的全部 teams |
+| **组合唯一** | `user_identities_user_id_oidc_iss_idx (user_id, oidc_iss)` | 每个 user/issuer 仅一个 identity |
 | **partial(按来源)** | `idx_envs_team_updated_at_templates (team_id, updated_at DESC, id DESC) WHERE source = 'template'` | 仅模板来源的团队列表 |
 | **GIN(仅一处)** | `idx_snapshots_team_metadata_gin (team_id, metadata) USING GIN` | 按 metadata KV 过滤(依赖 `btree_gin` 扩展) |
 
@@ -1394,6 +1413,7 @@ WHERE team_id = $1
 | Pause/Checkpoint | 应用层 `sandboxStore.StartRemoving` 独占 transition key | 防止同一 sandbox 并发 pause/snapshot/kill |
 | 团队成员变更 | `LockTeamMembersForUpdate`(显式 `FOR UPDATE`) | 防止管理员改成员时其它请求读到不一致状态 |
 | Build 状态变更 | `UPDATE env_builds SET status=...` 隐式行锁 | 防止 orchestrator 与 template-manager 同时改同一 build |
+| Identity 绑定 | UNIQUE `(user_id, oidc_iss)` | 并发 provisioning 时阻止同一 user/issuer 创建多条 identity |
 
 ### 11.2 ON CONFLICT 模式
 

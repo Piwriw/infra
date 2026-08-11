@@ -1,7 +1,7 @@
 # E2B 快照(Snapshot)系统全景
 
 > 范围:从 HTTP API、数据库、orchestrator gRPC、Firecracker、envd 全链路梳理"快照"功能。
-> 数据来源:代码与迁移文件,2026-07-10 校对。
+> 数据来源:代码与迁移文件,已同步至 2026.29。
 > 配套文档:数据库字段见 [`database-schema.md`](./database-schema.md),sandbox 创建/模板拉取见 `sandbox-lifecycle.md` / `template-module.md`。
 
 ---
@@ -23,14 +23,15 @@
 
 ## 1. 概念总览
 
-E2B 的"快照"在四个层次上有不同语义,理解清楚再读代码:
+E2B 的"快照"在五个层次上有不同语义,理解清楚再读代码:
 
 | 概念 | 含义 | 生命周期 |
 | --- | --- | --- |
 | **Pause(暂停)** | 把运行中 sandbox 的内存 + 磁盘状态持久化 | sandbox 进入 `paused` 状态,后续可 resume |
-| **Snapshot row(快照记录)** | `snapshots` 表中的一行,记录一次 pause 的元数据 | 跟随 sandbox,直到 sandbox 被删除 |
-| **Snapshot template(快照模板)** | 把某次 pause 提升为**可被反复 spawn** 的模板 | 独立持久化,在 `snapshot_templates` 表 + `envs.source='snapshot_template'` |
-| **Checkpoint(检查点)** | Pause + 立即 resume + 提升为快照模板的组合操作 | 原沙箱继续运行,另存为快照模板 |
+| **Snapshot row(快照记录)** | `snapshots` 表中的一行,记录最新 pause/checkpoint 的元数据 | 跟随 sandbox,直到 sandbox 被删除 |
+| **Snapshot template(快照模板)** | 把某次 snapshot 提升为**可被反复 spawn** 的模板 | 独立持久化,在 `snapshot_templates` 表 + `envs.source='snapshot_template'` |
+| **Checkpoint(检查点)** | Orchestrator 的 full-memory snapshot + 原地 resume 操作 | 原 sandbox 保持 ID、execution ID、expiration 与 Running 状态;是否创建模板由上层调用者决定 |
+| **Fork(派生)** | checkpoint 一次,再从同一不可变 snapshot 启动一个或多个新 ID | 原 sandbox 继续运行,副本各自独立运行;不创建 snapshot template |
 
 ### 1.1 两种快照数据模式
 
@@ -50,7 +51,8 @@ Running ──pause──→ Snapshotting ──┐
 
 Running ──checkpoint──→ Snapshotting ──→ Running(原沙箱恢复)
                             │
-                            └──→ Snapshot Template(独立 env,可被 spawn)
+                            ├── /snapshots ──→ Snapshot Template(独立 env,可被 spawn)
+                            └── /fork ───────→ N 个新 Sandbox ID(不创建 template)
 ```
 
 > 沙箱状态管理在 `packages/api/internal/sandbox/store.go`,动作集合为 `StateActionPause` / `StateActionSnapshot` / `StateActionKill`(`packages/api/internal/sandbox/aliases.go:58-60` re-export 自 `db/types`)。**没有 `StateActionResume`** — Resume 不走状态机,而是直接复用 sandbox 创建路径(`CreateSandbox` with `isResume=true`)。
@@ -65,6 +67,7 @@ Running ──checkpoint──→ Snapshotting ──→ Running(原沙箱恢复
 | --- | --- | --- | --- |
 | POST | `/sandboxes/{sandboxID}/pause` | `PostSandboxesSandboxIDPause` | 暂停 sandbox(默认 memory snapshot) |
 | POST | `/sandboxes/{sandboxID}/snapshots` | `PostSandboxesSandboxIDSnapshots` | **创建快照模板**(checkpoint 语义) |
+| POST | `/sandboxes/{sandboxID}/fork` | `PostSandboxesSandboxIDFork` | checkpoint 一次,从该快照并行启动 1..100 个新 sandbox |
 | POST | `/sandboxes/{sandboxID}/resume` | `PostSandboxesSandboxIDResume` | 显式 resume(deprecated,新代码用 connect) |
 | POST | `/sandboxes/{sandboxID}/connect` | `PostSandboxesSandboxIDConnect` | 自动 resume:已暂停则 resume,运行中只返回详情 |
 | GET | `/snapshots` | `GetSnapshots` | 列出团队快照模板(分页,支持按 sandboxID/name 过滤) |
@@ -309,7 +312,32 @@ publishSandboxEvent(Checkpointed)
 返回 201 SnapshotInfo { snapshot_id, names }
 ```
 
-> **关键差别**:Checkpoint 比 Pause 多了"立即 resume 原沙箱(保留 ExecutionID)"和"创建快照模板 env"两步。原沙箱不会进入 paused 状态,在 Checkpoint 成功后保持 Running。
+> **关键差别**:Orchestrator Checkpoint 比 Pause 多了"立即 resume 原沙箱(保留 ExecutionID)";`/snapshots` 的 API 编排再额外创建或关联 snapshot template env。原沙箱不会进入 paused 状态,在 Checkpoint 成功后保持 Running。
+
+#### 4.2.1 Fork 流程(HTTP `/fork` → checkpoint 一次 → 并行创建新 ID)
+
+```
+Client POST /sandboxes/{id}/fork {timeout?, count?}
+   │
+   ▼
+API: PostSandboxesSandboxIDFork (handlers/sandbox_fork.go)
+   │  ├─ count 默认 1,范围 1..100,且 count < 团队 sandbox concurrency
+   │  ├─ 只接受 Running sandbox;paused 返回 409,不存在/跨团队返回 404
+   │  └─ CheckEnvdVersionForSnapshot()
+   ▼
+API: orchestrator.CheckpointSandbox (orchestrator/checkpoint_instance.go)
+   │  ├─ StartRemoving(StateActionSnapshot) → Running → Snapshotting
+   │  ├─ throttledUpsertSnapshot() → 刷新原 sandbox 的 snapshot row/build
+   │  ├─ gRPC SandboxService.Checkpoint → full-memory snapshot + same-ID resume
+   │  ├─ UpdateEnvBuildStatus(Success)
+   │  └─ snapshotCache.Invalidate(sandboxID)
+   ▼
+API: 对同一 immutable snapshot 并行调用 startSandbox(new sandboxID, isResume=true) × count
+   │
+   └─ 201 []SandboxForkResult:每项独立包含 sandbox 或 error
+```
+
+Fork 与 `/snapshots` 共用底层 checkpoint,但数据库副作用不同:Fork 只更新原 sandbox 的 `snapshots` 行并复用它启动新 ID,**不调用** `resolveOrCreateSnapshotTemplate`,也不会新增 `snapshot_templates` 或可复用的 template alias。非 201 响应表示 checkpoint 前失败,没有任何 fork 被尝试;201 后仍需逐项检查部分失败。
 
 ### 4.3 Resume 流程(HTTP `/connect` / `/resume` → 复用 Create 路径)
 
@@ -413,11 +441,13 @@ deleteSnapshot (sandbox_kill.go:21)
 | 文件 | 角色 |
 | --- | --- |
 | `packages/api/internal/orchestrator/snapshot_template.go` | `CreateSnapshotTemplate` — checkpoint orchestrator 入口 |
+| `packages/api/internal/orchestrator/checkpoint_instance.go` | `CheckpointSandbox` — fork 使用的原地 checkpoint,只刷新 sandbox snapshot row |
 | `packages/api/internal/orchestrator/pause_instance.go` | 内部 `pauseSandbox`(L32) + `buildUpsertSnapshotParams` + `throttledUpsertSnapshot`(L173) |
 | `packages/api/internal/orchestrator/delete_instance.go` | `RemoveSandbox`(分发 Pause/Kill/Snapshot)+ `removeSandboxFromNode`(switch Action) |
 | `packages/api/internal/cache/snapshots/snapshot_cache.go` | Redis 缓存最近一次 pause |
 | `packages/api/internal/db/snapshots.go` | sqlc 包装(`GetSnapshotBuilds` — 仅 kill 用) |
 | `packages/api/internal/handlers/sandbox_pause.go` | HTTP `/sandboxes/{id}/pause` |
+| `packages/api/internal/handlers/sandbox_fork.go` | HTTP `/sandboxes/{id}/fork` + 并行 fork 结果聚合 |
 | `packages/api/internal/handlers/snapshot_template_create.go` | HTTP `/sandboxes/{id}/snapshots` + handler 层的 `templateCache.Invalidate` |
 | `packages/api/internal/handlers/snapshot_template_list.go` | HTTP `GET /snapshots` |
 | `packages/api/internal/handlers/sandbox_connect.go` | HTTP `/sandboxes/{id}/connect`(KeepAlive + resume fallback) |
@@ -438,6 +468,7 @@ deleteSnapshot (sandbox_kill.go:21)
 **失效时机**:
 - Pause 成功后:`Invalidate(sandboxID)`(下次读会从 DB 取最新)
 - Checkpoint 成功后:同上
+- Fork 的 checkpoint 成功后:同上,确保新 sandbox 读取刚写入的 snapshot
 - Kill sandbox 时:同上(由 `deleteSnapshot` 调用)
 
 ### 5.3 关键并发保护
@@ -707,6 +738,7 @@ packages/api/internal/
 │   ├── snapshot_template_create.go     ← POST /sandboxes/{id}/snapshots (+ handler 层 templateCache.Invalidate)
 │   ├── snapshot_template_list.go       ← GET /snapshots
 │   ├── sandbox_pause.go                ← POST /sandboxes/{id}/pause (调用 RemoveSandbox)
+│   ├── sandbox_fork.go                 ← POST /sandboxes/{id}/fork (checkpoint 一次 + 并行创建新 ID)
 │   ├── sandbox_resume.go               ← POST /sandboxes/{id}/resume (deprecated) + buildResumeSandboxData
 │   ├── sandbox_connect.go              ← POST /sandboxes/{id}/connect (KeepAlive + resume fallback)
 │   ├── sandbox_kill.go                 ← DELETE /sandboxes/{id} (级联清快照 + throttledGetSnapshotBuilds)
@@ -714,6 +746,7 @@ packages/api/internal/
 │   └── sandboxes_list.go               ← snapshotsToPaginatedSandboxes
 ├── orchestrator/
 │   ├── snapshot_template.go            ← CreateSnapshotTemplate (Checkpoint orchestrator 入口)
+│   ├── checkpoint_instance.go          ← CheckpointSandbox (Fork 的原地 checkpoint)
 │   ├── pause_instance.go               ← 内部 pauseSandbox + throttledUpsertSnapshot + buildUpsertSnapshotParams
 │   ├── delete_instance.go              ← RemoveSandbox(Pause/Kill/Snapshot 统一入口)+ removeSandboxFromNode
 │   └── orchestrator.go                 ← SnapshotCacheInvalidator
@@ -791,6 +824,7 @@ packages/envd/internal/
 ```
 tests/integration/internal/tests/api/sandboxes/
 ├── snapshot_template_test.go            ← 端到端快照模板测试
+├── sandbox_fork_test.go                 ← fork 参数、状态、并发和部分成功测试
 └── sandbox_rapid_pause_resume_test.go   ← 快速 pause/resume 链测试
 
 packages/db/pkg/tests/snapshots/
@@ -805,7 +839,7 @@ tests/periodic-test/snapshot-and-resume.ts  ← 周期性回归测试
 ## 附录:常见疑问
 
 **Q1: Pause 和 Checkpoint 区别?**
-Pause 让 sandbox 进入 paused 状态(后续可 resume,但没有独立模板);Checkpoint 是"pause + 立即 resume 原沙箱 + 把这次 snapshot 提升为可被 spawn 的模板",**原沙箱继续运行**。
+Pause 让 sandbox 进入 paused 状态(后续可 resume,但没有独立模板);Checkpoint 是"full-memory snapshot + 立即原地 resume",**原 sandbox 继续运行**。`/snapshots` 会在 checkpoint 外再创建或关联可复用模板,而 `/fork` 只刷新原 sandbox 的 snapshot row 并从中创建新 ID。
 
 **Q2: 为什么 `env_builds.env_id` 无 FK?**
 详见 [`database-schema.md` § 8.4](./database-schema.md#84-env--build-多对多去-fk-的反范式)。snapshot 流程也复用此设计:`CreateTemplateBuildAssignment` 显式写 `env_build_assignments`,触发器回填 `env_builds.env_id`。

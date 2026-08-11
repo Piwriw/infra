@@ -113,6 +113,19 @@ Orchestrator 的 live 状态只存在内存中。进程崩溃后不会“接管�
 
 入口在 `pkg/startupreclaim/reclaim.go`。失败会被记录，但不会把旧 VM 重新加入 live map。
 
+### 3.4 Template 与 Build Cache 的存储角色解析
+
+`pkg/cfg/storage.go` 分别解析 template storage 和 build-cache storage。`TEMPLATE_STORAGE_URL`、`BUILD_CACHE_STORAGE_URL` 对各自角色是权威配置,因此两个角色可以使用不同 provider 或 destination:
+
+| URL | 含义 |
+|---|---|
+| `gs://bucket` | Google Cloud Storage |
+| `s3://bucket?endpoint=http://host:port&s3ForcePathStyle=true&region=us-east-1` | AWS S3 或 S3-compatible storage |
+| `file:///absolute/path` | 本地绝对路径 |
+| `file:relative/path` | 本地相对路径 |
+
+云存储 URL 只接受 bucket,不支持 key prefix。未知 query 参数、URL credentials、非法 endpoint 都会在启动时失败;凭据来自 ADC/Workload Identity 或 AWS 环境变量。未设置角色 URL 时,旧配置 `STORAGE_PROVIDER`、两个 `*_BUCKET_NAME`、两个 `LOCAL_*_BASE_PATH` 和 `S3_USE_PATH_STYLE` 仍会先转换成等价 URL,再走统一 parser。`storage.NewProvider` 接收已经解析的 `storage.Spec`,不再自行读取环境变量。
+
 ## 4. RPC 边界与节点准入
 
 ### 4.1 `SandboxService` 不是薄转发
@@ -167,6 +180,10 @@ otherwise
 `request.sandbox.snapshot` 影响事件语义和准入策略，但真正决定热恢复还是冷启动的是模板元数据 `IsFilesystemOnly()`。内存快照不能被任意降级为冷启动，因为 guest page cache 中可能还有尚未落入 rootfs 的写入。
 
 节点边界不会用请求中的 `snapshot` 布尔值重新推导模板种类，也不会让它覆盖 metadata。调用方必须保持两者语义一致；即使不一致，启动路径仍以 metadata 为准，而事件名和 semaphore 策略可能仍按请求字段解释。
+
+### 4.4 `SandboxService.Update` 按 Sandbox 串行化
+
+`Sandbox` 持有专用 `updateMu`,`Server.Update` 通过 `sbx.RunUpdate` 把整组 all-or-none 更新、失败回滚和事件派发包在同一个临界区。同一 sandbox 的并发 timeout/network 更新会严格串行,后一个请求只能看到前一个请求提交或完整回滚后的状态,不会互相覆盖或用旧值回滚新值。锁是每个 `Sandbox` 实例私有的,不同 sandbox 的更新仍可并行。
 
 ## 5. Sandbox 生命周期核心
 
@@ -325,6 +342,10 @@ NBD 解决“guest 看到一块可写磁盘”的问题，UFFD 解决“恢复�
 
 恢复完成后，Server 从已经解析的 memfile/rootfs header 生成 `SchedulingMetadata`。rootfs 新增字节当前可以精确计算；memory dirty bytes 在异步 dedup 完成前是上界。API 可以用这些数据估算把同一 build 放到不同节点的读取成本，但最终选点仍在 API 侧。
 
+### 7.5 Template Build 的离线 Rootfs 扩容
+
+`build-ensure-free-disk-space` 开启时,template builder 在 user steps 之后、finalize 之前插入 `resize-disk` phase。`DiskSizeMB` 此时表示目标空闲 rootfs MiB,而不是总磁盘大小。phase 通过 NBD 暴露 quiescent COW overlay,回放 ext4 journal,读取 block group 空闲块;不足时执行 `e2fsck → resize2fs → e2fsck`,并只导出变化 block。无需扩容也会生成可缓存的 empty diff。该 layer 是 filesystem-only,所以 finalize 会 cold boot;ext4 metadata 和 finalize 写入可能让最终空闲空间略低于目标。
+
 ## 8. 网络与流量路径
 
 ### 8.1 一个 network slot 包含什么
@@ -363,6 +384,12 @@ SDK request
 guest 出口经过 network slot 的路由和 edition 提供的 `EgressProxy`。默认实现由 `pkg/tcpfirewall` 检查 CIDR、HTTP Host 或 TLS SNI；BYOP 配置还会在 Server.Create/Update 做二次 feature gate。
 
 Hyperloop、NFS proxy 和 portmapper 使用固定的 sandbox 内 Orchestrator 地址提供宿主能力。Volume gRPC 管理宿主目录，guest 再通过 NFS mount 使用持久卷。它们依赖 network 索引按源 IP 识别 sandbox，因此 stopping 阶段不能过早删除该索引。
+
+### 8.4 `NetworkAssignHook` 的执行屏障
+
+Edition-specific `EgressFactory` 可在 `EgressSetup` 中注入 `NetworkAssignHook`;未提供时使用 `NoopNetworkAssignHook`。Factory 在 `AssignNetwork` 完成后同步执行 hook,并严格等待 hook 返回后才允许 guest create/resume,因此扩展可以在 guest 发出任何流量前完成依赖网络身份的配置。
+
+reason 区分 `create`、`resume`、`reboot` 和 `throwaway_resume`。Hook 必须自行实现 timeout;返回错误只记录 warning,panic 会被 recover 并记录 error,两者都不会阻止 sandbox 启动。这意味着 hook 是顺序屏障但不是成功门槛,实现方不能无限阻塞。
 
 ## 9. Pause、Checkpoint 与恢复
 
@@ -422,6 +449,8 @@ old lifecycle
 它的目标是替换底层 VM lifecycle，同时让业务 sandbox 继续运行。上传同步还是异步由 feature flag 控制；同步上传失败时，刚恢复的 lifecycle 也会被撤销，避免运行一个无法再次恢复的实例。
 
 Checkpoint 没有回滚到旧 VM：旧 lifecycle 已退出 live，并通过 deferred Stop 收尾；snapshot 或新 resume 失败时，RPC 失败且旧实例仍会停止。异步上传模式若最终失败，则新 lifecycle 可以继续运行，但该 checkpoint 的远端耐久性不成立，保证与 Pause 的后台上传窗口相同。
+
+上层有两种 checkpoint 编排:`/sandboxes/{id}/snapshots` 在 checkpoint 外创建或关联 snapshot template;`/sandboxes/{id}/fork` 只刷新原 sandbox 的 snapshot row,再从同一 immutable snapshot 启动多个新 ID。节点侧 `Checkpoint` 本身不决定是否创建 template。
 
 ## 10. 删除、故障与有序关停
 
@@ -580,6 +609,8 @@ client-proxy
 8. 任何资源分配都必须在 Cleanup 中注册对称释放。
 9. 请求 context 取消不能自动取消必要的 Stop、Close 和上传收尾。
 10. Firecracker、kernel、envd、snapshot metadata 的兼容性错误不能静默降级。
+11. 同一 sandbox 的 Update 必须覆盖完整 apply/rollback/event 临界区;不同 sandbox 不共享这把锁。
+12. `NetworkAssignHook` 必须发生在 `AssignNetwork` 之后、guest 执行之前;hook 自己负责 timeout,失败不阻断启动。
 
 ## 14. 学完后的源码练习
 

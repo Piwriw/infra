@@ -254,8 +254,11 @@ claims := jwt.MapClaims{
     "volid":   volumeID,
     "voltype": volumeType,
 }
-token.Header["tokid"] = config.SigningKeyName
+token.Header["kid"] = config.SigningKeyName    // 标准 JOSE/JWKS key selection
+token.Header["tokid"] = config.SigningKeyName  // 旧 verifier 向后兼容
 ```
+
+`kid` 是标准 JWT header,用于 verifier 从 JWKS 或 key set 中选择签名密钥。`tokid` 暂时保留给旧客户端/验证器;两者当前写入相同的 `SigningKeyName`,新集成应读取 `kid`。
 
 | 配置项 | 环境变量 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -932,7 +935,8 @@ API:
 5. **节点亲和**:volume CRUD 和 sandbox 调度都按 `persistent-volume-type` label,保证数据本地性
 6. **DB 先于存储**:删除时先 DB 后目录,即使目录删除失败也不会有 ghost 卷
 7. **JWT 短时**:每次 GET/POST 重签,默认 1h 过期,客户端不能长期持权
-8. **umask 防御**:`CreateFile` / `CreateDir` 显式 `Chmod` 绕过进程 umask,确保权限严格符合请求
+8. **JWT key 选择兼容**:标准 `kid` 与兼容 `tokid` 同值;新 verifier 使用 `kid`,迁移期不能先移除 `tokid`
+9. **umask 防御**:`CreateFile` / `CreateDir` 显式 `Chmod` 绕过进程 umask,确保权限严格符合请求
 
 ---
 

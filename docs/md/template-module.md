@@ -1054,6 +1054,9 @@ Build 的触发有两种路径:
        │                                       ├─ Phase: steps[] (用户的自定义 step)
        │                                       │    └─ 每个 step 一个 layer,缓存复用
        │                                       │
+       │                                       ├─ Phase: resize-disk (flag 开启)
+       │                                       │    └─ 离线保证 rootfs 目标空闲空间
+       │                                       │
        │                                       ├─ Phase: finalize (postProcessing)
        │                                       │    ├─ 配置脚本(swap、user、permissions)
        │                                       │    └─ start cmd + ready cmd
@@ -1096,9 +1099,10 @@ Builder.Build 的工作流(见 [`builder.go`](../../packages/orchestrator/pkg/te
 4. 用 BusyBox 启动 FC VM,跑 provisioning 脚本(装 systemd)
 5. 用 systemd 重启 FC VM,等 envd ready
 6. 跑 template 的 steps/layers
-7. 跑配置脚本 + start cmd + ready cmd
-8. 快照(snapshot)
-9. 上传 template(以及未上传的 layers)到 GCS
+7. 可选离线扩容 rootfs,保证 `DiskSizeMB` 指定的目标空闲空间
+8. 跑配置脚本 + start cmd + ready cmd
+9. 快照(snapshot)
+10. 上传 template(以及未上传的 layers)到远端存储
 ```
 
 **Phases 编排**(见 `builder.go` 的 `runBuild`):
@@ -1108,10 +1112,15 @@ Builder.Build 的工作流(见 [`builder.go`](../../packages/orchestrator/pkg/te
 | `base` | 基础镜像处理 + 装 systemd + envd | rootfs layer |
 | `user` | 创建默认用户(v2+) | user layer |
 | `steps[]` | 用户的自定义 step(每个 step 一个 layer) | step layers |
+| `resize-disk` | flag 开启时在 user steps 后离线扩容 ext4 rootfs,使其接近 `DiskSizeMB` 指定的目标空闲 MiB | filesystem-only resize layer(可能是 empty diff) |
 | `finalize` (postProcessing) | 配置脚本(swap、user、permissions)+ start cmd + ready cmd | finalize layer |
 | `optimize` | 计算 prefetch mapping,优化启动 | optimize layer + 最终 snapshot |
 
-每个 phase 都是独立的 builder,跑完把自己的 layer 上传到 GCS。Layer 是内容寻址的(content-addressed),所以相同的 step 不会重复构建。
+每个 phase 都是独立的 builder,跑完把自己的 layer 上传到配置的远端存储。Layer 是内容寻址的(content-addressed),所以相同的 step 不会重复构建。
+
+`resize-disk` 受 `build-ensure-free-disk-space` 控制,顺序固定为 `base → user → steps → resize-disk → finalize → optimize`。它把静止的 COW rootfs 通过 NBD 暴露,回放 ext4 journal 并按 block group 统计空闲块;不足时依次执行 `e2fsck → resize2fs → e2fsck`,最后只导出变化 block。无需扩容时仍产出可缓存的 empty-diff artifact。该 layer 标为 filesystem-only,因此后续 `finalize` 会 cold boot。`DiskSizeMB` 不是最终磁盘总大小,而是 **user steps 完成后、finalize 开始前的 rootfs 目标空闲空间(MiB)**;ext4 metadata 和 finalize 写入可能使最终可用空间略低于目标。缓存 hash 包含 source hash、`resize-disk` 和 `DiskSizeMB`,扩容及 `e2fsck` 也有独立 trace span。
+
+构建 step 的目录 `COPY` 遵循 Docker 合并语义:复制到已存在目录时合并内容并覆盖同名文件,保留目标目录及已存在子目录的 metadata。实现使用 tar pipe,并通过 `--keep-directory-symlink` 正确处理 usrmerge 一类的目标目录 symlink;文件和 symlink source 仍移动到精确目标路径。
 
 ### 8.4 Build 状态同步
 
@@ -1355,11 +1364,18 @@ AND (eba.tag = COALESCE(@tag, 'default') OR eba.build_id = try_cast_uuid(@tag))
 
 ## 十一、存储结构
 
-### 11.1 GCS Bucket 配置
+### 11.1 Template 存储配置
 
-**Bucket 名称**:由 `TEMPLATE_BUCKET_NAME` 环境变量决定。
+首选 `TEMPLATE_STORAGE_URL`,它对 template storage 角色是权威配置,可独立于 build cache 选择 provider 和 destination:
 
-- 生产:`{bucket_prefix}fc-templates`(见 [`iac/provider-gcp/init/buckets.tf`](../../iac/provider-gcp/init/buckets.tf))
+- `gs://bucket`
+- `s3://bucket?endpoint=http://host:port&s3ForcePathStyle=true&region=us-east-1`
+- `file:///absolute/path`
+- `file:relative/path`
+
+bucket URL 只允许 bucket,不支持 key prefix;未知 query 参数直接报错。URL 不接收 credentials:GCS 使用 ADC/Workload Identity,S3 使用 AWS 环境凭据。未设置 URL 时仍兼容 `STORAGE_PROVIDER`、`TEMPLATE_BUCKET_NAME`、`LOCAL_TEMPLATE_STORAGE_BASE_PATH` 和 `S3_USE_PATH_STYLE`,并将旧配置转换为同一个 URL 解析流程。
+
+- GCP 生产:`{bucket_prefix}fc-templates`(见 [`iac/provider-gcp/init/buckets.tf`](../../iac/provider-gcp/init/buckets.tf))
 - 本地开发:用 `LOCAL_TEMPLATE_STORAGE_BASE_PATH`
 
 ### 11.2 目录结构
@@ -1630,7 +1646,7 @@ service TemplateService {
 | `buildID` | string | build ID |
 | `memoryMB` | int32 | 内存 MB |
 | `vCpuCount` | int32 | CPU 核数 |
-| `diskSizeMB` | int32 | 磁盘 MB |
+| `diskSizeMB` | int32 | user steps 后、finalize 前的目标 rootfs 空闲空间(MiB),不是总磁盘大小 |
 | `kernelVersion` | string | *(deprecated)* 内核版本,template-manager 自行决定 |
 | `firecrackerVersion` | string | *(deprecated)* Firecracker 版本,同上 |
 | `startCommand` | string | 启动命令 |
@@ -1786,9 +1802,14 @@ COMMIT;
 
 | 变量名 | 用途 | 默认值 |
 |--------|------|--------|
-| `TEMPLATE_BUCKET_NAME` | GCS bucket 名 | 无(必填) |
+| `TEMPLATE_STORAGE_URL` | Template storage 的 provider 与 destination;设置后覆盖该角色的旧配置 | 未设置时走旧配置 |
+| `BUILD_CACHE_STORAGE_URL` | Build cache storage 的 provider 与 destination,可与 template storage 不同 | 未设置时走旧配置 |
+| `TEMPLATE_BUCKET_NAME` | 旧式 template cloud bucket 名 | provider 为云存储且未设置 URL 时必填 |
+| `BUILD_CACHE_BUCKET_NAME` | 旧式 build cache bucket 名 | provider 为云存储时必填 |
 | `LOCAL_TEMPLATE_STORAGE_BASE_PATH` | 本地存储根目录(本地开发) | `/tmp/templates` |
+| `LOCAL_BUILD_CACHE_STORAGE_BASE_PATH` | 旧式本地 build cache 根目录 | `/tmp/build-cache` |
 | `STORAGE_PROVIDER` | 存储后端类型 | `GCPBucket` |
+| `S3_USE_PATH_STYLE` | 旧式 S3 path-style 开关 | `false` |
 | `TEMPLATE_CACHE_DIR` | orchestrator 本地 template cache 目录 | 配置文件 |
 | `BUILD_CLUSTERS_CONFIG` | build cluster 配置(JSON) | 无(必填) |
 | `CLIENT_CLUSTERS_CONFIG` | client(sandbox)cluster 配置(JSON) | 无(必填) |
@@ -1839,6 +1860,7 @@ E2B 使用 LaunchDarkly 做 feature flag 管理。template 相关的 flag:
 | `FreePageHintingFlag` | Firecracker free page hinting 优化 |
 | `BYOPProxyEnabledFlag` | BYOP egress proxy |
 | `BuildNodeInfo` | 指定 build node 的机器配置(CPU family 等) |
+| `BuildEnsureFreeDiskSpace`(`build-ensure-free-disk-space`) | 在 user steps 与 finalize 之间启用 `resize-disk`,默认 false |
 | `MaxSandboxesPerNode` | 每 node 最大沙盒数 |
 
 **Feature flag 客户端**:[`packages/shared/pkg/featureflags/`](../../packages/shared/pkg/featureflags/)
@@ -1889,6 +1911,9 @@ E2B 使用 LaunchDarkly 做 feature flag 管理。template 相关的 flag:
 |------|------|
 | [`packages/orchestrator/template-manager.proto`](../../packages/orchestrator/template-manager.proto) | template-manager gRPC 服务 proto 定义 |
 | [`packages/orchestrator/pkg/template/build/builder.go`](../../packages/orchestrator/pkg/template/build/builder.go) | `Builder.Build` — 完整 build 流程编排 |
+| [`packages/orchestrator/pkg/template/build/phases/ensurefreedisk/`](../../packages/orchestrator/pkg/template/build/phases/ensurefreedisk/) | `resize-disk` phase:NBD 离线 ext4 空闲空间检测、扩容和 diff 导出 |
+| [`packages/orchestrator/pkg/template/build/commands/copy.go`](../../packages/orchestrator/pkg/template/build/commands/copy.go) | Template `COPY` step 的参数装配 |
+| [`packages/orchestrator/pkg/template/build/commands/copy_script.sh`](../../packages/orchestrator/pkg/template/build/commands/copy_script.sh) | Docker-compatible 目录 merge、覆盖与 symlink 处理 |
 | [`packages/orchestrator/pkg/template/server/create_template.go`](../../packages/orchestrator/pkg/template/server/create_template.go) | gRPC `TemplateCreate` 服务端实现 |
 | [`packages/orchestrator/pkg/template/server/template_status.go`](../../packages/orchestrator/pkg/template/server/template_status.go) | gRPC `TemplateBuildStatus` |
 | [`packages/orchestrator/pkg/sandbox/template/cache.go`](../../packages/orchestrator/pkg/sandbox/template/cache.go) | `sbxtemplate.Cache` — 沙盒启动用的 template 文件缓存 |
@@ -2283,6 +2308,6 @@ grpcurl -plaintext -d '{
 
 ---
 
-**文档版本**:基于代码库 HEAD(2026-07-10),commit `9bf3667c7`
+**文档版本**:已同步至 2026.29
 
 **维护**:如有疑问或发现文档过期,请对照 [`packages/db/migrations/`](../../packages/db/migrations/) 和 [`packages/api/internal/template/`](../../packages/api/internal/template/) 的最新代码核对。

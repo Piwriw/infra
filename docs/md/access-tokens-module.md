@@ -208,11 +208,12 @@ OpenAPI spec(`spec/openapi.yml:3572`)显式标记:
         $ref: "#/components/responses/410"
 ```
 
-**两层 deprecated 信号**:
+**三层 deprecated / cutover 信号**:
 1. **静态层**(spec):`deprecated: true` — Swagger UI / 文档生成器会标灰,提醒客户端不要再用。
-2. **运行时层**(代码):LaunchDarkly flag `disable-e2b-access-token-provisioning` 默认 `false`。开启后 POST 立即返 `410 Gone` + 迁移指引。
+2. **停止签发**:`disable-e2b-access-token-provisioning` 默认 `false`。开启后只有 `POST /access-tokens` 立即返 `410 Gone`,已有 token 仍可能被接受。
+3. **停止认证**:`disable-e2b-access-token-auth` 默认 `false`。开启后 API 和 docker-reverse-proxy 的 V1 build docker login 都拒绝已有 `sk_e2b_` token。
 
-这种"spec 标 deprecated + flag 灰度"的双层设计,既能给文档读者信号,又能在生产环境按需"硬关"。
+两个运行时 flag 都按 user 灰度,把 issuance/provisioning 与 acceptance/auth 分开:可以先阻止新 token 增长,观察迁移情况,最后再关闭旧 token 的实际使用。
 
 ---
 
@@ -570,6 +571,10 @@ authService.ValidateAccessToken(accessToken)
    └── 3. telemetry.SetAttributes(maskedAccessToken, userID)
 ```
 
+APIStore 在 token 格式和 DB 记录校验成功、拿到 `userID` **之后**,才用 `UserContext(userID)` 评估 `disable-e2b-access-token-auth`。flag 开启时返回 401 和 API key 迁移提示。先验证再评估是按用户灰度的必要条件,也避免用未认证输入构造 LaunchDarkly user context。
+
+V1 template build 的 docker login 还会经过 `packages/docker-reverse-proxy`:Basic Auth 中用户名是 `_e2b_access_token`,password 是 `sk_e2b_` token。Proxy 同样先从 DB 验证 token 并取得 userID,再评估相同 flag;关闭时返回 403 和相同迁移指引。因此 auth cutover 同时覆盖业务 API 与旧 Docker registry 登录链路。
+
 **与 api-keys 验证路径的关键差异**:
 
 | 维度 | API Key 验证 | Access Token 验证 |
@@ -612,11 +617,13 @@ DELETE `/access-tokens/{id}` 后:
 | Flag | 默认 | 范围 | 影响 |
 | --- | --- | --- | --- |
 | `disable-e2b-access-token-provisioning` | `false` | LaunchDarkly,bool,支持按 user 灰度 | POST /access-tokens 返 410 Gone |
+| `disable-e2b-access-token-auth` | `false` | LaunchDarkly,bool,支持按 user 灰度 | API 拒绝 access token(401);docker-reverse-proxy 拒绝 V1 build docker login(403) |
 
 定义在 `packages/shared/pkg/featureflags/flags.go:226`:
 
 ```go
 DisableE2BAccessTokenProvisioningFlag = NewBoolFlag("disable-e2b-access-token-provisioning", false)
+DisableE2BAccessTokenAuthFlag = NewBoolFlag("disable-e2b-access-token-auth", false)
 ```
 
 调用方式(`accesstoken.go:25`):
@@ -633,9 +640,9 @@ a.featureFlags.BoolFlag(ctx, featureflags.DisableE2BAccessTokenProvisioningFlag,
 | --- | --- | --- |
 | 1. 内部测试 | 验证 410 流程不破坏旧 SDK | 对 `@e2b.dev` 邮箱后缀开启 |
 | 2. 早期通知 | 给 dashboard 加迁移提示 | 全量 false,但 SDK 检测到 deprecated header 时主动提示 |
-| 3. 灰度关闭 | 5-10% 用户 | 按用户 hash 百分比 |
-| 4. 全量关闭 | 所有人 | 全量 true |
-| 5. 代码下线 | 移除端点 | 删除 spec 里 `/access-tokens` POST 端点,删除 handler |
+| 3. 停止签发 | 5-10% → 全量用户 | 灰度再全量开启 provisioning flag,POST 返回 410 |
+| 4. 停止认证 | 已迁移用户 → 全量用户 | 灰度再全量开启 auth flag,API/docker login 拒绝旧 token |
+| 5. 代码下线 | 移除端点与验证链路 | 删除 spec POST、handler 和旧 token authenticators |
 
 **注意**:DELETE 端点**不要**在同时下线。要给用户至少一个清理周期(建议 6 个月+)让他们删除旧 token,否则 `access_tokens` 表里会留下永久垃圾。
 
@@ -673,6 +680,13 @@ a.featureFlags.BoolFlag(ctx, featureflags.DisableE2BAccessTokenProvisioningFlag,
 | `middleware.go:147` | `NewAccessTokenAuthenticator`(`AccessTokenAuth` 安全方案) |
 | `gin.go:23` | `MustGetUserID` |
 
+**Docker V1 build 登录链路**:
+
+| 文件 | 主要函数 |
+| --- | --- |
+| `packages/docker-reverse-proxy/internal/handlers/token.go` | `GetToken`:验证 token → 按 user 评估 auth flag → 签发 registry token |
+| `packages/docker-reverse-proxy/internal/auth/validate.go` | `ValidateAccessToken`:校验格式并从 DB 返回 owning userID |
+
 ### 10.4 DB(`packages/db/`)
 
 | 文件 | 查询 |
@@ -692,7 +706,7 @@ a.featureFlags.BoolFlag(ctx, featureflags.DisableE2BAccessTokenProvisioningFlag,
 
 | 文件 | 内容 |
 | --- | --- |
-| `packages/shared/pkg/featureflags/flags.go:226` | `DisableE2BAccessTokenProvisioningFlag` 定义 |
+| `packages/shared/pkg/featureflags/flags.go` | `DisableE2BAccessTokenProvisioningFlag`、`DisableE2BAccessTokenAuthFlag` 定义 |
 
 ### 10.6 OpenAPI spec
 
@@ -781,7 +795,7 @@ accessTokenDB, err := a.authDB.Write.CreateAccessToken(ctx, authqueries.CreateAc
 1. 升级 SDK 到最新版(新版本默认用 `E2B_API_KEY`)。
 2. 通过 dashboard 创建 team API Key(`e2b_` 前缀)。
 3. 把 API Key 配置到 SDK 的 `E2B_API_KEY` 环境变量。
-4. 旧的 access token 还能用(只要没删除),但建议清理。
+4. provisioning flag 只停止创建;旧 token 仅在 `disable-e2b-access-token-auth=false` 时还能用,应尽快清理。
 
 迁移指引见响应里的链接:`https://e2b.dev/docs/migration/access-token-deprecation`。
 
@@ -855,14 +869,18 @@ SELECT * FROM access_tokens WHERE access_token_hash = '<hashedToken>';
 - **使用**(每次鉴权):`ValidateAccessToken` 里 `telemetry.SetAttributes(... WithMaskedAccessToken ...)` 会把 mask 上报。在 Grafana 里按 maskedAccessToken 聚合可以看到使用情况。
 - **DB 查询**:`SELECT user_id, created_at, name FROM access_tokens WHERE user_id = '...'`(注意不能查 hash,不能查明文)。
 
-### Q10: flag 全量开启后,什么时候真正下线代码?
+### Q10:两个 flag 都全量开启后,什么时候真正下线代码?
 
 **建议路径**:
-1. flag 全量开启后,观察 1-3 个月,确认旧 SDK 流量降到接近 0。
+1. provisioning/auth 两个 flag 全量开启后,观察 1-3 个月,确认旧 SDK 流量降到接近 0。
 2. 删除 spec 里的 POST /access-tokens 端点。
 3. 等 OpenAPI 客户端都更新后(再观察 1-2 个月),删除 handler。
 4. DELETE 端点保留更久(至少 6 个月),给用户清理时间。
 5. 最终通过 migration 把 `access_tokens` 表 DROP(但要保留 user_id 的外键约束,直到确认没有代码引用)。
+
+### Q11:V1 template build 的 docker login 返回 403 和迁移提示
+
+`docker-reverse-proxy` 已成功验证 token 并得到 userID,但该用户命中了 `disable-e2b-access-token-auth`。这不是 registry scope 或密码格式错误;改用 `E2B_API_KEY`,并检查 API 侧同一用户的 access-token 请求是否也已返回 401。
 
 ---
 
@@ -917,6 +935,8 @@ SELECT * FROM access_tokens WHERE access_token_hash = '<hashedToken>';
 | accessTokenID 不是 UUID | 400 | "Error when parsing access token ID: ..." |
 | 未鉴权 | 401 | (由中间件返回) |
 | POST 时 flag 开启 | **410** | "Creating new access tokens is disabled. E2B_ACCESS_TOKEN is deprecated; use an API key (E2B_API_KEY) instead. See https://e2b.dev/docs/migration/access-token-deprecation" |
+| API 认证时 auth flag 开启 | **401** | Token 已验证,但不再接受;返回 API key 迁移提示 |
+| docker-reverse-proxy 认证时 auth flag 开启 | **403** | V1 build docker login 被拒绝,返回 API key 迁移提示 |
 | DELETE 找不到 | 404 | "id not found" |
 | DB 错误 | 500 | "Error when ..." |
 | 成功(POST) | 201 | JSON(含明文 token) |
@@ -935,9 +955,11 @@ SELECT * FROM access_tokens WHERE access_token_hash = '<hashedToken>';
 | **Mask** | 固定窗口(前 2 + 后 4),用于 UI 展示 |
 | **`access_tokens` 表** | user 级 token 的存储,uuid PK + hash UNIQUE |
 | **`team_api_keys` 表** | team 级 key 的存储(对照) |
-| **deprecated flag** | `disable-e2b-access-token-provisioning`,LaunchDarkly 控,按 user 灰度 |
+| **provisioning flag** | `disable-e2b-access-token-provisioning`,只停止创建新 token,按 user 灰度 |
+| **auth flag** | `disable-e2b-access-token-auth`,停止 API 与 docker-reverse-proxy 接受已有 token,按 user 灰度 |
 | **410 Gone** | POST 在 flag 开启时返回,引导用户迁移到 API Key |
 | **`DisableE2BAccessTokenProvisioningFlag`** | feature flag 定义,见 `packages/shared/pkg/featureflags/flags.go:226` |
+| **`DisableE2BAccessTokenAuthFlag`** | acceptance cutover flag,API 返回 401,docker-reverse-proxy 返回 403 |
 | **`UserContext`** | LaunchDarkly 的 user 维度上下文,支持按 userID 灰度 |
 | **触发器(已废弃)** | 早期 `generate_access_token_trigger`,新 user 注册自动生成 token,2025-08-25 移除 |
 | **`authDB.Read`** | 读副本(用于 GetUserIDFromAccessToken) |
