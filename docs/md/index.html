@@ -644,6 +644,7 @@ const LAYERS = [
       { slug: 'api-module', title: 'api-module', desc: 'API 服务整体架构:Gin 路由、中间件链、OpenAPI 分发器、与 orchestrator gRPC 边界', lines: 2012 },
       { slug: 'database-schema', title: 'database-schema', desc: '16 张核心表的数据模型、迁移史、索引策略、典型查询', lines: 1457 },
       { slug: 'clusters-module', title: 'clusters-module', desc: '多集群拓扑:team → cluster 路由、orchestrator 实例发现与健康检查', lines: 1031 },
+      { slug: 'dashboard-api-module', title: 'dashboard-api-module', desc: 'Dashboard 控制面:OIDC、SSO、团队 provision、成员一致性、build/template 历史查询', lines: 359 },
     ]
   },
   {
@@ -668,6 +669,7 @@ const LAYERS = [
     id: 4, name: '沙箱 (API 与生命周期)', color: 'purple',
     docs: [
       { slug: 'sandbox-api-module', title: 'sandbox-api-module', desc: '沙箱 REST 端点:HTTP 入口、请求/响应模型、校验、与 orchestrator 边界', lines: 920 },
+      { slug: 'mcp-integration', title: 'mcp-integration', desc: 'MCP 与自部署 E2B 服务:协议角色、sandbox mcp 字段边界、外部/内置部署拓扑', lines: 246 },
       { slug: 'sandbox-management', title: 'sandbox-management', desc: '沙箱管理(orchestrator 视角):Create/Pause/Resume/Stop/reclaim、timeout', lines: 720 },
       { slug: 'sandbox-lifecycle', title: 'sandbox-lifecycle', desc: '沙箱端到端:Create → VM 启动 → 网络/NBD/uffd → envd 握手 → pause/resume/kill', lines: 1753 },
       { slug: 'auto-resume-module', title: 'auto-resume-module', desc: '自动恢复:traffic catalog miss、snapshot 前置条件、Resume 状态机、超时与 token', lines: 1012 },
@@ -677,6 +679,7 @@ const LAYERS = [
     id: 5, name: '沙箱底层运行时', color: 'orange',
     docs: [
       { slug: 'orchestrator-module', title: 'orchestrator-module', desc: 'Orchestrator 服务:Firecracker microVM、NBD、网络 slot/tap、模板缓存、gRPC', lines: 2136 },
+      { slug: 'artifact-storage-cache', title: 'artifact-storage-cache', desc: 'Artifact 存储:V3/V4/V5 header、FrameTable、分层读取、NFS/P2P/对象存储缓存', lines: 379 },
       { slug: 'hyperloop-api-module', title: 'hyperloop-api-module', desc: 'Sandbox 内部 HTTP 通道:源 IP 身份、/me、日志 payload 防伪、collector 转发', lines: 666 },
       { slug: 'node-module', title: 'node-module', desc: '节点池:Instance 抽象、健康状态机、DrainSandboxes、autoscaler、机型兼容性', lines: 1895 },
       { slug: 'volumes', title: 'volumes', desc: '持久化卷:NFS 后端、本地缓存、双层调度门控、文件流式读写', lines: 983 },
@@ -692,6 +695,7 @@ const LAYERS = [
       { slug: 'client-proxy-module', title: 'client-proxy-module', desc: '边缘代理:公网入口、Consul 发现、paused sandbox 流量调度、Resume、连接池', lines: 1577 },
       { slug: 'edge-api-module', title: 'edge-api-module', desc: '远端 cluster HTTP 契约:service discovery、sandbox logs/metrics、build logs、兼容性', lines: 648 },
       { slug: 'team-metrics-module', title: 'team-metrics-module', desc: '团队用量与计费:OTLP Delta temporality、ClickHouse 查询、gauge/counter 上报', lines: 1182 },
+      { slug: 'observability-pipeline', title: 'observability-pipeline', desc: '可观测链路:OTel、Vector、Loki、ClickHouse、sandbox metrics、事件与 host stats', lines: 435 },
       { slug: 'sandbox-metrics-tz-verification', title: 'sandbox-metrics-tz-verification', desc: 'ClickHouse sandbox metrics 时区问题的可复现实验与参数时区修复验证', lines: 264 },
     ]
   },
