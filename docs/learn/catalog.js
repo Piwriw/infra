@@ -224,6 +224,7 @@ window.LEARNING_CATALOG = (() => {
     ['snapshots', 'Snapshots 快照系统', 'runtime', '../md/snapshots.md', 'docs/md/snapshots.md', 'pause/resume 产物、分发和缓存 TTL。', ['Snapshot', 'Storage']],
     ['envd-deep', 'Envd 深度剖析', 'runtime', '../md/envd-module.md', 'docs/md/envd-module.md', '进程、文件、cgroup、MMDS 与端口转发。', ['Envd', 'Process']],
     ['envd-api', 'Envd REST API', 'runtime', '../md/envd-api-module.md', 'docs/md/envd-api-module.md', '初始化、文件传输、认证与 freeze/thaw。', ['Envd', 'REST']],
+    ['public-uri-flow', 'Sandbox Public URI 访问链路', 'traffic', '../md/sandbox-public-uri-request-flow.md', 'docs/md/sandbox-public-uri-request-flow.md', '从公网 DNS、TLS 和 Host 解析到 VM 内用户服务，并覆盖 private ingress、auto-resume 与自定义域名。', ['Public URI', 'Traffic', 'Proxy']],
     ['traffic-routing', 'Sandbox 流量路由', 'traffic', '../md/sandbox-traffic-routing.md', 'docs/md/sandbox-traffic-routing.md', 'Client Proxy、Host 解析、token 与下游路由。', ['Traffic', 'Proxy']],
     ['client-proxy-deep', 'Client Proxy 深度剖析', 'traffic', '../md/client-proxy-module.md', 'docs/md/client-proxy-module.md', 'catalog、连接池、恢复和优雅关停。', ['Proxy', 'Redis']],
     ['edge-api', 'Edge API 契约', 'traffic', '../md/edge-api-module.md', 'docs/md/edge-api-module.md', '远端 cluster 的服务发现、日志和指标契约。', ['Edge', 'OpenAPI']],
