@@ -690,3 +690,286 @@ curl -sv \
 | 部署入口 | [`iac/provider-gcp/nomad-cluster/network/main.tf`](../iac/provider-gcp/nomad-cluster/network/main.tf)、[`iac/provider-aws/alb.tf`](../iac/provider-aws/alb.tf) | [`web-docs/sandbox-traffic-routing.md`](./sandbox-traffic-routing.md) |
 
 更细的 Host 语法、连接池和错误模板说明见 [`sandbox-traffic-routing.md`](./sandbox-traffic-routing.md)；auto-resume 状态机见 [`auto-resume-module.md`](./auto-resume-module.md)。本篇保留端到端视角，只记录会改变排障结论的实现细节。
+
+## 16. HTTP 透传契约
+
+### 16.1 ReverseProxy 对请求的改变范围
+
+**已实现：** 两层 proxy 都使用共享 `pool.ProxyClient`。该 client 的 `Rewrite` 回调先从 request context 取出 `Destination`，再调用 `r.SetURL(t.Url)`。因此 upstream 的 scheme 和 authority 来自 destination；请求的 method、URI path、query、body 以及未被显式覆盖的 header 仍由 Go `httputil.ReverseProxy` 负责复制。
+
+**已实现：** 共享实现没有调用 `SetXForwarded()`。没有 `maskRequestHost` 时，代码显式设置 `r.Out.Host = r.In.Host`，所以用户服务看到的 `Host` 是原始 Public URI Host，而不是 orchestrator 节点地址。这个选择还避免标准库自动写入的 `X-Forwarded-*` 组合影响 `Content-Location`，源码注释把这一点列为兼容性原因。
+
+**已实现：** 配置了 `MaskRequestHost` 时，upstream `Host` 被替换为 mask，原始值写入单一的 `X-Forwarded-Host`：
+
+```text
+client request Host       = 3000-i7fa3.sandbox.example.com
+upstream request Host     = api.internal.example.com:3000
+upstream X-Forwarded-Host = 3000-i7fa3.sandbox.example.com
+```
+
+上面的两个 Host 只表示字段位置；真实 sandbox ID 和 mask 由请求与配置决定。不要把 `X-Forwarded-Host` 当作可验证的身份凭据，应用若要信任它，必须只信任来自已知 proxy 的连接。
+
+**可推导：** 由于 `Destination.Url` 在 Client Proxy 阶段指向 `<orchestratorIP>:5007`，在 Orchestrator Proxy 阶段指向 `<slotHostIP>:<requestedPort>`，path 和 query 在两个阶段都不会被重新拼接。若用户服务收到错误 path，应先比较两层 access log 中的原始 URL，再检查服务自身的 router；不应先假设 catalog 把 path 丢失了。
+
+### 16.2 Header、压缩和协议版本
+
+**已实现：** transport 设置 `DisableCompression: true`，不会为了 upstream 协商而自动加入 `Accept-Encoding: gzip`，也不会在 proxy 层解压或重新压缩响应。用户服务主动返回的 `Content-Encoding` 仍属于业务响应的一部分，proxy 不会把它改写成固定编码。
+
+**已实现：** transport 设置 `ForceAttemptHTTP2: false`。Client Proxy 到 Orchestrator Proxy 的普通连接因此按 HTTP/1.1 建立；Orchestrator Proxy 到 VM 也沿用同一 transport。入口 server 通过 `httpserver.ConfigureH2C` 开启 h2c 能力，实际是否使用 h2c 由入口负载均衡器和后端配置决定，而不是由 Public URI 的端口号决定。
+
+**已实现：** GCP 网络模块为 `session` backend 同时创建可选 H2C backend，`protocol = "H2C"` 且 `compression_mode = "DISABLED"`。同一个配置文件明确提醒：WebSocket upgrade 路径应继续留在 HTTP/1.1 backend，除非另行拆分 backend。因此，看到普通 HTTP/2 成功不能推断 WebSocket 在所有部署中都会成功。
+
+**可推导：** 对长响应、SSE 或 WebSocket，连接 limiter 的释放点仍是 proxy handler 返回之后，而不是收到 response headers 的时刻。入口 LB、客户端和用户服务任何一层提前关闭连接，才会让 handler 提前返回；只要 body 还在读取，整个 slot 仍计入并发数。
+
+### 16.3 业务响应和代理错误的边界
+
+**已实现：** `ModifyResponse` 只记录状态码，不替换业务 body。用户服务返回的 `2xx/3xx/4xx/5xx` 会沿反向链路返回，状态码和应用 header 由 `ReverseProxy` 继续处理。只有 transport 无法建立或写入 upstream 时才进入 `ErrorHandler`。
+
+**已实现：** 代理生成的恢复、限流和端口错误使用统一模板。模板根据 User-Agent 是否匹配 `mozilla|chrome|safari|firefox|edge|opera|msie` 选择 HTML 或 JSON：
+
+| 触发类型 | 状态码 | 非浏览器 Content-Type | 浏览器 Content-Type |
+|---|---:|---|---|
+| 恢复权限拒绝 | 403 | `application/json; charset=utf-8` | `text/html; charset=utf-8` |
+| 仍在过渡 | 409 | `application/json; charset=utf-8` | `text/html; charset=utf-8` |
+| 团队/连接资源耗尽 | 429 | `application/json; charset=utf-8` | `text/html; charset=utf-8` |
+| Sandbox 不存在或端口关闭 | 502 | `application/json; charset=utf-8` | `text/html; charset=utf-8` |
+
+对应测试在 [`packages/shared/pkg/proxy/proxy_test.go`](../packages/shared/pkg/proxy/proxy_test.go) 中分别用普通 client 和 Mozilla User-Agent 验证了 status code、Content-Type 和 JSON 字段。排障脚本使用 `curl` 时通常得到 JSON；浏览器直接打开同一 URL 则可能看到内嵌 HTML 页面。
+
+**已实现：** Host、ID、端口和 routing header 的解析错误不走模板，而由 `handler.go` 用 `http.Error` 返回纯文本 `400`。如果看到 JSON 错误体，说明请求至少已经通过了 Host parser；如果看到 `Invalid host`，Redis、auto-resume 和 VM 尚未被访问。
+
+### 16.4 请求体重试的风险
+
+**已实现：** Client Proxy 的 pool 只设置 `ClientProxyRetries = 1`，Orchestrator Proxy 设置 `SandboxProxyRetries = 5`。重试发生在 transport 的 TCP dial，而不是在 HTTP handler 中重复发送已经写出的 application request。每次 dial 都接收原 request context，因此客户端取消会停止后续尝试。
+
+**可推导：** 对带不可重放 body 的 `POST`，proxy 不会因为端口重试而在应用层复制一次 POST；但如果客户端自身重试整个 HTTP 请求，用户服务仍可能收到多次业务操作。需要幂等性的 API 应使用业务 idempotency key，不能依赖 Public URI proxy 的 dial retry。
+
+**建议方案：** 若未来增加 HTTP 层重试，应限定为明确可重放的 `GET/HEAD/OPTIONS`，或者要求调用方提供显式幂等键，并在文档和 metrics 中区分“dial retry”和“request retry”。当前仓库没有通用的 request-level retry middleware。
+
+## 17. 生命周期级连接池和并发控制
+
+### 17.1 两种 connection key
+
+**已实现：** Client Proxy 的 destination 使用常量 `client-proxy` 作为 `ConnectionKey`。它只连接各节点的 `IP:5007`，不需要为每个 Sandbox 创建独立 keep-alive pool；同一个节点的 upstream 连接可以被多个 Sandbox 请求共享，因为节点侧会再次按 Sandbox ID 路由。
+
+**已实现：** Orchestrator Proxy 的 destination 使用 `sbx.LifecycleID`，而不是 Sandbox ID 或 slot IP。注释明确指出：同一 network slot 的 IP:port 可能在 pause/resume 后被重新分配；LifecycleID 能防止旧生命周期的连接被新生命周期复用。
+
+**可推导：** `ExecutionID` 在 pause/resume 过程中可保持稳定，LifecycleID 每次运行实例独立。故排查连接复用时应同时记录：
+
+| 标识 | 用途 | 是否跨 resume 稳定 |
+|---|---|---:|
+| Sandbox ID | Public URI 和 API 资源 | 是 |
+| Execution ID | catalog 删除守卫、API/分析身份 | 通常是 |
+| Lifecycle ID | 节点内 map、连接池、limiter | 否，每次生命周期新建 |
+| slot IP | VM 网络寻址 | 可能复用 |
+
+把 Sandbox ID 当作 pool key 会让旧 cleanup 线程有机会关闭新生命周期的连接；这也是源码不采用 Sandbox ID 的原因。
+
+### 17.2 pool 容量与关闭顺序
+
+**已实现：** 共享 pool 的总 idle client 上限是 `16384`。每个 `ProxyClient` 的 `MaxIdleConnsPerHost` 为总上限除以 `hostConnectionSplit=4`（总上限不超过 4 时不再除），目的是避免一个 host 吃完所有本地可用端口。这个值是 transport 上限，不代表每个 Sandbox 可以同时建立 16384 个业务连接。
+
+**已实现：** `ProxyPool.Close(connectionKey)` 先从 map 删除 proxy，再关闭 idle connections，并调用 active connection 的 `Reset()`。Orchestrator server 在 sandbox lifecycle goroutine 完成 `sbx.Close` 后按 LifecycleID 调用 `RemoveFromPool`；模板构建阶段也有同样的 defer 清理。清理失败会记 warning，不能把它解释为 Sandbox 仍然在 catalog 中。
+
+**可推导：** lifecycle cleanup 与一个正在进行的 response 可能并发。关闭 active connection 会让客户端看到连接错误或截断 body；这是停止 Sandbox 时的预期结果。若业务需要完整下载，应在 Sandbox 停止前等待 response 完成，而不是依赖 pool 的 graceful idle timeout。
+
+### 17.3 limiter 的原子语义
+
+**已实现：** `ConnectionLimiter.TryAcquire` 为每个 key 保存 `atomic.Int64`，使用 CAS 循环递增。`maxLimit < 0` 表示不限制，`maxLimit == 0` 直接拒绝全部请求；非负上限下只有 `current < maxLimit` 时才允许递增。`Release` 也用 CAS 递减，计数不会下降到负数。
+
+**已实现：** handler 在 destination 解析成功后、调用 pool `ServeHTTP` 前获取 slot；获取失败立即渲染 429，不建立 downstream 连接。获取成功后用 defer 释放，因此包含代理错误、客户端取消和正常业务响应。Orchestrator 的 `GetMaxLimit` 从 feature flag `SandboxMaxIncomingConnections` 读取，不应把默认值写成永远固定的行为；当前默认 flag 值在指标说明中为 `-1`。
+
+**已实现：** Sandbox map 的 `OnNetworkRelease` 调用 `limiter.Remove(LifecycleID)`，避免生命周期结束后空 counter 永久留在 map。旧 response 的 defer 可能在 Remove 后执行，此时 `Release` 对已删除 key 是 no-op；它不会影响新生命周期的同名计数，因为新生命周期使用新的 key。
+
+**可推导：** slot 的占用单位是 HTTP handler 生命周期，不是 TCP accept 数。一个 keep-alive TCP 连接上的连续请求会分别进入 handler、分别获取和释放 slot；一个流式 response 则会长时间占用一个 slot。应使用 `IngressProxyConnectionDurationHistogramName` 观察长连接，而不是只看当前 server connection 数。
+
+### 17.4 并发排障矩阵
+
+| 现象 | 首要信号 | 可能边界 | 操作 |
+|---|---|---|---|
+| 立即 429 | `connectionsBlocked` 增加 | feature flag 上限、同一 Lifecycle 长连接 | 查看 limiter count 和 duration histogram |
+| 连接数持续增长 | pool/server observable gauge 增加 | 客户端未读 body、SSE、WebSocket | 对比 response duration 与 LB idle timeout |
+| resume 后偶发旧响应 | 同一 slot IP、不同 LifecycleID | pool 未及时关闭或旧请求仍存活 | 检查 lifecycle cleanup 和 `RemoveFromPool` warning |
+| 新 Sandbox 继承旧限流计数 | key 不是 LifecycleID 或 cleanup 缺失 | 自定义调用方误用 Sandbox ID | 检查 destination.ConnectionKey 和 `OnNetworkRelease` |
+
+**建议方案：** 若未来需要跨多台 orchestrator 的全局连接上限，应在边缘层引入有租约的分布式计数器；当前 limiter 只存在于单个 orchestrator 进程内，不能提供跨节点总量保证。
+
+## 18. Auto-resume gRPC 与 OAuth 精确协议
+
+### 18.1 proto 只承载 Sandbox ID
+
+**已实现：** [`packages/shared/pkg/grpc/proxy/proxy.proto`](../packages/shared/pkg/grpc/proxy/proxy.proto) 的 `SandboxResumeRequest` 只有 `sandbox_id` 字段，`timeout_seconds` 仍是 reserved。响应只有 `orchestrator_ip`。请求端口、业务 traffic token 和 secure envd token 不进入 proto message，而由 Client Proxy 追加到 gRPC metadata。
+
+```text
+ResumeSandbox request message:
+  sandbox_id = i7fa3
+
+metadata:
+  e2b-sandbox-request-port: 3000
+  e2b-traffic-access-token: <optional>
+  e2b-envd-access-token: <optional>
+  authorization: Bearer <optional edge OAuth token>
+```
+
+**可推导：** gRPC 调用没有 path、query 或 body，因此 auto-resume 成功后，原始 HTTP 请求仍由 Client Proxy 重新发送到 `<orchestratorIP>:5007`。API 不会缓存或重放用户 body；这把生命周期操作与业务请求数据边界分开。
+
+### 18.2 地址选择和 TLS
+
+**已实现：** Client Proxy 启动时优先使用 `API_INTERNAL_GRPC_ADDRESS`。只有该值为空，才回退到 `API_EDGE_GRPC_ADDRESS`，并将 `useTLS` 设为 true，同时加载 edge OAuth 配置。两个值都为空时，paused sandbox resumer 不创建，日志标明 paused checks disabled；运行中 catalog 路由不受此开关影响。
+
+**已实现：** internal gRPC server 注册 `NewSandboxService(apiStore, false, nil)`，通常由 Nomad Consul 地址 `api-internal-grpc.service.consul:<port>` 访问；edge gRPC server 注册 `NewSandboxService(apiStore, true, verifier)`。edge client 使用 TLS 最低版本 1.2，internal client 使用 insecure credentials，不能因为两者都使用 gRPC 就把证书要求混为一谈。
+
+**已实现：** 环境配置模型的 proxy/health 默认端口是 `3002/3003`，但 gRPC 地址和端口来自环境/IaC，不能从 Public URI 的业务 port 推导。GCP 和 AWS 的 provider 都向 client-proxy job 注入 `API_INTERNAL_GRPC_ADDRESS`；部署覆盖可以通过 `client_proxy_env_vars` 改变该值。
+
+### 18.3 OAuth token 生命周期
+
+**已实现：** OAuth 配置只要 Client ID、Client Secret 或 Token URL 任一非空，就被视为启用；启用时三项必须全部非空，否则初始化直接报错。`clientcredentials.Config` 请求 scope 固定为 `sandboxes:lifecycle`，拿到 token 后以 `Authorization: Bearer <access_token>` metadata 发送给 edge gRPC。
+
+**已实现：** Token 获取发生在每次 `Resume` 的 `authorize` 阶段，失败立即返回，不会调用 `ResumeSandbox` RPC。oauth2 `TokenSource` 负责缓存和刷新 token；本仓库没有在 HTTP 请求层另存 token，也不会把 token 写入 Redis catalog。
+
+**已实现：** API edge handler 在 `requireEdgeClientProxyAuth` 为 true 时依次要求 bearer token、OIDC claims、`sandboxes:lifecycle` scope。若目标 team 绑定 cluster，还会从 cluster 的 `AuthOrgID` 与 token `org_id` 做 constant-time 比较。验证失败统一返回 gRPC `PermissionDenied`，Client Proxy 再映射成恢复权限错误页面。
+
+**可推导：** 一个有效 OAuth token 只证明 Client Proxy 有权请求生命周期操作，不等于业务 traffic token，也不等于 secure envd token。三者在 metadata key、生成方和校验路径上互相独立：
+
+| 凭证 | 作用域 | 校验位置 | 是否写入 URL |
+|---|---|---|---:|
+| edge OAuth bearer | Client Proxy -> API edge gRPC | API OAuth verifier | 否 |
+| traffic access token | private 业务端口 | API resume + Orchestrator Proxy | 否，HTTP header/metadata |
+| envd access token | secure `49983` | API resume + envd | 否，HTTP `X-Access-Token`/metadata |
+
+**建议方案：** 生产环境应把三项 OAuth 配置作为同一 secret 的原子发布单元，并在滚动更新时先验证 token endpoint 可达；当前启动检查只验证配置是否完整，不会预取 token 或执行端到端授权探针。
+
+### 18.4 API 前置检查与错误转换
+
+**已实现：** API `ResumeSandbox` 的顺序是：鉴权、短 ID 规范化、snapshot/auto-resume policy、filesystem-only 检查、team/cluster 校验、已有 Sandbox 状态处理、envd token 生成、private ingress token 校验、启动 Sandbox、读取 node route。任何一步失败都会在调用 `startSandboxInternal` 前返回；因此错误不应被解释为“VM 已经启动但 HTTP 请求失败”。
+
+**已实现：** metadata 中缺少 `e2b-sandbox-request-port` 时，API 按 non-envd traffic 处理；端口值无法解析时记录 warning，也按 non-envd traffic 处理。这意味着自定义 gRPC 调用方若省略或拼错端口 metadata，可能意外走业务 token 分支，而不是 secure envd 分支。
+
+**已实现：** `startSandboxInternal` 返回的 HTTP API error 通过 `GRPCCodeFromHTTPStatus` 转换为 gRPC code；Client Proxy 根据 `PermissionDenied`、`FailedPrecondition`、`ResourceExhausted` 和其他 code 映射到 403、409、429 或 generic not-found/route error。要定位根因，应同时记录原始 gRPC status message 和最终 HTTP status。
+
+## 19. Redis catalog 一致性与竞态
+
+### 19.1 记录格式和 TTL
+
+**已实现：** Redis key 固定为 `sandbox:catalog:<sandboxID>`，value 是 JSON `SandboxInfo`：
+
+```json
+{
+  "orchestrator_id": "node-service-instance",
+  "orchestrator_ip": "10.0.1.25",
+  "execution_id": "execution-uuid",
+  "sandbox_started_at": "2026-08-19T08:00:00Z",
+  "sandbox_max_length_in_hours": 1
+}
+```
+
+字段名以 `SandboxInfo` 的 JSON tags 为准；示例值仅用于说明边界，不是固定部署值。API 生命周期代码只为本地节点写入 catalog；远程 cluster node 走 gRPC metadata routing registration，不在本地 Redis routing table 注册。
+
+**已实现：** Store 的 expiration 由 `MaxLengthInHours` 推导：sandbox 的最大生命周期除以一小时后转换为整数，再以该小时数构造 TTL。TTL 是生命周期上限的缓存边界，不是“请求后延长”的 sliding TTL。若部署允许非整小时的最大生命周期，应注意整数转换后的精度损失，并以实际 feature/config 为准。
+
+**已实现：** Get、Store、Delete 都在各自 Redis 操作外包一秒 context timeout，并创建对应 OpenTelemetry span：`sandbox-catalog-get`、`sandbox-catalog-store`、`sandbox-catalog-delete`。Redis timeout 或 JSON decode error 不等价于 key miss；只有 `redis.Nil` 被转换为 `ErrSandboxNotFound`。
+
+### 19.2 catalog miss 的唯一恢复入口
+
+**已实现：** Client Proxy 的 `catalogResolution` 只在 `GetSandbox` 返回 `ErrSandboxNotFound` 时调用 paused resumer。Redis 连接失败、超时、空 JSON 或 unmarshal 失败会直接走 route error，不会尝试恢复。这样可以避免 Redis 故障期间对同一 Sandbox 产生大量无依据的 resume 请求。
+
+**已实现：** resumer 返回的 `orchestrator_ip` 会经过 `strings.TrimSpace` 和 `normalizeNodeIP`；空字符串转换为 `ErrNodeRouteUnavailable`。Client Proxy 会记录 route unavailable，并最终把它包装成 Sandbox not found/502 页面。一个 catalog 命中但 IP 为空的记录仍然是不可路由状态，不能当成成功命中。
+
+**可推导：** catalog miss 与 snapshot miss 的外部表现可能相同（502 或 not-found 页面），但内部路径不同：前者可能调用 API，后者会在 API 返回 NotFound 后停止。排查时应先看 `sandbox-catalog-get` span 和 `catalog miss, attempting resume via api` 日志，再判断是否需要检查 snapshot。
+
+### 19.3 写入、删除和旧生命周期保护
+
+**已实现：** `addSandboxToRoutingTable` 由 API 生命周期调用，写入当前 node 的 service instance ID、路由 IP、ExecutionID、启动时间和最大长度。`removeSandboxFromNode` 在本地 node 上删除记录；远程 node 分支跳过 Redis 删除，因为它的路由注册由远端 gRPC metadata 管理。
+
+**已实现：** `DeleteSandbox` 删除前重新读取 value，并比较 `info.ExecutionID` 与待删除的 execution ID。若 catalog 已经被新生命周期覆盖，旧生命周期的删除请求直接返回，不会删除新路由。这个 compare 是防止 pause/resume 迟到 cleanup 破坏新路由的关键守卫。
+
+**可推导：** Delete 的实现对 Redis `Get` 的任意错误都返回 nil（注释说明不存在时可提前返回），而不是把 Redis error 传播给调用方；因此删除日志成功不一定证明 key 已经删除。若需要严格一致性，应结合 Redis key 查询和后续 Get span 验证，而不是只看 API delete 请求的 HTTP status。
+
+**可推导：** Store 和 Delete 不是同一个 Redis transaction。写入新 execution、旧 execution 删除、节点网络释放之间可能交错；ExecutionID compare 只保护删除，不提供跨操作的全局线性化。Client Proxy 必须把 catalog 当作短期路由缓存，不能把它当作 Sandbox 状态的唯一事实源。
+
+### 19.4 并发恢复的行为
+
+**已实现：** 两个边缘请求同时看到 miss 时，两个请求都可能进入 `ResumeSandbox`。API 在启动新实例前查询 orchestrator 状态，并调用 `HandleExistingSandboxAutoResume`；若发现已有实例或过渡状态，会返回已有 node route、`FailedPrecondition`（still transitioning）或其他明确错误。仓库没有在 Client Proxy 内实现 per-Sandbox singleflight。
+
+**可推导：** 一个请求可能在 API 已启动 Sandbox 但 catalog 尚未写回的窗口内再次看到 miss。此时第二次请求可能等待已有状态，也可能得到 409；客户端应使用有上限的退避，不能把所有 409 当成可无限重试。恢复成功返回 node IP 后，当前请求才会重新进入 Client Proxy pool。
+
+**建议方案：** 若需要降低同一 Sandbox 的重复 resume，应在 API 层以 Sandbox ID 建立短时 singleflight/lease，并将 lease 状态与现有生命周期状态机绑定。单独在 Redis 加锁而不处理 API 进程崩溃、lease 过期和旧 ExecutionID，可能引入更难排查的死锁；当前仓库尚未实现这一方案。
+
+## 20. 配置、部署和操作手册
+
+### 20.1 Client Proxy 进程和 Nomad
+
+**已实现：** client-proxy 配置默认 `PROXY_PORT=3002`、`HEALTH_PORT=3003`，但环境变量可覆盖。Nomad job 将两个端口声明为 host network static port，并把 `HEALTH_PORT`、`PROXY_PORT` 传给容器。健康 handler 在 healthy 状态返回 `200 healthy`，否则返回 `503 unhealthy`。
+
+**已实现：** Nomad service check 访问 health port 的 `/health`，间隔和 timeout 都是 job 配置项；Traefik service router 使用 `PathPrefix(`/`)` 的低优先级 fallback，承接动态 Sandbox 子域名。该 fallback 只决定请求送到 Client Proxy，不解析 Sandbox ID，也不替代 Client Proxy 的 Host parser。
+
+**已实现：** job restart policy 在十分钟内最多尝试两次，reschedule 使用指数退避并允许无限次重新放置；启用 update stanza 时采用 canary 和健康 deadline。看到所有 Sandbox 同时 502 时，应先检查 Nomad allocation、`/health` 和 restart/reschedule 事件，再检查 Redis。
+
+**可推导：** Client Proxy 自身没有业务连接 limiter；它的 pool/server observable metrics 只能说明入口连接和到节点的连接数量，不能说明某个 Sandbox 的并发数。Sandbox 级 429 只在 Orchestrator Proxy 的 limiter 产生。
+
+### 20.2 GCP 入口边界
+
+**已实现：** GCP URL map 将 `*.${domain_name}` 和额外域名的 wildcard host 送到 `session-paths`，其 default backend 是可配置的 client-proxy session port；`api.*`、`docker.*` 和 `nomad.*` 有各自 host rule。session backend timeout 从 IaC 配置读取，当前定义为 86400 秒，health check path/port 同样由 `client_proxy_health_port` 变量提供。
+
+**已实现：** GCP TLS policy 的最低版本是 TLS 1.2；certificate map 同时覆盖顶层域名和 wildcard 子域名。Cloudflare `A` wildcard record 指向 global forwarding rule 的 IP，不是指向单个 Sandbox 或 orchestrator 节点。
+
+**已实现：** session、api、docker-reverse-proxy backend 的 compression 被禁用；H2C backend 是单独资源，且由 `h2c_backends` 集合决定。WebSocket 是否使用 HTTP/1.1 backend 取决于部署路由，不能只看 client-proxy 是否开启 h2c。
+
+**排障顺序：**
+
+1. 用 `dig` 检查 wildcard A 记录和实际 global forwarding IP。
+2. 用 `openssl s_client -servername <full-host>` 检查证书和 TLS 最低版本。
+3. 检查 URL map 的 host rule 是否落在 session backend，而不是 `api.*` 或 `nomad.*`。
+4. 检查 session health check 是否命中 `3003`（或覆盖后的 health port）和正确 path。
+5. 最后才在 Client Proxy 查 Host parser 和 Redis catalog。
+
+### 20.3 AWS ALB 和 gRPC 分流
+
+**已实现：** AWS HTTPS listener 的默认 action 转发到 HTTP/1 target group；`content-type: application/grpc*` 的优先级规则转发到独立的 GRPC target group。两个 target group 都指向可配置的 ingress port，但业务 target group 使用 `protocol_version = "HTTP1"`，gRPC target group 使用 `protocol_version = "GRPC"`。
+
+**已实现：** AWS HTTP target group 健康检查为 `/ping`、matcher `200`；GRPC target group 也请求 `/ping`，但 matcher 是 gRPC status `0`。因此在 AWS 上用浏览器访问 `/ping` 验证 gRPC 健康并不等价于一次完整 Resume RPC；它只验证 target group 的 health contract。
+
+**已实现：** ALB 的 host default route 不做 Sandbox ID 解析；wildcard certificate 只负责 TLS。若自定义域名直接落到 default target group，Client Proxy 仍会看到自定义 Host，并按标准 `<port>-<sandboxID>.<domain>` 规则解析失败。域名 alias 必须在 edge rewrite/redirect 或平台映射层实现。
+
+### 20.4 错误到操作动作的映射
+
+| 外部结果 | 已知原因 | 先查什么 | 不要做什么 |
+|---|---|---|---|
+| 400 | Host/header/ID/port 语法 | `host.go` 日志、请求 Host | 不要重试 Redis 或 resume |
+| 403 | traffic/envd/OAuth/组织权限 | token header、gRPC status、scope/org | 不要把 OAuth token 当 traffic token |
+| 409 | 已有生命周期仍在过渡 | API existing-sandbox 日志和 transition budget | 不要并发启动第二个 Sandbox |
+| 429 | team quota 或 ingress connection limit | API resource error、proxy blocked metric | 不要无界指数重试 |
+| 502 | catalog/route/VM dial 失败 | catalog span、node IP、端口监听 | 不要直接判定 VM 崩溃 |
+| 500 | 代理内部模板/未知错误 | Client/Orchestrator error log | 不要把业务 5xx 与代理 500 混淆 |
+
+**已实现：** 代理自身的 `DefaultToPortError` 只在 Orchestrator Proxy destination 设置为 true；因此节点侧 dial 失败通常渲染“Sandbox running but no service on port”页面，而 Client Proxy 到 `:5007` 的失败走 generic route failure。这个差异可帮助区分“节点不可达”和“VM 端口未监听”。
+
+### 20.5 最小测试和未覆盖风险
+
+**已实现：** 当前测试可以覆盖以下最小矩阵：
+
+| 测试 | 证据 |
+|---|---|
+| Host/header 解析和非法输入 | [`packages/shared/pkg/proxy/host_test.go`](../packages/shared/pkg/proxy/host_test.go) |
+| HTML/JSON 错误模板和 status | [`packages/shared/pkg/proxy/proxy_test.go`](../packages/shared/pkg/proxy/proxy_test.go) |
+| Host mask 与 X-Forwarded-Host | [`packages/shared/pkg/proxy/proxy_test.go`](../packages/shared/pkg/proxy/proxy_test.go) |
+| connection limiter 的阻断/释放 | [`packages/shared/pkg/proxy/proxy_test.go`](../packages/shared/pkg/proxy/proxy_test.go)、[`packages/shared/pkg/connlimit/limiter_test.go`](../packages/shared/pkg/connlimit/limiter_test.go) |
+| Client Proxy mask 和 catalog/resume 分支 | [`packages/client-proxy/internal/proxy/proxy_test.go`](../packages/client-proxy/internal/proxy/proxy_test.go) |
+| gRPC OAuth 配置、metadata 和错误 | [`packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc_test.go`](../packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc_test.go)、[`packages/client-proxy/internal/proxy/grpc_resume_auth_test.go`](../packages/client-proxy/internal/proxy/grpc_resume_auth_test.go) |
+| API resume 的 token、policy 和状态 | [`packages/api/internal/handlers/proxy_grpc_test.go`](../packages/api/internal/handlers/proxy_grpc_test.go) |
+
+**未覆盖风险：** 当前仓库没有一个同时启动真实 LB、Client Proxy、Redis、API gRPC、Orchestrator Proxy、envd 和 Firecracker 的端到端 Public URI 测试。尤其需要人工验证：
+
+- GCP H2C 与 WebSocket upgrade 在具体 URL map 版本中的组合；
+- AWS ALB gRPC health matcher 与实际 edge gRPC TLS/证书链；
+- Redis timeout、catalog 写入延迟和 API 启动窗口的并发行为；
+- slot IP 复用时旧 keep-alive/streaming response 的关闭可见性；
+- 自定义域名 rewrite 是否保留原始 Host、SNI、`X-Forwarded-Host` 和 private token 的可信边界。
+
+**建议方案：** 将这些风险纳入部署 smoke test，至少记录 request ID、Sandbox ID、port、ExecutionID、LifecycleID、catalog key、orchestrator IP、gRPC status 和最终 HTTP status。测试应使用短生命周期、可重复的 sandbox fixture，结束时显式等待 catalog 删除和 pool cleanup，避免把前一次测试的 slot 或 Redis key 当成当前结果。
+
+### 20.6 文档边界和配置变更规则
+
+**已实现：** 本文只描述源码和当前 IaC 能证明的行为；端口、域名、最大生命周期、feature flag、LB timeout、health path、OAuth issuer 和是否启用 edge auth 都是配置驱动。部署升级时应重新检查对应变量和环境注入，而不是把示例中的 `3000`、`3002`、`3003`、`5007` 或 `49983` 当作所有环境的常量。
+
+**建议方案：** 新增 ingress 行为时同时更新三处：OpenAPI 的网络配置说明、本文的端到端边界、以及对应的单元/集成测试。若引入 DNS alias、private ingress gateway、全局 connection limiter 或 HTTP request retry，还应先定义数据存储、token 生命周期和旧生命周期清理语义，再添加实现；单独增加一条路由规则无法解决这些跨服务一致性问题。
