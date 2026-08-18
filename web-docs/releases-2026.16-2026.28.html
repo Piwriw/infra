@@ -1,0 +1,1533 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="E2B Infra 2026.16 到 2026.28 的逐版本变更报告">
+  <title>E2B Infra 版本演进报告 · 2026.16—2026.28</title>
+  <style>
+    :root {
+      --paper: #f3f6f4;
+      --surface: #ffffff;
+      --ink: #17201d;
+      --muted: #5c6964;
+      --faint: #7d8984;
+      --line: #cad4cf;
+      --line-strong: #97a59f;
+      --green: #087a52;
+      --green-soft: #dff3e8;
+      --blue: #1f5fbf;
+      --blue-soft: #e4edfb;
+      --red: #b8322a;
+      --red-soft: #f9e6e3;
+      --amber: #9a5d00;
+      --amber-soft: #f8edcf;
+      --violet: #6849a8;
+      --violet-soft: #eee8f8;
+      --charcoal: #222c28;
+      --shadow: 0 12px 36px rgba(23, 32, 29, 0.08);
+      --sans: "Avenir Next", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      --serif: "Iowan Old Style", "Songti SC", "STSong", serif;
+      --mono: "SFMono-Regular", "Cascadia Code", "Roboto Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 96px;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration-color: rgba(8, 122, 82, 0.45);
+      text-underline-offset: 3px;
+    }
+
+    a:hover { text-decoration-color: currentColor; }
+
+    button,
+    input,
+    select { font: inherit; }
+
+    button,
+    select { cursor: pointer; }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    a:focus-visible {
+      outline: 3px solid rgba(31, 95, 191, 0.38);
+      outline-offset: 3px;
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: 0.88em;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    li { overflow-wrap: anywhere; }
+
+    .skip-link {
+      position: fixed;
+      z-index: 100;
+      top: 10px;
+      left: 10px;
+      padding: 8px 12px;
+      color: #fff;
+      background: var(--ink);
+      transform: translateY(-160%);
+    }
+
+    .skip-link:focus { transform: translateY(0); }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .topbar {
+      min-height: 54px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(243, 246, 244, 0.96);
+    }
+
+    .topbar-inner {
+      width: min(1420px, calc(100% - 40px));
+      min-height: 54px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      width: 12px;
+      height: 12px;
+      border: 3px solid var(--green);
+      background: var(--surface);
+      transform: rotate(45deg);
+    }
+
+    .topbar-meta {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .hero {
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .hero-inner {
+      width: min(1420px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 58px 0 42px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(520px, 1.05fr);
+      gap: 70px;
+      align-items: end;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p { margin-top: 0; }
+
+    h1 {
+      max-width: 760px;
+      margin-bottom: 18px;
+      font-family: var(--serif);
+      font-size: 58px;
+      font-weight: 600;
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .hero-lead {
+      max-width: 700px;
+      margin-bottom: 26px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .scope-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      color: var(--faint);
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .scope-line span::before {
+      content: "";
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      margin: 0 8px 2px 0;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .hero-visual {
+      min-width: 0;
+      padding: 20px 22px 18px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background: #f8faf9;
+      box-shadow: var(--shadow);
+    }
+
+    .visual-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .visual-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .visual-scale {
+      color: var(--faint);
+      font-family: var(--mono);
+      font-size: 10px;
+    }
+
+    .release-chart {
+      height: 180px;
+      display: grid;
+      grid-template-columns: repeat(12, minmax(22px, 1fr));
+      gap: 8px;
+      align-items: end;
+    }
+
+    .chart-column {
+      min-width: 0;
+      height: 100%;
+      display: grid;
+      grid-template-rows: 1fr auto auto;
+      align-items: end;
+      gap: 5px;
+      padding: 0;
+      border: 0;
+      color: inherit;
+      background: transparent;
+    }
+
+    .chart-track {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: end;
+      background: #e5ebe8;
+      overflow: hidden;
+    }
+
+    .chart-bar {
+      width: 100%;
+      min-height: 4px;
+      background: var(--green);
+      transition: background 160ms ease, height 400ms ease;
+    }
+
+    .chart-column:hover .chart-bar,
+    .chart-column:focus-visible .chart-bar { background: var(--blue); }
+
+    .chart-column:disabled {
+      cursor: not-allowed;
+      opacity: 0.3;
+    }
+
+    .chart-column:disabled:hover .chart-bar { background: var(--green); }
+
+    .chart-count {
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .chart-version {
+      color: var(--faint);
+      font-family: var(--mono);
+      font-size: 9px;
+      line-height: 1;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin-top: 34px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .stat {
+      min-width: 0;
+      padding: 18px 18px 16px 0;
+    }
+
+    .stat + .stat {
+      padding-left: 18px;
+      border-left: 1px solid var(--line);
+    }
+
+    .stat-value {
+      display: block;
+      margin-bottom: 2px;
+      font-family: var(--serif);
+      font-size: 29px;
+      font-weight: 600;
+      line-height: 1.1;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .workspace {
+      width: min(1420px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .overview {
+      padding: 48px 0 36px;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.35fr) minmax(0, 0.65fr);
+      gap: 36px;
+      align-items: start;
+      margin-bottom: 24px;
+    }
+
+    .section-kicker {
+      margin-bottom: 8px;
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin-bottom: 12px;
+      font-family: var(--serif);
+      font-size: 36px;
+      font-weight: 600;
+      line-height: 1.14;
+      letter-spacing: 0;
+    }
+
+    .section-copy {
+      margin: 4px 0 0;
+      color: var(--muted);
+    }
+
+    .storylines {
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .storyline {
+      display: grid;
+      grid-template-columns: 160px minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .storyline-name {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .storyline-flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .storyline-flow .node {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--ink);
+      background: var(--surface);
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+
+    .storyline-flow .arrow { color: var(--line-strong); }
+
+    .upgrade-band {
+      margin: 36px 0 44px;
+      border: 1px solid #d1ab68;
+      border-left: 5px solid var(--amber);
+      background: #fffaf0;
+    }
+
+    .upgrade-head {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 28px;
+      padding: 22px 24px;
+      border-bottom: 1px solid #e3cc9e;
+    }
+
+    .upgrade-head h2 {
+      margin-bottom: 0;
+      font-size: 27px;
+    }
+
+    .upgrade-head p {
+      margin: 2px 0 0;
+      color: #735523;
+      font-size: 14px;
+    }
+
+    .upgrade-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .upgrade-item {
+      display: grid;
+      grid-template-columns: 54px minmax(0, 1fr);
+      gap: 12px;
+      padding: 16px 22px;
+      border-bottom: 1px solid #ead8b5;
+    }
+
+    .upgrade-item:nth-child(odd) { border-right: 1px solid #ead8b5; }
+
+    .upgrade-version {
+      padding-top: 2px;
+      color: var(--amber);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .upgrade-item strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 13px;
+    }
+
+    .upgrade-item span:not(.upgrade-version) {
+      display: block;
+      color: #735d38;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .controls-shell {
+      position: sticky;
+      z-index: 20;
+      top: 0;
+      margin-bottom: 0;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: rgba(243, 246, 244, 0.97);
+      backdrop-filter: blur(12px);
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) 210px auto auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .search-wrap {
+      position: relative;
+      min-width: 0;
+    }
+
+    .search-wrap input,
+    .category-select {
+      width: 100%;
+      height: 42px;
+      border: 1px solid var(--line-strong);
+      border-radius: 4px;
+      color: var(--ink);
+      background: var(--surface);
+    }
+
+    .search-wrap input {
+      padding: 0 46px 0 13px;
+    }
+
+    .search-wrap input::placeholder { color: var(--faint); }
+
+    .clear-search {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 36px;
+      height: 36px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      color: var(--muted);
+      background: transparent;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .clear-search.visible { display: flex; }
+
+    .category-select { padding: 0 11px; }
+
+    .toggle {
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 0 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: 4px;
+      background: var(--surface);
+      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .toggle input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: var(--amber);
+    }
+
+    .result-count {
+      min-width: 108px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 11px;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .timeline-layout {
+      display: grid;
+      grid-template-columns: 176px minmax(0, 1fr);
+      gap: 42px;
+      align-items: start;
+      padding: 40px 0 72px;
+    }
+
+    .version-nav {
+      position: sticky;
+      top: 84px;
+      max-height: calc(100vh - 108px);
+      overflow: auto;
+      padding-right: 12px;
+    }
+
+    .version-nav-title {
+      margin: 0 0 11px;
+      color: var(--faint);
+      font-family: var(--mono);
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+
+    .baseline {
+      margin-bottom: 8px;
+      padding: 8px 10px;
+      border-left: 2px solid var(--line-strong);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+
+    .version-link {
+      width: 100%;
+      min-height: 36px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border: 0;
+      border-left: 2px solid var(--line);
+      color: var(--muted);
+      background: transparent;
+      text-align: left;
+      transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+    }
+
+    .version-link:hover {
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .version-link.active {
+      border-left-color: var(--green);
+      color: var(--green);
+      background: var(--green-soft);
+      font-weight: 700;
+    }
+
+    .version-link:disabled {
+      color: var(--faint);
+      background: transparent;
+      cursor: not-allowed;
+      opacity: 0.38;
+    }
+
+    .version-link .v {
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .version-link .n {
+      color: var(--faint);
+      font-family: var(--mono);
+      font-size: 9px;
+    }
+
+    .releases { min-width: 0; }
+
+    .release {
+      scroll-margin-top: 92px;
+      padding: 0 0 58px;
+      border-top: 2px solid var(--ink);
+    }
+
+    .release + .release { margin-top: 10px; }
+
+    .release-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 30px;
+      align-items: start;
+      padding: 22px 0 18px;
+    }
+
+    .release-route {
+      margin-bottom: 6px;
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .release h3 {
+      margin-bottom: 7px;
+      font-family: var(--serif);
+      font-size: 33px;
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .release-summary {
+      max-width: 780px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .release-metrics {
+      min-width: 300px;
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      gap: 4px 18px;
+      justify-content: end;
+      padding-top: 4px;
+      text-align: right;
+    }
+
+    .metric strong {
+      display: block;
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--faint);
+      font-size: 9px;
+      text-transform: uppercase;
+    }
+
+    .metric.delta strong { color: var(--green); }
+
+    .change-list { border-top: 1px solid var(--line-strong); }
+
+    .change {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr) 190px;
+      gap: 24px;
+      align-items: start;
+      padding: 18px 0 19px;
+      border-bottom: 1px solid var(--line);
+      animation: reveal 360ms both;
+    }
+
+    @keyframes reveal {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .change-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding-top: 2px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 2px 7px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 700;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .category-api,
+    .category-auth,
+    .category-dashboard { color: var(--blue); background: var(--blue-soft); border-color: #b7cbee; }
+    .category-runtime,
+    .category-storage { color: var(--green); background: var(--green-soft); border-color: #b7dbc9; }
+    .category-network,
+    .category-platform { color: var(--violet); background: var(--violet-soft); border-color: #d3c5e9; }
+    .category-security { color: var(--red); background: var(--red-soft); border-color: #efbbb5; }
+    .category-observability { color: #52615b; background: #e8eeeb; border-color: #cad4cf; }
+
+    .impact-action { color: var(--red); border-color: #df9c96; background: #fff; }
+    .impact-attention { color: var(--amber); border-color: #d8b56f; background: #fff; }
+    .impact-capability { color: var(--blue); border-color: #aac1e5; background: #fff; }
+    .impact-reliability { color: var(--green); border-color: #98ccb3; background: #fff; }
+    .impact-security { color: var(--red); border-color: #df9c96; background: #fff; }
+    .impact-reverted { color: var(--muted); border-color: var(--line-strong); background: #fff; }
+
+    .change-copy h4 {
+      margin: 0 0 5px;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .change-copy p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .sources {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 6px;
+      padding-top: 1px;
+    }
+
+    .source-link {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 5px;
+      min-height: 25px;
+      padding: 3px 7px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      color: var(--muted);
+      background: var(--surface);
+      font-family: var(--mono);
+      font-size: 9px;
+      text-decoration: none;
+    }
+
+    .source-link:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .source-link code { color: var(--faint); }
+
+    .release-note {
+      margin-top: 13px;
+      padding: 11px 13px;
+      border-left: 3px solid var(--line-strong);
+      color: var(--muted);
+      background: #e9eeec;
+      font-size: 12px;
+    }
+
+    .compare-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 14px;
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .empty-state {
+      display: none;
+      padding: 70px 20px;
+      border: 1px dashed var(--line-strong);
+      color: var(--muted);
+      background: var(--surface);
+      text-align: center;
+    }
+
+    .empty-state.visible { display: block; }
+
+    .reset-filters {
+      min-height: 38px;
+      margin-top: 16px;
+      padding: 7px 13px;
+      border: 1px solid var(--ink);
+      border-radius: 4px;
+      color: #fff;
+      background: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .reset-filters:hover { background: var(--green); border-color: var(--green); }
+
+    .methodology {
+      padding: 42px 0 54px;
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .method-grid {
+      display: grid;
+      grid-template-columns: 0.4fr 0.6fr;
+      gap: 48px;
+    }
+
+    .methodology h2 { font-size: 29px; }
+
+    .method-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border-top: 1px solid var(--line);
+    }
+
+    .method-list li {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      gap: 16px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .method-list strong {
+      color: var(--ink);
+      font-size: 11px;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      background: var(--charcoal);
+      color: #d7dfdb;
+    }
+
+    .footer-inner {
+      width: min(1420px, calc(100% - 40px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 22px 0;
+      font-size: 11px;
+    }
+
+    footer a { color: #fff; }
+
+    @media (max-width: 1080px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+      .hero-visual { max-width: 760px; }
+      .controls { grid-template-columns: minmax(220px, 1fr) 190px auto; }
+      .result-count { grid-column: 1 / -1; text-align: left; }
+      .change { grid-template-columns: 128px minmax(0, 1fr); }
+      .sources { grid-column: 2; justify-content: flex-start; }
+      .release-header { grid-template-columns: 1fr; gap: 14px; }
+      .release-metrics { justify-content: start; text-align: left; }
+    }
+
+    @media (max-width: 780px) {
+      html { scroll-padding-top: 16px; }
+      .topbar-inner,
+      .hero-inner,
+      .workspace,
+      .footer-inner { width: min(100% - 28px, 1420px); }
+      .topbar-meta { display: none; }
+      .hero-inner { padding: 38px 0 30px; }
+      h1 { font-size: 39px; }
+      .hero-lead { font-size: 16px; }
+      .hero-visual { padding: 16px 14px; overflow-x: auto; }
+      .release-chart { min-width: 560px; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .stat:nth-child(3) { border-top: 1px solid var(--line); border-left: 0; padding-left: 0; }
+      .stat:nth-child(4) { border-top: 1px solid var(--line); }
+      .section-head,
+      .upgrade-head,
+      .method-grid { grid-template-columns: 1fr; gap: 12px; }
+      h2 { font-size: 30px; }
+      .storyline { grid-template-columns: 1fr; gap: 8px; }
+      .upgrade-list { grid-template-columns: 1fr; }
+      .upgrade-item:nth-child(odd) { border-right: 0; }
+      .controls-shell { position: static; }
+      .controls { grid-template-columns: 1fr; }
+      .result-count { grid-column: auto; }
+      .timeline-layout { grid-template-columns: 1fr; gap: 24px; padding-top: 22px; }
+      .version-nav {
+        position: static;
+        display: flex;
+        gap: 4px;
+        max-height: none;
+        overflow-x: auto;
+        padding: 0 0 8px;
+      }
+      .version-nav-title,
+      .baseline { display: none; }
+      .version-link {
+        width: auto;
+        min-width: 80px;
+        border: 1px solid var(--line);
+        border-radius: 3px;
+      }
+      .version-link.active { border-color: var(--green); }
+      .release { scroll-margin-top: 16px; }
+      .release-metrics { min-width: 0; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .change { grid-template-columns: 1fr; gap: 10px; }
+      .sources { grid-column: 1; justify-content: flex-start; }
+      .footer-inner { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (max-width: 430px) {
+      h1 { font-size: 34px; }
+      .scope-line { display: grid; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .stat-value { font-size: 24px; }
+      .upgrade-item { grid-template-columns: 46px 1fr; padding: 14px 15px; }
+      .release h3 { font-size: 29px; }
+      .release-metrics { grid-template-columns: repeat(2, 1fr); }
+      .metric:nth-child(3) { grid-column: 1 / -1; }
+      .method-list li { grid-template-columns: 1fr; gap: 3px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    @media print {
+      body { background: #fff; font-size: 11px; }
+      .topbar,
+      .controls-shell,
+      .version-nav,
+      .release-chart { display: none !important; }
+      .hero-inner,
+      .workspace { width: 100%; }
+      .hero-inner { padding: 20px 0; }
+      h1 { font-size: 34px; }
+      .timeline-layout { display: block; padding-top: 10px; }
+      .release { break-inside: avoid; padding-bottom: 24px; }
+      .change { grid-template-columns: 120px 1fr 160px; padding: 10px 0; animation: none; }
+      .sources { grid-column: auto; justify-content: flex-end; }
+      a { text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到正文</a>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span>E2B Infra / Release Atlas</div>
+      <div class="topbar-meta">基于 Git tags · 生成于 2026-07-22 · Asia/Shanghai</div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-inner">
+        <div class="hero-grid">
+          <div>
+            <p class="eyebrow">2026 release sequence / 12 intervals</p>
+            <h1 id="page-title">E2B Infra<br>版本演进报告</h1>
+            <p class="hero-lead">从 <strong>2026.16</strong> 到 <strong>2026.28</strong>，逐个相邻标签梳理最终生效的能力、兼容性边界与升级动作。内容覆盖 API、鉴权、Sandbox、存储、网络、Dashboard 与部署基础设施。</p>
+            <div class="scope-line" aria-label="报告范围">
+              <span>2026-04-15 → 2026-07-09</span>
+              <span>标签差异口径</span>
+              <span>关键提交可回溯</span>
+            </div>
+          </div>
+
+          <div class="hero-visual" aria-labelledby="chart-title">
+            <div class="visual-head">
+              <p class="visual-title" id="chart-title">每个版本区间的提交量</p>
+              <span class="visual-scale">MAX 81 COMMITS</span>
+            </div>
+            <div class="release-chart" id="release-chart"></div>
+          </div>
+        </div>
+
+        <div class="stats" aria-label="总体统计">
+          <div class="stat"><strong class="stat-value">555</strong><span class="stat-label">非 merge 提交</span></div>
+          <div class="stat"><strong class="stat-value">1,393</strong><span class="stat-label">端点 diff 涉及文件</span></div>
+          <div class="stat"><strong class="stat-value">+99,214</strong><span class="stat-label">新增行</span></div>
+          <div class="stat"><strong class="stat-value">32</strong><span class="stat-label">唯一提交者邮箱</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="workspace">
+      <section class="overview" aria-labelledby="story-title">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Evolution map</p>
+            <h2 id="story-title">四条跨版本主线</h2>
+          </div>
+          <p class="section-copy">单看某一周容易错过真正的迁移方向。下面把持续数周的改造串起来，便于判断配置、数据和混合版本部署的先后顺序。</p>
+        </div>
+
+        <div class="storylines">
+          <div class="storyline">
+            <div class="storyline-name">认证体系</div>
+            <div class="storyline-flow"><span class="node">21 · 引入 OIDC</span><span class="arrow">→</span><span class="node">22 · 删除 users.email</span><span class="arrow">→</span><span class="node">24 · Admin team auth</span><span class="arrow">→</span><span class="node">26 · 移除 Supabase</span><span class="arrow">→</span><span class="node">27–28 · Access Token 下线</span></div>
+          </div>
+          <div class="storyline">
+            <div class="storyline-name">快照与存储</div>
+            <div class="storyline-flow"><span class="node">19 · 压缩 / Header V4</span><span class="arrow">→</span><span class="node">23 · Header V5</span><span class="arrow">→</span><span class="node">25 · 仅文件系统快照</span><span class="arrow">→</span><span class="node">26 · API 接入</span><span class="arrow">→</span><span class="node">28 · AWS 压缩上传</span></div>
+          </div>
+          <div class="storyline">
+            <div class="storyline-name">路由与发现</div>
+            <div class="storyline-flow"><span class="node">17 · 出网总开关</span><span class="arrow">→</span><span class="node">18–19 · H2C / 稳定域名</span><span class="arrow">→</span><span class="node">20 · Kubernetes SD</span><span class="arrow">→</span><span class="node">24 · SOCKS5 BYOP</span><span class="arrow">→</span><span class="node">28 · Nomad service SD</span></div>
+          </div>
+          <div class="storyline">
+            <div class="storyline-name">运行时可靠性</div>
+            <div class="storyline-flow"><span class="node">19 · NBD / UFFD 正确性</span><span class="arrow">→</span><span class="node">20 · Singleflight</span><span class="arrow">→</span><span class="node">24 · 关机与快照硬化</span><span class="arrow">→</span><span class="node">26 · Graceful drain</span><span class="arrow">→</span><span class="node">27–28 · 启动回收与自愈</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="upgrade-band" aria-labelledby="upgrade-title">
+        <div class="upgrade-head">
+          <h2 id="upgrade-title">先处理这些升级事项</h2>
+          <p>这是跨越多个标签升级时最容易造成启动失败、协议不兼容或行为变化的部分。详细条件与来源在对应版本中展开。</p>
+        </div>
+        <div class="upgrade-list">
+          <div class="upgrade-item"><span class="upgrade-version">19</span><div><strong>内部 gRPC 名称同步滚动</strong><span>API 与 client-proxy 需一起切到 <code>api-internal-grpc</code>；兼容 alias 到 2026.20 才补回。</span></div></div>
+          <div class="upgrade-item"><span class="upgrade-version">20</span><div><strong>client-proxy 强制依赖 Redis</strong><span>必须提供可用的 <code>REDIS_URL</code> 或 <code>REDIS_CLUSTER_URL</code>，内存 catalog fallback 已删除。</span></div></div>
+          <div class="upgrade-item"><span class="upgrade-version">21–22</span><div><strong>身份配置与 email 字段迁移</strong><span>部署端切换到 <code>AUTH_PROVIDER_CONFIG</code>；调用方接受 <code>email: null</code>，自定义 SQL 不再读取 <code>public.users.email</code>。</span></div></div>
+          <div class="upgrade-item"><span class="upgrade-version">23</span><div><strong>先升级 reader，再启用 Header V5</strong><span><code>header-v5-write</code> 默认关闭；所有 orchestrator 支持 V5 后才能开启写入。</span></div></div>
+          <div class="upgrade-item"><span class="upgrade-version">24</span><div><strong>检查迁移容量与 proto 语义</strong><span><code>env_builds</code> covering index 规模约 24 GB；<code>SchedulingMetadata</code> field 1 线号不变但语义变化。</span></div></div>
+          <div class="upgrade-item"><span class="upgrade-version">25–26</span><div><strong>Firecracker 与快照语义变化</strong><span>准备 v1.14.1 artifact；<code>memory:false</code> 恢复会冷启动并丢失 RAM、进程与连接。</span></div></div>
+          <div class="upgrade-item"><span class="upgrade-version">26</span><div><strong>Supabase 兼容层已删除</strong><span>Dashboard 改为 Ory-only；旧 header、legacy HMAC、Supabase DB/profile 配置均不再生效。</span></div></div>
+          <div class="upgrade-item"><span class="upgrade-version">27–28</span><div><strong>Access Token 分两阶段下线</strong><span>先停止签发并返回 410，再可按用户拒绝已有 <code>sk_e2b_</code> token 并返回 401。</span></div></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="controls-shell" aria-label="变更筛选工具">
+      <div class="workspace controls">
+        <div class="search-wrap">
+          <label for="search" class="sr-only">搜索变更</label>
+          <input id="search" type="search" placeholder="搜索版本、模块、配置或 PR，例如 OIDC、V5、Redis" autocomplete="off">
+          <button class="clear-search" id="clear-search" type="button" title="清除搜索" aria-label="清除搜索">×</button>
+        </div>
+        <label>
+          <span class="sr-only">按主题筛选</span>
+          <select class="category-select" id="category">
+            <option value="all">全部主题</option>
+            <option value="api">API / Schema</option>
+            <option value="auth">鉴权</option>
+            <option value="runtime">Sandbox / Runtime</option>
+            <option value="storage">存储</option>
+            <option value="network">网络 / 路由</option>
+            <option value="platform">平台 / IaC</option>
+            <option value="dashboard">Dashboard</option>
+            <option value="security">安全</option>
+            <option value="observability">可观测</option>
+          </select>
+        </label>
+        <label class="toggle"><input id="action-only" type="checkbox">仅看升级事项</label>
+        <div class="result-count" id="result-count" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="workspace timeline-layout">
+      <nav class="version-nav" id="version-nav" aria-label="版本导航"></nav>
+      <div class="releases">
+        <div id="release-list"></div>
+        <div class="empty-state" id="empty-state"><strong>没有匹配的变更</strong><br>请缩短关键词或重置筛选条件。<br><button class="reset-filters" id="reset-filters" type="button">重置筛选</button></div>
+      </div>
+    </div>
+
+    <section class="methodology">
+      <div class="workspace method-grid">
+        <div>
+          <p class="section-kicker">Methodology</p>
+          <h2>口径与限制</h2>
+          <p class="section-copy">这是一份面向升级决策的归纳，不是 555 条 commit message 的机械转录。每条结论都回到目标标签的最终代码与关键提交核对。</p>
+        </div>
+        <ul class="method-list">
+          <li><strong>标签日期</strong><span>这些版本均为 lightweight tag，日期采用标签所指向提交的 commit date。</span></li>
+          <li><strong>提交口径</strong><span><code>tagA..tagB</code>；该范围内没有 merge commit，因此总提交数与 <code>--no-merges</code> 一致。</span></li>
+          <li><strong>文件与行数</strong><span>使用两个标签端点的 <code>git diff</code>，会包含生成代码、依赖文件与机械重排，不等同于业务代码规模。</span></li>
+          <li><strong>回滚处理</strong><span>以目标标签最终行为为准；同区间落地后又撤销的改动只作为说明，不计为有效能力。</span></li>
+          <li><strong>来源</strong><span>主仓库 <a href="https://github.com/e2b-dev/infra" target="_blank" rel="noreferrer">e2b-dev/infra</a> 的 Git 历史、关键 diff、OpenAPI/proto 与 migration；另参考仓库内 API 变更总览。</span></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span>E2B Infra · 2026.16 → 2026.28 · 12 个相邻版本区间</span>
+      <span><a href="https://github.com/e2b-dev/infra/compare/2026.16...2026.28" target="_blank" rel="noreferrer">查看完整标签差异</a></span>
+    </div>
+  </footer>
+
+  <noscript>此报告需要 JavaScript 渲染版本时间线与筛选结果。</noscript>
+
+  <script>
+    const repo = "https://github.com/e2b-dev/infra";
+
+    const categories = {
+      api: "API / Schema",
+      auth: "鉴权",
+      runtime: "Sandbox / Runtime",
+      storage: "存储",
+      network: "网络 / 路由",
+      platform: "平台 / IaC",
+      dashboard: "Dashboard",
+      security: "安全",
+      observability: "可观测"
+    };
+
+    const impacts = {
+      action: "需行动",
+      attention: "需关注",
+      capability: "新能力",
+      reliability: "稳定性",
+      security: "安全",
+      reverted: "已回退"
+    };
+
+    const releases = [
+      {
+        version: "2026.17", previous: "2026.16", date: "2026-04-26", tag: "9c3b7c5db",
+        commits: 74, files: 350, added: 11953, deleted: 4506, contributors: 12, days: 11,
+        headline: "注册链路、镜像基线与网络控制重构",
+        summary: "Dashboard 用户 bootstrap 与数据库触发器完成职责迁移，Sandbox 网络和恢复路径获得更明确的生命周期控制。",
+        note: "区间内两项改动在标签前被撤销：Redis 强制依赖恢复为可选内存 fallback；regional API MIG 撤销流量接入。报告不把它们计为 2026.17 的最终能力。",
+        changes: [
+          { category: "auth", impact: "action", title: "Dashboard bootstrap 路径与认证方式变化", body: "入口改为 /admin/users/{userId}/bootstrap，只接受 Admin Token；数据库同时移除 auth.users 到 public.users 及默认团队创建触发器，注册职责转到应用。应先部署新 Dashboard API，再执行迁移并更新调用方。", sources: [{pr:2414, hash:"461bf363f"},{pr:2421, hash:"27bdbcabc"},{pr:2458, hash:"9f990b410"}] },
+          { category: "platform", impact: "action", title: "Admin Token Terraform state 需要显式迁移", body: "GCP API/Dashboard 的 Admin Token 资源移入 module.init/Secret Manager；升级需先执行 state-migrate 中的 terraform state mv，否则计划可能重建 token 或 secret。", sources: [{pr:2409, hash:"70216866b"},{pr:2420, hash:"3404c970c"}] },
+          { category: "network", impact: "capability", title: "Sandbox 网络新增总出网开关", body: "PUT /sandboxes/{sandboxID}/network 新增 allow_internet_access；false 等价于拒绝 0.0.0.0/0，可用一个布尔值表达全局断网。", sources: [{pr:2433, hash:"a664d0fec"}] },
+          { category: "runtime", impact: "reliability", title: "Resume 按生命周期重新挂载 Volume", body: "envd /init 引入 lifecycleID；恢复时重新挂载 NFS volume，避免复用上一个生命周期留下的挂载状态。", sources: [{pr:2407, hash:"f1743fa41"}] },
+          { category: "platform", impact: "action", title: "集群基础镜像切换到 Ubuntu 24.04 Noble", body: "AWS/GCP Packer 镜像升级到 Noble，并调整 GCSFuse 仓库签名配置。自托管环境需要重建 cluster disk image 并滚动替换节点。", sources: [{pr:2427, hash:"ec97b4411"}] },
+          { category: "security", impact: "security", title: "AWS 节点强制 IMDSv2", body: "所有 node launch template 强制使用 IMDSv2；Nomad/Consul 启动脚本补充 token、超时与重试，降低元数据凭据被 SSRF 获取的风险。", sources: [{pr:2452, hash:"4b1801c83"}] }
+        ]
+      },
+      {
+        version: "2026.18", previous: "2026.17", date: "2026-04-29", tag: "d59b47cea",
+        commits: 13, files: 48, added: 1335, deleted: 298, contributors: 8, days: 3,
+        headline: "BYOC 发布准备与节点镜像收口",
+        summary: "这是较小的一版，重点是可选 orchestrator 部署、节点依赖预烘焙与 H2C 基础设施准备。",
+        note: "GCP BYOC 的 H2C backend 已创建，但 URL map 在 2026.18 仍指向 HTTP backend，因此本标签没有实际 H2C 流量切换。",
+        changes: [
+          { category: "platform", impact: "capability", title: "Orchestrator Nomad job 可按配置禁用", body: "新增 ORCHESTRATOR_ENABLED，默认 true；设为 false 时不读取 orchestrator artifact，也不创建对应 Nomad module，适合外部系统托管编排的集群。", sources: [{pr:2518, hash:"540580736"}] },
+          { category: "platform", impact: "action", title: "ClickHouse client 与 CNI 改为镜像预烘焙", body: "节点启动时不再在线下载 clickhouse-client 25.4.5.24 和 CNI plugins v1.6.2。升级顺序应先构建并发布新 Packer image，再替换节点。", sources: [{pr:2496, hash:"3f633053e"}] },
+          { category: "network", impact: "attention", title: "GCP BYOC 增加 H2C backend，尚未切流", body: "新 backend service 为后续 H2C rollout 提供基础设施；当前版本不会把现有流量迁到 H2C。", sources: [{pr:2506, hash:"dad458b0b"}] },
+          { category: "security", impact: "attention", title: "Portmap 外部 SET / UNSET 被禁止", body: "PMAPPROC_SET/UNSET 固定返回 false，内部 NFS 映射改走私有 registerPort。正常内部注册不变，但依赖远端 SET 的非标准集成将失效。", sources: [{pr:2524, hash:"d59b47cea"}] },
+          { category: "observability", impact: "reliability", title: "修正实例计数与高基数遥测", body: "修复 PostHog created_instance 重复计数，关闭 OTel exemplar，并过滤无用的 rpc.client size 指标，减少误报和时序膨胀。", sources: [{pr:2500, hash:"e46764086"},{pr:2508, hash:"815975edb"},{pr:2509, hash:"fef28716d"}] }
+        ]
+      },
+      {
+        version: "2026.19", previous: "2026.18", date: "2026-05-07", tag: "a67f9830c",
+        commits: 38, files: 272, added: 15069, deleted: 4911, contributors: 11, days: 7,
+        headline: "BYOC 自动恢复、压缩资产与稳定路由",
+        summary: "Edge client-proxy 获得自动恢复能力，存储格式进入 V4 压缩时代，NBD/UFFD 的快照正确性也显著加强。",
+        changes: [
+          { category: "auth", impact: "action", title: "BYOC edge client-proxy 接入自动恢复与 OIDC", body: "新增 edge gRPC API、client-credentials、sandboxes:lifecycle scope 与 org_id 校验；clusters 增加唯一 auth_org_id。启用前需写入 cluster auth_org_id 并配置 issuer、client 与 token URL。", sources: [{pr:2470, hash:"ed90bd31f"}] },
+          { category: "platform", impact: "action", title: "内部 gRPC 环境变量与 Consul service 改名", body: "API_GRPC_PORT/ADDRESS 改为 API_INTERNAL_GRPC_PORT/ADDRESS，service 从 api-grpc 改为 api-internal-grpc。兼容 alias 到 2026.20 才补回，本次升级应同步滚动 API 与 client-proxy。", sources: [{pr:2470, hash:"ed90bd31f"},{pr:2589, hash:"6c0bcb15d"}] },
+          { category: "storage", impact: "action", title: "Memfile / rootfs 引入压缩与 Header V4", body: "新增 LZ4/Zstd 分帧压缩和 FrameTable；COMPRESS_ENABLED 默认 false，V1–V3 reader 仍保留。开启压缩前应先升级所有可能读取或 peer-serve 资产的 orchestrator。", sources: [{pr:2034, hash:"08810dbcb"}] },
+          { category: "network", impact: "capability", title: "按域名改写 header，并支持稳定 Sandbox Host", body: "Sandbox create/network update 新增 rules[].transform.headers，规则随 pause/resume 持久化；SDK 流量可经稳定 sandbox.<domain> Host 路由，IP Host 回归也在同版修复。", sources: [{pr:2515, hash:"758e726c7"},{pr:2540, hash:"345fa2452"},{pr:2581, hash:"f50b5f281"}] },
+          { category: "runtime", impact: "reliability", title: "NBD / UFFD 快照状态与断连路径修复", body: "NBD 正确解析 flags/type，并识别 TRIM、WRITE_ZEROES 与全零写以缩小 diff；UFFD 加入 REMOVE 事件和 race-safe page state，envd 修复 subscriber 断开导致的 fan-out deadlock。", sources: [{pr:2548, hash:"97aa71a31"},{pr:2546, hash:"498acfad2"},{pr:2520, hash:"b01a6a139"},{pr:2579, hash:"a67f9830c"}] },
+          { category: "security", impact: "security", title: "修复 GitHub Actions 分支名命令注入", body: "不再把攻击者可控的 github.head_ref 直接插入 shell，而是通过环境变量和正确引用传参。", sources: [{pr:2558, hash:"92ea305dd"}] }
+        ]
+      },
+      {
+        version: "2026.20", previous: "2026.19", date: "2026-05-14", tag: "8cf17952c",
+        commits: 46, files: 435, added: 7072, deleted: 2762, contributors: 10, days: 6,
+        headline: "Redis 成为硬依赖，服务发现开始可插拔",
+        summary: "client-proxy 收紧运行前提；API 则加入 Kubernetes 发现、并发去重与更稳健的 Sandbox 清理。",
+        changes: [
+          { category: "platform", impact: "action", title: "client-proxy 正式删除内存 catalog fallback", body: "从本版本起 Redis 未配置或不可连接时 client-proxy 直接退出。每个实例都必须提供 REDIS_URL 或 REDIS_CLUSTER_URL；这与 2026.17 中被撤销的强制尝试不同。", sources: [{pr:2636, hash:"e90a75fa9"}] },
+          { category: "platform", impact: "attention", title: "API 服务发现新增 Kubernetes provider", body: "SERVICE_DISCOVERY_PROVIDER=kubernetes 会按 namespace/label 查找 Running+Ready 的 orchestrator/template-manager Pod。需授予 ServiceAccount pod list 权限并保证 HostIP 可达；默认仍为 nomad。", sources: [{pr:2601, hash:"e43d497f6"},{pr:2602, hash:"e73022402"}] },
+          { category: "runtime", impact: "capability", title: "新构建可按特性开关选择 kernel，并支持 pause 前回收", body: "build-kernel-version 控制新模板 kernel；另加入默认关闭的 guest-pause-reclaim 和 Firecracker v1.14+ free-page-reporting，降低快照脏页与内存体积。", sources: [{pr:2592, hash:"cec0e8124"},{pr:2551, hash:"a9f962918"},{pr:2541, hash:"9d4f79810"}] },
+          { category: "api", impact: "attention", title: "gRPC 字段源码名变化，wire 保持兼容", body: "chunks.proto 多个 request 的字段名从 file_name 改为 name，字段号仍为 2；线上 wire 兼容，但重新生成代码后的源码字段名不兼容。api-grpc 兼容 alias 同时补回。", sources: [{pr:2585, hash:"6d217f96c"},{pr:2631, hash:"bb6891e66"}] },
+          { category: "runtime", impact: "reliability", title: "Sandbox 操作 singleflight 与陈旧数据清理", body: "API 对同一 sandbox 的 evict 操作去重并限制总并发为 256；Redis cleaner 开始删除超过 StaleCutoff 的记录，removal 收尾不再继承已取消的请求 context。", sources: [{pr:2625, hash:"f2c360d23"},{pr:2640, hash:"0f12a543e"},{pr:2655, hash:"7f3e661c8"}] },
+          { category: "runtime", impact: "reliability", title: "envd 连续修复断连 panic、data race 与无界 RSS", body: "等待 sender goroutine、保护 subscriber 切片，并在无订阅者时丢弃输出，避免客户端断开后出现 nil panic、竞态或内存持续增长。", sources: [{pr:2596, hash:"a9050678a"},{pr:2643, hash:"a2bb1cbd4"},{pr:2639, hash:"8cf17952c"}] },
+          { category: "api", impact: "capability", title: "Admin nodes 列表支持 cluster_id 过滤", body: "管理端可按集群 UUID 过滤 nodes；这是 additive OpenAPI 变化。", sources: [{pr:2641, hash:"66daf3bac"}] }
+        ]
+      },
+      {
+        version: "2026.21", previous: "2026.20", date: "2026-05-21", tag: "fe7bd8d15",
+        commits: 81, files: 399, added: 10708, deleted: 4768, contributors: 15, days: 7,
+        headline: "OIDC 认证主线落地，用户资料开始解耦",
+        summary: "这是区间内提交最多的一版：认证从 Supabase 专用实现走向通用 provider，email 字段与写操作授权语义同步收紧。",
+        changes: [
+          { category: "auth", impact: "action", title: "通用 OIDC provider 取代 Supabase 专用 JWT 配置", body: "新增 public.user_identities 与 OIDC discovery/JWKS 校验；AUTH_PROVIDER_CONFIG 取代 SUPABASE_JWT_SECRETS，但暂保留 legacy.hmac.secrets 兼容。空配置可启动，所有 JWT 请求会返回 401。", sources: [{pr:2673, hash:"f27618a1b"},{pr:2716, hash:"d9e036f12"}] },
+          { category: "api", impact: "action", title: "TeamUser.email 进入弃用并可能为 null", body: "API 将 email 标为 nullable/deprecated 并开始返回 null；Dashboard 成员邮箱改从身份 provider 读取，public.users.email 停止同步。客户端必须先兼容空值。", sources: [{pr:2718, hash:"688e309b2"},{pr:2721, hash:"423deb375"},{pr:2763, hash:"47d29fe0c"}] },
+          { category: "auth", impact: "action", title: "默认团队唯一索引带来迁移前置检查", body: "数据库新增“每个用户只能有一个 is_default=true 团队”的并发唯一索引。执行 migration 前应确认没有重复默认团队，否则 CREATE UNIQUE INDEX CONCURRENTLY 会失败。", sources: [{pr:2621, hash:"97e4076f8"}] },
+          { category: "auth", impact: "attention", title: "Blocked team 改为在写端点统一拦截", body: "blocked team 不再全局拒绝登录，而是在资源创建与修改路径拒绝；banned team 仍由共享认证层直接阻止。", sources: [{pr:2659, hash:"db848ab73"}] },
+          { category: "runtime", impact: "attention", title: "envd /init 的环境变量从合并改为替换", body: "只要请求携带非 nil EnvVars，就会替换整个字典；从 sandbox 配置中删除的变量不会继续残留到下一次 /init。依赖旧合并语义的调用方需调整。", sources: [{pr:2706, hash:"1b52e9a43"}] },
+          { category: "platform", impact: "action", title: "Traefik 增加 internal entrypoint 与安全灰度", body: "新增非默认 internal 入口、连接排空、最长 24h 优雅关闭和 1% ingress 灰度。部署需开放对应内部端口并纳入流量配置。", sources: [{pr:2714, hash:"f85dfa326"},{pr:2711, hash:"5483f1bf6"},{pr:2779, hash:"fe7bd8d15"}] },
+          { category: "runtime", impact: "reliability", title: "内存与快照路径修复竞态和资源泄漏", body: "Firecracker 内存改用 memfd 跟踪；固定 UFFD ioctl 的 Go buffer，API 退出等待在途 pause/snapshot，envd 日志队列也改为有界。", sources: [{pr:2522, hash:"12a4ed717"},{pr:2745, hash:"837fa91ce"},{pr:2708, hash:"06378c733"},{pr:2676, hash:"05c9939f3"}] }
+        ]
+      },
+      {
+        version: "2026.22", previous: "2026.21", date: "2026-05-28", tag: "56ac61050",
+        commits: 51, files: 241, added: 9234, deleted: 4874, contributors: 14, days: 7,
+        headline: "Email 列正式删除，Sandbox 后端统一到 Redis",
+        summary: "身份迁移进入破坏性阶段，同时新增内部团队 API Key 管理并修复多处压缩与 UFFD 正确性问题。",
+        note: "本区间曾引入 memfd wake path，随后在目标标签前回滚；2026.22 的最终行为不包含该实验路径。",
+        changes: [
+          { category: "api", impact: "action", title: "数据库删除 public.users.email", body: "Supabase 用户同步 migration/worker 同步移除。依赖该列的自定义 SQL、报表和集成必须先迁移到身份 profile；这不是 nullable 兼容，而是物理删列。", sources: [{pr:2781, hash:"14939e321"},{pr:2784, hash:"ce8fa2959"}] },
+          { category: "platform", impact: "action", title: "删除 memory 与 populate_redis Sandbox 后端", body: "SANDBOX_STORAGE_BACKEND 不再可选，Redis 成为唯一实现；旧 memory 配置无效，部署必须提供稳定 Redis。", sources: [{pr:2750, hash:"957608393"}] },
+          { category: "auth", impact: "capability", title: "新增内部团队创建与 API Key 管理", body: "管理员可创建内部团队，并通过新路由创建或失效团队 API Key；blocked-team 检查也集中到 API/Dashboard middleware。", sources: [{pr:2824, hash:"375051ba2"},{pr:2825, hash:"4a1e0837e"},{pr:2757, hash:"9e97dcbd4"}] },
+          { category: "storage", impact: "reliability", title: "大 Header 与压缩损坏场景得到修复", body: "V4 header 读取上限从 64 MiB 提至 256 MiB，并在写侧对称校验；压缩审计修复 LZ4 越界、损坏缓存、GCS 转换期 404 和 range-read 卡死。", sources: [{pr:2850, hash:"56ac61050"},{pr:2803, hash:"d21a6a9dd"}] },
+          { category: "runtime", impact: "reliability", title: "UFFD、rsync 与 reservation 并发路径收紧", body: "修复 UFFD prefault/Close 的 fd 回收竞态和 rsync 继承已卸载 cwd；reservation 等待从 20ms 轮询改成 Redis pub/sub。", sources: [{pr:2830, hash:"5c805e2bf"},{pr:2835, hash:"7160db9e5"},{pr:2729, hash:"2944d0614"}] },
+          { category: "runtime", impact: "capability", title: "Dirty-page 去重与 user cgroup freeze", body: "新增 4 KiB dirty-page 去重及异步 compare/write，均由 feature flag 控制；pause/resume 可冻结 user cgroup，生产默认关闭且要求 envd ≥ 0.6.0。", sources: [{pr:2590, hash:"fd42d7369"},{pr:2814, hash:"77e70fb3c"},{pr:2818, hash:"5422b3fe9"},{pr:2688, hash:"eceb7419f"}] }
+        ]
+      },
+      {
+        version: "2026.23", previous: "2026.22", date: "2026-06-05", tag: "dfc8a20d8",
+        commits: 49, files: 223, added: 13176, deleted: 3475, contributors: 13, days: 7,
+        headline: "Header V5、跨代 CPU 恢复与交付栈升级",
+        summary: "存储 header 面向百万级 mapping 重新编码，Dashboard/Ory 能力扩展，Nomad、Consul 与 Terraform 也跨越关键版本。",
+        note: "区间内曾删除 Nomad no_cgroups 配置，随后回滚；2026.23 最终仍保留该配置。",
+        changes: [
+          { category: "storage", impact: "action", title: "新增 V5 columnar-varint Header", body: "Reader 无条件支持 V5，writer 受默认关闭的 header-v5-write 控制。混合版本发布必须先升级所有读取方，再开启写入，否则旧节点无法读取新格式。", sources: [{pr:2847, hash:"9dd931b8d"},{pr:2880, hash:"a86bc089a"}] },
+          { category: "api", impact: "action", title: "Pause RPC 返回类型发生 source-level 变化", body: "Orchestrator Pause 从 google.protobuf.Empty 改为 SandboxPauseResponse；wire 可按新消息演进，但生成代码与调用签名变化，内部客户端需要重新生成并同步部署。", sources: [{pr:2873, hash:"b48f2139c"}] },
+          { category: "dashboard", impact: "action", title: "Ory profile、OIDC bootstrap 与模板分页", body: "新增 Ory profile provider、OIDC 管理员 bootstrap 和 keyset cursor /templates。Ory 模式需配置 USER_PROFILE_PROVIDER、ORY_SDK_URL、ORY_PROJECT_API_TOKEN，并确保 issuer 与 AUTH_PROVIDER_CONFIG 一致。", sources: [{pr:2840, hash:"30d40d22f"},{pr:2841, hash:"6a7a59ee0"},{pr:2904, hash:"68824637b"}] },
+          { category: "platform", impact: "action", title: "Terraform、Consul、Nomad 跨版本升级", body: "Terraform 1.5.7→1.7.5、Consul 1.16.2→1.17.3、Nomad 1.6.2→1.8.4，并启用 memory oversubscription。应遵循各组件滚动升级顺序。", sources: [{pr:2897, hash:"9f7ccd522"},{pr:2896, hash:"34dcd147e"},{pr:2917, hash:"2a42bfa2b"}] },
+          { category: "platform", impact: "action", title: "非 Supabase PostgreSQL 的 RLS 需人工评估清理", body: "历史 migration 不再创建默认 RLS/policy，但已存在数据库不会自动变化；仓库提供手工脚本，明确禁止在 Supabase 上执行。", sources: [{pr:2866, hash:"8eea298f0"}] },
+          { category: "runtime", impact: "reliability", title: "CPU 兼容改为指令集超集判断", body: "保留源 build CPU 信息，并以指令集能力判断恢复兼容性，使 N2 快照可在满足指令集超集的 N4 节点恢复。", sources: [{pr:2928, hash:"3b5de48c1"}] },
+          { category: "storage", impact: "reliability", title: "压缩模板写穿 NFS，并行碎片读取", body: "上传时将压缩模板写穿 NFS，fragmented backing read 并行化，同时修复不连续 offset 错误合并和 copy-build 压缩后缀解析。", sources: [{pr:2827, hash:"57503c1a9"},{pr:2872, hash:"c7655a7cd"},{pr:2848, hash:"33fefffc0"},{pr:2859, hash:"8966f7e22"}] }
+        ]
+      },
+      {
+        version: "2026.24", previous: "2026.23", date: "2026-06-15", tag: "bf52a4b7f",
+        commits: 55, files: 270, added: 18155, deleted: 5007, contributors: 16, days: 10,
+        headline: "模板标签体系、SOCKS5 出网与快照链路硬化",
+        summary: "Dashboard 模板能力大幅扩展；网络层支持 BYOP，运行时则集中修复 P2P、压缩与关机清理。",
+        changes: [
+          { category: "dashboard", impact: "capability", title: "模板标签与构建资源接口成体系", body: "新增 tag 分组、计数、存在性与 assignment history，/builds 返回 CPU、内存、磁盘和 envd 版本，并加入内部删除用户路由。", sources: [{pr:2885, hash:"bf52a4b7f"},{pr:3009, hash:"bf49c3245"},{pr:2986, hash:"ecc1291ad"}] },
+          { category: "dashboard", impact: "action", title: "模板列表移除部分 sort / filter 值", body: "为降低查询成本，/templates 不再支持 name/cpu/memory 排序以及 cpu/memory 过滤，只保留 created/updated 排序。旧客户端继续发送这些值会校验失败。", sources: [{pr:2983, hash:"51ad7ff04"}] },
+          { category: "network", impact: "capability", title: "Sandbox 网络支持 SOCKS5 egressProxy", body: "受 byop-proxy-enabled 控制；GET 不回传密码，并在创建与拨号时防 DNS rebinding 和内网代理。普通出网拒绝集合还加入 100.64.0.0/10。", sources: [{pr:2642, hash:"1fc3820d7"}] },
+          { category: "auth", impact: "security", title: "Admin Token 可组合 X-Team-ID 访问团队端点", body: "管理端获得团队上下文认证；错误响应不再泄露内部验证细节，模板上传 hash 也强制为 64 位小写十六进制。", sources: [{pr:2934, hash:"549666684"},{pr:2946, hash:"d6aaa831f"},{pr:2952, hash:"ce1431122"}] },
+          { category: "runtime", impact: "reliability", title: "Pause 上传、P2P/压缩与关机路径集中加固", body: "快照上传采用约 2h 有界重试并在关机时排空；修复 P2P→存储 header/压缩不同步、V3 祖先读取，以及 Firecracker、网络槽和 nftables 清理。", sources: [{pr:2993, hash:"4f817994b"},{pr:2919, hash:"1c73a491d"},{pr:2994, hash:"c479dd390"},{pr:2996, hash:"df662e7fd"}] },
+          { category: "api", impact: "action", title: "Cluster / 索引 migration 需要容量规划", body: "clusters.name 变为 NOT NULL，新写入必须显式提供；env_builds covering index 预计约 24 GB、构建需数十分钟，即使 CONCURRENTLY 也要预留磁盘与 I/O。", sources: [{pr:2955, hash:"c54dbf932"},{pr:2983, hash:"51ad7ff04"}] },
+          { category: "platform", impact: "action", title: "envd 改为显式 promote，调度 metadata 语义变化", body: "envd 不再自动覆盖 latest，需 promote-envd 晋级；SchedulingMetadata field 1 从 base_build_id 变为 memfile_base_build_id，并新增 rootfs_base_build_id，线号不变但语义改变。", sources: [{pr:2979, hash:"01675ccf0"},{pr:2920, hash:"3e35a2ab8"}] }
+        ]
+      },
+      {
+        version: "2026.25", previous: "2026.24", date: "2026-06-18", tag: "ea2663e1b",
+        commits: 19, files: 111, added: 4144, deleted: 1329, contributors: 8, days: 2,
+        headline: "Firecracker 1.14.1 与仅文件系统快照底座",
+        summary: "短周期版本集中改变运行时默认值，并完成低成本文件系统快照的 orchestrator 底层实现。",
+        changes: [
+          { category: "runtime", impact: "action", title: "默认启用 memfd / 后台复制，并切到 Firecracker v1.14.1", body: "这是默认运行时行为变化，不是可选实验。自托管节点需准备新的 Firecracker artifact，混合版本节点应按兼容顺序滚动。", sources: [{pr:3011, hash:"40bbc3c9e"}] },
+          { category: "runtime", impact: "attention", title: "仅文件系统快照底层能力完成，尚未公开", body: "只保存 rootfs/metadata，恢复时冷启动；RAM、进程和连接不会保留。2026.25 仅接入 orchestrator/resume-build，公共 API 在下一版完成。", sources: [{pr:2995, hash:"62aa3874f"}] },
+          { category: "storage", impact: "reliability", title: "FIFREEZE 保证文件系统快照一致性", body: "envd 0.6.6 使用 /fsfreeze 与 /fsthaw；旧 envd 回退为 sync，因此可兼容但无法提供同等级的一致性保证。", sources: [{pr:3019, hash:"1abfea3a0"}] },
+          { category: "runtime", impact: "capability", title: "Pause 前可将 envd heap 合并为 2 MiB hugepage", body: "collapse-envd-heap 默认关闭，可降低冷恢复时的远程缺页数量；需要 envd 0.6.5+。", sources: [{pr:2997, hash:"6677f7375"}] },
+          { category: "storage", impact: "attention", title: "P2P 统一发送 V5 pending header", body: "同时补齐旧 V3 未压缩 build 映射并兼容无 header 的旧模板。混合版本集群中，P2P 消费者应先具备 V5 reader。", sources: [{pr:3015, hash:"1e4379e89"},{pr:3026, hash:"8a44bfe1a"}] },
+          { category: "platform", impact: "action", title: "envd service 启动顺序与 base layer 哈希变化", body: "服务改在 local-fs.target 之后，避免 /tmp 挂载竞态；baked-rootfs 文件哈希随之失效，模板 base layer 会重建。", sources: [{pr:3020, hash:"f05ccea7a"},{pr:3043, hash:"ea2663e1b"}] }
+        ]
+      },
+      {
+        version: "2026.26", previous: "2026.25", date: "2026-06-25", tag: "4d47148ff",
+        commits: 38, files: 301, added: 11027, deleted: 5806, contributors: 16, days: 7,
+        headline: "Supabase 兼容层移除，文件系统快照公开",
+        summary: "认证迁移完成最后清理；pause API 获得 memory:false，模板列表进入 v2，自动恢复也成为固定行为。",
+        changes: [
+          { category: "auth", impact: "action", title: "彻底删除 Supabase 与 legacy HMAC 认证", body: "旧 header、Supabase profile/DB wiring、legacy verifier 和管理员 bootstrap 路由被移除，Dashboard 变为 Ory-only。升级前必须完成 ORY 与 AUTH_PROVIDER_CONFIG 配置迁移。", sources: [{pr:3042, hash:"ac79b1b97"}] },
+          { category: "api", impact: "action", title: "POST pause 支持 memory:false", body: "仅文件系统快照正式接入控制面：显式 resume 会冷启动；connect 和流量自动恢复被拒绝。无 body 或 memory 未设置仍保存完整内存，chunked body 也能正确解析。", sources: [{pr:3027, hash:"c09d96ad1"},{pr:3056, hash:"d66aab8c9"},{pr:3055, hash:"ecd13b04d"}] },
+          { category: "api", impact: "capability", title: "新增分页 GET /v2/templates", body: "支持 limit/nextToken，并通过 X-Next-Token 返回游标；旧 GET /templates 标记 deprecated。", sources: [{pr:3059, hash:"91e02e48a"}] },
+          { category: "runtime", impact: "action", title: "client-proxy 自动恢复永久启用", body: "auto-resume 先成为默认值，随后 feature flag 被删除；模板构建同时默认预留 256 MB root 空间，可用磁盘会相应减少。", sources: [{pr:3073, hash:"cfdccff14"},{pr:3078, hash:"f38b3a9fe"},{pr:3065, hash:"d473f989f"}] },
+          { category: "storage", impact: "capability", title: "对象 provenance 与 S3 path-style 支持", body: "上传对象/header 增加 team_id、template_id、build_origin；S3_USE_PATH_STYLE 支持 MinIO/Ceph，AWS multipart 不再被存储层 30 秒 timeout 截断。", sources: [{pr:3033, hash:"ba8604e06"},{pr:3072, hash:"fc08d468c"},{pr:3049, hash:"7272ceb89"}] },
+          { category: "runtime", impact: "reliability", title: "Sandbox / build 关机支持 graceful drain", body: "orchestrator 退出时先排空运行中的 sandbox 与 template build；resume 重试会 pin 到上次超时节点，避免反复落到不同节点。", sources: [{pr:3069, hash:"6ce68e3d5"},{pr:3079, hash:"1b3001c81"},{pr:3066, hash:"a4fd0f2e5"}] },
+          { category: "platform", impact: "attention", title: "ClickHouse 读路径可按请求切换集群", body: "新增分号分隔 CLICKHOUSE_CONNECTION_STRINGS，并由 clickhouse-read-endpoint 控制；同时保留原单数连接作为主端点。", sources: [{pr:3061, hash:"29e74ca75"}] }
+        ]
+      },
+      {
+        version: "2026.27", previous: "2026.26", date: "2026-07-02", tag: "3fa2aeb93",
+        commits: 57, files: 230, added: 5744, deleted: 2566, contributors: 15, days: 7,
+        headline: "Access Token 弃用、软删除与启动资源回收",
+        summary: "API 开始正式下线旧 Access Token；数据库和对象生命周期改为可回收，orchestrator 启动时主动清理泄漏资源。",
+        changes: [
+          { category: "auth", impact: "action", title: "Access Token 停止签发进入可控阶段", body: "OpenAPI 标记 AccessToken 认证与 POST /access-tokens deprecated；开启 disable-e2b-access-token-provisioning 后，创建 token 返回 410，但已有 token 此时仍能认证。", sources: [{pr:3101, hash:"2f7811e90"},{pr:3110, hash:"ebc2daa31"},{pr:3084, hash:"711aa33a0"}] },
+          { category: "api", impact: "action", title: "模板 build name / alias 上限 128 字符", body: "超长请求会在 OpenAPI 校验阶段被拒绝；生成 SDK 和已有调用方应同步约束输入。", sources: [{pr:3109, hash:"84aa186bd"}] },
+          { category: "storage", impact: "action", title: "模板删除转为数据库软删除", body: "envs 增加 deleted_at 与 active_envs view；删除时释放 alias、清理 active build，并保留 build attribution 给后续 GC。migration 必须先于新 API 查询上线。", sources: [{pr:3121, hash:"ee887768c"}] },
+          { category: "observability", impact: "attention", title: "Sandbox events 改为逐行 TTL", body: "ClickHouse 新增 events_ttl_days，默认仍回退 7 天，并关闭该表 ttl_only_drop_parts。精细 TTL 会增加 merge 与 part rewrite 成本。", sources: [{pr:3179, hash:"f1fedb4ff"},{pr:3152, hash:"f046fcf62"}] },
+          { category: "runtime", impact: "action", title: "Orchestrator 启动默认回收泄漏资源", body: "启动时清理 netns、cgroup、NBD 与 Firecracker，并用进程生命周期 flock 防止多实例。可用 DISABLE_STARTUP_RECLAIM=true 关闭；clean-nfs-cache 的旧 Terraform 限流参数已删除。", sources: [{pr:3123, hash:"79b838e4a"},{pr:3143, hash:"1320d6e38"},{pr:3118, hash:"a85cbe0e9"}] },
+          { category: "security", impact: "security", title: "Redis 与 Go 工具链修复已知 CVE", body: "Redis 7.4.2→7.4.6 修复 CVE-2025-49844；docker-reverse-proxy 使用 Go 1.26.4 修复 CVE-2026-42504。", sources: [{pr:2981, hash:"46b7cf0ff"},{pr:3188, hash:"a5cc1ff07"}] },
+          { category: "runtime", impact: "reliability", title: "修复 P2P readiness 与错误分类", body: "避免压缩块尚未就绪就被消费；修正 API 使用错误变量，以及把内部 timeout 误报成用户取消的问题。", sources: [{pr:3185, hash:"74a6e5b35"},{pr:3135, hash:"a131a0050"},{pr:3155, hash:"8f83959e3"}] }
+        ]
+      },
+      {
+        version: "2026.28", previous: "2026.27", date: "2026-07-09", tag: "fda7bef10",
+        commits: 34, files: 145, added: 6000, deleted: 1498, contributors: 11, days: 6,
+        headline: "Access Token 最终开关、Nomad 服务发现与 AWS 压缩上传",
+        summary: "认证下线链路闭环，服务发现从节点推断走向 service registration，跨云压缩上传也统一到共享实现。",
+        changes: [
+          { category: "auth", impact: "action", title: "可按用户拒绝已有 E2B Access Token", body: "新增默认关闭的 disable-e2b-access-token-auth；开启后，已验证的 sk_e2b_ token 也返回 401 和弃用说明，可通过 LaunchDarkly 分批执行最终下线。", sources: [{pr:3240, hash:"2cf489bd8"}] },
+          { category: "api", impact: "action", title: "事件 TTL 进入团队 tier / addon 数据模型", body: "PostgreSQL 为 tiers/addons 增加事件保留天数，SandboxConfig proto 添加 events_ttl_days；需与上一版 ClickHouse 逐行 TTL migration 配套部署。", sources: [{pr:3181, hash:"f76b2cb62"}] },
+          { category: "platform", impact: "action", title: "Orchestrator 发现切到 Nomad service registration", body: "支持跨 node pool/service job；新增 NOMAD_ORCHESTRATOR_SERVICE_NAMES，并默认合并旧发现路径。关闭 legacy fallback 前，必须确认每个 service registration 的 Address/Port 正确。", sources: [{pr:3176, hash:"32af250ca"}] },
+          { category: "storage", impact: "reliability", title: "GCP/AWS 共用压缩上传框架，AWS 首次完整支持", body: "抽取共享 multipart/limiter，AWS 支持压缩上传、读取与 uncompressed-size metadata；同时补齐 CRC/截断校验、坏缓存淘汰和 S3 complete 错误识别。", sources: [{pr:3232, hash:"40d690e3b"},{pr:3113, hash:"5a252498e"},{pr:3231, hash:"980748fb1"}] },
+          { category: "security", impact: "security", title: "签名比较改为 constant-time，并批量修复 CVE", body: "envd HMAC 校验不再使用普通字节比较；Go、goose、pgx、moby、brotli 等依赖同步升级，修复三项安全问题。", sources: [{pr:3145, hash:"fcf92faac"},{pr:3218, hash:"076823bc5"}] },
+          { category: "runtime", impact: "reliability", title: "Eviction index 自愈与并发初始化确定性", body: "Redis eviction index 加 execution ID，并自动补回缺失 sandbox；envd CA 并发安装返回可重试 503，SetOnce 在结果与取消同时就绪时确定性优先结果。", sources: [{pr:3199, hash:"3d03b59a0"},{pr:3206, hash:"91d09e4b1"},{pr:3241, hash:"fda7bef10"}] },
+          { category: "runtime", impact: "attention", title: "OCI layer 解包行为与 Docker 对齐", body: "改用 chrootarchive，修复 Nix 等越界式相对 symlink；代价是 nested whiteout 不再受支持，依赖该非标准层结构的镜像需重建。", sources: [{pr:3215, hash:"507993a43"}] },
+          { category: "platform", impact: "capability", title: "可直接使用预构建 client-proxy 与 ClickHouse migrator", body: "新增 CLIENT_PROXY_VERSION、CLICKHOUSE_MIGRATOR_VERSION；设置后拉取 E2B artifact，不设置仍保持源码构建。", sources: [{pr:3210, hash:"5686d881e"}] }
+        ]
+      }
+    ];
+
+    const state = { query: "", category: "all", actionOnly: false };
+    const totalChanges = releases.reduce((sum, release) => sum + release.changes.length, 0);
+
+    const formatNumber = value => new Intl.NumberFormat("zh-CN").format(value);
+
+    function sourceMarkup(source) {
+      return `<a class="source-link" href="${repo}/pull/${source.pr}" target="_blank" rel="noreferrer" title="打开 PR #${source.pr}，提交 ${source.hash}"><span>#${source.pr}</span><code>${source.hash.slice(0, 7)}</code></a>`;
+    }
+
+    function searchableText(release, change) {
+      return [release.version, release.previous, release.headline, release.summary, categories[change.category], impacts[change.impact], change.title, change.body, ...change.sources.map(s => `#${s.pr} ${s.hash}`)].join(" ").toLocaleLowerCase("zh-CN");
+    }
+
+    function matches(release, change) {
+      if (state.category !== "all" && change.category !== state.category) return false;
+      if (state.actionOnly && !["action", "attention"].includes(change.impact)) return false;
+      if (state.query && !searchableText(release, change).includes(state.query)) return false;
+      return true;
+    }
+
+    function renderChart() {
+      const max = Math.max(...releases.map(r => r.commits));
+      document.getElementById("release-chart").innerHTML = releases.map(release => {
+        const height = Math.max(5, Math.round((release.commits / max) * 100));
+        return `<button class="chart-column" type="button" data-scroll="release-${release.version}" data-version="${release.version}" title="${release.previous} → ${release.version}：${release.commits} 个提交">
+          <span class="chart-track"><span class="chart-bar" style="height:${height}%"></span></span>
+          <span class="chart-count">${release.commits}</span>
+          <span class="chart-version">${release.version.slice(5)}</span>
+        </button>`;
+      }).join("");
+    }
+
+    function renderVersionNav() {
+      document.getElementById("version-nav").innerHTML = `<p class="version-nav-title">Version index</p><div class="baseline">2026.16 · 基线</div>` + releases.map(release => {
+        return `<button type="button" class="version-link" data-scroll="release-${release.version}" data-version="${release.version}"><span class="v">${release.version}</span><span class="n">${release.commits}</span></button>`;
+      }).join("");
+    }
+
+    function renderReleases() {
+      let visibleCount = 0;
+      const visibleVersions = new Set();
+      const markup = releases.map(release => {
+        const visibleChanges = release.changes.filter(change => matches(release, change));
+        if (!visibleChanges.length) return "";
+        visibleVersions.add(release.version);
+        visibleCount += visibleChanges.length;
+        const changesMarkup = visibleChanges.map(change => `<div class="change" data-category="${change.category}" data-impact="${change.impact}">
+          <div class="change-tags">
+            <span class="tag category-${change.category}">${categories[change.category]}</span>
+            <span class="tag impact-${change.impact}">${impacts[change.impact]}</span>
+          </div>
+          <div class="change-copy"><h4>${change.title}</h4><p>${change.body}</p></div>
+          <div class="sources" aria-label="相关提交">${change.sources.map(sourceMarkup).join("")}</div>
+        </div>`).join("");
+
+        return `<article class="release" id="release-${release.version}" data-version="${release.version}">
+          <header class="release-header">
+            <div>
+              <div class="release-route">${release.previous} → ${release.version} · ${release.date}</div>
+              <h3>${release.version} · ${release.headline}</h3>
+              <p class="release-summary">${release.summary}</p>
+            </div>
+            <div class="release-metrics" aria-label="${release.version} 统计">
+              <div class="metric"><strong>${release.commits}</strong><span>commits</span></div>
+              <div class="metric"><strong>${release.files}</strong><span>files</span></div>
+              <div class="metric delta"><strong>+${formatNumber(release.added)} / -${formatNumber(release.deleted)}</strong><span>endpoint diff</span></div>
+            </div>
+          </header>
+          <div class="change-list">${changesMarkup}</div>
+          ${release.note ? `<div class="release-note"><strong>区间说明：</strong>${release.note}</div>` : ""}
+          <a class="compare-link" href="${repo}/compare/${release.previous}...${release.version}" target="_blank" rel="noreferrer">查看 ${release.previous}...${release.version} 完整差异 ↗</a>
+        </article>`;
+      }).join("");
+
+      document.getElementById("release-list").innerHTML = markup;
+      document.getElementById("result-count").textContent = `${visibleCount} / ${totalChanges} 条关键变化`;
+      document.getElementById("empty-state").classList.toggle("visible", visibleCount === 0);
+      document.querySelectorAll(".version-link, .chart-column").forEach(control => {
+        control.disabled = !visibleVersions.has(control.dataset.version);
+      });
+      setupObserver();
+    }
+
+    let observer;
+    function setupObserver() {
+      if (observer) observer.disconnect();
+      const articles = [...document.querySelectorAll(".release")];
+      if (!articles.length) return;
+      observer = new IntersectionObserver(entries => {
+        const visible = entries.filter(entry => entry.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        if (!visible) return;
+        const version = visible.target.dataset.version;
+        document.querySelectorAll(".version-link").forEach(link => link.classList.toggle("active", link.dataset.version === version));
+      }, { rootMargin: "-12% 0px -72% 0px", threshold: 0 });
+      articles.forEach(article => observer.observe(article));
+    }
+
+    function scrollToRelease(id) {
+      const target = document.getElementById(id);
+      if (target) target.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    }
+
+    document.addEventListener("click", event => {
+      const trigger = event.target.closest("[data-scroll]");
+      if (trigger) scrollToRelease(trigger.dataset.scroll);
+    });
+
+    const search = document.getElementById("search");
+    const clearSearch = document.getElementById("clear-search");
+    search.addEventListener("input", event => {
+      state.query = event.target.value.trim().toLocaleLowerCase("zh-CN");
+      clearSearch.classList.toggle("visible", Boolean(state.query));
+      renderReleases();
+    });
+
+    clearSearch.addEventListener("click", () => {
+      search.value = "";
+      state.query = "";
+      clearSearch.classList.remove("visible");
+      search.focus();
+      renderReleases();
+    });
+
+    document.getElementById("reset-filters").addEventListener("click", () => {
+      search.value = "";
+      state.query = "";
+      state.category = "all";
+      state.actionOnly = false;
+      document.getElementById("category").value = "all";
+      document.getElementById("action-only").checked = false;
+      clearSearch.classList.remove("visible");
+      renderReleases();
+      search.focus();
+    });
+
+    document.getElementById("category").addEventListener("change", event => {
+      state.category = event.target.value;
+      renderReleases();
+    });
+
+    document.getElementById("action-only").addEventListener("change", event => {
+      state.actionOnly = event.target.checked;
+      renderReleases();
+    });
+
+    renderChart();
+    renderVersionNav();
+    renderReleases();
+  </script>
+</body>
+</html>

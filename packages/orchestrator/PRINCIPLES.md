@@ -153,7 +153,7 @@ service InfoService {
         └────────────────┘
 ```
 
-完整流程详见 `docs/sandbox-lifecycle.md`。orchestrator 的职责是把每个状态迁移**原子化**：先校验前置条件、再执行、最后通过 `Cleanup` 注册回滚。
+完整流程详见 `web-docs/sandbox-lifecycle.md`。orchestrator 的职责是把每个状态迁移**原子化**：先校验前置条件、再执行、最后通过 `Cleanup` 注册回滚。
 
 ---
 
@@ -902,7 +902,7 @@ echo 1024 | sudo tee /proc/sys/vm/nr_hugepages
 | 配置模型 | `pkg/cfg/model.go` |
 | Cleanup 回调队列 | `pkg/sandbox/cleanup.go` |
 | 沙箱字典 pub-sub | `pkg/sandbox/map.go` |
-| Sandbox 生命周期（外部文档） | `docs/sandbox-lifecycle.md` |
+| Sandbox 生命周期（外部文档） | `web-docs/sandbox-lifecycle.md` |
 
 ---
 
