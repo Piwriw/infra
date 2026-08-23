@@ -229,6 +229,7 @@ window.LEARNING_CATALOG = (() => {
     ['envd-api', 'Envd REST API', 'runtime', './envd-api-module.md', 'web-docs/envd-api-module.md', '初始化、文件传输、认证与 freeze/thaw。', ['Envd', 'REST']],
     ['envd-package', 'Envd Package 原理', 'runtime', './envd-package.md', 'web-docs/envd-package.md', 'Envd 包的协议、运行模式与核心子系统补充说明。', ['Envd', 'Package']],
     ['artifact-storage-cache', 'Artifact 存储与缓存', 'runtime', './artifact-storage-cache.md', 'web-docs/artifact-storage-cache.md', '模板与快照产物的 header、分层读取和多级缓存。', ['Storage', 'Cache']],
+    ['storage-size-by-team', '按 Team 统计存储大小', 'runtime', './storage-size-by-team.md', 'web-docs/storage-size-by-team.md', '梳理 Sandbox、Template、Snapshot 的逻辑磁盘容量，并提供按 team_id 汇总的 PostgreSQL 与对象存储 Inventory SQL。', ['Storage', 'SQL', 'Team']],
     ['public-uri-flow', 'Sandbox Public URI 访问链路', 'traffic', './sandbox-public-uri-request-flow.md', 'web-docs/sandbox-public-uri-request-flow.md', '从公网 DNS、TLS 和 Host 解析到 VM 内用户服务，并覆盖 private ingress、auto-resume 与自定义域名。', ['Public URI', 'Traffic', 'Proxy']],
     ['traffic-routing', 'Sandbox 流量路由', 'traffic', './sandbox-traffic-routing.md', 'web-docs/sandbox-traffic-routing.md', 'Client Proxy、Host 解析、token 与下游路由。', ['Traffic', 'Proxy']],
     ['client-proxy-deep', 'Client Proxy 深度剖析', 'traffic', './client-proxy-module.md', 'web-docs/client-proxy-module.md', 'catalog、连接池、恢复和优雅关停。', ['Proxy', 'Redis']],
