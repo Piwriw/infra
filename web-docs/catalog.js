@@ -203,6 +203,7 @@ window.LEARNING_CATALOG = (() => {
   const deep = [
     ['api-deep', 'API 服务深度剖析', 'control', './api-module.md', 'web-docs/api-module.md', '路由、中间件、handler 与服务装配的完整参考。', ['API', 'OpenAPI']],
     ['database-schema', '数据库表与关联关系', 'control', './database-schema.md', 'web-docs/database-schema.md', '核心表、约束、索引与查询关系参考。', ['Schema', 'PostgreSQL']],
+    ['database-tables-analysis', '数据库表结构全量分析', 'control', './database-tables-analysis.md', 'web-docs/database-tables-analysis.md', '按模块全量分析表功能、字段、关系可信度、ER 图与风险清单。', ['Schema', 'PostgreSQL', 'Analysis']],
     ['dashboard-api-deep', 'Dashboard API 深度剖析', 'control', './dashboard-api-module.md', 'web-docs/dashboard-api-module.md', '团队管理、模板构建视图与控制台后端接口。', ['Dashboard', 'Team']],
     ['clusters', 'Clusters 与多集群路由', 'control', './clusters-module.md', 'web-docs/clusters-module.md', 'team 到 cluster、节点发现和健康状态。', ['Cluster', 'Discovery']],
     ['auth-deep', '认证子系统深度剖析', 'security', './auth-module.md', 'web-docs/auth-module.md', '认证器组合、缓存、OIDC 与 team 上下文。', ['Auth', 'OIDC']],
