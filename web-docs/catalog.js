@@ -201,8 +201,10 @@ window.LEARNING_CATALOG = (() => {
   ].map(doc => ({ ...doc, kind: 'core' }));
 
   const deep = [
+    ['architecture-overview', '系统架构总览（ARCHITECTURE 中文版）', 'control', './architecture-overview.md', 'web-docs/architecture-overview.md', 'docs/ARCHITECTURE.md 的中文翻译：服务职责、数据存储、核心流程与部署拓扑。', ['架构', '全景', '总览']],
     ['api-deep', 'API 服务深度剖析', 'control', './api-module.md', 'web-docs/api-module.md', '路由、中间件、handler 与服务装配的完整参考。', ['API', 'OpenAPI']],
     ['database-schema', '数据库表与关联关系', 'control', './database-schema.md', 'web-docs/database-schema.md', '核心表、约束、索引与查询关系参考。', ['Schema', 'PostgreSQL']],
+    ['tier-user-team-rules', 'Tier、用户与团队配额规则', 'control', './tier-user-team-rules.md', 'web-docs/tier-user-team-rules.md', '用户与团队关联、tier/addon 配额、参数校验与套餐变更的实际行为。', ['Tier', 'Team', 'Quota']],
     ['database-tables-analysis', '数据库表结构全量分析', 'control', './database-tables-analysis.md', 'web-docs/database-tables-analysis.md', '按模块全量分析表功能、字段、关系可信度、ER 图与风险清单。', ['Schema', 'PostgreSQL', 'Analysis']],
     ['dashboard-api-deep', 'Dashboard API 深度剖析', 'control', './dashboard-api-module.md', 'web-docs/dashboard-api-module.md', '团队管理、模板构建视图与控制台后端接口。', ['Dashboard', 'Team']],
     ['clusters', 'Clusters 与多集群路由', 'control', './clusters-module.md', 'web-docs/clusters-module.md', 'team 到 cluster、节点发现和健康状态。', ['Cluster', 'Discovery']],
@@ -224,6 +226,7 @@ window.LEARNING_CATALOG = (() => {
     ['auto-resume', 'Auto-resume 透明恢复', 'sandbox', './auto-resume-module.md', 'web-docs/auto-resume-module.md', 'catalog miss 到 Resume 状态机与错误映射。', ['Resume', 'Proxy']],
     ['hyperloop-api', 'Hyperloop 内部通道', 'runtime', './hyperloop-api-module.md', 'web-docs/hyperloop-api-module.md', 'sandbox 内部身份、日志与 collector 转发。', ['Hyperloop', 'Internal API']],
     ['node', 'Node 与节点池', 'runtime', './node-module.md', 'web-docs/node-module.md', '实例抽象、健康状态、drain 与 autoscaling。', ['Node', 'Autoscaling']],
+    ['node-scheduling', '节点、Sandbox 与 Template 构建调度', 'runtime', './node-scheduling-strategies.md', 'web-docs/node-scheduling-strategies.md', '节点发现与健康状态、Sandbox Best-of-K、构建节点选择、接收限制及失败重试策略。', ['Node', 'Scheduling', 'Sandbox', 'Template']],
     ['volumes', 'Volumes 持久化卷', 'runtime', './volumes.md', 'web-docs/volumes.md', 'NFS 后端、缓存、调度门控和文件操作。', ['Volume', 'NFS']],
     ['snapshots', 'Snapshots 快照系统', 'runtime', './snapshots.md', 'web-docs/snapshots.md', 'pause/resume 产物、分发和缓存 TTL。', ['Snapshot', 'Storage']],
     ['envd-deep', 'Envd 深度剖析', 'runtime', './envd-module.md', 'web-docs/envd-module.md', '进程、文件、cgroup、MMDS 与端口转发。', ['Envd', 'Process']],
