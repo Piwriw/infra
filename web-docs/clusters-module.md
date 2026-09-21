@@ -1,11 +1,12 @@
 # Clusters 模块
 
-> 范围:E2B 控制平面(CP API)如何抽象"一个部署区域"、如何把 team 路由到对应的 cluster、如何在 cluster 内部发现 orchestrator/builder 实例并维护它们的健康状态。涉及 `packages/api/internal/clusters/`、`packages/shared/pkg/clusters/`、`packages/db/queries/get_active_clusters.sql` 与若干 migrations。
+> 范围:E2B 控制平面(CP API)如何抽象"一个部署区域"、如何把 team 路由到对应的 cluster、如何在 cluster 内部发现 orchestrator/builder 实例并维护它们的健康状态。涉及 `packages/api/internal/clusters/`、`packages/shared/pkg/clusters/`、`packages/shared/pkg/servicediscovery/`、`packages/db/queries/get_active_clusters.sql` 与若干 migrations。
 >
 > 本文聚焦「多集群拓扑 + 节点发现 + 资源访问」的抽象。每个 cluster 内部的沙箱调度、模板缓存在 `orchestrator-module.md`(待写)与 `template-cache-module.md`(待写)中讨论。
 
 ## 目录
 
+- [零、2026.30 变动](#零202630-变动)
 - [一、概述](#一概述)
 - [二、数据模型与 schema 演进](#二数据模型与-schema-演进)
 - [三、`Cluster` 与 `Pool` 的内存抽象](#三cluster-与-pool-的内存抽象)
@@ -25,6 +26,68 @@
 - [附录 A:`Cluster` / `Instance` 状态机](#附录-acluster--instance-状态机)
 - [附录 B:DB schema 演进](#附录-bdb-schema-演进)
 - [附录 C:术语表](#附录-c术语表)
+
+---
+
+## 零、2026.30 变动
+
+### 0.1 服务发现整体下沉到 `packages/shared/pkg/servicediscovery/`
+
+⛔ 2026.29 时本文档 §7 描述的「四个实现」分散在两个目录中，2026.30 这两个目录**已被整体删除**：
+
+| 2026.29 路径 | 2026.30 状态 |
+|---|---|
+| `packages/api/internal/clusters/discovery/`（`discovery.go`、`kubernetes.go`、`local.go`、`remote.go`、`remote_test.go`、`static.go`） | ⛔ 整目录删除 |
+| `packages/api/internal/orchestrator/discovery/`（`discovery.go`、`kubernetes.go`、`local.go`、`merged.go`、`nomad.go`、`nomad_node_pool.go` 等 10 个文件） | ⛔ 整目录删除 |
+| `packages/shared/pkg/clusters/discovery/nomad.go` | ⛔ 删除 |
+
+全部能力收敛到新包 `packages/shared/pkg/servicediscovery/`：
+
+| 文件 | 关键导出 | 位置（2026.30） |
+|---|---|---|
+| `servicediscovery.go` | `Instance`、`Discoverer` 接口、`ErrNotYetSynced`、`NoSync` | `packages/shared/pkg/servicediscovery/servicediscovery.go:27,53,89,102` |
+| `config.go` | `Config` | `packages/shared/pkg/servicediscovery/config.go:3` |
+| `cached.go` | `Cached(lister, logger)`，`cacheRefreshInterval = 10 * time.Second` | `packages/shared/pkg/servicediscovery/cached.go:11,41` |
+| `merged.go` | `NewMerged(primary, fallback)` | `packages/shared/pkg/servicediscovery/merged.go:27` |
+| `local.go` | `NewLocal(addr)`，`localInstanceID = "local"` | `packages/shared/pkg/servicediscovery/local.go:14,28` |
+| `remote.go` | `NewRemote(client)`，`hostWithoutPort` | `packages/shared/pkg/servicediscovery/remote.go:26,62` |
+| `static.go` | `NewStatic(results, port)` | `packages/shared/pkg/servicediscovery/static.go:14` |
+| `provider/provider.go` | `New(...)` 与各 provider 构造、`ErrMissingStaticEndpoints` | `packages/shared/pkg/servicediscovery/provider/provider.go:33,136` |
+| `dns/dns.go` | `New(hosts, resolver, servicePort)` | `packages/shared/pkg/servicediscovery/dns/dns.go:38` |
+| `nomad/services.go` | `NewServices(client, serviceNames)` | `packages/shared/pkg/servicediscovery/nomad/services.go:33` |
+| `nomad/nodepool.go` | `NewNodePool(client, nodePool)` | `packages/shared/pkg/servicediscovery/nomad/nodepool.go:36` |
+| `nomad/allocations.go` | `NewAllocations` / `NewAllocationsOnPort` | `packages/shared/pkg/servicediscovery/nomad/allocations.go:32,38` |
+| `kube/pods.go` | `NewPods` / `NewPodsOnPort` | `packages/shared/pkg/servicediscovery/kube/pods.go:45,56` |
+| `kube/client.go` | `NewClient(ctx, endpoint)`、`hostBoundBearer` | `packages/shared/pkg/servicediscovery/kube/client.go:43,113` |
+
+### 0.2 `Discovery` 接口与 `Item` 结构被替换
+
+| 2026.29 | 2026.30 |
+|---|---|
+| `Discovery` 接口，唯一方法 `Query(ctx) ([]Item, error)` | `Discoverer` 接口，三个方法 `ListInstances(ctx) ([]Instance, error)`、`Start(ctx)`、`Stop(ctx)` |
+| `Item{UniqueIdentifier, NodeID, InstanceID, LocalIPAddress, LocalInstanceApiPort}` | `Instance{WorkloadID, NodeID, IPAddress, Port, Backend}` |
+| `discovery.Item`（无 `Backend`，无生命周期方法） | `servicediscovery.Instance`；`Backend` 记录「是哪个 lister 产出这条记录」 |
+
+⚠️ 这是**不兼容的接口重写**，不是改名。`Query` 没有对应的 `Start`/`Stop` 语义，因此新接口把「需要后台刷新的适配器」和「纯查询适配器」显式区分开：后者嵌入 `NoSync` 获得空实现（`servicediscovery.go:102`）。
+
+⚠️ `Item.InstanceID` 的语义被拆成两个字段。旧注释写「每次重启变化（只有 remote 有）」，新代码把这个概念放进 `WorkloadID`，并把「实例运行在哪台机器」放进 `NodeID`。`WorkloadID` 的注释明确要求：**跨后端取并集时同一实例必须得到相同的 `WorkloadID`**，消费方把它当作不假设宽度的不透明字符串（`servicediscovery.go:53-60`）。remote 集群的 per-RPC 路由现在读 `sd.WorkloadID`（`packages/api/internal/clusters/cluster.go:110-112`）。
+
+⚠️ `instancesSyncStore` 的内部类型全部从 `discovery.Item` 换成 `servicediscovery.Instance`，`SourceList` 从 `d.discovery.Query(ctx)` 改为 `d.discovery.ListInstances(ctx)`（`packages/api/internal/clusters/instances_sync.go:19,21,24-25,33,56,62`）。
+
+### 0.3 新增 `nomad+kubernetes` 组合 provider
+
+API 侧装配重写为「两个发现平面」：`type serviceDiscovery struct { nodes, templateBuilders servicediscovery.Discoverer }`（`packages/api/internal/handlers/store.go:62-65`）。新增 `ServiceDiscoveryProviderNomadKubernetes = "nomad+kubernetes"`（`packages/api/internal/cfg/model.go:26`），由 `newComposedServiceDiscovery` 用 `NewMerged` 在两个平面上各自取 Nomad 与 K8s 的并集（`store.go:90-104`）。分派入口 `newServiceDiscovery`（`store.go:74`）。
+
+### 0.4 与本文档其余章节相关的小改动
+
+| 项目 | 2026.30 变化 | 位置 |
+|---|---|---|
+| 缓存包装 | 新增 `Cached(...)`，10 秒刷新；首次刷新完成前返回 `ErrNotYetSynced` | `packages/shared/pkg/servicediscovery/cached.go:11,41,69` |
+| DNS 后端 | 新增 `dns` 子包，`dnsClient` 超时 2 秒 | `packages/shared/pkg/servicediscovery/dns/dns.go:22` |
+| K8s 客户端 | 新增 `kube/client.go`，含 `hostBoundBearer`（把 bearer 绑定到特定 host）与 `canonicalAuthority`/`canonicalHost` | `packages/shared/pkg/servicediscovery/kube/client.go:113,121,134` |
+| Node 状态枚举 | orchestrator 侧新增 `ShuttingDown = 4`，关停时写它而非 `Draining` | `packages/orchestrator/info.proto:17`、`packages/orchestrator/pkg/factories/run.go:1085-1091` |
+| 节点在途工作 | 新增 `outstanding_work` 上报字段 | `packages/orchestrator/info.proto:55-56` |
+| orchestrator 配置 | `LaunchDarklyAPIKey` 被 `InstanceGroupName`（`INSTANCE_GROUP_NAME`）取代 | `packages/orchestrator/pkg/cfg/model.go:86` |
 
 ---
 
@@ -156,7 +219,7 @@ type Cluster struct {
 	AuthOrgID     string
 
 	instances       *smap.Map[*Instance]
-	synchronization *synchronization.Synchronize[discovery.Item, *Instance]
+	synchronization *synchronization.Synchronize[servicediscovery.Instance, *Instance]
 	resources       ClusterResource
 }
 ```
@@ -243,7 +306,7 @@ DB 里 cluster 的字段变了(比如 `endpoint` 改了),目前**不会**触发�
 | 维度 | Local (`cluster.go:72-103`) | Remote (`cluster.go:105-165`) |
 |---|---|---|
 | Cluster ID | `consts.LocalClusterID` (`uuid.Nil`) | DB 分配的真实 UUID |
-| Discovery 源 | `LocalServiceDiscovery`(Nomad alloc 或 static) | `RemoteServiceDiscovery`(Edge API `/v1/service-discovery`) |
+| Discovery 源 | `servicediscovery.NewLocal` / `nomad.NewServices` / `nomad.NewAllocations` / `kube.NewPods`（2026.30；2026.29 为 `LocalServiceDiscovery`） | `servicediscovery.NewRemote`（Edge API `/v1/service-discovery`；2026.29 为 `RemoteServiceDiscovery`） |
 | gRPC 目标 | 直连节点 IP + `LocalInstanceApiPort` | 统一 endpoint(edge-backend 转发) |
 | TLS | 通常关闭(`EndpointTls = false`) | 通常开启(`EndpointTls = true`) |
 | 鉴权 | 无 | `EdgeRpcAuthHeader` + service instance ID 路由 |
@@ -372,94 +435,90 @@ handler 在节点查找失败时可以调它,**立即**触发一次 discovery—
 
 ## 七、Service Discovery 抽象
 
-`Discovery` 接口(`discovery/discovery.go:25-27`):
+⛔ 本节在 2026.29 描述的接口与四个实现已全部删除，2026.30 的实现位于 `packages/shared/pkg/servicediscovery/`。以下按新接口重写；旧路径仅作历史对照。
+
+`Discoverer` 接口（`packages/shared/pkg/servicediscovery/servicediscovery.go:89-100`）：
 
 ```go
-type Discovery interface {
-	Query(ctx context.Context) ([]Item, error)
+type Discoverer interface {
+    ListInstances(ctx context.Context) ([]Instance, error)
+
+    // Start begins the background refresh a cached adapter needs before its
+    // first ListInstances returns anything; query adapters ignore it.
+    Start(ctx context.Context)
+
+    // Stop ends what Start began.
+    Stop(ctx context.Context)
 }
 ```
 
-返回的 `Item`(`discovery.go:11-23`):
+返回的 `Instance`（`servicediscovery.go:53-81`）：
 
 ```go
-type Item struct {
-	UniqueIdentifier     string  // 去重 key(alloc ID / service instance ID)
-	NodeID               string  // 逻辑节点 ID
-	InstanceID           string  // 每次重启变化(只有 remote 有)
-	LocalIPAddress       string  // 节点 IP
-	LocalInstanceApiPort uint16  // gRPC 端口
+type Instance struct {
+    WorkloadID string // 在其来源内唯一；跨后端并集时必须一致
+    NodeID     string // 实例所在的机器；DNS/STATIC 来源为空
+    IPAddress  string // gRPC server 监听的主机
+    Port       uint16 // 该 server 的端口
+    Backend    string // 产出这条记录的 lister
 }
 ```
 
-### 7.1 四个实现
+`Address()` 是 `"<IPAddress>:<Port>"`（`servicediscovery.go:82-84`）。
+
+⚠️ 与 2026.29 的 `Item` 相比，字段语义被重新划分：`UniqueIdentifier` → `WorkloadID`，`LocalIPAddress`/`LocalInstanceApiPort` → `IPAddress`/`Port`，`InstanceID` 并入 `WorkloadID`，并新增 `Backend`。旧代码里「`InstanceID` 只有 remote 有」这条不对称消失了——新注释转而要求所有后端在并集场景下对同一实例给出一致的 `WorkloadID`，这也是两个 Nomad node 后端都从 **node** 而非 allocation 推导它的原因。
+
+`NoSync`（`servicediscovery.go:102-106`）给纯查询适配器提供 `Start`/`Stop` 的空实现。
+
+### 7.1 实现清单
 
 | 实现 | 文件 | 用途 |
 |---|---|---|
-| `LocalServiceDiscovery` | `discovery/local.go:20-81` | Local cluster(Nomad 部署):Nomad alloc 或 static(local env) |
-| `KubernetesServiceDiscovery` | `discovery/kubernetes.go:22-94` | Local cluster(K8s 部署):列举 template-manager pods |
-| `RemoteServiceDiscovery` | `discovery/remote.go:32-73` | Remote cluster:Edge API `/v1/service-discovery` |
-| `StaticServiceDiscovery` | `discovery/static.go:8-27` | 测试用 |
+| `NewLocal(addr)` | `servicediscovery/local.go:28` | Local cluster 的静态单条记录；`localInstanceID = "local"`（`:14`） |
+| `NewRemote(client)` | `servicediscovery/remote.go:26` | Remote cluster：Edge API `/v1/service-discovery` |
+| `NewStatic(results, port)` | `servicediscovery/static.go:14` | 测试／固定地址 |
+| `dns.New(hosts, resolver, servicePort)` | `servicediscovery/dns/dns.go:38` | 按主机名解析 |
+| `nomad.NewServices(client, serviceNames)` | `servicediscovery/nomad/services.go:33` | Nomad 原生服务发现 |
+| `nomad.NewNodePool(client, nodePool)` | `servicediscovery/nomad/nodepool.go:36` | Nomad node pool 发现（历史兼容路径） |
+| `nomad.NewAllocations` / `NewAllocationsOnPort` | `servicediscovery/nomad/allocations.go:32,38` | 按 allocation 发现（template builder） |
+| `kube.NewPods` / `NewPodsOnPort` | `servicediscovery/kube/pods.go:45,56` | K8s Pod 发现 |
+| `Cached(lister, logger)` | `servicediscovery/cached.go:41` | 包装任意 `Discoverer`，10 秒刷新（`:11`） |
+| `NewMerged(primary, fallback)` | `servicediscovery/merged.go:27` | 两个后端取并集 |
 
-`KubernetesServiceDiscovery`(`kubernetes.go:29-38`)是 `LocalServiceDiscovery` 的 K8s 对应版本——用于在 K8s 上部署 E2B 时发现 template-manager pods。它通过 `pods.List(labelSelector)` 列举 pods,只返回 `podReady` 的(`kubernetes.go:83-94`)。注意它使用 `status.HostIP`(因为 template-manager 在 K8s 上以 `host_network=true` 运行,`kubernetes.go:21`),fallback 到 `status.PodIP`。
+`provider.New(...)`（`servicediscovery/provider/provider.go:33`）是配置驱动的装配入口，按 provider 分派到 `createNomadK8sProvider`（`:52`）、`createDnsProvider`（`:71`）、`createK8sProvider`（`:90`）、`createNomadProvider`（`:117`）、`createStaticProvider`（`:138`）。
 
-### 7.2 Local 实现细节
+⛔ 历史对照：2026.29 的 `LocalServiceDiscovery`（`clusters/discovery/local.go:20-81`）、`KubernetesServiceDiscovery`（`clusters/discovery/kubernetes.go:22-94`）、`RemoteServiceDiscovery`（`clusters/discovery/remote.go:32-73`）、`StaticServiceDiscovery`（`clusters/discovery/static.go:8-27`）均已被上表实现取代。
 
-`discovery/local.go:32-81` 有两条路径:
+### 7.2 K8s 发现细节
 
-```go
-if env.IsLocal() {
-    // static:返回单个 localhost 条目(用于本地开发)
-    return []Item{{
-        UniqueIdentifier: "local",
-        NodeID: "local",
-        LocalIPAddress: testsInstanceHost,
-        LocalInstanceApiPort: consts.OrchestratorAPIPort,
-    }}, nil
-}
+`kube.NewPods(client, namespace, labelSelector)` / `NewPodsOnPort(..., port, preferHostIP)`（`servicediscovery/kube/pods.go:45,56`）列举 Pod，只接受 Running 且 Ready 的（`pods.go:66-105`）。地址选择在 `addressOf`（`pods.go:106`）：`preferHostIP` 为真时优先 `status.HostIP`（template-manager 在 K8s 上以 `host_network=true` 运行），缺失时回退 `status.PodIP`。
 
-// 生产 local:从 Nomad 拉 alloc
-alloc, err := discovery.ListOrchestratorAndTemplateBuilderAllocations(ctx, sd.nomad, discovery.FilterTemplateBuilders)
-```
+`kube.NewClient(ctx, endpoint)`（`kube/client.go:43`）构造 K8s 客户端；`hostBoundBearer`（`client.go:113`）是自定义 `RoundTripper`，通过 `canonicalAuthority`/`canonicalHost`（`client.go:121,134`）把 bearer 绑定到特定 host，避免凭据被重定向到别的地址。
 
-注意 `testsInstanceHost = env.GetEnv("TESTS_ORCH_INSTANCE_HOST", "localhost")`(`local.go:18`)——本地开发默认连 localhost。
+### 7.3 Local 与 Remote 实现细节
 
-**只查 template builders**:`FilterTemplateBuilders` 标志 + `local.go:55-56` 的注释说明:local orchestrators **不**通过这条 discovery 路径——它们仍走旧的 Nomad discovery(在 node manager flow 内部)。这是历史遗留,为了最小化改动而保留。
+`NewLocal(addr)`（`local.go:28-53`）把单个 `host:port` 地址包成一条 `Instance`，`WorkloadID` 与 `NodeID` 均为 `"local"`（`localInstanceID`，`local.go:14`）。API 侧的装配在 `newLocalServiceDiscovery`（`packages/api/internal/handlers/store.go:144-156`），地址来自 `LOCAL_ORCHESTRATOR_ADDRESS`（默认 `127.0.0.1:5008`，`packages/api/internal/cfg/model.go:93`）。ⓘ 2026.29 的 `local.go` 还内置了「`env.IsLocal()` 时返回 localhost 条目」的分支与 `TESTS_ORCH_INSTANCE_HOST` 环境变量，新实现把地址来源交给调用方，不再自行判断环境。
 
-### 7.3 Remote 实现细节
-
-`discovery/remote.go:44-73`:
-
-```go
-res, err := sd.client.V1ServiceDiscoveryWithResponse(ctx)
-// ...
-nodes := res.JSON200.Orchestrators
-for i, n := range nodes {
-    result[i] = Item{
-        UniqueIdentifier: n.ServiceInstanceID,
-        NodeID:           n.NodeID,
-        InstanceID:       n.ServiceInstanceID,
-        LocalIPAddress:   ipAddressFromServiceHost(n.ServiceHost),
-    }
-}
-```
-
-`ipAddressFromServiceHost`(`remote.go:18-30`)处理 `host:port` 格式,只保留 host(用于数据面路由;控制面走统一 endpoint)。
+`NewRemote(client)`（`remote.go:26-61`）调用 Edge API 的 `V1ServiceDiscoveryWithResponse`，把 `res.Orchestrators` 逐条转成 `Instance`。`hostWithoutPort`（`remote.go:62`）处理 `host:port` 格式，只保留 host——因为控制面走统一 endpoint，host 只用于数据面路由。remote 集群的 per-RPC 路由取 `sd.WorkloadID` 作为 `serviceInstanceID`（`packages/api/internal/clusters/cluster.go:107-112`）。
 
 ### 7.4 同步去重
 
-`instancesSyncStore.SourceExists`(`instances_sync.go:33-42`)用 `UniqueIdentifier` 去重——同一个 alloc/service instance 不会被加两次。
+`instancesSyncStore` 的类型全部换成 `servicediscovery.Instance`（`packages/api/internal/clusters/instances_sync.go:19-21`），`SourceList` 调 `d.discovery.ListInstances(ctx)`（`:24-25`）。
 
-`PoolExists`(`instances_sync.go:53-57`)用 `NodeID` 作为内存 key:
+`SourceExists`（`instances_sync.go:33-41`）用 `WorkloadID` 去重——同一个 alloc/service instance 不会被加两次。
+
+`PoolExists`（`instances_sync.go:56-60`）用 `NodeID` 作为内存 key：
 
 ```go
-func (d instancesSyncStore) PoolExists(_ context.Context, s discovery.Item) bool {
+func (d instancesSyncStore) PoolExists(_ context.Context, s servicediscovery.Instance) bool {
 	_, found := d.instances.Get(s.NodeID)
 	return found
 }
 ```
 
-如果 `NodeID` 相同但 `UniqueIdentifier` 变了(比如 alloc 重建),会被认为是"已存在"——这是有意识的设计,避免节点反复 add/remove。但**Instance 内部状态会通过 `Sync` 更新**。
+如果 `NodeID` 相同但 `WorkloadID` 变了（比如 alloc 重建），会被认为是"已存在"——这是有意识的设计，避免节点反复 add/remove。但**Instance 内部状态会通过 `Sync` 更新**。
+
+⚠️ 去重键是 `WorkloadID`、池 key 是 `NodeID`，两个字段语义不同。在 `nomad+kubernetes` 组合模式下，两条后端对同一实例必须给出相同的 `WorkloadID` 才能正确去重——`NewMerged` 本身**不做跨后端去重**（`merged.go:34-53` 只做并集与错误传播），去重责任落在后端推导 `WorkloadID` 的约定上。
 
 ---
 
@@ -754,11 +813,16 @@ Handler                         Cluster                instancesSyncStore      D
 
 | 变量 | 用途 |
 |---|---|
-| `TESTS_ORCH_INSTANCE_HOST` | 本地开发时 local discovery 用的 host(默认 `localhost`) |
+| `SERVICE_DISCOVERY_PROVIDER` | 发现 provider 选择:`nomad`(默认)/`kubernetes`/`nomad+kubernetes`/`local`；非法值启动失败(`packages/api/internal/cfg/model.go:64,291`) |
+| `NOMAD_ORCHESTRATOR_SERVICE_NAMES` | Nomad 原生服务名,默认 `orchestrator`(`model.go:75`) |
+| `NOMAD_ORCHESTRATOR_LEGACY_DISCOVERY_ENABLED` | 是否叠加 `default` node pool 的历史兼容发现,默认 `true`(`model.go:87`) |
+| `LOCAL_ORCHESTRATOR_ADDRESS` | `local` provider 的固定地址,默认 `127.0.0.1:5008`(`model.go:93`) |
+| `K8S_ORCHESTRATOR_POD_LABEL_SELECTOR` / `K8S_TEMPLATE_MANAGER_POD_LABEL_SELECTOR` | K8s Pod selector,默认 `app.kubernetes.io/name=orchestrator` 与 `.../template-manager`(`model.go:100-101`) |
+| ⛔ `TESTS_ORCH_INSTANCE_HOST` | 2026.29 的本地开发 discovery host(默认 `localhost`)；2026.30 已不再被新发现层读取 |
 | `LOKI_URL` / `LOKI_USER` / `LOKI_PASSWORD` | Local cluster 的 build/sandbox logs 后端 |
 | `CLICKHOUSE_*` | Local cluster 的 metrics 后端 |
 
-Local cluster 不需要 cluster-specific 配置——它的 ID 是 `uuid.Nil`,所有节点通过 Nomad/Consul 发现。
+Local cluster 不需要 cluster-specific 配置——它的 ID 是 `uuid.Nil`，节点通过 `SERVICE_DISCOVERY_PROVIDER` 指定的后端发现（2026.30 起统一由 `packages/shared/pkg/servicediscovery/` 提供，见 §7）。
 
 ### 13.2 DB 配置
 
@@ -790,11 +854,22 @@ Local cluster 不需要 cluster-specific 配置——它的 ID 是 `uuid.Nil`,�
 | `packages/api/internal/clusters/resources.go` | `ClusterResource` 接口、`LogQueryWindow`、`getBuildLogsWithSources` | 资源访问抽象 + 共享逻辑 |
 | `packages/api/internal/clusters/resources_local.go` | `LocalClusterResourceProvider` | ClickHouse + Loki 直连 |
 | `packages/api/internal/clusters/resources_remote.go` | `ClusterResourceProviderImpl` | Edge API 转发 |
-| `packages/api/internal/clusters/discovery/discovery.go` | `Discovery` 接口、`Item` | 节点发现抽象 |
-| `packages/api/internal/clusters/discovery/local.go` | `LocalServiceDiscovery` | Nomad/static 发现 |
-| `packages/api/internal/clusters/discovery/kubernetes.go` | `KubernetesServiceDiscovery`、`NewKubernetesDiscovery`、`podReady` | K8s 部署的 local cluster 发现 |
-| `packages/api/internal/clusters/discovery/remote.go` | `RemoteServiceDiscovery` | Edge API `/v1/service-discovery` |
-| `packages/api/internal/clusters/discovery/static.go` | `StaticServiceDiscovery` | 测试用 |
+| `packages/api/internal/handlers/store.go` | `serviceDiscovery`、`newServiceDiscovery`、`newComposedServiceDiscovery` | 发现平面的 API 侧装配（2026.30 新增结构） |
+| `packages/shared/pkg/servicediscovery/servicediscovery.go` | `Discoverer` 接口、`Instance`、`NoSync`、`ErrNotYetSynced` | 节点发现抽象（2026.30 新包） |
+| `packages/shared/pkg/servicediscovery/local.go` | `NewLocal` | 静态单条 local 记录 |
+| `packages/shared/pkg/servicediscovery/remote.go` | `NewRemote`、`hostWithoutPort` | Edge API `/v1/service-discovery` |
+| `packages/shared/pkg/servicediscovery/static.go` | `NewStatic` | 测试用 |
+| `packages/shared/pkg/servicediscovery/cached.go` | `Cached`、`cacheRefreshInterval` | 10 秒刷新的缓存包装 |
+| `packages/shared/pkg/servicediscovery/merged.go` | `NewMerged` | 双后端并集 |
+| `packages/shared/pkg/servicediscovery/provider/provider.go` | `New`、各 `create*Provider`、`ErrMissingStaticEndpoints` | 配置驱动装配 |
+| `packages/shared/pkg/servicediscovery/dns/dns.go` | `New` | DNS 解析发现 |
+| `packages/shared/pkg/servicediscovery/nomad/services.go` | `NewServices` | Nomad 原生服务 |
+| `packages/shared/pkg/servicediscovery/nomad/nodepool.go` | `NewNodePool` | Nomad node pool（历史兼容） |
+| `packages/shared/pkg/servicediscovery/nomad/allocations.go` | `NewAllocations`、`NewAllocationsOnPort` | Nomad allocation（template builder） |
+| `packages/shared/pkg/servicediscovery/kube/pods.go` | `NewPods`、`NewPodsOnPort`、`addressOf` | K8s Pod 发现 |
+| `packages/shared/pkg/servicediscovery/kube/client.go` | `NewClient`、`hostBoundBearer` | K8s 客户端与 host 绑定凭据 |
+| ⛔ `packages/api/internal/clusters/discovery/**`（6 个文件） | `Discovery` 接口、`Item`、`LocalServiceDiscovery`、`KubernetesServiceDiscovery`、`RemoteServiceDiscovery`、`StaticServiceDiscovery` | 2026.30 已整目录删除，见 §7 |
+| ⛔ `packages/api/internal/orchestrator/discovery/**`（10 个文件） | — | 2026.30 已整目录删除，能力迁入上表新包 |
 | `packages/shared/pkg/clusters/cluster.go` | `WithClusterFallback` | `*uuid.UUID` → `uuid.UUID`(NULL→local) |
 | `packages/shared/pkg/consts/cluster.go` | `LocalClusterID = uuid.Nil` | local cluster 标识 |
 | `packages/db/queries/get_active_clusters.sql` | `GetActiveClusters` | 只返回有 team 引用的 cluster |
@@ -869,10 +944,14 @@ DB 里 INSERT 了 cluster 行,但**还没有 team 引用它**。`GetActiveCluste
 
 ### Q3:Local cluster 的 instance 列表为空
 
-检查:
-- `env.IsLocal()` 是否为 true(本地开发模式)
-- `TESTS_ORCH_INSTANCE_HOST` 是否设置(默认 `localhost`)
-- Nomad alloc 列表是否非空(`ListOrchestratorAndTemplateBuilderAllocations` 是否报错)
+检查（2026.30 已更新）:
+- `SERVICE_DISCOVERY_PROVIDER` 的取值是否合法（`nomad` / `kubernetes` / `nomad+kubernetes` / `local`；非法值在启动时以 `invalid_service_discovery_provider` 失败，`packages/api/internal/cfg/model.go:291`）
+- 对应 provider 的装配函数是否成功（`newLocalServiceDiscovery` / `newNomadServiceDiscovery` / `newKubernetesServiceDiscovery` / `newComposedServiceDiscovery`，`packages/api/internal/handlers/store.go:74-186`）
+- `local` 模式下 `LOCAL_ORCHESTRATOR_ADDRESS`（默认 `127.0.0.1:5008`）
+- Nomad 模式下 `NOMAD_ORCHESTRATOR_SERVICE_NAMES`（默认 `orchestrator`）与 legacy 开关 `NOMAD_ORCHESTRATOR_LEGACY_DISCOVERY_ENABLED`（默认 `true`）
+- 若走 `Cached(...)` 包装，首次刷新完成前 `ListInstances` 返回 `ErrNotYetSynced`，此时空列表是预期行为
+
+ⓘ 2026.29 文档此处提到的 `env.IsLocal()` 分支与 `TESTS_ORCH_INSTANCE_HOST` 已不再是 local 发现的判定依据——新实现把地址来源交给调用方。
 
 ### Q4:Builder 报"`available template builder not found`"
 
@@ -1029,3 +1108,9 @@ CREATE UNIQUE INDEX clusters_auth_org_id_idx
 | **`syncFailCount`** | Instance 连续失败计数,达到阈值后标记为 unhealthy |
 | **`WithClusterFallback`** | 把 `*uuid.UUID`(可空)转换为 `uuid.UUID` 的 helper,NULL → local cluster |
 | **`smap.Map`** | E2B 自家的类型化并发 map 包装(`packages/shared/pkg/smap`) |
+| **`WorkloadID`** | 2026.30 起 `Instance` 的去重键，替代 2026.29 的 `UniqueIdentifier`；语义是「在其来源内唯一」 |
+| **`Backend`** | 2026.30 新增字段，记录产出该 `Instance` 的 lister（如 nomad/kube/dns/static） |
+
+---
+
+已同步至 **2026.30**

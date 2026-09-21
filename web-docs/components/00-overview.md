@@ -10,9 +10,11 @@
 |---|---|---|
 | 控制面 | 谁能创建什么、放到哪里、生命周期如何变化 | `api`、`auth`、`dashboard-api`、`db` |
 | 数据面 | 请求最终怎样进入 microVM，进程和文件怎样被操作 | `client-proxy`、`orchestrator`、`envd` |
-| 支撑面 | 服务怎样部署、发现、观测和共享协议 | `shared`、`clickhouse`、`iac`、OTel、Nomad 插件 |
+| 支撑面 | 服务怎样发现、观测和共享协议 | `shared`（含 `servicediscovery`）、`clickhouse`、OTel |
 
 这三个平面不是三个独立系统。一次真实请求通常会跨越它们：控制面决定目标和权限，数据面执行动作，支撑面提供状态、协议和运行环境。
+
+> ⛔ **2026.30 把 `iac` 从支撑面里删掉了。** 本仓库不再包含部署 IaC：`iac/`（172 文件）、根目录 `self-host.md` 全部删除，根 `Makefile` 移除了所有 Terraform/Nomad 目标。（`packages/docker-reverse-proxy/`，19 文件 → 0，也在 2026.30 消失，但由更早的 `d153bbe9d` 删除，不属于同一次退役。）支撑面现在只剩"跨服务契约 + 观测 + 服务发现"这些**仓库内**的职责。详见 [§13 2026.30 变动小结](#13-202630-变动小结)。
 
 ## 2. 一张最小系统图
 
@@ -64,8 +66,8 @@ SDK / CLI / Dashboard
    等待 VM 内 daemon 就绪，执行 /init，建立可用状态
 
 6. 创建链路 -> sandbox catalog
-   Nomad/local 节点由 API sandbox.Store 回调写 Redis 路由；remote 节点把
-   catalog create/delete event 放进 gRPC metadata，由远端路由层处理
+   默认由 API（cloud）在 Create 返回后写 Redis 的 sandbox:catalog:{id}；
+   BYOC 集群由集群 edge 从 gRPC metadata 取 catalog create/delete event 处理
 
 7. API -> SDK
    返回 sandbox 标识和连接所需信息
@@ -95,6 +97,8 @@ Envd / user process inside microVM
 ```
 
 如果 catalog 中没有目标，Client Proxy 可以调用 API 的 Resume gRPC 入口尝试自动恢复已暂停沙箱。恢复成功时 API 直接返回新的 orchestrator IP，Client Proxy 用这个返回值继续当前请求；catalog 发布会随恢复链路发生，但不是当前请求转发前必须重读或等待的屏障。
+
+> ⚠️ **2026.30 起"路由 catalog"其实是两条记录并存**：API 持有的 `sandbox:catalog:{id}`（默认，也是事实来源）与 orchestrator 持有的 `sandbox:routing:{id}`（v1 测试路径，由 `orchestrator-routing-publish` / `orchestrator-routing-prioritized` 两个 flag 门控，且 miss 时不回退）。本节及下文按**默认路径**叙述。详见 [架构总览 §沙箱路由记录](../architecture-overview.md#沙箱路由记录)。
 
 ## 5. 暂停与恢复为什么是核心能力
 
@@ -144,6 +148,7 @@ Template definition
 | 节点内运行实例 | Orchestrator 进程内状态 | gRPC server、proxy、metrics |
 | rootfs、snapshot 等大对象 | GCS/S3 或 Local 对象存储；NFS 只可作为底层 provider 的缓存 | Orchestrator、template manager |
 | 高频指标与事件 | ClickHouse / OTel 后端 | API 查询、监控与计量 |
+| 沙箱与模板构建日志 | 默认 Loki（Vector 写入）；迁移期可切 ClickHouse 的 `sandbox_logs` | API 日志读端点、Grafana |
 | API 契约和跨服务消息 | OpenAPI / protobuf，生成到各 Go module | 服务端与客户端 |
 
 判断一个修改是否正确时，先问“哪一份状态是权威来源”。缓存、catalog 和本地 map 都不能悄悄变成第二份业务真相。
@@ -184,10 +189,12 @@ OpenAPI 与 protobuf 是跨组件边界。字段编号、认证 scheme、错误�
 | 7 | [Envd](07-envd.md) | VM 内部怎样执行进程与文件操作？ |
 | 8 | [Shared](08-shared.md) | 跨服务契约和基础能力放在哪里？ |
 | 9 | [ClickHouse](09-clickhouse.md) | 高频指标和事件怎样写入与查询？ |
-| 10 | [IaC](10-iac.md) | 这些服务怎样变成真实部署？ |
-| 11 | [Docker Reverse Proxy](11-docker-reverse-proxy.md) | 模板构建怎样安全访问镜像仓库？ |
+| 10 | [IaC](10-iac.md) ⛔ | 这些服务怎样变成真实部署？（**描述的是 2026.29 及之前**） |
+| 11 | [Docker Reverse Proxy](11-docker-reverse-proxy.md) ⛔ | 模板构建怎样安全访问镜像仓库？（**描述的是 2026.29 及之前**） |
 | 12 | [Nomad Nodepool APM](12-nomad-nodepool-apm.md) | 节点池怎样向 autoscaler 暴露指标？ |
 | 13 | [Local Dev 与 OTel](13-local-dev-observability.md) | 本地依赖与遥测管道怎样复现？ |
+
+> ⛔ **第 10、11 项的主题在 2026.30 已从仓库删除**：`iac/`（Terraform + Nomad job）与 `packages/docker-reverse-proxy/` 都不再存在。这两篇文档保留为**历史档案**，用于理解旧部署路径的设计；当前状态请看 [架构总览 §部署拓扑](../architecture-overview.md#部署拓扑)。第 12 项（`nomad-nodepool-apm`）**仍然有效**——该插件目录还在仓库里，只是它服务的 Nomad 部署路径退役了。
 
 ## 10. 阅读源码的方法
 
@@ -210,7 +217,9 @@ OpenAPI 与 protobuf 是跨组件边界。字段编号、认证 scheme、错误�
 | `packages/client-proxy/main.go` | 沙箱流量入口、catalog 与 auto-resume 装配 |
 | `packages/shared/pkg/grpc/` | 跨服务 protobuf 契约 |
 | `packages/db/migrations/` | PostgreSQL 业务模型的演进历史 |
-| `iac/provider-gcp/main.tf` | 生产部署资源的顶层组合 |
+| `packages/shared/pkg/servicediscovery/` | 节点发现后端：Kubernetes / DNS / 静态列表 / legacy Nomad（2026.30 新建） |
+| `packages/api/internal/orchestrator/placement/` | best-of-K 选点实现 |
+| `packages/orchestrator/pkg/routing/` | orchestrator 持有的路由记录写入（flag 门控） |
 
 ## 12. 深挖入口
 
@@ -220,3 +229,51 @@ OpenAPI 与 protobuf 是跨组件边界。字段编号、认证 scheme、错误�
 - [认证子系统](../auth-module.md)
 - [数据库表与关系](../database-schema.md)
 - [Orchestrator 深度剖析](../orchestrator-module.md)
+- [架构总览（已同步至 2026.30）](../architecture-overview.md)
+
+## 13. 2026.30 变动小结
+
+本模块描述的是"项目全景"，因此受 2026.30 影响的主要是**支撑面与部署拓扑**部分。按"删除 / 新增 / 改写"列出：
+
+### 13.1 ⛔ 删除（不再存在于仓库）
+
+| 对象 | 说明 | 本模块受影响处 |
+|---|---|---|
+| `iac/`（172 文件） | Terraform（`provider-gcp/`、`provider-aws/`）+ Nomad job spec + 共享模块 | §1 支撑面、§9 阅读顺序第 10 项、§11 源码锚点 |
+| `packages/docker-reverse-proxy/`（19 文件） | Docker Registry v2 认证网关（:5000） | §9 阅读顺序第 11 项 |
+| 根目录 `self-host.md` | 自托管指南 | —— |
+| 根 `Makefile` 的 Terraform/Nomad 目标 | `plan`、`apply`、`init`、`build-and-upload` 等 | §10 阅读源码的方法（无直接影响） |
+| `.github/workflows/` 四个工作流 | `publish.yml`、`release-please.yml`、`validate-iac.yml`、`build-and-upload-images.yml` | —— |
+| `Consul KV` | orchestrator 的网络 slot 分配状态（跨重启） | §7 状态表（本模块本来就没列它；slot 分配改为按节点本地 netns 状态） |
+| `access_tokens` 表与 `sk_e2b_` 凭证 | 用户级 access token 完全退役 | 见 [`access-tokens-module.md`](../access-tokens-module.md) |
+
+相关提交：`8a1c48884406b909f64c1239c808d0bc1cbf05bf` "chore(deploy): retire Nomad-based deployment ahead of a new deploy path"。
+
+### 13.2 ✅ 新增（2026.30 才有）
+
+| 对象 | 说明 | 本模块受影响处 |
+|---|---|---|
+| `packages/shared/pkg/servicediscovery/` | 节点发现后端：Kubernetes、DNS、静态列表、legacy Nomad | §1 支撑面、§11 源码锚点 |
+| 双路由记录 | API 持有的 `sandbox:catalog:{id}`（默认）vs orchestrator 持有的 `sandbox:routing:{id}`（flag 门控、miss 不回退） | §4 连接沙箱、§7 状态表 |
+| volume-content API（belt） | 卷内容的独立 API，`api.<domain>`，由 API 铸造短生命周期 JWT（`aud` 绑定 origin） | 新增的平面边界，见 [架构总览](../architecture-overview.md#卷内容) |
+| API 的 Secrets / Workload identity / Rig 透传 | 三个新的 API 能力面 | 控制面职责扩大 |
+| ClickHouse 可选日志 | `sandbox_logs` + `logs-read-config` 迁移期读路径 | §7 状态表 |
+| `project_limits` 表 | 按团队配额覆盖，`team_limits` 视图优先读它 | §7 状态表 |
+
+### 13.3 🔁 改写
+
+| 主题 | 2026.29 | 2026.30 |
+|---|---|---|
+| 部署方式 | Terraform 部署到 Nomad + Consul 集群（server/api/default/build/clickhouse 五池） | **与调度器无关的二进制/容器；官方支持的运行方式是 Kubernetes 发行版**（控制面 / 沙箱节点 / 构建节点 / 分析四池） |
+| 节点发现 | Nomad、Kubernetes 或静态列表 | 同上，但实现收敛到 `packages/shared/pkg/servicediscovery`，Nomad 后端被标为 legacy |
+| 沙箱节点运行方式 | Nomad *system* job + `raw_exec`（需要 root） | 直接在宿主机上运行 orchestrator（同样需要 root） |
+| 沙箱代理 | 只走 HTTP | 走 HTTP 或配置的 HTTPS（后端可用自签名证书） |
+| 日志管道 | Vector → Loki | 默认仍是 Vector → Loki，但可动态选择主/shadow collector，并可切到 ClickHouse |
+
+### 13.4 一条不变的判断准则
+
+§8 的跨组件不变量在 2026.30 全部仍然成立。特别地，"**先问哪一份状态是权威来源**"这条在路由记录上变得更关键了：现在物理上存在两条路由记录，但**只有 API 持有的那条是事实来源**，orchestrator 持有的那条是 v1 测试路径。
+
+---
+
+> 文档版本：已同步至 **2026.30**（提交 `f32ee8a2a50052f32e3632ceb451111a98dd5104`）。

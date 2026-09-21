@@ -3,7 +3,8 @@
 > **分析范围**：`packages/db/migrations/` 与 `packages/db/pkg/dashboard/migrations/` 当前迁移链、`packages/db/queries/`、`packages/db/pkg/auth/sql_queries/`、`packages/db/pkg/dashboard/sql_queries/` 的原始 SQL 与 sqlc 生成代码、`packages/db/schema/`、数据库测试及相关业务代码。
 >
 > **迁移边界**：主迁移由 `packages/db/migrations/` 管理；Dashboard 专属迁移位于 `packages/db/pkg/dashboard/migrations/`，两者不能混为同一迁移目录。
-> **校验基线**：本文以仓库中截至 `20260707193000_user_identities_unique_user_issuer.sql` 的迁移文件为准。迁移历史中曾经存在、但当前已删除的列或约束只在“演进与风险”中说明。
+> **校验基线**：本文以 tag `2026.30`（2026-09-10）中截至 `20260826075153_add_free_disk_limit_columns.sql` 的迁移文件为准。迁移历史中曾经存在、但当前已删除的列或约束只在“演进与风险”中说明。
+> **本次更新（2026.29 → 2026.30）**：`access_tokens` 表已删除；新增 `project_limits` 与 `projection` schema 下的两张 revision ledger；`team_limits` 视图两次重写。
 >
 > **证据等级**：
 > - **已确认**：DDL 外键/约束，或 SQL 中明确的 `JOIN`/写入关系。
@@ -18,11 +19,14 @@
 
 | 类型 | 对象 |
 |---|---|
-| 表（`public`） | `tiers`、`teams`、`users`、`user_identities`、`users_teams`、`team_api_keys`、`access_tokens`、`envs`、`env_aliases`、`env_builds`、`env_build_assignments`、`active_template_builds`、`snapshots`、`snapshot_templates`、`clusters`、`volumes`、`addons`、`env_defaults`（Dashboard 专属迁移） |
+| 表（`public`） | `tiers`、`teams`、`users`、`user_identities`、`users_teams`、`team_api_keys`、`envs`、`env_aliases`、`env_builds`、`env_build_assignments`、`active_template_builds`、`snapshots`、`snapshot_templates`、`clusters`、`volumes`、`addons`、`project_limits`、`env_defaults`（Dashboard 专属迁移） |
+| 表（`public`，回滚备份） | `_backup_teams_default_team_rename` — `20260723120001_rename_default_team_names_to_project.sql` 在改名时原子写入的备份行（`id` / `old_name` / `captured_at`），迁移注释给出了按 `id` 回滚的 `UPDATE ... FROM` 语句 |
 | 表（`auth`） | `auth.users` |
+| 表（`projection`） | `projection.project_members`、`projection.project_limits` — 单调 revision 账本，用于拒绝乱序到达的投影推送 |
 | 表（`billing`，迁移链外） | `billing.sandbox_logs` — 结构仅声明在 `packages/db/schema/sqlc_overrides.sql`，供 sqlc 解析；真实 DDL 不在主迁移链中，由外部/独立迁移管理 |
 | 视图 | `team_limits`、`active_envs` |
 | 未发现的重点表 | 本 PostgreSQL 迁移中没有独立的 usage、event、audit 表；这些状态由 ClickHouse、Redis 及应用/编排层承担。计费加购在 `addons`，sandbox 运行记录在 `billing.sandbox_logs`。 |
+| 已退役的表 | `public.access_tokens` — 由 `20260823120000_drop_access_tokens.sql` 在 Up 段 `DROP TABLE`；`generate_access_token()` 函数同迁移删除。E2B 用户级 access token（`sk_e2b_` 前缀）不再签发、校验或清理。 |
 
 ## 2. 来源与分析方法
 
@@ -37,6 +41,11 @@
 - snapshot template：`packages/db/migrations/20260211120000_add_snapshot_templates.sql`
 - 软删除 env：`packages/db/migrations/20260628120000_add_env_deleted_at.sql`
 - OIDC identity 唯一性：`packages/db/migrations/20260515120000_create_user_identities_table.sql`、`20260707193000_user_identities_unique_user_issuer.sql`
+- 配额推送覆盖：`packages/db/migrations/20260728163016_add_project_limits.sql`（新增 `project_limits` 并重写 `team_limits`）、`20260826075153_add_free_disk_limit_columns.sql`（追加 `max_free_disk_size_mb` 输出列）
+- 投影账本：`packages/db/migrations/20260807120000_add_project_member_projection_ledger.sql`、`20260812150000_add_project_limits_projection_ledger.sql`
+- 凭据退役：`packages/db/migrations/20260823120000_drop_access_tokens.sql`（Up 段 `DROP TABLE public.access_tokens`）
+- 默认团队名改 project 措辞（纯数据迁移 + 备份表）：`packages/db/migrations/20260723120001_rename_default_team_names_to_project.sql`，被改动的行原子地存入 `public._backup_teams_default_team_rename`（`id` / `old_name` / `captured_at`）
+- 磁盘额度列：`packages/db/migrations/20260714091414_add_template_disk_entitlements.sql`（`tiers` 两列 + `addons.extra_max_disk_size_mb`）、`20260714091415_extend_team_limits.sql`（视图扩容）、`20260723120000_set_tier_max_disk_size.sql`（重设各 tier 上限值）
 
 完整迁移演进仍应以 `packages/db/migrations/` 为准；本文不把历史上已删除的列当作当前 schema。
 
@@ -45,7 +54,7 @@
 - sqlc 配置：`packages/db/sqlc.yaml`
 - 生成模型：`packages/db/queries/models.go`
 - 生成查询实现：`packages/db/queries/**/*.sql.go`
-- 原始查询按 `builds/`、`snapshots/`、`templates/`、`template_aliases/`、`teams/`、`volumes/` 等目录组织。
+- 原始查询按 `builds/`、`snapshots/`、`templates/`、`template_aliases/`、`teams/`、`volumes/` 等目录组织。2026.30 新增 core 侧 `queries/teams/project_limits.sql`、`queries/template_aliases/replace_template_alias.sql`；新增 auth 侧 `pkg/auth/sql_queries/teams/get_team_member_ids.sql`、`project_member_projections.sql`、`team_management.sql`、`team_membership_sync.sql`；新增 dashboard 侧 `pkg/dashboard/sql_queries/clusters/register_team_cluster.sql`、`pkg/dashboard/sql_queries/teams/set_team_banned.sql`、`set_team_blocked.sql`。删除 core 侧 `queries/builds/validate_build.sql` 与 auth 侧整个 `pkg/auth/sql_queries/access_token/` 目录（`create_access_token.sql`、`delete_access_token.sql`、`get_user_id_from_access_token.sql`）。
 - 测试根目录：`packages/db/pkg/tests/`，覆盖 builds、snapshots、template aliases、templates、identity、volumes；通用数据库 fixture 在 `packages/db/pkg/testutils/tests.sql`。
 - Dashboard 专属迁移：`packages/db/pkg/dashboard/migrations/20260316130000_dashboard_add_env_defaults_and_team_profile_picture.sql`，创建 `env_defaults`（`env_id → envs.id`）并向 `teams` 增加 `profile_picture_url`。Dashboard 查询源位于 `packages/db/pkg/dashboard/sql_queries/`，生成代码位于 `packages/db/pkg/dashboard/queries/`。
 - Auth 查询源位于 `packages/db/pkg/auth/sql_queries/`，生成代码位于 `packages/db/pkg/auth/queries/`。
@@ -57,11 +66,13 @@
 |---|---|---|
 | 身份认证 | `auth.users`、`users`、`user_identities` | 外部身份源、业务用户投影、OIDC 多身份绑定 |
 | 租户与权限 | `tiers`、`teams`、`users_teams` | 团队租户、订阅配额、成员和默认团队 |
-| 凭据 | `team_api_keys`、`access_tokens` | 团队级 API key、用户级 access token |
+| 凭据 | `team_api_keys` | 团队级 API key（用户级 `access_tokens` 已于 2026.30 删除） |
 | 模板与构建 | `envs`、`env_aliases`、`env_builds`、`env_build_assignments`、`active_template_builds` | 模板实体、别名、构建产物、tag 关联和并发计数 |
 | Sandbox 与快照 | `snapshots`、`snapshot_templates` | sandbox 暂停状态及可复用快照模板 |
 | 基础设施与存储 | `clusters`、`volumes` | orchestrator 集群、团队持久化卷 |
-| 计费与配额 | `addons`、`team_limits` | tier 基础配额、时间有效的额外配额及聚合结果 |
+| 回滚备份 | `_backup_teams_default_team_rename` | 默认团队名改 project 措辞时的旧值快照，仅供回滚，无运行时读写 |
+| 计费与配额 | `addons`、`project_limits`、`team_limits` | tier 基础配额、时间有效的额外配额、外部推送的绝对配额及聚合结果 |
+| 投影账本 | `projection.project_members`、`projection.project_limits` | 拒绝乱序到达的成员/配额投影推送 |
 | 软删除读模型 | `active_envs` | 过滤 `envs.deleted_at` 后的规范读入口 |
 
 ## 4. 分模块表说明
@@ -82,7 +93,7 @@
 - **字段**：`id uuid`、`created_at timestamptz`、`updated_at timestamptz`；旧 `email` 已在迁移中删除。
 - **主键/约束/索引**：`id` 主键；时间戳由默认值/更新时间逻辑维护。
 - **生命周期**：注册/provisioning 时创建；删除会影响多个业务 FK，创建者字段通常 `SET NULL`。
-- **关系**：被 `user_identities.user_id`、`users_teams.user_id/added_by`、`access_tokens.user_id`、`team_api_keys.created_by`、`envs.created_by`、`addons.added_by` 引用，均为**已确认**，但删除动作依字段不同为 `CASCADE`、`SET NULL` 或 `NO ACTION`。
+- **关系**：被 `user_identities.user_id`、`users_teams.user_id/added_by`、`team_api_keys.created_by`、`envs.created_by`、`addons.added_by` 引用，均为**已确认**，但删除动作依字段不同为 `CASCADE`、`SET NULL` 或 `NO ACTION`。2026.29 及更早还包含 `access_tokens.user_id`，该表已在 2026.30 删除。
 
 #### `user_identities`
 
@@ -147,7 +158,11 @@
 - **生命周期/入口**：创建时返回一次明文 key，鉴权成功后更新 `last_used`，删除时按 `id` 清理；主要业务入口为 API auth/key handler。
 - **关系**：所属 team 和创建用户均为**已确认**；key 与请求中的 Bearer token 的验证链为**代码推断**。
 
-#### `access_tokens`
+#### `access_tokens`（已于 2026.30 退役）
+
+> ⚠️ **已于 2026.30 退役**：`20260823120000_drop_access_tokens.sql` 在 Up 段执行 `DROP TABLE IF EXISTS public.access_tokens`，并删除 `public.generate_access_token()` 函数。迁移注释说明 E2B 用户级 access token（`sk_e2b_` 前缀）已无任何签发、校验或清理路径，剩余行只是已撤销凭据的 hash。
+> 同批 `20260727041400_drop_duplicate_access_tokens_hash_index.sql` 删除了重复的 hash 索引（该迁移在表删除之前执行）。
+> `packages/db/pkg/auth/sql_queries/` 下已无 access_token 相关查询。下文保留以对照 2026.29 及更早版本。
 
 - **功能/场景**：用户级 access token，与 team API key 并存。
 - **字段**：`id`、`access_token_hash`、prefix/length/mask 字段、`user_id`、`created_at`、`name`。
@@ -234,12 +249,45 @@
 - **生命周期/入口**：billing webhook/管理员创建，过期记录保留作审计；由 `team_limits` 按有效时间聚合。
 - **关系**：team、added_by 及视图聚合为**已确认**；Stripe/payment provider 的外部订单关系在本库没有字段，属于**待确认**。
 
+#### `project_limits`
+
+- **功能/场景**：由“拥有 project 的服务”推送进来的**绝对配额**，用来取代 `team_limits` 视图当前的算术推导。
+- **字段**：`team_id uuid` 主键兼 `teams.id` FK（`ON DELETE CASCADE`）、`max_length_hours`、`concurrent_sandboxes`、`concurrent_template_builds`、`max_vcpu`、`max_ram_mb`、`disk_mb`、`events_ttl_days`、`default_free_disk_size_mb`、`max_disk_size_mb`、`updated_at`。2026.30 追加可空列 `max_free_disk_size_mb`。
+- **约束**：所有配额列 `bigint NOT NULL CHECK (>= 0)`——与 `tiers` 的 `> 0` 不同，这里**刻意允许 0**，因为该表是推送目标，拒绝调用方认为合法的值只会变成永不排空的 retry 循环；负数仍然拒绝。另有跨列检查 `project_limits_default_free_disk_size_lte_max_check`（`default_free_disk_size_mb <= max_disk_size_mb`），与 `tiers` 的同名约束对齐。全部列 `NOT NULL`，因此一行要么覆盖全部九项，要么不存在，不存在“半覆盖”的 team。
+- **生命周期/入口**：⚠️ **迁移注释里的“Nothing writes this table yet”只在迁移落地的时点成立**。在 tag `2026.30`，这张表**已有完整写入路径**：`packages/dashboard-api/internal/management/limits.go` 的 `ApplyProjectLimits`（行 51）经 `applyProjectLimits`（行 71）在单个事务内依次 `LockManagedProject`（行 80）→ `ApplyProjectLimitsProjection`（行 88）→ `UpsertProjectLimits`（行 106），由 `packages/dashboard-api/internal/handlers/management_project_limits.go` 的 `ManagementUpsertProjectLimits` 暴露为管理面接口。因此“视图恒走回落分支”不再成立。
+- **读写位置**：查询定义 `packages/db/queries/teams/project_limits.sql`（`LockManagedProject` 行 3、`ApplyProjectLimitsProjection` 行 20、`UpsertProjectLimits` 行 48）；写入方见上。
+- **关系**：`project_limits.team_id → teams.id` 为**已确认**；被 `team_limits` 以 `LEFT JOIN ... pl ON pl.team_id = t.id` 读取为**已确认**。
+
+#### `_backup_teams_default_team_rename`
+
+- **功能/场景**：`20260723120001_rename_default_team_names_to_project.sql` 把 `'Default Team'` / `'<名字>''s Default Team'` 精确改写为 `'Personal Project'` / `'<名字>''s Project'` 时，把被改动的行原子地存入本表，便于回滚。
+- **字段/约束**：`id`（对应 `teams.id`）、`old_name`、`captured_at`；迁移注释给出的回滚语句是 `UPDATE public.teams t SET name = b.old_name FROM public._backup_teams_default_team_rename b WHERE t.id = b.id`。
+- **生命周期/入口**：只在上述数据迁移的 Up 段写入一次，没有运行时读写方；用户自取的名字（即使包含该短语）不会被精确匹配改写。
+- **关系**：与 `teams` 是**代码推断**的按 id 对应关系（迁移里没有声明 FK）。
+
+#### `projection.project_members`
+
+- **功能/场景**：project 成员投影的单调 revision 账本。
+- **字段/约束**：复合主键 `(project_id, user_id)`；`project_id → public.teams(id) ON DELETE CASCADE`；`revision bigint NOT NULL CHECK (revision > 0)`；`present boolean`；`created_at`、`updated_at`。
+- **生命周期/入口**：查询定义 `packages/db/pkg/auth/sql_queries/teams/project_member_projections.sql`；写入方为 `packages/dashboard-api/internal/management/members.go` 的 `ApplyProjectMember`（行 36）。
+- **关系**：`projection.project_members.project_id → public.teams.id` 为**已确认**；`user_id` 无 FK，属于**代码推断**（账本记录的是“是否在场”，不是用户主数据）。
+
+#### `projection.project_limits`
+
+- **功能/场景**：project 配额推送的 revision 账本。与 `project_limits` 本身**刻意分离**：`public.project_limits` 是读者要的答案，本表是决定“哪次投递有权写入它”的簿记。
+- **字段/约束**：`project_id uuid` 主键兼 `public.teams(id)` FK（`ON DELETE CASCADE`）；`revision bigint NOT NULL CHECK (revision > 0)`；`created_at`、`updated_at`。
+- **为什么需要**：推送是跨网络的 at-least-once，两次投递可能同时在途且以任意顺序到达。调用方能约束自己发出的顺序，但约束不了到达顺序，所以较旧的那次必须在落地处被拒绝。只有当投递携带的 revision **高于**本表记录值时才被应用，否则原样保留已有行。revision 与数值在**同一事务**内推进——这是两者不会互相矛盾的保证：只记录 revision 而不记录数值，会让之后每次重试都成为被本侧丢弃的重复投递，使 project 永久停留在旧配额上。
+- **生命周期/入口**：写入方为 `packages/dashboard-api/internal/management/limits.go` 的 `ApplyProjectLimits`（行 51），与 `public.project_limits` 的落值在同一事务内。
+- **关系**：`projection.project_limits.project_id → public.teams.id` 为**已确认**；与 `public.project_limits` 的对应关系是**代码推断**（同一事务内写入，数据库未声明 FK）。
+
 #### `team_limits`（视图）
 
-- **功能/场景**：将 `teams`、`tiers` 和当前有效 `addons` 聚合为最终配额。
-- **核心字段**：team id、最大运行时长、并发 sandbox/build、最大 vCPU/RAM、磁盘和事件 TTL。
-- **来源/读路径**：由 addons 迁移创建/更新，API team context 读取；不是独立存储表。
-- **关系**：视图到三张源表为**已确认**；视图结果不是账单事实，只是授权/配额计算结果。
+- **功能/场景**：将 `teams`、`tiers`、当前有效 `addons` 与推送来的 `project_limits` 聚合为最终配额。
+- **核心字段**：team id、最大运行时长、并发 sandbox/build、最大 vCPU/RAM、磁盘、事件 TTL，以及 2026.30 追加的 `max_free_disk_size_mb`。
+- **来源/读路径**：由 addons 迁移创建，经 `20260728163016_add_project_limits.sql` 与 `20260826075153_add_free_disk_limit_columns.sql` 两次 `CREATE OR REPLACE` 重写；API team context 读取；不是独立存储表。视图带 `security_invoker=on`。
+- **聚合口径（2026.30）**：每一列都是 `COALESCE(pl.<列>, <tiers 与 addons 的算术表达式>)`，即 `project_limits` 有行时以推送值覆盖，否则回落到 tier 基础值加当前有效 addons 之和。`addons` 的求和改为 `LEFT JOIN LATERAL` 子查询，按 `valid_from <= now()` 且 `valid_to IS NULL OR valid_to > now()` 过滤。
+- **兼容期细节**：新追加的 `max_free_disk_size_mb` 输出列读的是 `COALESCE(pl.max_disk_size_mb, tier.max_disk_size_mb + a.extra_max_disk_size_mb)`，**并没有读同批新增的 `tiers.max_free_disk_size_mb` / `addons.extra_max_free_disk_size_mb` / `project_limits.max_free_disk_size_mb` 三列**——迁移注释称“兼容 rollout 期间旧列仍是权威”。因此这三个新列在 2026.30 是**已声明但未被视图消费**的状态。
+- **关系**：视图到四张源表为**已确认**；视图结果不是账单事实，只是授权/配额计算结果。
 
 #### `active_envs`（视图）
 
@@ -258,7 +306,7 @@
 | `user_identities.user_id` | `users.id` | 多对一 | DDL FK/identity tests | 高 |
 | `team_api_keys.team_id` | `teams.id` | 多对一 | DDL FK | 高 |
 | `team_api_keys.created_by` | `users.id` | 多对一，可空 | DDL FK | 高 |
-| `access_tokens.user_id` | `users.id` | 多对一 | DDL FK | 高 |
+| ~~`access_tokens.user_id`~~ | ~~`users.id`~~ | 多对一 | DDL FK（2026.30 表已删除） | 已退役 |
 | `envs.team_id` | `teams.id` | 多对一 | DDL FK | 高 |
 | `envs.created_by` | `users.id` | 多对一，可空 | DDL FK | 高 |
 | `envs.cluster_id` | `clusters.id` | 多对一，可空 | DDL FK | 高 |
@@ -277,6 +325,11 @@
 | `volumes.team_id` | `teams.id` | 多对一 | DDL FK/volumes.sql | 高 |
 | `addons.team_id` | `teams.id` | 多对一 | DDL FK/team_limits view | 高 |
 | `addons.added_by` | `users.id` | 多对一 | DDL FK | 高 |
+| `project_limits.team_id` | `teams.id` | 一对一 | DDL FK（PK 同时 FK，CASCADE） | 高 |
+| `projection.project_members.project_id` | `teams.id` | 多对一 | DDL FK（CASCADE） | 高 |
+| `projection.project_members.user_id` | `users.id` | 多对一 | 账本只记在场状态；无 FK | 低/待确认 |
+| `projection.project_limits.project_id` | `teams.id` | 一对一 | DDL FK（PK 同时 FK，CASCADE） | 高 |
+| `projection.project_limits.project_id` | `project_limits.team_id` | 一对一（同事务写入） | 代码约定；无 FK | 中 |
 | `env_builds.env_id` | `envs.id` | 多对一（冗余首个关联） | assignment AFTER INSERT trigger 回填；无 FK | 中 |
 | `env_builds.team_id` | `teams.id` | 多对一（冗余归属） | assignment trigger 回填；无 FK | 中 |
 | `snapshot_templates.build_id` | `env_builds.id` | 多对一 | 查询/业务写入；无 FK | 中 |
@@ -292,7 +345,6 @@
 erDiagram
     USERS ||--o{ USER_IDENTITIES : binds
     USERS ||--o{ USERS_TEAMS : joins
-    USERS ||--o{ ACCESS_TOKENS : owns
     USERS ||--o{ TEAM_API_KEYS : creates
     USERS ||--o{ ENVS : creates
     USERS ||--o{ ADDONS : adds
@@ -302,6 +354,9 @@ erDiagram
     TEAMS ||--o{ SNAPSHOTS : owns
     TEAMS ||--o{ VOLUMES : owns
     TEAMS ||--o{ ADDONS : purchases
+    TEAMS ||--o| PROJECT_LIMITS : overridden_by
+    TEAMS ||--o{ PROJECTION_PROJECT_MEMBERS : projects
+    TEAMS ||--o| PROJECTION_PROJECT_LIMITS : fences
     CLUSTERS ||--o{ TEAMS : schedules
     CLUSTERS ||--o{ ENVS : routes
     ENVS ||--o{ ENV_ALIASES : names
@@ -354,9 +409,9 @@ erDiagram
 
 ### 7.5 API Key、配额与计费
 
-- API key：`team_api_keys.team_id`；用户级 token：`access_tokens.user_id`。
+- API key：`team_api_keys.team_id`。用户级 `access_tokens.user_id` 链路已于 2026.30 随表删除而消失。
 - 计费扩展：`addons.team_id` + `valid_from/valid_to`；幂等键防止 webhook 重放。
-- 最终限额：`tiers` 基础值 + 当前有效 `addons`，由 `team_limits` 输出。
+- 最终限额：优先取 `project_limits` 的推送值，缺行时回落 `tiers` 基础值 + 当前有效 `addons`，由 `team_limits` 输出。`projection.project_limits.revision` 保证乱序到达的推送不会覆盖较新的值。
 - sandbox 运行记录（启停时间、规格）在 `billing.sandbox_logs`，但该表 DDL 不在主迁移链中管理。
 - 未发现 PostgreSQL invoice/payment/customer 表；Stripe 或其他账单事实应在外部系统，**待人工确认**。
 
@@ -370,6 +425,9 @@ erDiagram
 4. `snapshots.config` 中的 volume 名称没有 FK，卷重命名/删除只能由应用层协调。
 5. `env_build_assignments` 对 `source='app'` 的 `(env_id, build_id, tag)` 不做全量唯一限制，查询必须按时间取最新；重复写入是允许的业务语义，但需要确保所有读取都遵循排序。
 6. `envs` 使用软删除，而多个查询/业务代码仍可能直接访问基础表；直接查询必须确认是否有意读取“已删除但仍保留”的行。
+7. `project_limits` 在 2026.30 **不是空表**：`packages/dashboard-api/internal/management/limits.go` 已经是它的写入方，`team_limits` 的对应列会整体取自推送值，不再回落到 tier+addons。仍需确认“没有行”与“推送值为 0”在读者语义上是否会被混淆——该表刻意允许 0，所以这两种状态在数值上都可能表现为 0。
+8. `team_limits.max_free_disk_size_mb` 这个新输出列读的是 `max_disk_size_mb` 的来源，而同批新增的 `tiers.max_free_disk_size_mb`、`addons.extra_max_free_disk_size_mb`、`project_limits.max_free_disk_size_mb` 三列**没有任何视图消费者**。这是有意的兼容 rollout 状态，但意味着这三列在 2026.30 写入后不会影响任何读路径；切换权威列时必须有单独的迁移。
+9. `projection.*` 两张账本与它们投影的目标表（`projection.project_members` 侧对应 `users_teams` 的成员可见性，`projection.project_limits` 侧对应 `public.project_limits`）之间没有 FK，一致性由“同一事务内推进 revision 与数值”的应用约定保证。两张账本的写入方走**不同 pool**（auth pool 与 core pool），事务不跨库。
 
 ### 8.2 可能缺少审计/计费实体
 
@@ -384,7 +442,8 @@ erDiagram
 - `users_teams` 同时保留历史 `id bigint` 和当前 `uuid_id`，新代码需确认使用哪一个。
 - `teams.is_blocked` 与 `is_banned` 并存，语义和兼容路径需要继续梳理。
 - `public.users` 与 `auth.users` 都有用户 id，但当前不是数据库 FK；名称相同容易误判为直接引用。
-- `team_api_keys`、`access_tokens` 的 hash/mask 字段是当前凭据模型，旧明文列已删除，文档或工具不得按旧列查询。
+- `team_api_keys` 的 hash/mask 字段是当前凭据模型，旧明文列已删除，文档或工具不得按旧列查询。`access_tokens` 的同类字段随表在 2026.30 一并消失。
+- `teams` 表名未改，但 2026.30 的 `20260723120001_rename_default_team_names_to_project.sql` 把默认 team 名称的措辞改成了 project；`project_limits`、`projection.project_members` 等新对象也统一用 project 命名。团队与项目在代码里是同一个 `teams` 实体，命名正在向 project 迁移。
 
 ### 8.4 孤立表/字段判定
 
@@ -418,9 +477,30 @@ erDiagram
 | Snapshot | `packages/db/queries/snapshots/*.sql`、`pkg/tests/snapshots/*` |
 | Volume | `packages/db/queries/volumes/volumes.sql`、`pkg/tests/volumes/db_test.go` |
 | sqlc 模型 | `packages/db/queries/models.go`、`packages/db/queries/db.go` |
-| Auth 查询 | `packages/db/pkg/auth/sql_queries/`（access_token、api_keys、teams、user_identities、users、users_teams） |
+| Auth 查询 | `packages/db/pkg/auth/sql_queries/`（api_keys、teams、user_identities、users、users_teams；access_token 子目录已随表删除） |
+| 配额推送 | `packages/db/queries/teams/project_limits.sql`、`packages/db/pkg/auth/sql_queries/teams/project_member_projections.sql` |
 | Dashboard 查询 | `packages/db/pkg/dashboard/sql_queries/`（teams、templates） |
 
-**测试覆盖空白**（按目录结构判断，未做覆盖率统计）：auth 的 22 个查询与 dashboard 的全部查询没有对应专项测试;`tiers`/`team_limits` 配额合并、`teams`/`clusters` 删除行为、`envs` 软删除过滤、`addons` 聚合、`billing.sandbox_logs` 均无直接数据库测试。阅读这些路径时应以迁移和 SQL 为准，而非测试行为。
+**测试覆盖空白**（按目录结构判断，未做覆盖率统计）：auth 的 21 个查询与 dashboard 的全部查询没有对应专项测试;`tiers`/`team_limits` 配额合并、`project_limits` 覆盖与 revision 栅栏、`projection.*` 两张账本、`teams`/`clusters` 删除行为、`envs` 软删除过滤、`addons` 聚合、`billing.sandbox_logs` 均无直接数据库测试。阅读这些路径时应以迁移和 SQL 为准，而非测试行为。
+
+### 9.2 2026.30 的索引与存储参数调整
+
+2026.30 新增 22 个迁移，其中只有 `20260823120000_drop_access_tokens.sql` 的 Up 段是破坏性的（`DROP TABLE`）；其余 `DROP COLUMN` / `DROP TABLE` 全部位于 `-- +goose Down` 段。另有 5 个迁移在 Up 段做纯索引删除（均为 `-- +goose NO TRANSACTION` + `DROP INDEX CONCURRENTLY`，先删后建以避开锁等待）：
+
+| 迁移 | Up 段动作 |
+|---|---|
+| `20260727041100_drop_duplicate_snapshots_sandbox_id_index` | 删除重复的 `idx_snapshots_sandbox_id` |
+| `20260727041200_drop_unused_env_builds_status_index` | 删除未使用的 `idx_env_builds_status` |
+| `20260727041300_drop_duplicate_team_api_keys_hash_index` | 删除重复的 `idx_team_api_keys_api_key_hash` |
+| `20260727041400_drop_duplicate_access_tokens_hash_index` | 删除重复的 `idx_access_tokens_access_token_hash`（在表删除之前执行） |
+| `20260727060500_drop_superseded_eba_tip_index` | 删除被取代的 `idx_env_build_assignments_env_tag_created` |
+
+新增索引：`20260727032500_env_build_assignments_tip_lookup_index` 建 `idx_env_build_assignments_env_tag_created_build`（tag 取最新关联的 tip 查询）；`20260814120000_add_snapshot_template_list_index` 建 `idx_snapshots_team_base_env_time_id`。
+
+autovacuum 存储参数：`20260723030000_env_builds_autovacuum_scale.sql` 把 `env_builds` 的 `autovacuum_vacuum_scale_factor` 设为 `0.02`、`autovacuum_analyze_scale_factor` 设为 `0.01`，理由是默认 scale factor 要等死元组达到表的固定比例才触发，对更新频繁的大表来说太晚——索引查找早已为累积的死元组支付可见性检查。同批还有 `20260724051151_snapshots_autovacuum_scale.sql`、`20260724051152_envs_autovacuum_scale.sql`、`20260724213257_env_build_assignments_autovacuum.sql`。这些都是纯存储参数变更，只取短暂的 `ShareUpdateExclusive` 锁，不重写任何数据，只影响 autovacuum 调度。
 
 > **维护建议**：新增迁移时同步更新本文的“表总览、字段/约束、关系清单、ER 图和风险项”；新增 SQL 或测试时更新第 9 节。字段的最终类型和 nullable 状态以迁移及 sqlc 生成结果为准，不以本文摘要取代 schema。
+
+---
+
+> **已同步至 2026.30**。迁移基线：`packages/db/migrations/` 下 133 个文件，最后一个为 `20260826075153_add_free_disk_limit_columns.sql`。

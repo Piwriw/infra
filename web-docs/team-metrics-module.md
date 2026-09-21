@@ -19,6 +19,12 @@
 > - `packages/clickhouse/pkg/utils/step.go` — 动态步长算法
 > - `packages/api/internal/clusters/resources_*.go` — sandbox metrics 转发层
 > - `packages/api/internal/metrics/team.go` — `ExportPeriod` 定义(5s)
+>
+> 行号均按 tag `2026.30` 核对。已同步至 2026.30(2026-09-10)。
+
+> ⚠️ **2026.30 本模块主体未变**:`team_metrics.go`、`team_metrics_max.go`、`sandbox_metrics.go`、`sandboxes_list_metrics.go`、`packages/clickhouse/pkg/team.go`、`packages/clickhouse/pkg/utils/`、`packages/api/internal/metrics/` 在 2026.29 → 2026.30 之间**零 diff**,4 个 metrics 端点的行为、SQL、步长算法、错误码全部不变。2026.30 对本模块只有两类影响:
+> 1. **同一层级的 `resources_local.go` 被日志读取改动挤动了行号**(`GetSandboxMetrics` / `GetSandboxesMetrics` 下移),见 §10.3。
+> 2. **新增了一个 admin 侧计数端点** `GET /admin/sandboxes/running-counts`,与 team metrics 共用 `sandbox.Store` 的统计口径,见 §十三。
 
 ## 目录
 
@@ -57,6 +63,7 @@
 - [十、关键代码文件索引](#十关键代码文件索引)
 - [十一、设计要点与权衡](#十一设计要点与权衡)
 - [十二、常见问题与排查](#十二常见问题与排查)
+- [十三、2026.30 变动](#十三202630-变动)
 - [附录 A:端点速查表](#附录-a端点速查表)
 - [附录 B:错误码与 HTTP 状态映射](#附录-b错误码与-http-状态映射)
 - [附录 C:术语表](#附录-c术语表)
@@ -915,11 +922,13 @@ ClickHouse
 
 | 文件 | 主要 API |
 | --- | --- |
-| `resources.go:20-25` | `ClusterResource` interface |
-| `resources_local.go:41` | `GetSandboxMetrics`(本地) |
-| `resources_local.go:90` | `GetSandboxesMetrics`(本地) |
+| `resources.go:21` | `ClusterResource` interface(2026.29 为 `:20-25`) |
+| `resources_local.go:116` | `GetSandboxMetrics`(本地；2026.29 为 `:41`) |
+| `resources_local.go:165` | `GetSandboxesMetrics`(本地；2026.29 为 `:90`) |
 | `resources_remote.go:38` | `GetSandboxMetrics`(转发到 edge) |
 | `resources_remote.go:77` | `GetSandboxesMetrics`(转发到 edge) |
+
+> ⚠️ `resources_local.go` 行号在 2026.30 整体下移,原因是文件头部新增了日志读取相关代码(`mustLogReadCounter` `:46`、`recordClickhouseLogReadError` `:55`、`readFromClickhouse` `:98`、`apiLogDirectionToSandboxLogsSortOrder` `:108`,以及 `GetSandboxLogs` `:193` / `GetBuildLogs` `:258` 里的 ClickHouse 分支)。**两个 metrics 方法本身一字未改**,只是位置变了。
 
 ### 10.4 metrics 上报(`packages/api/internal/metrics/`)
 
@@ -1088,12 +1097,59 @@ WHERE team_id = '<teamID>';
 **不能**。每个请求只能查一个 team(path 参数)。如果要跨 team 对比(例如 admin 看全平台):
 - 实现一个新端点 `GET /admin/metrics?team_ids=...`(目前没有)。
 - 或直接连 ClickHouse 查(需要 DB 访问权限)。
+- **(2026.30)** 如果只需要"每个 team 当前有多少 sandbox 在跑"这一个 gauge,可以用 §十三 的 `GET /admin/sandboxes/running-counts`——它一次返回全部 team 的计数。
+
+---
+
+## 十三、2026.30 变动
+
+### 13.1 新增 `GET /admin/sandboxes/running-counts`(2026.30 新增)
+
+一个 admin 端点,一次返回**全平台所有 team 的 running sandbox 计数**,keyed by team ID。
+
+| 项目 | 值 |
+| --- | --- |
+| 路径 | `GET /admin/sandboxes/running-counts`(`spec/openapi.yml:3989`) |
+| tag | `admin` |
+| 鉴权 | `AdminApiKeyAuth` / `AdminJWTAuth` |
+| 200 响应 | `AdminTeamRunningSandboxCounts` = `map[string]int64`(`api.gen.go:297`) |
+| 错误 | 401(中间件)、500 `"Failed to count running sandboxes"` |
+| handler | `packages/api/internal/handlers/admin_running_sandbox_counts.go:11` |
+
+**调用链**:
+
+```
+GetAdminSandboxesRunningCounts            handlers/admin_running_sandbox_counts.go:11
+  └─ a.teamSandboxCounter.TeamRunningSandboxCounts          (interface, store.go:188-190)
+       └─ sandboxcounts.CountsCache.TeamRunningSandboxCounts  cache/sandboxcounts/counts_cache.go:52
+            └─ Orchestrator.TeamRunningSandboxCounts          orchestrator/admin.go:13
+                 └─ sandbox.Store.TeamsWithSandboxes          sandbox/store.go:124
+                      └─ storage.TeamsWithSandboxCount
+```
+
+**⚠️ 两个反直觉点**:
+
+1. **数据来自 Redis 共享缓存,不是实时计算**。`counts_cache.go:14-16` 定义 `countsCacheTTL = 30s`、`countsCacheRefreshInterval = 5s`、`countsCacheRefreshTimeout = 10s`;整个 fleet 只用一个固定 key `countsCacheKey = "all"`(`counts_cache.go:24`),注释解释了原因——*每个消费者都需要完整快照,所以一个 entry 意味着所有 API 实例每 5 秒只加一把锁、只刷新一次*。**响应会滞后最多约 5 秒**。
+2. **口径是"缓存里的 live sandbox index",不是"ClickHouse 里的历史"**。OpenAPI 描述原文:`Returns a shared snapshot normally refreshed after five seconds. A sandbox transitioning out of running can remain counted until removal.` —— 也就是说**正在退出 running 的 sandbox 在移除前仍会被计入**。因此它和 §4 里 `concurrent_sandboxes`(来自 ClickHouse `team_metrics_gauge`,5 秒 export)是**两个不同口径**,数值不保证相等。
+
+> ⓘ 与 `packages/api/internal/metrics/team.go:85` 和 `packages/api/internal/orchestrator/metrics.go:83` 复用同一个 `store.TeamsWithSandboxes(ctx)`,所以 admin 端点看到的数和上报到 ClickHouse 的团队指标同源。
+
+### 13.2 其余改动
+
+| 项 | 2026.29 | 2026.30 |
+| --- | --- | --- |
+| 4 个 metrics 端点 | — | ✅ 无变化 |
+| `packages/clickhouse/pkg/team.go` | — | ✅ 无 diff |
+| `packages/api/internal/metrics/` | — | ✅ 无 diff |
+| `resources_local.go` 中两个 metrics 方法的行号 | `:41` / `:90` | `:116` / `:165`(位置变,代码未变) |
+| `GET /admin/sandboxes/running-counts` | ⛔ 不存在 | ✅ 新增(§13.1) |
+| `cache/sandboxcounts/` | ⛔ 不存在 | ✅ 新增 |
 
 ---
 
 ## 附录 A:端点速查表
 
-### A.1 4 个 metrics 端点
+### A.1 4 个 metrics 端点(+1 个 admin 计数端点)
 
 | 端点 | 数据源 | 成功 | 失败常见码 |
 | --- | --- | --- | --- |
@@ -1101,6 +1157,7 @@ WHERE team_id = '<teamID>';
 | `GET /teams/{id}/metrics/max` | ClickHouse | 200 + `MaxTeamMetric` | 400, 401, 403, 500 |
 | `GET /sandboxes/metrics?sandbox_ids=...` | edge cluster | 200 + `SandboxesWithMetrics` | 400, 401, 500 |
 | `GET /sandboxes/{sandboxID}/metrics` | edge cluster | 200 + `[]SandboxMetric` | 400, 401, 404, 500 |
+| `GET /admin/sandboxes/running-counts`(2026.30 新增) | Redis 共享缓存 | 200 + `AdminTeamRunningSandboxCounts` | 401, 500 |
 
 ### A.2 时间窗口与步长对照
 
@@ -1152,6 +1209,7 @@ WHERE team_id = '<teamID>';
 | sandbox 不存在 | 404 | (edge 返回) |
 | cluster 找不到 | 500 | "cluster not found for sandbox metrics" |
 | ClickHouse 查询失败 | 500 | "error querying team metrics: ..." |
+| 计数缓存/源失败(admin 端点) | 500 | "Failed to count running sandboxes" |
 | 成功(所有端点) | 200 | JSON |
 
 ---

@@ -1,8 +1,78 @@
 # IaC：云底座与 Nomad 部署编排
 
-> `iac/provider-gcp`、`iac/provider-aws` 和 `iac/modules` 把云资源、Nomad/Consul 节点池与应用作业装配成一套可部署的 E2B 集群。
+> ## ⛔ `iac/` 已于 2026.30 整体删除
+>
+> **本模块描述的目录当前不存在。** 提交 `8a1c48884406b909f64c1239c808d0bc1cbf05bf`（Tomas Virgl，2026-09-09，subject：`chore(deploy): retire Nomad-based deployment ahead of a new deploy path`）把整个 `iac/` 目录从仓库中移除：2026.29 的 **172 个文件 → 2026.30 的 0 个文件**。
+>
+> 本文档因此从「部署 IaC 导读」转为**历史档案**，描述的是 2026.29 及以前的实现。正文里的 `iac/**` 相对链接**全部失效**（点击会 404），保留仅为对照源码路径。
+>
+> **2026.30 的仓库里还剩什么：** 只有 `packages/` 下的服务源码、`spec/` 契约、`tests/integration/`。全仓库唯一剩下的 `.hcl` 文件是 `packages/api/docker-bake.hcl`（Docker Bake 构建定义，与 Nomad job spec 无关）。
+>
+> ---
+>
+> **本文档的结构：**
+> - **§零** — 2026.30 退役了什么（只有这节描述当前状态）
+> - **§1 ~ §8** — **历史档案**，描述 2026.29 及之前的 IaC 结构。其中的路径、模块名、Makefile 目标、CI workflow 都已不存在，保留是为了理解这套部署体系当初如何组织。
+
+---
+
+## 零、2026.30：Nomad 部署路径退役
+
+### 零.1 被删除的清单
+
+`iac/` 在 2026.29 → 2026.30 之间从 172 个文件清零。按类别：
+
+| 类别 | 2026.29 路径 | 内容 |
+| --- | --- | --- |
+| GCP provider | `iac/provider-gcp/` | 根模块（`main.tf`、`api.tf`、`dashboard-api.tf`、`docker-reverse-proxy.tf`、`persistent-volumes.tf`、`volume_content_signing_key.tf`、`variables.tf`、`moved.tf`）、`Makefile`、`.terraform.lock.hcl`、`.gitignore`、`init/`、`modules/`、`nomad/`、`nomad-cluster/`、`nomad-cluster-disk-image/`、`k8s-apps/`、`persistent-volume-types/`、`redis/`、`remote-repository/` |
+| AWS provider | `iac/provider-aws/` | 根模块（`main.tf`、`alb.tf`、`alb_athena.tf`、`domain.tf`、`variables.tf`、`moved.tf`）、`Makefile`、`.terraform.lock.hcl`、`init/`、`modules/`（含 `cloudflare/`、`network/`、`nodepool-api/`）、`nomad/`、`nomad-cluster/`、`nomad-cluster-disk-image/` |
+| Nomad job modules | `iac/modules/job-*/` | 13 个模块：`job-api`、`job-clickhouse`、`job-client-proxy`、`job-dashboard-api`、`job-ingress`、`job-logs-collector`、`job-loki`、`job-orchestrator`、`job-otel-collector`、`job-otel-collector-nomad-server`、`job-redis`、`job-template-manager`、`job-template-manager-autoscaler`；每个含 `main.tf`、`variables.tf` 与 `jobs/*.hcl`（另有 `configs/`、`scripts/`、`readme.md` 等附属文件） |
+| nodepool modules | `iac/modules/nodepool-*`、`iac/provider-aws/modules/nodepool-*` | 节点池模块，例如 `provider-aws/modules/nodepool-api/`（含 `scripts/start-api.sh`） |
+| 节点磁盘镜像 | `iac/nomad-cluster-disk-image/`、`iac/provider-gcp/nomad-cluster-disk-image/`、`iac/provider-aws/nomad-cluster-disk-image/` | 镜像构建定义与 `setup/` 脚本：`install-nomad.sh`、`install-consul.sh`、`install-cni-plugins.sh`、`install-clickhouse-client.sh`、`supervisord.conf`、`limits.conf`、`daemon.json`、`supervisor-initd-script.sh` |
+| 节点启动脚本 | `iac/provider-gcp/nomad-cluster/scripts/run-nomad.sh` | 以及同目录的 `run-consul.sh` 等 —— 节点启动时读取 instance metadata/tags 生成本机 agent 配置 |
+
+同时消失的还有：
+
+- **根 `self-host.md`** —— 自托管指南整篇删除。
+- **根 `Makefile` 的 Terraform/Nomad 目标**：`provider-login`、`init`、`plan`、`plan-only-jobs`、`plan-only-jobs/%`、`plan-without-jobs`、`state-migrate`、`apply-init`、`apply`、`import`、`move` 全部移除；`setup-ssh`、`connect-orchestrator`、`gcloud-ingress-dashboard` 也一并消失；`login-gcloud` 同样从 `CLAUDE.md` 的指引里删除。`build-and-upload` 聚合目标不再包含 `build-and-upload/docker-reverse-proxy`，改为包含 `build-and-upload/nomad-nodepool-apm`。
+- **`.github/workflows/`** 删除 `validate-iac.yml`、`publish.yml`、`release-please.yml`、`build-and-upload-images.yml`、`periodic-test.yml`、`pr-no-generated-changes.yml`；新增 `nixos-base-image.yml`、`nixos-pin-bump.yml`。
+- **根 `CLAUDE.md`** 的 "Infrastructure as Code" 与 "Self-Hosting" 两节整段删除（该文件 -63/+15）。
+- **根 `DEV.md` 整篇删除**（-19）。它的 "Remote Development (VSCode)" / "SSH to Orchestrator" / "Nomad UI" 三节讲的正是随 `iac/` 一起消失的那套远程调试与集群访问方式。
+
+### 零.2 2026.30 的仓库里不再有任何地方引用 `iac/`
+
+在 tag `2026.30` 上执行：
+
+```bash
+git grep -l "iac/" 2026.30 -- '*.md' '*.yml' '*.yaml' 'Makefile'
+```
+
+返回空。文档、CI 配置和 Makefile 里对 `iac/` 的引用已全部清理干净 —— 也就是说，2026.30 的仓库**自己也不再指向这套已删除的目录**。
+
+### 零.3 仍然存在的东西
+
+退役的是**部署层**，不是服务本身。以下内容在 2026.30 依然存在：
+
+- `packages/client-proxy/`、`packages/api/`、`packages/orchestrator/`、`packages/envd/`、`packages/dashboard-api/` 等业务包 —— 只是它们的 Nomad job spec 没了。
+- `packages/nomad-nodepool-apm/` —— autoscaler 插件代码仍在（见 [12-nomad-nodepool-apm.md](./12-nomad-nodepool-apm.md)），只是不再有 `iac/modules/job-template-manager-autoscaler/` 那样的部署描述。
+- `scripts/` 目录仍在（`confirm.sh`、`download-prod-env.sh` 等），只是不再有 Terraform 目标调用它们。
+- `docs/ARCHITECTURE.md` 仍在，且已把 `docker-reverse-proxy` 从架构图与服务表中移除。
+
+### 零.4 新部署路径
+
+提交信息只说 "ahead of a new deploy path"（为新部署路径做准备），**没有说明新路径是什么**，该提交也没有随附任何替代 IaC。
+
+因此客观陈述是：**2026.30 的仓库不含部署 IaC** —— 没有 Terraform、没有 Nomad job spec、没有 `self-host.md`。想在 2026.30 上自托管，需要自行拼装。
+
+> ⚠️ 2026.30 的 `docs/ARCHITECTURE.md` "Deployment topology" 一节给出了方向性描述：*"The services are scheduler-agnostic binaries and containers; the supported way to run them is the Kubernetes-based distribution."* 同节还提到 api 通过 `packages/shared/pkg/servicediscovery` 发现 orchestrator 节点，后端可以是 Kubernetes、DNS、静态列表，或「代码仍保留的 legacy Nomad 后端」。
+>
+> 但这是**描述性文字，不是可用的部署产物**：2026.30 的仓库里没有任何 Kubernetes manifests、Helm chart 或发行版打包脚本对应这段描述。同理，2026.30 的 `README.md` 仍写着 *"Read the [self-hosting guide](./self-host.md)"* 和 *"The infrastructure is deployed using Terraform."*，而 `self-host.md` 已被删除 —— 这是退役提交留下的悬空链接与陈旧描述。
+
+---
 
 ## 1. 系统位置
+
+> ⓘ **以下（§1 ~ §8）为历史档案**，描述 2026.29 及之前的 IaC 结构。所有 `iac/**` 路径在 2026.30 已不存在，链接已失效。
 
 IaC 位于源码构建产物和运行中服务之间，负责把“镜像/二进制需要什么”翻译为云资源、节点 metadata、环境变量、端口、服务发现和持久化配置。
 
@@ -173,3 +243,8 @@ provider Makefile -> terraform plan/apply
 - [ClickHouse package](../clickhouse-package.md)：有状态节点、迁移与备份作业。
 - [Docker Reverse Proxy](../docker-reverse-proxy.md)：`docker.<domain>` 路由和 registry 边界。
 - [OIDC 演进](../oidc-history.md)：auth provider 配置与云 secret 的部署历史。
+- [Node 模块](../node-module.md) §17/§18：节点池、drain 与 autoscaling 的运行时行为（该部分的代码在 2026.30 仍然存在）。
+
+---
+
+> **文档版本**：已同步至 **2026.30**。§零 描述 2026.30 的退役状态；§1 ~ §8 为 2026.29 及以前的历史档案，其中所有 `iac/**` 路径与相对链接均已失效。

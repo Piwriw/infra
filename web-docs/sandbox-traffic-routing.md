@@ -3,6 +3,12 @@
 > 范围:用户 HTTP 请求从公网到达 sandbox 内业务进程的完整转发链路——三层反向代理级联、Host 编码规则、端口 1:1 直通、envd vs 业务流量分流、私有 ingress token 校验、共享主机 Host 改写。
 >
 > 阅读建议:先看「一、概述」与「四、端到端时序图」建立全局视图,再按需深入具体章节。本文与 `client-proxy-module.md`(边缘路由整体)、`orchestrator-module.md`(节点内部)、`auto-resume-module.md`(paused 唤醒)、`access-tokens-module.md`(token 校验)互为补充,只在**流量转发规则**这条路径上展开细节。
+>
+> 行号均按 tag `2026.30` 核对。已同步至 2026.30(2026-09-10)。
+
+> ⛔ **2026.30 部署侧退役提示**:提交 `8a1c48884`（`chore(deploy): retire Nomad-based deployment ahead of a new deploy path`）把 **`iac/` 整棵树（172 个文件）** 全部删除,根目录 `self-host.md` 也已删除（⚠️ `packages/docker-reverse-proxy/` 的 19 个文件由更早的 `d153bbe9d` 删除,2026-08-06,不是这批）。本文 §9.2 提到 5007 端口"Nomad job 定义中固定"——**该 Nomad job spec（`iac/modules/job-client-proxy/...`）在 2026.30 已不存在**,但 `packages/client-proxy/` 服务本身仍在。所有 `iac/**` 路径链接不可点,保留为历史档案。`packages/nomad-nodepool-apm/` **仍然存在**,不受影响。
+
+> ⚠️ **2026.30 数据面路由有一处实质变更**:client-proxy 现在**同时持有两个 Redis catalog**,并按 LaunchDarkly flag `orchestrator-routing-prioritized` 逐请求二选一;5007 端口也从编译期常量改成了环境变量 `ORCHESTRATOR_PROXY_PORT`。详见 §5.4 与 §2.3。
 
 ## 目录
 
@@ -11,6 +17,7 @@
 - [三、整体架构:三层反向代理](#三整体架构三层反向代理)
 - [四、端到端时序图](#四端到端时序图)
 - [五、Layer 1:Client-Proxy(边缘)](#五layer-1client-proxy边缘)
+  - [5.4 双 catalog:`sandbox:catalog:` vs `sandbox:routing:`(2026.30 新增)](#54-2026.30-新增-双-catalogsandboxcatalog-vs-sandboxrouting)
 - [六、Layer 2:Orchestrator Proxy(节点入口)](#六layer-2orchestrator-proxy节点入口)
 - [七、Layer 3:Sandbox 内部(业务进程)](#七layer-3sandbox-内部业务进程)
 - [八、Host 解析规则详解](#八host-解析规则详解)
@@ -102,8 +109,10 @@ Client-Proxy   ── 跨节点路由(Redis catalog)──►   nodeIP:5007
 
 | 端口 | 含义 | 用途 |
 |---|---|---|
-| **5007** | orchestrator proxy 监听端口(`orchestratorProxyPort`) | client-proxy 跨节点路由的固定目标 |
+| **5007** | orchestrator proxy 监听端口 | client-proxy 跨节点路由的固定目标 |
 | **49983** | envd daemon 监听端口(`DefaultEnvdServerPort`) | SDK 控制流量专用端口 |
+
+> ⚠️ **2026.30 变动**:5007 在 2026.29 是 `packages/client-proxy/internal/proxy/proxy.go:29` 上的编译期常量 `orchestratorProxyPort = 5007`;2026.30 该常量**已删除**,改为 `cfg.Config.OrchestratorProxyPort`(`packages/client-proxy/internal/cfg/model.go:12`,`env:"ORCHESTRATOR_PROXY_PORT"`,`envDefault:"5007"`),由 `main.go:168` 传入 `NewClientProxy`。**默认值仍是 5007**,但现在是部署期可覆盖的配置,`cfg.Parse()`(`model.go:34-36`)会拒绝 `0` 值并报 `"ORCHESTRATOR_PROXY_PORT must be greater than zero"`。注意 `NewClientProxy` 内部要 `strconv.Itoa(int(orchestratorProxyPort))`,因为 `uint16` 不能直接喂给 `strconv.Itoa`。
 
 ### 2.4 两类流量
 
@@ -284,46 +293,48 @@ Client-Proxy
 
 ### 5.1 入口构造
 
-`packages/client-proxy/internal/proxy/proxy.go:138-215` `NewClientProxy`:
+`packages/client-proxy/internal/proxy/proxy.go:146-225` `NewClientProxy`(2026.29 为 `:138-215`):
 
 ```go
-getTargetFromRequest := reverseproxy.GetTargetFromRequest()
-proxy := reverseproxy.New(
-    port,
-    reverseproxy.ClientProxyRetries,
-    idleTimeout,
-    func(r *http.Request) (*pool.Destination, error) {
-        ctx := r.Context()
-        sandboxId, port, err := getTargetFromRequest(r)  // ← 第一次解析
-        if err != nil { return nil, err }
+// 2026.30 签名：新增 orchestratorProxyPort 与 orchestratorCatalog 两个参数
+func NewClientProxy(meterProvider, serviceName string, port, orchestratorProxyPort uint16,
+    catalog, orchestratorCatalog catalog.SandboxesCatalog,
+    pausedSandboxResumer PausedSandboxResumer, featureFlagsClient *featureflags.Client) (*reverseproxy.Proxy, error) {
 
-        trafficAccessToken := r.Header.Get(proxygrpc.MetadataTrafficAccessToken)
-        envdAccessToken     := r.Header.Get(proxygrpc.MetadataEnvdHTTPAccessToken)
+    getTargetFromRequest := reverseproxy.GetTargetFromRequest()
+    proxy := reverseproxy.New(
+        port,
+        reverseproxy.ClientProxyRetries,
+        idleTimeout,
+        func(r *http.Request) (*pool.Destination, error) {
+            ctx := r.Context()
+            sandboxId, port, err := getTargetFromRequest(r)  // ← 第一次解析
+            if err != nil { return nil, err }
 
-        nodeIP, err := catalogResolution(ctx, sandboxId, port, trafficAccessToken, envdAccessToken, catalog, pausedSandboxResumer)
-        if err != nil { /* 错误分类处理 */ }
+            trafficAccessToken := r.Header.Get(proxygrpc.MetadataTrafficAccessToken)
+            envdAccessToken     := r.Header.Get(proxygrpc.MetadataEnvdHTTPAccessToken)
 
-        url := &url.URL{
-            Scheme: "http",
-            Host:   net.JoinHostPort(nodeIP, strconv.Itoa(orchestratorProxyPort)),  // ← 固定 :5007
-        }
+            routingSource := selectCatalog(ctx, featureFlagsClient, catalog, orchestratorCatalog) // ← 2026.30 新增
+            nodeIP, err := catalogResolution(ctx, sandboxId, port, trafficAccessToken, envdAccessToken, routingSource, pausedSandboxResumer)
+            if err != nil { /* 错误分类处理 */ }
 
-        return &pool.Destination{
-            SandboxId:       sandboxId,
-            SandboxPort:     port,
-            ConnectionKey:   pool.ClientProxyConnectionKey,
-            Url:             url,
-            MaskRequestHost: clientProxyMaskRequestHost(ctx, featureFlagsClient, r.Host, sandboxId, port),
-        }, nil
-    },
-    nil,
-    false,
-)
+            url := &url.URL{
+                Scheme: "http",
+                Host:   net.JoinHostPort(nodeIP, strconv.Itoa(int(orchestratorProxyPort))),  // ← 配置值，默认 :5007
+            }
+
+            return &pool.Destination{ /* 同 2026.29 */ }, nil
+        },
+        nil,
+        false,
+    )
+    ...
+}
 ```
 
 ### 5.2 catalog 解析
 
-`packages/client-proxy/internal/proxy/proxy.go:76-95` `catalogResolution`:
+`packages/client-proxy/internal/proxy/proxy.go:74-93` `catalogResolution`(2026.29 为 `:76-95`):
 
 ```go
 func catalogResolution(ctx, sandboxId, sandboxPort, trafficAccessToken, envdAccessToken, c, pausedChecker) (string, error) {
@@ -341,6 +352,39 @@ func catalogResolution(ctx, sandboxId, sandboxPort, trafficAccessToken, envdAcce
     return catalogSandboxNodeIP(s)  // catalog hit → 用 s.OrchestratorIP
 }
 ```
+
+函数体与 2026.29 **逐字相同**——变的是**传进来的 `c` 是谁**(见 §5.4)。
+
+### 5.4 (2026.30 新增) 双 catalog:`sandbox:catalog:` vs `sandbox:routing:`
+
+2026.30 起 client-proxy 在启动时构造**两个** catalog 实例(`main.go:130-131`),指向 Redis 上两份不同的路由记录:
+
+| 变量 | 构造函数 | Redis key 前缀 | 写入方 |
+|---|---|---|---|
+| `catalog` | `NewRedisSandboxCatalog` | `sandbox:catalog:{sandboxID}` | **API**(`catalog_redis.go:49`) |
+| `orchestratorCatalog` | `NewRedisSandboxRoutingCatalog` | `sandbox:routing:{sandboxID}` | **orchestrator**(`catalog_redis.go:51`) |
+
+两者是**同一个结构体** `RedisSandboxCatalog`,只有 `keyPrefix` 字段不同(`catalog_redis.go:54-75`)。
+
+逐请求选择由 `selectCatalog`(`proxy.go:136-144`)完成:
+
+```go
+// selectCatalog picks the routing source per request: the orchestrator-owned
+// record when OrchestratorRoutingPrioritizedFlag is on, else the API-owned one.
+func selectCatalog(ctx, featureFlags, apiCatalog, orchestratorCatalog catalog.SandboxesCatalog) catalog.SandboxesCatalog {
+    if orchestratorCatalog != nil && featureFlags.BoolFlag(ctx, featureflags.OrchestratorRoutingPrioritizedFlag) {
+        return orchestratorCatalog
+    }
+    return apiCatalog
+}
+```
+
+> ⚠️ **三个反直觉点**:
+> 1. **这是"逐请求"判断,不是启动时定死**。同一个 client-proxy 进程可以在 flag 翻转后立刻切换数据源,无需重启。
+> 2. **`orchestratorCatalog == nil` 时永远回退到 API-owned catalog**,哪怕 flag 是开的。flag 只是"允许",不是"强制"。
+> 3. **两个 flag 有先后依赖**。`featureflags/flags.go:463-471` 的注释明确写着:`orchestrator-routing-publish`(让 orchestrator 在 `MarkRunning` 时写 `sandbox:routing:{id}`、在 `MarkStopping` 时删,由 `packages/orchestrator/pkg/routing/publisher.go` 实现)**必须先开满一个 max sandbox lifetime**,才能开 `orchestrator-routing-prioritized`(让 client-proxy 改读它)。**顺序颠倒会让 client-proxy 读到一个还没被写入的 key**,表现为全量 catalog miss → 404。
+>
+> 两个 flag 默认都是 `false`(`flags.go:466` / `:471`),即 2026.30 的默认行为与 2026.29 完全一致(走 API-owned `sandbox:catalog:`)。
 
 ### 5.3 重要:Client-Proxy 不做 token 校验
 
@@ -616,9 +660,13 @@ Sandbox VM: 业务进程在 :{PORT} 监听
 
 ### 9.2 为什么 5007 是例外
 
-`orchestratorProxyPort = 5007` 是 **client-proxy → orchestrator proxy 这一跳的固定端口**,与 sandboxID 无关。
+**5007 是 client-proxy → orchestrator proxy 这一跳的固定端口**,与 sandboxID 无关。
 
-它是节点上 orchestrator 进程的入站监听端口,Nomad job 定义中固定。orchestrator 收到后,**根据 Host 头再决定要打到哪个 sandbox**。
+它是节点上 orchestrator 进程的入站监听端口。orchestrator 收到后,**根据 Host 头再决定要打到哪个 sandbox**。
+
+> ⚠️ **2026.30 变动**:2026.29 它是 `client-proxy/proxy.go:29` 上的常量 `orchestratorProxyPort = 5007`;2026.30 **常量已删除**,改由 `ORCHESTRATOR_PROXY_PORT` 环境变量提供(`cfg/model.go:12`,默认 5007)。完整说明见 §2.3。
+>
+> ⛔ 2026.29 版本的本节还写着"Nomad job 定义中固定"——该 Nomad job spec 随 `iac/` 在 2026.30 一并删除(见文首退役提示)。
 
 ### 9.3 没有 NAT / 端口映射表
 
@@ -1042,11 +1090,11 @@ WebSocket 升级握手走 HTTP,三层代理对 UPGRADE 请求透明。升级后�
 
 | 常量 | 位置 | 值 | 用途 |
 |---|---|---|---|
-| `orchestratorProxyPort` | `client-proxy/proxy.go:29` | `5007` | client-proxy → orchestrator 的固定目标端口 |
+| `ORCHESTRATOR_PROXY_PORT`(2026.30 新增) | `client-proxy/internal/cfg/model.go:12` | `5007`(默认) | client-proxy → orchestrator 的目标端口。2026.29 是常量 `orchestratorProxyPort`(`proxy.go:29`),现已删除 |
 | `DefaultEnvdServerPort` | `shared/pkg/consts/envd.go:4` | `49983` | envd daemon 监听端口 |
-| `idleTimeout`(client-proxy) | `client-proxy/proxy.go:34` | `610s` | > GCP LB 的 600s |
-| `idleTimeout`(orchestrator) | `orchestrator/proxy.go:32` | `620s` | > client-proxy 的 610s |
-| `trafficAccessTokenHeader` | `orchestrator/proxy/proxy.go:34` | `"e2b-traffic-access-token"` | 业务流量 token header 名 |
+| `idleTimeout`(client-proxy) | `client-proxy/proxy.go:32`(2026.29 为 `:34`) | `610s` | > GCP LB 的 600s |
+| `idleTimeout`(orchestrator) | `orchestrator/proxy.go:34`(2026.29 为 `:32`) | `620s` | > client-proxy 的 610s |
+| `trafficAccessTokenHeader` | `orchestrator/proxy/proxy.go:36`(2026.29 为 `:34`) | `"e2b-traffic-access-token"` | 业务流量 token header 名 |
 | `MetadataEnvdHTTPAccessToken` | `shared/pkg/grpc/proxy/metadata.go` | (string) | envd HTTP 流量 token header 名 |
 | `MetadataSandboxRequestPort` | `shared/pkg/grpc/proxy/metadata.go:7` | `"e2b-sandbox-request-port"` | auto-resume gRPC 元数据 |
 | `ClientProxyRetries` | `shared/pkg/proxy/` | (常量) | client-proxy 重试次数 |
@@ -1065,12 +1113,14 @@ WebSocket 升级握手走 HTTP,三层代理对 UPGRADE 请求透明。升级后�
 | `packages/shared/pkg/proxy/handler.go` | `handler` | 反向代理 HTTP handler,错误分类 |
 | `packages/shared/pkg/proxy/pool/client.go` | (pool client) | 连接池,Host 改写 |
 | `packages/shared/pkg/consts/envd.go` | `DefaultEnvdServerPort` | envd 端口常量 |
-| `packages/client-proxy/internal/proxy/proxy.go` | `NewClientProxy`、`catalogResolution`、`handlePausedSandbox`、`clientProxyMaskRequestHost` | Layer 1 入口 |
+| `packages/client-proxy/internal/proxy/proxy.go` | `NewClientProxy`、`catalogResolution`、`handlePausedSandbox`、`clientProxyMaskRequestHost`、**`selectCatalog`**(2026.30 新增,`:136-144`) | Layer 1 入口 |
 | `packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go` | `NewGRPCPausedSandboxResumer`、`Resume` | catalog miss 时 gRPC 唤醒 API |
 | `packages/orchestrator/pkg/proxy/proxy.go` | `NewSandboxProxy`、`SandboxProxy` | Layer 2 入口 |
 | `packages/orchestrator/pkg/proxy/metrics.go` | `Metrics` | 连接数 / 持续时间 OTel 指标 |
 | `packages/orchestrator/pkg/sandbox/sandbox.go` | `Config.GetNetworkIngress` | ingress 配置读取 |
-| `packages/shared/pkg/sandbox-catalog/catalog_redis.go` | `RedisSandboxCatalog` | Redis catalog 实现 |
+| `packages/shared/pkg/sandbox-catalog/catalog_redis.go` | `RedisSandboxCatalog`、`NewRedisSandboxCatalog`(key 前缀 `sandbox:catalog:`)、**`NewRedisSandboxRoutingCatalog`**(2026.30 新增,key 前缀 `sandbox:routing:`,`:69-75`) | Redis catalog 实现(双 key 前缀) |
+| `packages/orchestrator/pkg/routing/publisher.go`(2026.30 新增) | `Publisher`、`OnInsert`、`OnStopping` | orchestrator 侧写/删 `sandbox:routing:{id}`,受 `orchestrator-routing-publish` 控制 |
+| `packages/client-proxy/internal/cfg/model.go`(2026.30 变动) | `Config.OrchestratorProxyPort`、`RedisTLSEnabled`、`RedisPassword`、`Parse` | 新增端口与 Redis TLS/密码配置 |
 | `packages/shared/pkg/grpc/proxy/metadata.go` | 各 metadata 常量 | gRPC 元数据 keys |
 
 ---
@@ -1092,6 +1142,8 @@ WebSocket 升级握手走 HTTP,三层代理对 UPGRADE 请求透明。升级后�
 | **MaskRequestHost** | 共享主机模式下的 Host 改写机制 |
 | **traffic-access-token** | 业务流量校验用 token,header 名 `e2b-traffic-access-token` |
 | **envd access token** | envd 流量校验用 token(secure sandbox) |
-| **orchestratorProxyPort** | 5007,client-proxy → orchestrator 的固定目标端口 |
+| **orchestratorProxyPort** | client-proxy → orchestrator 的目标端口,默认 5007。2026.30 起由 `ORCHESTRATOR_PROXY_PORT` 配置,不再是编译期常量 |
+| **API-owned catalog**(2026.30 命名) | Redis `sandbox:catalog:{id}`,由 API 写入,client-proxy 的默认路由来源 |
+| **orchestrator-owned routing record**(2026.30 新增) | Redis `sandbox:routing:{id}`,由 orchestrator 在 `MarkRunning`/`MarkStopping` 写删;仅在 `orchestrator-routing-prioritized` 开启时被 client-proxy 采用 |
 | **idleTimeout** | 长连接空闲超时,> GCP LB 的 600s 避免竞态 |
 | **PortClosedError** | sandbox 内端口未监听时返回的用户友好错误页 |

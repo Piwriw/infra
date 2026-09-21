@@ -9,6 +9,14 @@
 > - [`sandbox-management.md`](sandbox-management.md) — Sandbox 管理面(节点上 sandbox 的生命周期)
 > - [`database-schema.md`](database-schema.md) — 数据库 schema
 
+> ⛔ **关于 `iac/**` 与 `self-host.md` 的引用(2026.30 变更)**
+>
+> 提交 `8a1c48884406b909f64c1239c808d0bc1cbf05bf`(Tomas Virgl,2026-09-09,subject:`chore(deploy): retire Nomad-based deployment ahead of a new deploy path`)在 2026.30 把整个 `iac/` 目录(172 文件 → 0)与根 `self-host.md` 删除,根 `Makefile` 的 Terraform/Nomad 目标也一并消失。
+>
+> **因此本文中所有指向 `iac/**`(nomad-cluster、modules/job-*、run-nomad.sh 等)与 `self-host.md` 的链接在 2026.30 已失效。** 这些段落描述的是 2026.29 及以前的部署方式,保留作为历史档案;节点、健康检查、调度、autoscaling 的**代码侧**行为(§2 ~ §16 的 `packages/**` 内容)在 2026.30 仍然有效。
+>
+> 受影响的章节已在正文中逐处标注。参见 [`components/10-iac.md`](components/10-iac.md) §零。
+
 ---
 
 ## 目录
@@ -169,6 +177,8 @@ Node Pool 是 **Nomad 原生概念**(Nomad 1.4+),不是 E2B 自创的。E2B 用 
 
 在 IaC 里,node pool 名通过 `run-nomad.sh` 写到 Nomad client 配置里,Nomad job spec 里通过 `node_pool = "${node_pool}"` 约束 job 只调度到对应池。
 
+> ⛔ **2026.30 失效:** `run-nomad.sh`(`iac/provider-gcp/nomad-cluster/scripts/run-nomad.sh`)与全部 Nomad job spec(`iac/modules/job-*/jobs/*.hcl`)已随 `iac/` 目录删除。node pool 名与 `node_pool` 约束在 2026.30 的仓库里已无对应的声明文件。以下关于 node pool 如何被写入与消费的描述为 2026.29 及以前的历史。
+
 ### 2.4 Instance(服务实例)
 
 **定义**:discovery 发现到的一个服务实例,建立了 gRPC 连接。
@@ -292,17 +302,18 @@ JOIN teams t ON t.cluster_id = c.id;
 
 **DB 中没有专门的 node 表** — node 是动态的,由 discovery 发现。Node 状态存在 API 内存里。
 
-**Node 状态枚举**(见 [`packages/api/internal/api/api.gen.go`](../packages/api/internal/api/api.gen.go)):
+**Node 状态枚举**(见 [`packages/api/internal/api/api.gen.go:134-139`](../packages/api/internal/api/api.gen.go),spec 定义在 [`spec/openapi.yml:1771-1783`](../spec/openapi.yml)):
 
-| 状态 | 含义 |
-|------|------|
-| `ready` | 健康,可调度 |
-| `draining` | 优雅下线中(不接受新 sandbox) |
-| `unhealthy` | 健康检查失败 |
-| `standby` | 备用(手动设置) |
-| `connecting` | gRPC 连接中(派生状态) |
+| 状态 | 含义 | 2026.30 |
+|------|------|---------|
+| `ready` | 健康,可调度 | — |
+| `draining` | 优雅下线中(不接受新 sandbox) | 语义收窄,见下 |
+| `unhealthy` | 健康检查失败 | — |
+| `standby` | 备用(手动设置) | — |
+| `connecting` | gRPC 连接中(派生状态) | — |
+| `shutting_down` | **进程正在退出**,终态不可逆 | 🆕 **新增** |
 
-**状态映射**(见 [`nodemanager/client.go`](../packages/api/internal/orchestrator/nodemanager/client.go)):
+**状态映射**(见 [`nodemanager/status.go:23-29`](../packages/api/internal/orchestrator/nodemanager/status.go)):
 
 | ServiceInfoStatus (gRPC) | NodeStatus (API) |
 |--------------------------|------------------|
@@ -310,6 +321,104 @@ JOIN teams t ON t.cluster_id = c.id;
 | `Draining` | `Draining` |
 | `Unhealthy` | `Unhealthy` |
 | `Standby` | `Standby` |
+| `ShuttingDown` | `ShuttingDown` |
+
+> ⚠️ **`ApiNodeToOrchestratorStateMapper` 是双向用途的同一张表**,`nodemanager/status.go:18-22` 的注释专门解释了为什么:这张表既用于"把 orchestrator 报的状态翻译成 API 状态",也用于"把 API 状态发回 orchestrator"(`SendStatusChange`)。因此**为了让某个状态可被 override 而加一项,同时也会让它变成可路由的**。测试 `TestStatusMappersAreInverses` 把这张表和反向表钉在一起,防止漂移。
+>
+> ⚠️ **`shutting_down` 是唯一"能读不能写"的状态**:`Node.SendStatusChange` 在 [`status.go:141-143`](../packages/api/internal/orchestrator/nodemanager/status.go) 直接拒绝:
+>
+> ```go
+> if s == api.NodeStatusShuttingDown {
+>     return grpcstatus.Error(codes.FailedPrecondition, "shutting_down can only be entered during process shutdown")
+> }
+> ```
+>
+> 也就是说 **admin 不能手动把节点置为 `shutting_down`** —— 它只能由 orchestrator 进程自己在退出流程里设置。
+
+#### 3.4.1 `shutting_down` 的三重保护(2026.30 新增)
+
+新增这个状态时,作者在三层都加了守卫,防止它被误用成一个"更强的 draining":
+
+**第一层:orchestrator 进程内** — [`pkg/service/info.go:99-102`](../packages/orchestrator/pkg/service/info.go)
+
+```go
+func (s *ServiceInfo) setStatus(ctx context.Context, status orchestratorinfo.ServiceInfoStatus) bool {
+    if s.status.Status == orchestratorinfo.ServiceInfoStatus_ShuttingDown && status != s.status.Status {
+        return false
+    }
+    ...
+```
+
+一旦进入 `ShuttingDown`,**任何**离开它的转换都被拒绝 —— 包括转回 `Healthy`。这是"终态"的实现方式。
+
+**第二层:override 入口** — [`pkg/service/info.go:83-94`](../packages/orchestrator/pkg/service/info.go)
+
+```go
+func (s *ServiceInfo) OverrideStatus(ctx context.Context, status orchestratorinfo.ServiceInfoStatus) bool {
+    ...
+    // Only process shutdown may enter ShuttingDown.
+    if status == orchestratorinfo.ServiceInfoStatus_ShuttingDown {
+        return false
+    }
+
+    if s.status.Status == orchestratorinfo.ServiceInfoStatus_Draining && status == orchestratorinfo.ServiceInfoStatus_Standby {
+        return false
+    }
+
+    return s.setStatus(ctx, status)
+}
+```
+
+这里挡了两件事:
+1. **不能从 override 入口进入 `ShuttingDown`**(呼应上面的"只有进程退出能进")。
+2. **`Draining → Standby` 被拒绝**。这是一条独立的修复:曾经可以把一个正在排空的节点"救回来"变成 standby,导致它重新开始接流量,而此时它已经在关闭路上。注意 `Draining → Healthy` **仍然允许** —— draining 的语义是"排除新工作、做完现有工作",它是可逆的。
+
+**第三层:API 侧** — 见上面的 `SendStatusChange` 拒绝。
+
+**唯一进入点**:[`pkg/factories/run.go:1086`](../packages/orchestrator/pkg/factories/run.go)
+
+```go
+serviceInfo.SetStatus(ctx, orchestratorinfo.ServiceInfoStatus_ShuttingDown)
+...
+    time.Sleep(15 * time.Second)
+```
+
+> ⚠️ **`Draining` 的语义在 2026.30 被重新表述过。** 2026.29 的 proto 注释是:
+>
+> > Draining means the node is bound to be shut down. It will not accept new sandboxes and will stop once all existing sandboxes are done.
+>
+> 2026.30 改成了:
+>
+> > Draining excludes new work while existing work finishes; it can return to Healthy.
+>
+> 差别在于 **draining 从"注定要关"变成了"暂时不接新活"**。如果你按旧语义写了自动化(比如"看到 draining 就开始迁移 sandbox"),新语义下会误判。真正的"要关了"信号现在是 `shutting_down`。
+
+#### 3.4.2 `UnreachableSince`:为什么不能只看 Status(2026.30 新增)
+
+[`nodemanager/status.go:121-138`](../packages/api/internal/orchestrator/nodemanager/status.go) 新增了一个**和 Status 平行**的本地信号:
+
+```go
+// Deliberately separate from Status, because the two answer different
+// questions. A node that answers the sync and reports itself Unhealthy is
+// responsive — it is telling us something. A node this replica cannot reach at
+// all is not telling us anything. Both currently collapse into
+// api.NodeStatusUnhealthy, and anything reasoning about whether a node is
+// still there needs them apart.
+func (n *Node) UnreachableSince() (time.Time, bool)
+```
+
+要点:
+
+| | `Status()` | `UnreachableSince()` |
+| --- | --- | --- |
+| 回答的问题 | 节点说自己怎么样 | 这个 replica 能不能够到它 |
+| 写入时机 | 状态**转变**时(`ChangedAt` 重置) | **首次**失败时写入,后续周期不覆盖 |
+| 谁能看到 | 全局(所有 replica 看到的 ServiceInfo 相同) | **仅本 replica**(本地单副本信号) |
+| 何时清除 | 状态转回 | 下一次成功 sync(`markReachable`) |
+
+> ⚠️ **`markUnreachable` 故意不从 `markUnhealthyLocal` 调用**,虽然一次 sync 失败通常两者都成立。原因是存在"够得到但 sync 失败"的情况:`ServiceInfo` 答了,紧随其后的 sandbox list 调用挂了。这时节点**明确答复过我们**,不该被当成不可达 —— 混淆两者会让一个活着的节点被当成可回收候选。
+>
+> ⚠️ `ChangedAt` 与 `unreachableSince` 的"首次写入优先"差异也是刻意的:`ChangedAt` 记录状态转变时刻,而 `unreachableSince` 要跨连续静默周期**累积**时长,所以不能被每轮重试重置。
 
 ---
 
@@ -328,6 +437,8 @@ var OrchestratorAPIPort = uint16(utils.Must(strconv.ParseUint(
 ```
 
 ### 4.2 Node ID 的来源链
+
+> ⛔ **2026.30 失效:** 下面第 1 步的 `NODE_ID` 来自 Nomad job spec(`orchestrator.hcl:69`、`template-manager.hcl:96`),这两个文件已随 `iac/` 删除。第 2 步起的**代码侧**读取逻辑(`packages/orchestrator/`)在 2026.30 仍然有效。
 
 ```
 1. Nomad job spec 设置环境变量
@@ -660,6 +771,8 @@ CLIENT_CLUSTERS_CONFIG='{"default": {"cluster_size": 1, "hugepages_percentage": 
 
 #### 在 IaC 里怎么用
 
+> ⛔ **2026.30 失效:** 本节整段依赖 `iac/provider-gcp/nomad-cluster/`,该目录已随 `iac/` 删除,下面的链接会 404。`BUILD_CLUSTERS_CONFIG` / `CLIENT_CLUSTERS_CONFIG` 这两个环境变量的**消费方**(`packages/api`、`packages/orchestrator` 等代码)仍在,但不再有 Terraform 侧的生成者。
+
 文件:[`iac/provider-gcp/nomad-cluster/main.tf`](../iac/provider-gcp/nomad-cluster/main.tf)
 
 - `module "build_cluster"` 对 `var.build_clusters_config`(`for_each`)每个 entry 创建一个 `worker-cluster` 子模块:
@@ -802,6 +915,8 @@ Nomad 用 Consul 做 DNS 和服务发现。Consul token、gossip key 在 `run-no
 **三层健康检查**:
 
 #### Layer 1: Nomad service check
+
+> ⛔ **2026.30 失效:** 本层的 health check 定义在 `iac/modules/job-orchestrator/jobs/orchestrator.hcl`,该文件已随 `iac/` 删除。下面 `/health` 的**实现**(orchestrator 内的 HTTP handler)仍在 2026.30 的代码里,失效的只是它的调度侧声明。
 
 文件:[`iac/modules/job-orchestrator/jobs/orchestrator.hcl`](../iac/modules/job-orchestrator/jobs/orchestrator.hcl)
 
@@ -1118,6 +1233,8 @@ Firecracker microVM 需要 hugepages 来分配 VM 内存。HugePages 在节点�
 
 ### 11.1 云 MIG/ASG 自动伸缩
 
+> ⛔ **2026.30 失效:** 本节两段 HCL(GCP `google_compute_region_autoscaler` 与 AWS `aws_autoscaling_group`)分别来自 `iac/provider-gcp/nomad-cluster/worker-cluster/nodepool.tf` 与 `iac/provider-aws/modules/nodepool-client/main.tf`,两个文件都已随 `iac/` 删除,下面链接失效。`memory_target > base_hugepages_percentage` 这条约束本身仍然成立(它源于 hugepages 预分配被计入 used memory),但 2026.30 的仓库里已没有声明它的 Terraform 代码。
+
 #### GCP
 
 文件:[`iac/provider-gcp/nomad-cluster/worker-cluster/nodepool.tf:52`](../iac/provider-gcp/nomad-cluster/worker-cluster/nodepool.tf)
@@ -1158,6 +1275,10 @@ AWS 目前靠 Nomad 层 autoscaler(见 11.2)。
 
 ### 11.2 Nomad autoscaler(template-manager)
 
+> ⛔ **2026.30 失效:** 下面的 `scaling` stanza 来自 `iac/modules/job-template-manager/jobs/template-manager.hcl`,部署描述 `iac/modules/job-template-manager-autoscaler/` 同属 `iac/` 目录,两者都已删除,链接失效。`packages/nomad-nodepool-apm/` 插件代码本身仍在。
+>
+> ⚠️ 顺带一处事实订正:本节的 "只统计 `ready + eligible` 的 node" 在 2026.30 已不成立 —— 2026.30 改为**只要求 `ready`**,临时 ineligible(如正在 drain)的节点仍计入。详见 [`components/12-nomad-nodepool-apm.md`](components/12-nomad-nodepool-apm.md) §零.2。
+
 文件:[`iac/modules/job-template-manager/jobs/template-manager.hcl:19-35`](../iac/modules/job-template-manager/jobs/template-manager.hcl)
 
 ```hcl
@@ -1184,16 +1305,20 @@ scaling {
 
 **自定义 plugin package**:[`packages/nomad-nodepool-apm/`](../packages/nomad-nodepool-apm/)
 
-部署:[`iac/modules/job-template-manager-autoscaler/`](../iac/modules/job-template-manager-autoscaler/)(部署 nomad-autoscaler job + 插件)
+部署:[`iac/modules/job-template-manager-autoscaler/`](../iac/modules/job-template-manager-autoscaler/)(部署 nomad-autoscaler job + 插件) ⛔ **该路径已随 `iac/` 在 2026.30 删除,链接失效**
 
-同一 package 现在构建两个外部 plugin。`nomad-nodepool-apm` 仍是 metric source,只统计 `ready + eligible` 的 node;`nomad-deployment-aware-target` 是写侧 Target,用于 Nomad service job 在 rollout 与 autoscaling 冲突时协调扩缩容:
+同一 package 现在构建两个外部 plugin。`nomad-nodepool-apm` 仍是 metric source,统计 node pool 里的 node;`nomad-deployment-aware-target` 是写侧 Target,用于 Nomad service job 在 rollout 与 autoscaling 冲突时协调扩缩容:
+
+> ⚠️ **2026.30 起 metric 口径放宽了:只要求 `Status == ready`,不再要求 `SchedulingEligibility == eligible`。** 新增的 `countReadyNodes`(`plugin/plugin.go`)注释写明理由:临时 ineligible(例如正在 drain)的节点应保留在 desired count 里,直到它真正离开 node pool。日志字段随之从 `ready_eligible_nodes` 改名为 `ready_nodes`,`README.md` 也从 "ready, eligible nodes" 改成 "ready nodes"。
+>
+> ⚠️ **2026.29 版本的正文这里写的是 "只统计 `ready + eligible` 的 node"——那句在 2026.30 不再成立。** 差别是实质性的:drain 中的节点以前会被立即从 desired count 里剔除,现在会一直计入。
 
 1. durable task-group count 已等于目标时直接 no-op,不会触碰仍在收敛的 deployment。
 2. count 必须变化且存在 active deployment 时,先将冲突 deployment 标为 `failed`,再从 fresh state 重试 scale。
 3. scaled group 必须设置 `auto_revert=false`;否则 fail deployment 会回滚旧 job version,plugin 会拒绝执行。
 4. 以 namespace/job 串行,最多 5 次 fresh-state/CAS retry;dry-run 不写 deployment 或 count。
 
-当前开源 IaC 的 template-manager scaling policy 仍只显式引用 APM;仓库 README 说明 deployment-aware Target 用于 `orchestrator-ee`。不要据此假设本仓库所有 autoscaler policy 已切换到该 Target。
+仓库 README 说明 deployment-aware Target 用于 `template-manager` 与 `orchestrator-ee` 两个 service job(**2026.30 起;2026.29 时只写了 `orchestrator-ee`**)。不过 2026.30 的仓库里已经没有 Nomad job spec 可以核对——`iac/` 整体删除,包括 template-manager 的 scaling policy。所以不要据此假设某个具体 autoscaler policy 已经切到该 Target。
 
 ### 11.3 ListCachedBuilds 与调度
 
@@ -1208,6 +1333,8 @@ scaling {
 ---
 
 ## 十二、Nomad 集成
+
+> ⛔ **2026.30 失效:** 本章(§12.1 ~ §12.3)描述的 Nomad job spec 与 node pool 配置全部来自 `iac/`,该目录已在 2026.30 整体删除。下表引用的 `orchestrator.hcl`、`template-manager.hcl`、`run-nomad.sh` 均不存在,链接失效。**代码侧**的 Nomad 集成(`packages/api` 的 `/v1/nodes?NodePool=X` 发现、`packages/orchestrator` 读取 `NODE_POOL` 等)在 2026.30 仍然保留 —— `docs/ARCHITECTURE.md` 在 2026.30 仍称其为 "the legacy Nomad backend the code still carries"。
 
 ### 12.1 Nomad Job Spec
 
@@ -1258,11 +1385,15 @@ orchestrator/template-manager 注册的是 **Nomad-native service**(`provider = 
 
 Consul token/gossip key 在 `run-nomad.sh` 里配置,node_pool 名通过 Nomad client meta 暴露。
 
+> ⛔ **2026.30 失效:** `run-nomad.sh`(`iac/provider-gcp/nomad-cluster/scripts/run-nomad.sh`)已随 `iac/` 删除,本节关于 Consul token/gossip key 如何注入、node_pool 如何通过 client meta 暴露的描述已无对应源码。
+
 ---
 
 ## 十三、Build Node Pool vs Client Node Pool
 
 ### 13.1 对比表
+
+> ⛔ **2026.30 失效:** 表中 "Nomad job type"、"Job constraint"、"是否开 autoscaler" 等行描述的是 `iac/` 里的 job spec 声明(已删除)。"Nomad node_pool 名" 与 "服务发现名" 仍是代码侧的标识,在 2026.30 的源码里有效。
 
 | 维度 | Build Node Pool | Client Node Pool (Orchestrator) |
 |------|-----------------|----------------------------------|
@@ -1370,6 +1501,8 @@ message ServiceInfoResponse {
 
 ### 15.2 Cluster 配置(IaC 层)
 
+> ⛔ **2026.30 失效:** 本节列出的 Terraform 变量(`BUILD_CLUSTERS_CONFIG`、`SERVER_MACHINE_TYPE` 等)在 2026.30 的仓库里已没有声明者 —— 它们的定义与消费都在 `iac/provider-gcp/` 与 `iac/provider-aws/` 里,已随 `iac/` 删除。作为**环境变量**被服务代码读取的部分仍可能有效,但不再有 Terraform 侧的生成链路。
+
 | 变量 | 作用 |
 |------|------|
 | `BUILD_CLUSTERS_CONFIG` | JSON map,定义 build cluster(仅 GCP) |
@@ -1379,6 +1512,8 @@ message ServiceInfoResponse {
 | `CLICKHOUSE_MACHINE_TYPE` / `CLICKHOUSE_CLUSTER_SIZE` | ClickHouse |
 
 ### 15.3 Nomad / Consul(节点启动脚本)
+
+> ⛔ **2026.30 失效:** 本节整节依赖 `iac/provider-gcp/nomad-cluster/scripts/run-nomad.sh`,该文件已随 `iac/` 删除,下面链接会 404。下表描述的变量注入机制在 2026.30 的仓库里已无对应源码。
 
 文件:[`iac/provider-gcp/nomad-cluster/scripts/run-nomad.sh`](../iac/provider-gcp/nomad-cluster/scripts/run-nomad.sh)
 
@@ -1548,6 +1683,8 @@ message ServiceInfoResponse {
 
 ### 17.9 IaC
 
+> ⛔ **本节整表失效(2026.30)。** `iac/` 目录已于 2026.30 整体删除(172 文件 → 0),下表 7 个条目全部指向不存在的文件,链接会 404。提交:`8a1c48884406b909f64c1239c808d0bc1cbf05bf`(`chore(deploy): retire Nomad-based deployment ahead of a new deploy path`)。保留此表作为「这套部署体系原来由哪些文件组成」的历史索引;参见 [`components/10-iac.md`](components/10-iac.md) §零。
+
 | 文件 | 作用 |
 |------|------|
 | [`iac/provider-gcp/nomad-cluster/main.tf`](../iac/provider-gcp/nomad-cluster/main.tf) | GCP nomad 集群主入口(build_cluster + client_cluster 模块) |
@@ -1560,37 +1697,174 @@ message ServiceInfoResponse {
 
 ### 17.10 配置模板与文档
 
+> ⛔ **2026.30 变更:** 下表 `self-host.md` 已于 2026.30 删除,链接失效 —— 自托管指南随部署 IaC 一起退役。同批删除的还有根 `DEV.md`(远程开发与 SSH 到 orchestrator)。`.env.gcp.template` / `.env.aws.template` / `DEV-LOCAL.md` 仍然存在。
+
 | 文件 | 作用 |
 |------|------|
 | [`.env.gcp.template`](../.env.gcp.template) | `BUILD_CLUSTERS_CONFIG`/`CLIENT_CLUSTERS_CONFIG` 示例 |
-| [`self-host.md`](../self-host.md) | 自托管文档 |
+| [`self-host.md`](../self-host.md) | 自托管文档 ⛔ **2026.30 已删除** |
 | [`DEV-LOCAL.md`](../DEV-LOCAL.md) | 本地开发文档 |
 
 ---
 
 ## 十八、设计要点与演进
 
-### 18.1 两套 Discovery interface 的区别(容易混淆)
+### 18.1 Discovery 的收敛:从两套到一套(2026.30 重大变更)
 
-代码里有**两套** `Discovery` interface:
+> ⚠️ **本节在 2026.30 被整体重写。** 2026.29 的"两套 Discovery interface"结构已经不存在了。
 
-#### 第一套:cluster 层
+#### 18.1.1 2026.29 的两套(历史)
 
-文件:[`packages/api/internal/clusters/discovery/discovery.go`](../packages/api/internal/clusters/discovery/)
+| | cluster 层 | orchestrator 层 |
+| --- | --- | --- |
+| 路径 | `packages/api/internal/clusters/discovery/` | `packages/api/internal/orchestrator/discovery/` |
+| 服务对象 | cluster 内的服务实例(builder/orchestrator) | Nomad-managed orchestrator 节点 |
+| 接口 | `Query() → []Item`,`Item.InstanceID`(每次重启变化) | `ListNodes() → []Node`,`Node.ShortID`(稳定 8 字符) |
+| 实现 | `Local`/`Remote`/`Kubernetes`/`Static` | `nomad`/`nomadNodePool`/`merged` |
+| 文件 | `discovery.go`、`kubernetes.go`、`local.go`、`remote.go`、`static.go` | `discovery.go`、`kubernetes.go`、`local.go`、`merged.go`、`nomad.go`、`nomad_node_pool.go` |
 
-- 给 **cluster 内的 Instance**(template-builder/orchestrator 服务实例)用
-- `Query() → []Item`,Item 含 `InstanceID`(每次重启变化)
-- 实现:`LocalServiceDiscovery`/`RemoteServiceDiscovery`/`KubernetesServiceDiscovery`/`StaticServiceDiscovery`
+两套接口、两套实现、两套 ID 语义 —— 而且各自都在 2026.16–2026.28 期间长出了 K8s 后端,导致同一件事写了两遍。
 
-#### 第二套:orchestrator 层
+#### 18.1.2 2026.30 的统一结构
 
-文件:[`packages/api/internal/orchestrator/discovery/discovery.go`](../packages/api/internal/orchestrator/discovery/discovery.go)
+两个目录**全部删除**,实现搬到 shared:
 
-- 给 **Nomad-managed orchestrator 节点**用
-- `ListNodes() → []Node`,Node 含 `ShortID`(稳定,8 字符)
-- 实现:`nomadDiscovery`/`nomadNodePoolDiscovery`/`mergedDiscovery`
+```
+packages/shared/pkg/servicediscovery/
+├── servicediscovery.go   # 包文档、Instance、Discoverer、NoSync
+├── config.go
+├── provider/provider.go  # 按配置选后端
+├── cached.go             # 后台刷新 + 上次好结果 + ErrNotYetSynced
+├── merged.go             # NewMerged,两路合并
+├── local.go / remote.go / static.go
+├── dns/dns.go
+├── nomad/
+│   ├── services.go       # Nomad service 目录
+│   ├── nodepool.go       # 旧式 node pool 列举
+│   └── allocations.go    # 经 shared/pkg/clusters/discovery 查 allocation
+└── kube/
+    ├── client.go
+    └── pods.go           # 列举 host-network pod
+```
 
-**使用关系**:`Orchestrator` 用第二套,`Cluster`/`Pool` 用第一套。
+**核心抽象** —— [`servicediscovery.go:53-79`](../packages/shared/pkg/servicediscovery/servicediscovery.go):
+
+```go
+type Instance struct {
+    // WorkloadID is unique within this instance's source. Backends that union
+    // with each other must agree on it for the same instance — which is why the
+    // two Nomad node backends both derive it from the node rather than reaching
+    // for an allocation. Consumers compare it as an opaque string of no assumed
+    // width.
+    WorkloadID string
+
+    // NodeID is the machine the instance runs on. Empty where the source has no
+    // notion of one: DNS and STATIC resolve addresses, not schedulers, and the
+    // machine only arrives once the instance answers over gRPC. ...
+    NodeID string
+
+    IPAddress string
+    Port      uint16
+    Backend   string
+}
+
+func (i Instance) Address() string  // "<IPAddress>:<Port>"
+
+type Discoverer interface {
+    ListInstances(ctx context.Context) ([]Instance, error)
+    Start(ctx context.Context)
+    Stop(ctx context.Context)
+}
+
+// NoSync gives the query adapters, which hold nothing to refresh, the
+// lifecycle half of Discoverer.
+type NoSync struct{}
+```
+
+**双身份设计是这次统一的关键决策**(`servicediscovery.go:44-52` 的注释):
+
+| 身份 | 回答的问题 | 由谁提供 | 重启后 |
+| --- | --- | --- | --- |
+| `WorkloadID` | "这是不是我上一轮看到的同一个东西" | 每个后端挑**自己源里最窄的**身份:allocation 或 pod | **变化**(消费者能察觉重启) |
+| `NodeID` | "它在哪台机器上" | Nomad node / K8s node | **存活**(placement 目标不被重启搅动) |
+
+> ⚠️ **一个 key 服务不了两种消费者**,所以才有两个字段。追踪"服务实例"的消费者要 `WorkloadID`(重启要感知);追踪"放置目标"的消费者要 `NodeID`(重启不该让它重新选点)。旧的两套接口正是分别只服务了其中一种,统一后必须同时提供。
+>
+> ⚠️ **两个 Nomad node 后端都从 node 而不是 allocation 推导 `WorkloadID`**。原因是它们会被 `NewMerged` 合并,如果同一个实例在两条路径上算出不同的 `WorkloadID`,去重就会失败、实例会被数两遍。
+
+**错误语义**(`servicediscovery.go:1-13` 包文档,值得整段读):
+
+- 所有后端以**同一方式**报告源损坏:错误直接返回给调用方,调用方**跳过本轮**、保留上次已知集合。
+- `Cached` 包装一个 Discoverer,后台刷新,同时提供"上次好结果"和"上次刷新错误" —— 让死掉的源被**报告**出来,而不是被当成"一直是旧的"。
+- `ErrNotYetSynced`(`:27`)区分**"缓存从未完成过一次刷新"**与**"刷新过、源就是空的"**。这两件事在旧实现里无法区分。
+- `NewMerged` 同样传播任一侧的错误,理由相同。
+
+**后端标识常量**(`servicediscovery.go:35-42`):`nomad` / `kubernetes` / `local` / `remote` / `dns` / `static`。注释说明了为什么需要它:迁移期两套调度器同时在跑实例、各自按不同节奏迁移,读目录的运维**必须能分辨两者**;其余后端也给了名字,这样答案永远不会是 "unknown"。
+
+#### 18.1.3 `packages/shared/pkg/clusters/discovery/` 是什么(别混淆)
+
+统一之后仓库里仍有一个名字很像的包:[`packages/shared/pkg/clusters/discovery/nomad.go`](../packages/shared/pkg/clusters/discovery/nomad.go)。它**不是** servicediscovery 的替代品,而是一个更底层的 Nomad API 查询工具:
+
+```go
+type Allocation struct {
+    NodeID       string
+    AllocationID string
+    AllocationIP string
+}
+
+var FilterTemplateBuilders = NomadQueryFilter(...)
+var FilterTemplateBuildersAndOrchestrators = NomadQueryFilter(...)
+```
+
+它只负责"按 Nomad 过滤表达式列出 allocation",不认识 `Instance`/`Discoverer` 抽象。调用方有三处:`servicediscovery/nomad/allocations.go`、`servicediscovery/provider/provider.go`、以及 `packages/api/internal/handlers/store.go:42`(别名 `sharedclusters`)。
+
+#### 18.1.4 provider 选择:两层不同的字符串常量
+
+这里有一个**很容易踩的坑**:API 层和 shared 层各有一套 provider 命名,值不一样。
+
+**第一层 — API 的 `SERVICE_DISCOVERY_PROVIDER` 环境变量**([`packages/api/internal/cfg/model.go:19-30`](../packages/api/internal/cfg/model.go)):
+
+| 常量 | 值 |
+| --- | --- |
+| `ServiceDiscoveryProviderNomad` | `nomad` |
+| `ServiceDiscoveryProviderKubernetes` | `kubernetes` |
+| `ServiceDiscoveryProviderNomadKubernetes` | `nomad+kubernetes` |
+| `ServiceDiscoveryProviderLocal` | `local` |
+
+无 `envDefault`,空串合法(`model.go:291` 的白名单含 `""`,回落 Nomad)。
+
+**第二层 — shared 的 provider 注册键**([`servicediscovery/provider/provider.go:19-25`](../packages/shared/pkg/servicediscovery/provider/provider.go)):
+
+```go
+const (
+    DnsProviderKey       = "DNS"
+    StaticProviderKey    = "STATIC"
+    NomadProvider        = "NOMAD"
+    K8sPodsProvider      = "K8S-PODS"
+    NomadK8sPodsProvider = "NOMAD+K8S-PODS"
+)
+```
+
+`provider.New` 用 `strings.ToUpper(config.Provider)` 做匹配(`:34`),所以**大小写不敏感** —— 但**字符串内容必须一致**。
+
+> ⚠️ **`nomad+kubernetes` ≠ `nomad+k8s-pods`。** 差别不是大小写(那层被 `ToUpper` 吃掉了),而是 `kubernetes` 与 `k8s-pods` 是**两个不同的词**。把 API 环境变量的值直接喂给 `provider.New` 会落到 `default` 分支报 `unsupported service discovery provider`。
+>
+> 实际上 API **不会**把 provider 串透传给 `provider.New` —— [`packages/api/internal/handlers/store.go:74-85`](../packages/api/internal/handlers/store.go) 有自己的一套 `switch`,按 API 常量构造 backend。两套命名因此没有直接连线,但读代码时容易以为有。详见 [api-module.md §4.6](./api-module.md#46-服务发现discovery)。
+
+**provider 的配置形状**([`servicediscovery/config.go`](../packages/shared/pkg/servicediscovery/config.go)):
+
+| 字段 | env | 何时需要 |
+| --- | --- | --- |
+| `Provider` | `PROVIDER`(**required**) | 总是 |
+| `OrchestratorPort` | `PORT`(默认 `5008`) | 总是 |
+| `DNSQuery` / `DNSResolverAddress` | `DNS_QUERY` / `DNS_RESOLVER_ADDRESS` | `Provider == "DNS"` |
+| `K8sAPIEndpoint` / `PodNamespace` / `PodLabels` / `HostIP` | `K8S_API_ENDPOINT` / `POD_NAMESPACE` / `POD_LABELS` / `HOST_IP` | `K8S-PODS` 或 `NOMAD+K8S-PODS` |
+| `StaticEndpoints` | `STATIC` | `STATIC` |
+| `NomadEndpoint` / `NomadToken` | `NOMAD_ENDPOINT` / `NOMAD_TOKEN` | `NOMAD` 或 `NOMAD+K8S-PODS` |
+
+> ⚠️ `K8sAPIEndpoint` 为空时用 pod 自己的 ServiceAccount,**只在集群内可用**;要从集群外访问需要显式设置(走 Google ADC)。见 `config.go:15-16` 注释。
+
+> ⚠️ `NOMAD+K8S-PODS` 合并时 **Nomad 是 primary,dedup 冲突时 Nomad 条目胜出**(`provider.go:50-51`)。这个方向不是随意的 —— Nomad 侧本身还嵌套着"新 service 目录 ∪ 旧 node pool 列举"的一层合并。
 
 ### 18.2 Node 的两套结构体
 
@@ -1908,6 +2182,6 @@ nomad operator api '/v1/jobs/template-manager/scale'
 
 ---
 
-**文档版本**:已同步至 2026.29
+**文档版本**:已同步至 **2026.30**。所有 `iac/**` 与 `self-host.md` 引用已标注失效(见文首 ⛔ 说明);节点、健康检查、调度与 autoscaling 的代码侧行为已按 2026.30 核对。
 
 **维护**:如有疑问或发现文档过期,请对照 [`packages/api/internal/clusters/`](../packages/api/internal/clusters/) 和 [`packages/api/internal/orchestrator/`](../packages/api/internal/orchestrator/) 的最新代码核对。

@@ -1,24 +1,35 @@
 # `packages/clickhouse/` 原理详解
 
 > 本文档梳理 E2B 基础设施中 `packages/clickhouse` 的设计原理、代码组织、批量写入路径、查询 API、数据模型与部署方式。所有结论均基于仓库源码与 `.understand-anything/knowledge-graph.json`。
+>
+> 行号均按 tag `2026.30` 核对。已同步至 2026.30(2026-09-10)。
 
 ## 1. 概述
 
-`packages/clickhouse` 是 E2B 基础设施的 **分析/可观测数据层**，承担两类职责：
+`packages/clickhouse` 是 E2B 基础设施的 **分析/可观测数据层**，承担三类职责：
 
 1. **写入端**：把 orchestrator 在沙箱生命周期中产生的高频遥测数据（生命周期事件、CPU/内存/磁盘指标、cgroup 主机统计、Webhook 投递结果）异步批量写入 ClickHouse。
 2. **查询端**：向 API 层提供沙箱级和团队级时间序列指标的查询接口，用于 Dashboard 与限流决策。
+3. **日志读取端（2026.30 新增）**：`pkg/sandboxlogs` 提供 `sandbox_logs` 表的最小 ClickHouse reader，让 API 在 `logs-read-config` 打开时不再依赖 Loki。
 
-整个包是独立的 Go module（`packages/clickhouse/go.mod`），不依赖 `packages/api`、`packages/orchestrator` 等业务包，**只依赖** `packages/shared/pkg/{telemetry, logger, featureflags, events}`，从而保证可复用性。
+整个包是独立的 Go module（`packages/clickhouse/go.mod`），不依赖 `packages/api`、`packages/orchestrator` 等业务包，**只依赖** `packages/shared/pkg/{telemetry, logger, featureflags, events, logs}`，从而保证可复用性。
 
 ```
 Client (Clickhouse) ──┬─> QuerySandboxTimeRange / QuerySandboxMetrics / QueryLatestMetrics
                       ├─> QueryTeamMetrics / QueryMaxStartRateTeamMetrics / QueryMaxConcurrentTeamMetrics
                       └─> Close
 
+sandboxlogs.Reader    ──┬─> QuerySandboxLogs
+                        └─> QueryBuildLogs            (2026.30 新增的读路径)
+
 ClickhouseDelivery (events)  ─┐
 ClickhouseDelivery (hoststats)─┴─> 共享 *batcher.Batcher[T]  → driver.Conn.PrepareBatch → INSERT
 ```
+
+> ⚠️ **`sandbox_egress` 表只有迁移,没有写入实现**。它由 `20260818120000_add_sandbox_egress.sql` 创建,但写入端不在本仓库(见 §9.6)。
+
+> ⛔ **2026.30 部署侧退役提示**:提交 `8a1c48884`（`chore(deploy): retire Nomad-based deployment ahead of a new deploy path`）把 **`iac/` 整棵树（172 个文件,含 `iac/provider-gcp/`、`iac/provider-aws/`、`iac/modules/job-*/`）** 全部删除,根目录 `self-host.md` 也已删除。⚠️ `packages/docker-reverse-proxy/`（19 个文件 → 0）**不是这个提交删的**,它由更早的 `d153bbe9d`（Jakub Rojko, 2026-08-06, `chore(docker-reverse-proxy): remove deprecated service`）删除。因此**本文中所有 `iac/**` 路径（尤其 §11）在 2026.30 都已不存在,链接不可点**,保留为历史档案。`packages/nomad-nodepool-apm/` **仍然存在**,不受影响。
+
 
 ## 2. 目录结构
 
@@ -30,9 +41,10 @@ packages/clickhouse/
 ├── local/                 # 本地 dev 用的 clickhouse-server 配置模板
 │   ├── config.tpl.xml
 │   └── users.tpl.xml
-├── migrations/            # goose 迁移 SQL（按时间戳命名）
+├── migrations/            # goose 迁移 SQL（按时间戳命名，2026.30 共 28 个文件）
 └── pkg/
-    ├── clickhouse.go      # Client、Clickhouse、SandboxQueriesProvider 接口
+    ├── clickhouse.go      # Client、Clickhouse、SandboxQueriesProvider 接口、NewDriver、EndpointFromDSN
+    ├── switcher.go        # SwitchingClient（LD-gated 多集群切换）
     ├── mock.go            # NoopClient（测试用）
     ├── dates.go           # MaxDate64 常量
     ├── sandbox.go         # 沙箱级指标查询
@@ -46,11 +58,16 @@ packages/clickhouse/
     ├── hoststats/         # 主机 cgroup 统计投递
     │   ├── hoststats.go   # SandboxHostStat + Delivery 接口 + noop / multi
     │   └── delivery.go    # ClickhouseDelivery
+    ├── sandboxlogs/       # (2026.30 新增) sandbox_logs 读取端
+    │   ├── sandboxlogs.go # Reader / QuerySandboxLogs / QueryBuildLogs / SortOrder
+    │   └── sandboxlogs_test.go
     └── utils/             # 工具函数
         ├── sandbox.go     # GetSandboxStartEndTime
         ├── step.go        # CalculateStep
         └── validate.go    # ValidateRange
 ```
+
+> ⓘ `switcher.go` 在本节之前的版本里漏列了，但它在 2026.29 就已存在。
 
 ## 3. 客户端与连接管理
 
@@ -189,6 +206,17 @@ func NewDefaultClickhouseSandboxEventsDelivery(ctx, conn, featureFlags, batcherN
 
 - **通过 LaunchDarkly 调参**：生产/预发环境的 `MaxBatchSize`、`MaxDelay`、`QueueSize` 都不写死，而是走 `featureflags` 动态下发，方便灰度/回滚。
 - `batcherName` 作为 OTel `batcher` 属性传入。
+
+**2026.30 变动**：`clickhouse-batcher-max-batch-size` 的默认值从 **100 改为 1000**（[`flags.go:439`](../packages/shared/pkg/featureflags/flags.go)；2026.29 在 `flags.go:286`）。相关 flag：
+
+| Flag | 2026.29 默认 | 2026.30 默认 |
+| --- | --- | --- |
+| `clickhouse-batcher-max-batch-size` | 100 | **1000** |
+| `max-cache-writer-concurrency` | 10 | 10（未变，[`flags.go:472`](../packages/shared/pkg/featureflags/flags.go)） |
+| `clickhouse-write-fanout` | false | false（未变，[`flags.go:859`](../packages/shared/pkg/featureflags/flags.go)） |
+
+> ⚠️ 注意区分两个 `defaultMaxBatchSize`：`batcher.go:18` 的 `defaultMaxBatchSize = 64 * 1024` 是**代码兜底值**（只在 flag 返回 0/负数时才用），而 LD flag 的默认是 1000。正常部署走的是 flag 值，不是 64K。
+
 
 ### 5.3 Publish 路径
 
@@ -411,6 +439,54 @@ WHERE metric_name = 'e2b.team.sandbox.running'
 
 直接 `argMax + max` 在原始表上拿最大 gauge 与时间戳。
 
+### 7.3 日志查询（`pkg/sandboxlogs/`，2026.30 新增）
+
+文件：[`packages/clickhouse/pkg/sandboxlogs/sandboxlogs.go`](../packages/clickhouse/pkg/sandboxlogs/sandboxlogs.go)。这是**读 `sandbox_logs` 表**的最小 reader，与 §7.1/§7.2 的 metrics 查询彼此独立。
+
+```go
+type SortOrder int
+
+const (
+    SortOrderForward  SortOrder = iota
+    SortOrderBackward
+)
+
+type Reader struct{ conn driver.Conn }
+
+func NewReader(conn driver.Conn) *Reader
+func (r *Reader) Close(_ context.Context) error
+
+func (r *Reader) QuerySandboxLogs(ctx, teamID uuid.UUID, sandboxID string, start, end time.Time,
+    limit int, order SortOrder, level *logs.LogLevel, search *string) ([]logs.LogEntry, error)
+
+func (r *Reader) QueryBuildLogs(ctx, templateID, buildID string, start, end time.Time,
+    limit int, offset int32, level *logs.LogLevel, order SortOrder) ([]logs.LogEntry, error)
+```
+
+两者共用同一段 `sandboxLogsSelect`（`SELECT timestamp, team_id, sandbox_id, template_id, build_id, service, category, level, message, raw, fields FROM sandbox_logs`），只在 WHERE / ORDER BY / LIMIT 上分叉：
+
+| | `QuerySandboxLogs` | `QueryBuildLogs` |
+| --- | --- | --- |
+| 过滤 | `team_id = ?`、`sandbox_id = ?`、`timestamp BETWEEN ? AND ?`、`category != 'metrics'` | `build_id = ?`、`template_id = ?`、`timestamp BETWEEN ? AND ?`、`service = 'template-manager'` |
+| `level` | 可选，`level IN {levels:Array(String)}` | 同左 |
+| 文本搜索 | 可选，`position(message, ?) > 0` | ⛔ 不支持 |
+| 分页 | `LIMIT <limit>` | `LIMIT <offset>, <limit>` |
+
+三个设计要点：
+
+1. **级别过滤对齐 Loki 语义**。`atLeastLevels(minLevel)` 把「最低级别」展开成允许的 level 字符串集合，与 [`packages/shared/pkg/logs/loki/provider.go`](../packages/shared/pkg/logs/loki/provider.go) 的 regex 语义一致：
+
+   | 最低级别 | 允许的存储值 |
+   | --- | --- |
+   | `error` | `error` |
+   | `warn` | `warn`, `error` |
+   | `info` | `""`, `info`, `warn`, `error` |
+   | `debug`（默认分支） | `""`, `debug`, `info`, `warn`, `error` |
+
+2. **文本搜索是 literal substring，不是 regex**。用 `position(message, ?) > 0` 而不是 `match()`——与 Loki 侧用 `regexp.QuoteMeta` 转义用户输入的做法保持同样的安全语义。这张表的 `idx_message_ngram`（`ngrambf_v1(4, 8192, 3, 0)`）就是为这个谓词建的；迁移注释明确说 `tokenbf_v1` 只支持整 token 的 `hasToken`，**对 substring 谓词没有帮助**。
+
+3. **`Fields` 是 JSON 编码的 `map[string]string`**。unmarshal 失败时不返回错误：记一条 warning（`failed to parse sandbox log fields`，带 `sandbox_id` / `timestamp`），退化成空 map，并**保留 `Raw`**。所以行不会因为一个坏 JSON 字段整条丢掉。
+
 ## 8. 工具函数（`pkg/utils/`）
 
 ### 8.1 `ValidateRange(start, end)`
@@ -472,6 +548,10 @@ ClickHouse 的所有业务表都遵循 **local + Distributed 双层** 模式：
 | `sandbox_events_local` | MergeTree | `(sandbox_id, timestamp)` | `toDate(timestamp)` | 7d | `xxHash64(sandbox_id)` |
 | `sandbox_host_stats_local` | MergeTree | `(sandbox_id, timestamp)` | `toDate(timestamp)` | 7d | `xxHash64(sandbox_id)` |
 | `webhook_deliveries_local` | MergeTree | `(team_id, webhook_id, timestamp, id)` | `toDate(timestamp)` | 7d | `xxHash64(team_id)` |
+| `sandbox_logs_local`（2026.30 新增） | MergeTree | `(team_id, sandbox_id, timestamp)` | `toDate(ingested_at)` | 7d | `xxHash64(team_id)` |
+| `sandbox_egress_local`（2026.30 新增） | MergeTree | `(team_id, sandbox_id, destination_ip, destination_port, last_seen)` | `toDate(ingested_at)` | 7d | `xxHash64(sandbox_id)` |
+
+> ⚠️ 新加的两张表**分区与 TTL 都键在 `ingested_at`（服务端时钟）而不是事件时间**。原因见 §9.6。
 
 ### 9.1 OTel 入口：metrics_gauge / metrics_sum
 
@@ -521,9 +601,106 @@ ALTER TABLE sandbox_metrics_gauge_local MODIFY SETTING ttl_only_drop_parts = 1;
 - 因为所有表都 `PARTITION BY toDate(timestamp)`，TTL 边界（天）正好和分区边界对齐。
 - 开启后，TTL 过期时 ClickHouse **直接 drop 整个 part**，不重写——大幅降低后台合并压力。
 
+> ⚠️ **2026.30 起这条规则有两个例外**：`sandbox_logs` 与 `sandbox_egress` 的分区与 TTL 都键在 **`ingested_at`（服务端时钟）** 而不是 `timestamp` / `last_seen`（节点时钟）。原因是节点时钟偏斜会写出一个**永不过期的分区**。详见 §9.6。
+
 ### 9.5 v1 → v2 事件迁移
 
 `20251017213618_migrate_sandbox_events.sql` 把旧 `event_category='lifecycle' + event_label='create' + version='v1'` 的记录一次性 `ALTER TABLE ... UPDATE` 成 `version='v2' + type='sandbox.lifecycle.created'`，配合 `20251017213615_sandbox_events.sql`（新增 `type`/`version` 列）和 `20251017213616_sandbox_events_id.sql`（新增 `id UUID DEFAULT generateUUIDv4()`）完成 v1→v2 升级。
+
+### 9.6 2026.30 新增的两张表
+
+#### 9.6.1 `sandbox_logs`（迁移 `20260702181515_add_sandbox_logs.sql`）
+
+```sql
+CREATE TABLE sandbox_logs_local (
+    timestamp DateTime64(9) CODEC (Delta, ZSTD(1)),
+    ingested_at DateTime64(9) DEFAULT now64(9) CODEC (Delta, ZSTD(1)),
+    team_id UUID CODEC (ZSTD(1)),
+    sandbox_id String CODEC (ZSTD(1)),
+    template_id String CODEC (ZSTD(1)),
+    build_id String CODEC (ZSTD(1)),
+    service LowCardinality(String) CODEC (ZSTD(1)),
+    category LowCardinality(String) CODEC (ZSTD(1)),
+    level LowCardinality(String) CODEC (ZSTD(1)),
+    message String CODEC (ZSTD(1)),
+    raw String CODEC (ZSTD(1)),
+    fields String CODEC (ZSTD(1)),
+    INDEX idx_build_id build_id TYPE bloom_filter GRANULARITY 4,
+    INDEX idx_message_ngram message TYPE ngrambf_v1(4, 8192, 3, 0) GRANULARITY 4
+) ENGINE = MergeTree
+    PARTITION BY toDate(ingested_at)
+    ORDER BY (team_id, sandbox_id, timestamp)
+    TTL toDateTime(ingested_at) + INTERVAL 7 DAY
+    SETTINGS ttl_only_drop_parts = 1;
+
+CREATE TABLE sandbox_logs AS sandbox_logs_local
+    ENGINE = Distributed('cluster', currentDatabase(), 'sandbox_logs_local', xxHash64(team_id));
+```
+
+要点：
+
+- 排序键 `(team_id, sandbox_id, timestamp)`——**查询入口按 team + sandbox**，与 `sandbox_events_local` 的 `(sandbox_id, timestamp)` 不同。
+- **按 `team_id` 分片**，不是 sandbox。理由是日志的读取入口总是「某个 team 的某个 sandbox」。
+- 分区/TTL 用 `ingested_at`（服务端）而非 `timestamp`（节点）：和 §9.6.2 同一个理由——**节点时钟偏斜会写进一个永不过期的分区**。
+- `idx_message_ngram` 用 `ngrambf_v1`，专门服务 §7.3 的 `position(message, ?) > 0` 子串谓词；迁移注释明确说 `tokenbf_v1` 只支持整 token 的 `hasToken`，对子串谓词无效。
+
+#### 9.6.2 `sandbox_egress`（迁移 `20260818120000_add_sandbox_egress.sql`）
+
+记录 sandbox 出站连接的**目的地址与防火墙裁决**。完整列清单：
+
+| 列 | 类型 | 说明 |
+| --- | --- | --- |
+| `first_seen` | `DateTime64(9)` | 首次看到（**节点时钟**） |
+| `last_seen` | `DateTime64(9)` | 最后一次看到（**节点时钟**） |
+| `ingested_at` | `DateTime64(9) DEFAULT now64(9)` | **服务端**赋值 |
+| `team_id` | `UUID` | |
+| `sandbox_id` | `String` | |
+| `sandbox_execution_id` | `String` | |
+| `sandbox_template_id` | `String` | |
+| `sandbox_build_id` | `String` | |
+| `sandbox_type` | `LowCardinality(String)` | |
+| `protocol` | `LowCardinality(String)` | |
+| `destination_ip` | **`String`** | 见下 ⚠️ |
+| `destination_port` | `UInt16` | |
+| `server_name` | `Nullable(String)` | |
+| `decision` | `LowCardinality(String)` | |
+| `match_type` | `LowCardinality(String)` | |
+| `connections` | `UInt64` | 预聚合的连接数 |
+
+```sql
+ENGINE = MergeTree
+PARTITION BY toDate(ingested_at)
+ORDER BY (team_id, sandbox_id, destination_ip, destination_port, last_seen)
+TTL toDateTime(ingested_at) + INTERVAL 7 DAY
+SETTINGS ttl_only_drop_parts = 1
+
+CREATE TABLE sandbox_egress AS sandbox_egress_local
+    ENGINE = Distributed('cluster', currentDatabase(), 'sandbox_egress_local', xxHash64(sandbox_id));
+```
+
+三个反直觉点（都来自迁移里的原文注释）：
+
+**(a) ⚠️ `destination_ip` 故意用 `String` 而不是 `IPv6`**
+
+> the IPv6 type stores a v4 address as `::ffff:a.b.c.d`, for which `isIPAddressInRange` answers false against a v4 CIDR. On a String it answers directly.
+
+ClickHouse 的 `IPv6` 类型把 v4 地址存成 v4-mapped 形式，拿它和 v4 CIDR 做 `isIPAddressInRange` 会**返回 false**，策略匹配静默失效。用 `String` 存原始文本可以直接匹配。**不要把它「修正」成 IPv6。**
+
+**(b) 分区/TTL 用 `ingested_at`**
+
+> a node with a skewed clock would otherwise write a partition that never expires
+
+**(c) 一行是「裁决」，不是「完成的连接」**
+
+行在防火墙**放行/拒绝**时写入，**早于 upstream dial**（dial 仍可能失败）；行是**按 flush 间隔预聚合**的，全量历史必须 `sum(connections)`，不是 `count(*)`。
+
+索引：`idx_destination_ip`、`idx_server_name`、`idx_sandbox_id`，均 `bloom_filter GRANULARITY 4`。注释解释了为什么需要它们：排序键以 team 打头，所以「从目的地出发」或「不知道 team、只知道 sandbox」的查询都会全扫。
+
+**按 sandbox 分片而不是按 team**，和邻居表相反：
+
+> the workload that produces the most rows here is one team's sandboxes contacting many endpoints, and sharding on the team would land all of it on a single shard.
+
+> ⚠️ **本仓库只有这张表的迁移，没有写入端**。`git grep sandbox_egress` 在仓库内只命中迁移文件；写入实现应在闭源/企业版组件里。仓库内唯一相关的改动是 `packages/orchestrator/pkg/factories/run.go` 把 ClickHouse endpoint 传给 `EgressFactory`（`Deps.ClickhouseEndpoints`，`run.go:89`，填充于 `:736`，传入于 `:739`）。
 
 ## 10. 迁移与运维
 
@@ -540,11 +717,11 @@ ALTER TABLE sandbox_metrics_gauge_local MODIFY SETTING ttl_only_drop_parts = 1;
 - `make run`：用 `local/config.tpl.xml` / `users.tpl.xml` 起一个 `clickhouse/clickhouse-server:25.4.5.24` 容器。
 - `make connect-clickhouse`：`gcloud compute ssh` 端口转发到 9000。
 
-## 11. 部署（IaC）
+## 11. 部署（IaC）—— 2026.30 起已从仓库退役
 
-知识图谱显示该包在多个 IaC 模块里出现，组合起来是完整 ClickHouse 部署栈：
+> ⛔ **本节描述的全部路径在 2026.30 已不存在**。提交 `8a1c48884` 把 `iac/`（172 个文件）整体删除,ClickHouse 的 Terraform/Nomad 部署栈（`iac/provider-gcp/`、`iac/provider-aws/`、`iac/modules/job-clickhouse/`）随之离开本仓库。下面保留 2026.29 的路径清单作为历史档案,**链接已不可点**;新的部署路径尚未落地。
 
-### 11.1 GCP
+### 11.1 GCP（2026.29 历史档案,⛔ 2026.30 已删除）
 
 - `iac/provider-gcp/nomad-cluster/nodepool-clickhouse.tf`：`google_compute_instance_group_manager.clickhouse_pool` + `google_compute_instance_template.clickhouse` + `google_compute_stateful_disk`（持久化 ClickHouse 数据）+ `google_compute_health_check` + `per_instance_config`。
 - `iac/provider-gcp/nomad-cluster/scripts/start-clickhouse.sh`：节点上启动脚本。
@@ -553,11 +730,22 @@ ALTER TABLE sandbox_metrics_gauge_local MODIFY SETTING ttl_only_drop_parts = 1;
 - `iac/modules/job-clickhouse/`：4 个 Nomad job —— `clickhouse.hcl`（主服务）、`clickhouse-migrator.hcl`（执行 SQL 迁移）、`clickhouse-backup.hcl` / `clickhouse-backup-restore.hcl`。
 - `iac/modules/job-clickhouse/configs/`：`config.xml` / `users.xml` / `otel-agent.yaml`（otel collector 侧）。
 
-### 11.2 AWS
+### 11.2 AWS（2026.29 历史档案,⛔ 2026.30 已删除）
 
 - `iac/provider-aws/modules/nodepool-clickhouse/`：EC2 + EBS + IAM（`clickhouse_node_policy`）+ launch template。
 - `iac/provider-aws/init/`：`aws_s3_bucket.clickhouse_backups` + `aws_ecr_repository.clickhouse_migrator` + `aws_secretsmanager_secret.clickhouse`（含随机密码 + 初始版本 SecretVersion）。
 - `iac/provider-aws/nomad-cluster/main.tf`：`module.clickhouse` + `data.aws_s3_bucket.clickhouse_bucket`。
+
+### 11.3 2026.30 之后还剩什么
+
+| 能力 | 2026.29 位置 | 2026.30 |
+| --- | --- | --- |
+| 建表迁移 | `packages/clickhouse/migrations/*.sql` + `Dockerfile` | ✅ 仍在仓库 |
+| 迁移执行 | `make migrate` / `make migrate-local`（§10.2） | ✅ 仍在仓库 |
+| 本地单机 ClickHouse | `local/config.tpl.xml` / `users.tpl.xml` + `make run` | ✅ 仍在仓库 |
+| 集群/节点/备份 Terraform | `iac/provider-{gcp,aws}/...` | ⛔ 已删除 |
+| Nomad job（含 migrator、backup） | `iac/modules/job-clickhouse/` | ⛔ 已删除 |
+| 根目录 `self-host.md` 自托管指南 | `self-host.md` | ⛔ 已删除 |
 
 ## 12. 写入路径全景图
 
@@ -614,6 +802,9 @@ batcher.Push(SandboxEvent) ──┐                              │
 | 沙箱查询 | `packages/clickhouse/pkg/sandbox.go` | `QueryLatestMetrics` / `QuerySandboxTimeRange` / `QuerySandboxMetrics` |
 | 团队查询 | `packages/clickhouse/pkg/team.go` | `QueryTeamMetrics` / `QueryMaxStartRateTeamMetrics` / `QueryMaxConcurrentTeamMetrics` |
 | 工具 | `packages/clickhouse/pkg/utils/*.go` | `ValidateRange` / `CalculateStep` / `GetSandboxStartEndTime` |
+| 日志查询（2026.30 新增） | `packages/clickhouse/pkg/sandboxlogs/sandboxlogs.go` | `Reader` / `QuerySandboxLogs` / `QueryBuildLogs`（见 §7.3） |
 | Mock | `packages/clickhouse/pkg/mock.go` | `NoopClient` |
-| 迁移 | `packages/clickhouse/migrations/*.sql` | 25 张 goose 迁移 |
-| 部署 | `iac/modules/job-clickhouse/`, `iac/provider-{gcp,aws}/...` | Nomad jobs + Terraform |
+| 迁移 | `packages/clickhouse/migrations/*.sql` | 28 张 goose 迁移（2026.30；2026.29 为 26 张） |
+| 新增迁移（2026.30） | `packages/clickhouse/migrations/20260702181515_add_sandbox_logs.sql` | `sandbox_logs_local` + `sandbox_logs`（见 §9.6.1） |
+| 新增迁移（2026.30） | `packages/clickhouse/migrations/20260818120000_add_sandbox_egress.sql` | `sandbox_egress_local` + `sandbox_egress`（见 §9.6.2,⚠️ 无写入端） |
+| 部署 | `iac/modules/job-clickhouse/`, `iac/provider-{gcp,aws}/...` | ⛔ 2026.30 已随 `iac/` 整体删除,见 §11 |

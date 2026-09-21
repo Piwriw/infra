@@ -1,6 +1,12 @@
 # E2B Edge API 模块详解
 
-> 范围:本文描述 `spec/openapi-edge.yml` 定义的 9 个 HTTP 端点,以及当前仓库中 `packages/api` 如何使用这些端点访问远端 cluster。Edge 服务端实现不在本仓库;因此服务端内部存储、部署和查询实现不做推测,只描述 OpenAPI 契约和本仓库中可验证的客户端行为。
+> 范围:本文描述 `spec/openapi-edge.yml` 定义的 **14** 个 HTTP 端点(2026.30；2026.29 为 9 个),以及当前仓库中 `packages/api` 如何使用这些端点访问远端 cluster。Edge 服务端实现不在本仓库;因此服务端内部存储、部署和查询实现不做推测,只描述 OpenAPI 契约和本仓库中可验证的客户端行为。
+>
+> 行号均按 tag `2026.30` 核对。已同步至 2026.30(2026-09-10)。
+
+> ⚠️ **2026.30 变动速览**:新增 **5 个 rigs 端点**(§5.1、§十七),用于管理远端 cluster 背后的云厂商 scaling group。已有 9 个端点(discovery / sandbox logs / metrics / build logs / health)的**契约与行为未变**。
+>
+> ⛔ 2026.30 的部署侧退役(提交 `8a1c48884` 删除 `iac/` 与根 `self-host.md`;`packages/docker-reverse-proxy/` 则是更早的 `d153bbe9d`,2026-08-06)与本文无关——本文只描述 OpenAPI 契约与 `packages/api` 侧的消费代码,不引用任何 `iac/**` 路径。
 
 ## 目录
 
@@ -20,6 +26,7 @@
 - [十四、配置与同步周期](#十四配置与同步周期)
 - [十五、常见问题与排查](#十五常见问题与排查)
 - [十六、关键文件索引](#十六关键文件索引)
+- [十七、Rigs(2026.30 新增)](#十七rigs202630-新增)
 - [附录 A:端点速查](#附录-a端点速查)
 - [附录 B:时间单位与限制](#附录-b时间单位与限制)
 
@@ -32,8 +39,11 @@ Edge API 是控制面 API 访问**远端 cluster**时使用的 HTTP 契约。它
 1. **服务发现**:返回远端 cluster 中的 orchestrator / template-builder 节点。
 2. **可观测数据**:读取 sandbox 日志、单 sandbox 时间序列指标、批量最新指标。
 3. **持久化构建日志**:读取 template build 的结构化日志。
+4. **Rig 管理**(2026.30 新增):查询/调整远端 cluster 背后的云厂商 scaling group,以及列举/终止其实例、读取扩容错误(§十七)。
 
 此外还有健康检查和 Edge 节点自身信息端点。
+
+> ⚠️ 第 4 类与前 3 类**性质不同**:前 3 类是只读的可观测数据面,rigs 是**写操作**(PUT capacity / DELETE instance)且属于平台运维面(公共 API 侧挂在 `admin` tag 下)。
 
 ### 1.1 与其他文档的边界
 
@@ -124,10 +134,18 @@ clusters.Pool ── 根据 team/template/sandbox 的 clusterID 选 Cluster
             └─ 生命周期/节点 RPC: endpoint 代理的 gRPC
 ```
 
-`ClusterResource` 接口把 local 和 remote 的差异收敛为四个方法:
+`ClusterResource` 接口把 local 和 remote 的差异收敛为方法集(`packages/api/internal/clusters/resources.go:21-34`):
 
 ```go
 type ClusterResource interface {
+    // A rig is a cloud scaling group behind an edge deployment, so only a
+    // remote cluster can serve these; the local one answers 501.
+    GetRigs(ctx context.Context) ([]api.Rig, *api.APIError)                                  // 2026.30 新增
+    SetRigCapacity(ctx context.Context, rigID string, desired int32) *api.APIError            // 2026.30 新增
+    GetRigInstances(ctx context.Context, rigID string) ([]api.RigInstance, *api.APIError)     // 2026.30 新增
+    GetRigErrors(ctx context.Context, rigID string, limit *int32) ([]api.RigError, *api.APIError) // 2026.30 新增
+    TerminateRigInstance(ctx context.Context, instanceID string, decrementDesired bool) *api.APIError // 2026.30 新增
+
     GetSandboxMetrics(...)
     GetSandboxesMetrics(...)
     GetSandboxLogs(...)
@@ -136,6 +154,8 @@ type ClusterResource interface {
 ```
 
 远端实现是 `ClusterResourceProviderImpl`;内部持有 cluster ID、节点 map 和 Edge `ClientWithResponses`。
+
+> ⚠️ **2026.30 变动**:接口从 4 个方法扩到 9 个(前 5 个是 rigs)。**local 实现**的 5 个 rig 方法全部直接返回 `rigsUnsupported()`(`resources_local.go:326-343`),即 501 `Rig management is not available for this cluster`。**remote 实现**在 `packages/api/internal/clusters/resources_remote_rigs.go`。
 
 ### 3.2 Remote cluster 初始化
 
@@ -198,7 +218,7 @@ HTTP client 的 base URL 和 gRPC target 来自同一个 `endpoint`,但协议和
 
 ## 五、端点全景
 
-OpenAPI 共定义 9 个 endpoint:
+OpenAPI 共定义 **14** 个 endpoint(2026.30):
 
 | 分组 | Method | Path | 是否声明 `ApiKeyAuth` | 本仓库主要调用方 |
 |---|---|---|---|---|
@@ -211,8 +231,33 @@ OpenAPI 共定义 9 个 endpoint:
 | sandboxes | GET | `/v1/sandboxes/{sandboxID}/metrics` | 是 | 单 sandbox metrics |
 | sandboxes | GET | `/v1/sandboxes/metrics` | 是 | 批量 sandbox metrics |
 | templates | GET | `/v1/templates/builds/{buildID}/logs` | 是 | template build logs |
+| **rigs** | GET | `/v1/rigs` | 是 | `GetClustersClusterIDRigs`(2026.30 新增) |
+| **rigs** | PUT | `/v1/rigs/{rigID}/capacity` | 是 | `PutClustersClusterIDRigsRigIDCapacity`(2026.30 新增) |
+| **rigs** | DELETE | `/v1/rigs/instances/{instanceID}` | 是 | `DeleteClustersClusterIDRigsInstancesInstanceID`(2026.30 新增) |
+| **rigs** | GET | `/v1/rigs/{rigID}/instances` | 是 | `GetClustersClusterIDRigsRigIDInstances`(2026.30 新增) |
+| **rigs** | GET | `/v1/rigs/{rigID}/errors` | 是 | `GetClustersClusterIDRigsRigIDErrors`(2026.30 新增) |
 
-注意:`templates` 被 endpoint 使用,但顶层 `tags` 列表只声明了 `service-discovery` 和 `sandboxes`;这不影响代码生成和运行时请求。
+注意:`templates` 被 endpoint 使用,但顶层 `tags` 列表**仍未声明**它。2026.30 的顶层 `tags` 是 `service-discovery` / `sandboxes` / `rigs`(`spec/openapi-edge.yml:453-456`)——即 **`rigs` 是新声明进来的**,而 `templates` 依旧缺席。这不影响代码生成和运行时请求。
+
+### 5.1 Rigs 端点(2026.30 新增)
+
+新增的 5 个端点都带 `tags: [rigs]` 与 `ApiKeyAuth`,操作对象是**远端 cluster 背后的云厂商 scaling group**(AWS ASG / GCP MIG)。
+
+| 端点 | operationId | 成功码 | 失败码 |
+|---|---|---|---|
+| `GET /v1/rigs` | `v1Rigs` | 200 | 401, 500 |
+| `PUT /v1/rigs/{rigID}/capacity` | `v1RigsRigIDCapacity` | **202** | 400, 401, 404, 409, 500, **501** |
+| `DELETE /v1/rigs/instances/{instanceID}` | `v1RigsInstancesInstanceID` | **202** | 400, 401, 404, 409, 500, **501** |
+| `GET /v1/rigs/{rigID}/instances` | `v1RigsRigIDInstances` | 200 | 400, 401, 404, 500, **501** |
+| `GET /v1/rigs/{rigID}/errors` | `v1RigsRigIDErrors` | 200 | 400, 401, 404, 500, **501** |
+
+> ⚠️ **四个反直觉点**:
+> 1. **`GET /v1/rigs` 没有 501**。源码注释解释了这个不对称(`resources_remote_rigs.go:18-19`):`Upstream declares only 401/500 here: no rig management means 200 with an empty list, not 501.` —— **"没配 rig" 是空列表,不是"不支持"**。
+> 2. **两个写操作返回 202 而不是 200**。`SetRigCapacity` 与 `TerminateRigInstance` 都是"已接受",不是"已完成"。
+> 3. **`501` 表示"这个 cluster 没有 rig 能力"**,是给"遍历所有 cluster"的调用方用来跳过该 cluster 的(`resources.go:42-43` 的 `rigsUnsupported()` 注释原文:`a 501 rather than a 404: the cluster exists, the capability does not.`)。**local cluster 的 5 个 rig 方法全部返回 501**。
+> 4. **`DELETE /v1/rigs/instances/{instanceID}` 的 `decrementDesired` 是必填 query 参数**(不是可选):
+>    - `true` → desired capacity 减 1,**rig 缩容**;
+>    - `false` → scaling group 启动一个**替换实例**。
 
 ---
 
@@ -446,6 +491,8 @@ JSON200 != nil
 
 只有 status 200 但 body 未成功解码,仍按失败处理。
 
+> ⚠️ 上表针对**读取类**端点。2026.30 的 rigs **写**端点期望的是 `202 Accepted`(不是 200):`SetRigCapacity` 在 `resources_remote_rigs.go:46` 判断 `res.StatusCode() != http.StatusAccepted`,`TerminateRigInstance` 同理(`:107`)。
+
 ### 11.2 `handleEdgeErrorResponse`
 
 | Edge 响应 | 公共 API 行为 |
@@ -457,6 +504,8 @@ JSON200 != nil
 | HTTP transport 错误 | 对外通用 500 |
 
 只有 400 被视为可安全透传的调用方错误。鉴权 secret、远端故障和未知响应不会直接泄露 Edge 细节给终端用户。
+
+> ⚠️ **2026.30 例外**:`handleEdgeErrorResponse` 只服务 metrics / logs / build logs 等**既有**资源读取端点。**rigs 的 5 个方法不走这里**,而走新的 `handleEdgeRigErrorResponse`——它会把 400/404/409/501 **原样转发**(原因见 §17.3)。因此"只有 400 透传"这条规则**不再适用于全部端点**。
 
 ### 11.3 字段转换
 
@@ -609,32 +658,131 @@ X-E2B-Edge-Feature-Sandbox-Logs-Level-Text-Filtering-Enabled
 
 | 文件 | 职责 |
 |---|---|
-| [`spec/openapi-edge.yml`](../spec/openapi-edge.yml) | 9 个端点与模型的契约源 |
+| [`spec/openapi-edge.yml`](../spec/openapi-edge.yml) | **14** 个端点与模型的契约源(2026.30；2026.29 为 9 个) |
 | [`packages/shared/pkg/http/edge/cfg.yaml`](../packages/shared/pkg/http/edge/cfg.yaml) | oapi-codegen client/models 配置 |
 | [`packages/shared/pkg/http/edge/generated.go`](../packages/shared/pkg/http/edge/generated.go) | 生成的强类型客户端 |
 | [`packages/shared/pkg/http/edge/incompatibility_log.go`](../packages/shared/pkg/http/edge/incompatibility_log.go) | feature header 缺失告警 |
 | [`packages/shared/pkg/consts/edge.go`](../packages/shared/pkg/consts/edge.go) | HTTP/gRPC 鉴权头和 feature header |
 | [`packages/api/internal/clusters/cluster.go`](../packages/api/internal/clusters/cluster.go) | Remote cluster/client 初始化 |
 | [`packages/api/internal/clusters/discovery/remote.go`](../packages/api/internal/clusters/discovery/remote.go) | Edge service discovery 消费 |
-| [`packages/api/internal/clusters/resources.go`](../packages/api/internal/clusters/resources.go) | ClusterResource 接口、日志双源逻辑 |
+| [`packages/api/internal/clusters/resources.go`](../packages/api/internal/clusters/resources.go) | ClusterResource 接口(`:21-34`)、日志双源逻辑、`rigsUnsupported`(`:44`) |
 | [`packages/api/internal/clusters/resources_remote.go`](../packages/api/internal/clusters/resources_remote.go) | Edge metrics/logs/build logs 转换 |
+| [`packages/api/internal/clusters/resources_remote_rigs.go`](../packages/api/internal/clusters/resources_remote_rigs.go)(2026.30 新增) | 5 个 rigs 方法的远端实现、`handleEdgeRigErrorResponse` |
+| [`packages/api/internal/handlers/admin_rigs.go`](../packages/api/internal/handlers/admin_rigs.go)(2026.30 新增) | 5 个 admin handler + `clusterResources` 404 包装 |
 | [`packages/api/internal/clusters/clusters_sync.go`](../packages/api/internal/clusters/clusters_sync.go) | Cluster pool 周期同步 |
 | [`packages/api/internal/clusters/instance_client.go`](../packages/api/internal/clusters/instance_client.go) | 远端 gRPC metadata 与 TLS |
+
+---
+
+## 十七、Rigs(2026.30 新增)
+
+### 17.1 什么是 rig
+
+OpenAPI 对 `Rig` 的描述:`An orchestrator node pool backed by one cloud scaling group`。也就是**一个 rig = 一个云厂商 scaling group**(AWS ASG 或 GCP MIG),背后是一池 orchestrator 节点。
+
+模型定义在 `spec/openapi-edge.yml:322-451`:
+
+| Schema | 行 | 字段 |
+|---|---|---|
+| `Rig` | `:322-360` | `id`、`provider`(`"aws"` / `"gcp"`)、`resourceId`、`capacityDesired`、`capacityMin`、`capacityMax`、`capacityCurrent` |
+| `RigsResponse` | `:362-373` | `items: Rig[]`(包一层对象,便于将来加字段) |
+| `RigCapacityRequest` | `:375-385` | `desired`(int32,`minimum: 0`) |
+| `RigError` | `:387-414` | `timestamp`、`code`、`message`、`instance`(nullable)、`action`(nullable) |
+| `RigInstance` | `:416-438` | `id`、`createdAt`(nullable)、`transitioning`、`terminating` |
+| `RigInstancesResponse` | `:440-451` | `items: RigInstance[]` |
+
+> ⚠️ **包装不对称**:`RigsResponse` 和 `RigInstancesResponse` 都把数组包在 `{ items: [...] }` 里(注释说是为了将来能加字段),但 **`GET /v1/rigs/{rigID}/errors` 的 200 直接返回裸数组**(`spec/openapi-edge.yml:948`),没有 `items` 包装。客户端侧对应地写 `raw := *res.JSON200`(`resources_remote_rigs.go:86`),而不是 `res.JSON200.Items`。
+
+> ⚠️ **`Rig` 的必填字段只有 5 个**:`id` / `provider` / `resourceId` / `capacityDesired` / `capacityCurrent`。**`capacityMin` 与 `capacityMax` 是可选的**——OpenAPI 描述原文:*Omitted when nothing enforces bounds (GCP MIG without an active autoscaler)*。所以客户端**必须处理这两个字段缺席**的情况,不能当成 0。
+>
+> ⚠️ **`RigInstance.createdAt` 也是 nullable**:*Null while the instance is transitioning.* —— 正在创建的实例还没有创建时间。
+>
+> ⓘ `RigInstance.id` 同时是 **provider instance ID 和 orchestrator 上报的 node ID**(*also the node ID the orchestrator reports*),所以它可以和节点表关联。
+
+### 17.2 调用链
+
+```text
+公共 API 路由 (spec/openapi.yml:4538/:4570/:4606/:4648/:4681)
+  GET    /clusters/{clusterID}/rigs
+  PUT    /clusters/{clusterID}/rigs/{rigID}/capacity
+  GET    /clusters/{clusterID}/rigs/{rigID}/instances
+  GET    /clusters/{clusterID}/rigs/{rigID}/errors
+  DELETE /clusters/{clusterID}/rigs/instances/{instanceID}
+        │
+        ▼
+handlers/admin_rigs.go
+  GetClustersClusterIDRigs            :14
+  PutClustersClusterIDRigsRigIDCapacity :35
+  GetClustersClusterIDRigsRigIDInstances :63
+  GetClustersClusterIDRigsRigIDErrors :84
+  DeleteClustersClusterIDRigsInstancesInstanceID :105
+  clusterResources (404 if unknown)   :126
+        │
+        ▼
+clusters.ClusterResource (interface, resources.go:21-34)
+        │
+        ├─ LocalClusterResourceProvider → 全部 501
+        └─ ClusterResourceProviderImpl  → resources_remote_rigs.go
+                 GetRigs                    :12
+                 SetRigCapacity             :40
+                 GetRigInstances            :53
+                 GetRigErrors               :76
+                 TerminateRigInstance       :101
+                 edgeRequestError           :114
+                 handleEdgeRigErrorResponse :125
+```
+
+### 17.3 错误映射:为什么 rigs 不用 `handleEdgeErrorResponse`
+
+这是本节最值得记的一点。既有的 `handleEdgeErrorResponse`(`resources_remote.go:223`)会把下游错误**压成 500**;rigs 用的是**新的** `handleEdgeRigErrorResponse`(`resources_remote_rigs.go:125-165`),它**原样转发状态码**。
+
+源码注释(`:122-124`)解释了原因:
+
+```go
+// handleEdgeRigErrorResponse forwards edge's status instead of collapsing it
+// into a 500 like handleEdgeErrorResponse does: 404 and 501 tell a caller
+// iterating clusters to skip this one, and 409 to retry.
+```
+
+映射表:
+
+| Edge 状态码 | 转发为 | 用途 |
+|---|---|---|
+| 400 | 400 | 参数错 |
+| 404 | 404 | 调用方应**跳过**该 cluster |
+| 409 | 409 | 调用方应**重试** |
+| 501 | 501 | 调用方应**跳过**该 cluster(无 rig 能力) |
+| **401** | **500**(不转发) | 见下 ⚠️ |
+| 其他 | 500 | |
+
+> ⚠️ **401 永远不被转发成 401**。注释原文(`:150-151`):`401 means this API is misconfigured against the cluster, not that the caller is unauthorized. Never forward it as a 401.` —— 因为对**最终用户**来说,他的鉴权是好的,是**平台自己**配错了 cluster token。把它当 401 抛出去会误导用户去改自己的凭据。所以统一变 500。
+>
+> ⓘ 消息选择规则:优先用 edge 返回的 `body.Message`;若 body 为空,则用 handler 传入的 `clientMsg`(如 `"Failed to fetch rigs"`)。
+
+### 17.4 与 team-metrics / admin 文档的关系
+
+- `GET /admin/sandboxes/running-counts`(2026.30 新增,见 `team-metrics-module.md` §13.1)与 rigs 是**两个独立的新端点**,不要混。
+- rigs 端点是**平台运维面**(`admin` tag),不是面向用户的 sandbox API。
 
 ---
 
 ## 附录 A:端点速查
 
 ```text
-GET /health
-GET /health/machine
-GET /v1/info
-GET /v1/service-discovery/nodes/orchestrators  [deprecated]
-GET /v1/service-discovery
-GET /v1/sandboxes/{sandboxID}/logs
-GET /v1/sandboxes/{sandboxID}/metrics
-GET /v1/sandboxes/metrics
-GET /v1/templates/builds/{buildID}/logs
+GET    /health
+GET    /health/machine
+GET    /v1/info
+GET    /v1/service-discovery/nodes/orchestrators  [deprecated]
+GET    /v1/service-discovery
+GET    /v1/sandboxes/{sandboxID}/logs
+GET    /v1/sandboxes/{sandboxID}/metrics
+GET    /v1/sandboxes/metrics
+GET    /v1/templates/builds/{buildID}/logs
+GET    /v1/rigs                                    (2026.30)
+PUT    /v1/rigs/{rigID}/capacity                   (2026.30, 202)
+DELETE /v1/rigs/instances/{instanceID}             (2026.30, 202, query: decrementDesired)
+GET    /v1/rigs/{rigID}/instances                  (2026.30)
+GET    /v1/rigs/{rigID}/errors                     (2026.30, query: limit 1..50 default 20)
 ```
 
 ## 附录 B:时间单位与限制
@@ -645,3 +793,5 @@ GET /v1/templates/builds/{buildID}/logs
 | Sandbox metrics | Unix 秒 | 时间范围可选 |
 | Batch sandbox metrics | 无时间范围 | 描述约定最多 100 IDs |
 | Build logs | Unix 毫秒 | limit 默认 100,最大 100 |
+| Rig errors(2026.30) | 无 | `limit` 1..50,默认 20 |
+| Rig capacity(2026.30) | 无 | `desired` ≥ 0,绝对目标值(不是增量) |

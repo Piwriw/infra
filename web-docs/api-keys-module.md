@@ -8,8 +8,16 @@
 > - `packages/api/internal/handlers/apikey.go` — 4 个 handler
 > - `packages/api/internal/team/apikeys.go` — 共享的 `CreateAPIKey` / `DeleteAPIKey`
 > - `packages/shared/pkg/keys/` — Key 生成、hash、mask 工具
-> - `packages/db/pkg/auth/sql_queries/api_keys/` — 5 个 sqlc 查询
+> - `packages/db/pkg/auth/sql_queries/api_keys/` — 6 个 sqlc 查询
 > - `spec/openapi.yml` 中 `tags: [api-keys]` 的端点
+>
+> 本文行号均按 tag `2026.30` 核对;凡与 2026.29 不同处,写作「行 N(2026.30;2026.29 为 M)」。
+
+> ⛔ **2026.30 起,access token(`sk_e2b_`)已整体删除**。本文 §2.5、§9、附录 C 中出现的 access token 相关内容是**历史对照**,不再是可用的能力:`AccessTokenAuth` scheme、`POST /access-tokens`、`ValidateAccessToken`、`keys.AccessTokenPrefix`、`public.access_tokens` 表与 `public.generate_access_token()` 函数、以及 `disable-e2b-access-token-provisioning` / `disable-e2b-access-token-auth` 两个 flag 全部移除。详见 [2.5](#25-与-access-token-的对照202630-起为历史对照)。
+>
+> ⚠️ **2026.30 起,`authDB.Read` / `authDB.Write` 读写分离已取消**(读副本整体移除),所有调用改为直接挂在 `authDB` 上,例如 `a.authDB.GetTeamAPIKeysWithCreator(...)`。本文中所有 `authDB.Read.X` / `authDB.Write.X` 写法在 2026.30 均为 `authDB.X`。
+>
+> ⚠️ **2026.30 起,删除 API Key 会主动清缓存**。`team.DeleteAPIKey` 新增 `authService` 参数并在删除后调用 `InvalidateAPIKeyCache`,所以「删除后要等 5 分钟 TTL」这个旧结论**已不成立**——见 [8.3](#83-删除后缓存如何失效202630-重写)。
 
 ## 目录
 
@@ -18,12 +26,13 @@
   - [1.2 关键定位:与 admin 路径的对照](#12-关键定位与-admin-路径的对照)
   - [1.3 关键心智模型](#13-关键心智模型)
   - [1.4 整体架构](#14-整体架构)
+  - [1.5 2026.30 变动总览](#15-202630-变动总览)
 - [二、核心概念](#二核心概念)
   - [2.1 API Key 的三层表示](#21-api-key-的三层表示)
   - [2.2 Hash 策略:SHA256,不是 bcrypt](#22-hash-策略sha256不是-bcrypt)
   - [2.3 Mask 策略:固定窗口](#23-mask-策略固定窗口)
   - [2.4 Team 绑定 + 可选 CreatedBy](#24-team-绑定--可选-createdby)
-  - [2.5 与 access token 的对照](#25-与-access-token-的对照)
+  - [2.5 与 access token 的对照(2026.30 起为历史对照)](#25-与-access-token-的对照202630-起为历史对照)
 - [三、整体架构](#三整体架构)
   - [3.1 装配序列](#31-装配序列)
   - [3.2 依赖图](#32-依赖图)
@@ -47,7 +56,7 @@
 - [八、与 auth 验证链路的闭环](#八与-auth-验证链路的闭环)
   - [8.1 创建后,API Key 怎么被验证](#81-创建后api-key-怎么被验证)
   - [8.2 last_used 异步更新](#82-last_used-异步更新)
-  - [8.3 删除后,缓存如何失效](#83-删除后缓存如何失效)
+  - [8.3 删除后,缓存如何失效(2026.30 重写)](#83-删除后缓存如何失效202630-重写)
 - [九、配置与 Feature Flag](#九配置与-feature-flag)
 - [十、关键代码文件索引](#十关键代码文件索引)
 - [十一、设计要点与权衡](#十一设计要点与权衡)
@@ -79,12 +88,17 @@ E2B 有两条创建/删除 team API Key 的路径,**底层共用 `team.CreateAPI
 
 | 维度 | `/api-keys`(本文档) | `/admin/teams/{teamID}/api-keys`(admin 模块) |
 | --- | --- | --- |
-| 鉴权 | OIDC JWT(`AuthProviderBearerAuth + AuthProviderTeamAuth`) | `X-Admin-Token` |
+| 鉴权 | OIDC JWT(`AuthProviderBearerAuth + AuthProviderTeamAuth`),GET/PATCH/DELETE 另有 `AdminJWTAuth + AdminTeamAuth` 兜底 | `X-Admin-Token` |
 | 调用方 | 终端用户(经 dashboard/CLI) | 内部服务(dashboard-api、客服工具) |
 | team 上下文 | 从 ctx 拿(`MustGetTeamID`)— 由 OIDC 链路写入 | 从 path param 拿 |
 | `createdBy` | 当前 user ID(非 nil) | nil |
-| blocked team | 不能创建(handler 主动检查) | 不能创建(handler 主动检查) |
+| blocked team | **不能创建、不能改名**;GET / DELETE 放行(由中间件 allowlist 决定,handler 自己不检查) | 不能创建(handler 主动调 `CheckTeamBlocked` 检查) |
 | 底层调用 | `team.CreateAPIKey(ctx, authDB, teamID, &userID, name)` | `team.CreateAPIKey(ctx, authDB, teamID, nil, name)` |
+| 删除 | `team.DeleteAPIKey(ctx, authDB, authService, teamID, apiKeyID)` — 2026.30 起多一个 `authService` 参数 | 同上(2026.30 起 `admin_api_keys.go:92` 也传 `a.authService`) |
+
+> ⚠️ **blocked team 的行为容易记反**:它**不是**在 handler 里判断的。`/api-keys` 的创建/改名之所以被拦,是因为 `EnforceBlockedTeam` 中间件 + `blockedTeamAllowlist`(`packages/api/internal/middleware/blocked_team.go:15-47`)只放行了 `GET /api-keys` 和 `DELETE /api-keys/:apiKeyID`——`POST /api-keys` 与 `PATCH /api-keys/:apiKeyID` 不在 allowlist 里,所以 blocked team 用这两个端点会拿到 403。`PostApiKeys` 自身**没有任何 blocked 检查**(`packages/api/internal/handlers/apikey.go:138-179`)。
+>
+> 而 admin 路径的 `PostAdminTeamsTeamIDApiKeys` **确实**在 handler 里显式调用了 `sharedauth.CheckTeamBlocked(teamInfo)`(`packages/api/internal/handlers/admin_api_keys.go:53`),因为 admin 请求的 team 上下文是 path param 决定的,中间件拿不到。
 
 ### 1.3 关键心智模型
 
@@ -94,7 +108,7 @@ E2B 有两条创建/删除 team API Key 的路径,**底层共用 `team.CreateAPI
 2. **Mask 是固定窗口**:前 2 字符 + 后 4 字符,中间用 `*` 展示(UI 自行渲染)。
 3. **Team 绑定**。一把 Key 只属于一个 team,SQL 用 `WHERE id AND team_id` 双重过滤防越权。
 4. **创建后立即可用**。无需传播等待——验证路径走的是 hash 直接查 DB,且失败不缓存。
-5. **删除后异步失效**。team 缓存有 5 分钟左右的 TTL,短期内 Key 仍可能用(详见 [8.3](#83-删除后缓存如何失效))。
+5. **删除后立即失效**(2026.30 起)。删除时会同步清掉该 key 的认证缓存,下一次请求就 401(详见 [8.3](#83-删除后缓存如何失效202630-重写))。⚠️ 2026.29 的行为是「等 team 缓存 5 分钟 TTL 到期才失效」,已作废。
 
 ### 1.4 整体架构
 
@@ -117,10 +131,11 @@ E2B 有两条创建/删除 team API Key 的路径,**底层共用 `team.CreateAPI
         │  2. AuthProviderTeamAuth   → 查 team → 注入 ctx   │
         │                                                  │
         │  handlers/apikey.go:                              │
-        │   - GetApiKeys     → authDB.Read.GetTeamAPIKeysWithCreator │
+        │   - GetApiKeys     → authDB.GetTeamAPIKeysWithCreator │
         │   - PostApiKeys    → team.CreateAPIKey(teamID, &userID, name) │
-        │   - PatchApiKeys   → authDB.Write.UpdateTeamApiKey │
+        │   - PatchApiKeys   → authDB.UpdateTeamApiKey      │
         │   - DeleteApiKeys  → team.DeleteAPIKey(teamID, apiKeyID) │
+        │                      + authService.InvalidateAPIKeyCache │
         └────────────┬─────────────────────────────────────┘
                      │
                      ▼
@@ -129,6 +144,19 @@ E2B 有两条创建/删除 team API Key 的路径,**底层共用 `team.CreateAPI
               │  team_api_keys 表 │
               └──────────────────┘
 ```
+
+### 1.5 2026.30 变动总览
+
+| 类别 | 变动 | 位置 |
+| --- | --- | --- |
+| 读写分离 | ⛔ 读副本移除。`authDB.Read.X` / `authDB.Write.X` → `authDB.X` | `packages/db/pkg/auth/client.go` |
+| 缓存失效 | **删除 API Key 现在主动清缓存**(新增 `InvalidateAPIKeyCache` 调用) | `packages/api/internal/team/apikeys.go:52` |
+| SQL | `DeleteTeamAPIKey` 的 `RETURNING` 从 `id` 改成 `api_key_hash`(为了拿到 hash 去清缓存) | `packages/db/pkg/auth/sql_queries/api_keys/delete_team_api_key.sql:4` |
+| 函数签名 | `team.DeleteAPIKey` 新增 `authService sharedauth.Service` 参数 | `packages/api/internal/team/apikeys.go:52` |
+| 鉴权 | GET / PATCH / DELETE 的 `security:` 新增第三组 `AdminJWTAuth + AdminTeamAuth`(服务 JWT) | `spec/openapi.yml:4120-4121`、`:4170-4171`、`:4198-4199` |
+| access token | ⛔ 整体删除(scheme、端点、表、flag、`AccessTokenPrefix`) | 见 §2.5 |
+| 包结构 | `packages/auth/pkg/auth/*.go` 拆成公开重导出层 + `internal/**` 实现 | 见 §10.4 |
+| 不变 | `packages/api/internal/handlers/apikey.go` 的 4 个 handler 签名与行号、`team.CreateAPIKey` 签名、`keys` 包全部逻辑、`team_api_keys` 表结构、6 个 sqlc 查询文件(除 `delete_team_api_key.sql` 一行) | — |
 
 ---
 
@@ -192,7 +220,7 @@ API Key 是 20 字节随机(hex 编码后 40 字符),**熵足够高**(160 bit),�
 Mask 是 **前 2 字符 + 后 4 字符**,中间字符不暴露。具体规则在 `keys.MaskKey`:
 
 ```go
-// packages/shared/pkg/keys/key.go:33-64
+// packages/shared/pkg/keys/key.go:33-64(key.go 在 2026.30 零改动,行号与 2026.29 相同)
 const (
     identifierValueSuffixLength = 4
     identifierValuePrefixLength = 2
@@ -242,19 +270,37 @@ api_key_hash   text   UNIQUE,      -- 唯一索引
   - admin 路径(`/admin/teams/{id}/api-keys`):填 NULL(无具体创建者)
 - `api_key_hash` 是 UNIQUE 索引,允许 O(1) 验证。
 
-### 2.5 与 access token 的对照
+### 2.5 与 access token 的对照(2026.30 起为历史对照)
 
-| 维度 | API Key | Access Token |
+> ⛔ **2026.30 起 access token 已整体删除,下表右列只是历史对照,不再是可用的能力。** API Key 现在是唯一的长期凭证类型。
+
+| 维度 | API Key | Access Token(⛔ 2026.30 已删除) |
 | --- | --- | --- |
 | 前缀 | `e2b_` | `sk_e2b_` |
 | 绑定 | team | user |
-| 状态 | **active** | **deprecated**(flag 控制是否还能创建) |
+| 状态 | **active** | **2026.29 为 deprecated;2026.30 已删除** |
 | 用法 | `X-API-Key` 头 | `Authorization: Bearer` |
-| 创建端点 | `POST /api-keys` | `POST /access-tokens`(`deprecated: true`) |
-| 删除端点 | `DELETE /api-keys/{id}` | `DELETE /access-tokens/{id}` |
+| 创建端点 | `POST /api-keys` | `POST /access-tokens`(2026.30 返回 **410 Gone**) |
+| 删除端点 | `DELETE /api-keys/{id}` | `DELETE /access-tokens/{id}`(2026.30 返回 **410 Gone**) |
 | List / Update | 有 | 无(只有 create + delete) |
 
-详见独立的 access-tokens 模块文档。
+**2026.30 的删除清单**:
+
+| 被删对象 | 2026.29 位置 |
+| --- | --- |
+| `AccessTokenAuth` scheme | `spec/openapi.yml`(13 处引用) |
+| handler | `packages/api/internal/handlers/accesstoken.go` |
+| `APIStore.GetUserFromAccessToken` | `packages/api/internal/handlers/store.go` |
+| `ValidateAccessToken` | `packages/auth/pkg/auth/service.go:140`(接口成员 `:34`) |
+| `keys.AccessTokenPrefix`(`sk_e2b_`) | `packages/shared/pkg/keys/constants.go:5` |
+| `auth.PrefixAccessToken` | `packages/auth/pkg/auth/consts.go` |
+| 表 + 函数 | `public.access_tokens`、`public.generate_access_token()`(migration `packages/db/migrations/20260823120000_drop_access_tokens.sql`) |
+| sqlc 查询 | `packages/db/pkg/auth/sql_queries/access_token/`(3 个文件)+ 生成的 `queries/*_access_token.sql.go` |
+| Feature flag | `disable-e2b-access-token-provisioning`、`disable-e2b-access-token-auth`(`packages/shared/pkg/featureflags/flags.go:226`、`:234`) |
+
+⚠️ 老客户端打 `POST /access-tokens` / `DELETE /access-tokens/:accessTokenID` 不会拿到 404,而是 **410 Gone**,错误串是 `E2B_ACCESS_TOKEN is deprecated and no longer supported. Use an API key (E2B_API_KEY) instead. See https://e2b.dev/docs/migration/access-token-deprecation`。这两个 410 路由注册在 `packages/api/main.go:169-173`,位于 OpenAPI 校验中间件**之前**,所以不会走鉴权、也不会被 404 兜底吃掉。
+
+**对本文档的影响**:`team_api_keys` 表本身没有任何变化;api-keys 模块的 4 个端点行为也不受 access token 删除影响。唯一实质关联是 §9 的 flag 表——原来列的 `disable-e2b-access-token-provisioning` 已经不存在了。
 
 ---
 
@@ -282,12 +328,16 @@ r.DELETE("/api-keys/:apiKeyID",      middleware → apiStore.DeleteApiKeysApiKey
 ```
 APIStore
 ├── authDB   (packages/db/pkg/auth.Client)
-│   ├── Read.GetTeamAPIKeysWithCreator
-│   └── Write.CreateTeamAPIKey / UpdateTeamApiKey / DeleteTeamAPIKey
-│       (后者两个由 team.CreateAPIKey / team.DeleteAPIKey 包装)
-├── authService (仅间接,通过 ctx 拿 team)
-└── featureFlags (本模块未直接使用,但访问 token 模块用了)
+│   ├── GetTeamAPIKeysWithCreator
+│   └── CreateTeamAPIKey / UpdateTeamApiKey / DeleteTeamAPIKey
+│       (前两个由 team.CreateAPIKey / team.DeleteAPIKey 包装;
+│        DeleteTeamAPIKey 现在 RETURNING api_key_hash)
+├── authService (packages/auth/pkg/auth.Service)
+│   └── DeleteAPIKey 删除后调 InvalidateAPIKeyCache(hashedKey)   ← 2026.30 新增
+└── featureFlags (本模块未直接使用)
 ```
+
+> ⚠️ 2026.30 前这里是 `authDB.Read.*` / `authDB.Write.*` 两个字段;现在 `packages/db/pkg/auth.Client` 直接内嵌 `*authqueries.Queries`,只有一个 `authDB`。`authService` 也从「仅间接使用」变成了删除路径的**直接依赖**。
 
 ### 3.3 数据流总览
 
@@ -307,7 +357,7 @@ Handler (apikey.go)
    ├── teamID := auth.MustGetTeamID(c)       ← 直接从 ctx 拿
    ├── userID := auth.MustGetUserID(c)        ← POST 时用
    │
-   ├── 调 authDB.Read.* / authDB.Write.* / team.*
+   ├── 调 authDB.* / team.* / authService.InvalidateAPIKeyCache
    │
    ▼
 JSON 响应(创建时含明文 key,列表时只有 mask)
@@ -321,21 +371,23 @@ JSON 响应(创建时含明文 key,列表时只有 mask)
 
 **Handler**:`APIStore.GetApiKeys` (`packages/api/internal/handlers/apikey.go:67`)
 
-**鉴权**(OpenAPI spec):
+**鉴权**(OpenAPI spec,`spec/openapi.yml:4115-4121`):
 ```yaml
 security:
   - AuthProviderBearerAuth: []
     AuthProviderTeamAuth: []
   - AdminApiKeyAuth: []
     AdminTeamAuth: []
+  - AdminJWTAuth: []          # ← 2026.30 新增第三组
+    AdminTeamAuth: []
 ```
-普通用户走第一组(OIDC),内部服务走第二组(admin 兜底)。
+普通用户走第一组(OIDC),内部服务走第二组(admin token),dashboard 管理面走第三组(服务 JWT + `X-Team-ID`)。
 
 **流程**:
 
 ```go
 teamID := auth.MustGetTeamID(c)
-apiKeysDB, err := a.authDB.Read.GetTeamAPIKeysWithCreator(ctx, teamID)
+apiKeysDB, err := a.authDB.GetTeamAPIKeysWithCreator(ctx, teamID)
 // ...
 teamAPIKeys := make([]api.TeamAPIKey, len(apiKeysDB))
 for i, apiKey := range apiKeysDB {
@@ -356,7 +408,7 @@ c.JSON(http.StatusOK, teamAPIKeys)
 ```
 
 **关键点**:
-- 用 `authDB.Read`(读副本),走 `GetTeamAPIKeysWithCreator` SQL。
+- 走 `GetTeamAPIKeysWithCreator` SQL。⚠️ 2026.29 这里用的是 `authDB.Read`(读副本),**2026.30 读副本已移除**,改为 `a.authDB.GetTeamAPIKeysWithCreator`(`packages/api/internal/handlers/apikey.go:72`;2026.29 为同一行但写作 `a.authDB.Read.GetTeamAPIKeysWithCreator`)。
 - **响应里没有 hash,没有明文,只有 mask 字段**——前端用 mask 渲染 `e2b_a1****wxyz`。
 - `createdBy.Email` 始终是 `nil`(SQL 没联表查 users 表,只返回 `created_by_id`)。前端要展示 email 需另外查。
 - `LastUsed` 可能为 `nil`(从未使用过的 Key)。
@@ -366,13 +418,13 @@ c.JSON(http.StatusOK, teamAPIKeys)
 
 **Handler**:`APIStore.PostApiKeys` (`apikey.go:138`)
 
-**鉴权**:
+**鉴权**(`spec/openapi.yml:4139-4141`):
 ```yaml
 security:
   - AuthProviderBearerAuth: []
     AuthProviderTeamAuth: []
 ```
-注意:**没有 admin 兜底**。admin 路径走单独的 `POST /admin/teams/{teamID}/api-keys`。
+注意:**没有 admin 兜底,2026.30 也没有加 `AdminJWTAuth`**——POST 仍然只有 OIDC 一组。admin 路径走单独的 `POST /admin/teams/{teamID}/api-keys`。
 
 **流程**:
 
@@ -401,18 +453,18 @@ c.JSON(http.StatusCreated, api.CreatedTeamAPIKey{
 
 1. **`createdBy = &userID`**:区别于 admin 路径的 nil。这是用户路径的标志。
 2. **`Key` 字段返回明文**:`apiKey.RawAPIKey`(`e2b_...` 44 字符)。前端必须立刻保存,**刷新页面后就再也拿不到了**。
-3. **不主动检查 blocked**:与 admin 路径不同。这里假设 OIDC 登录链路通过意味着 team 状态正常。
+3. **不主动检查 blocked**:与 admin 路径不同。⚠️ 这里的拦截来自中间件 allowlist(`POST /api-keys` 不在 `blockedTeamAllowlist` 里),**不是** handler 里的判断——handler 里一行 blocked 检查都没有。
 4. **不缓存**:Key 直接写 DB,下次请求验证时如果 cache miss 会查 DB,所以创建后立即可用。
 5. **底层 `team.CreateAPIKey`** 详见 [6.1](#61-generatekey-的完整产物)。
 
-**底层 `team.CreateAPIKey`**(`packages/api/internal/team/apikeys.go:21`):
+**底层 `team.CreateAPIKey`**(`packages/api/internal/team/apikeys.go:22`;2026.29 为 `:21`):
 
 ```go
 func CreateAPIKey(ctx context.Context, authDB *authdb.Client, teamID uuid.UUID, createdBy *uuid.UUID, name string) (CreateAPIKeyResponse, error) {
     teamApiKey, err := keys.GenerateKey(keys.ApiKeyPrefix)         // 1. 本地生成
     if err != nil { /* ... */ }
 
-    apiKey, err := authDB.Write.CreateTeamAPIKey(ctx, authqueries.CreateTeamAPIKeyParams{
+    apiKey, err := authDB.CreateTeamAPIKey(ctx, authqueries.CreateTeamAPIKeyParams{
         TeamID:           teamID,
         CreatedBy:        createdBy,
         ApiKeyHash:       teamApiKey.HashedValue,
@@ -435,7 +487,7 @@ func CreateAPIKey(ctx context.Context, authDB *authdb.Client, teamID uuid.UUID, 
 
 **Handler**:`APIStore.PatchApiKeysApiKeyID` (`apikey.go:22`)
 
-**鉴权**:同 GET(支持 admin 兜底)。
+**鉴权**:同 GET(`spec/openapi.yml:4165-4171`,含 `AdminApiKeyAuth` 与 2026.30 新增的 `AdminJWTAuth` 兜底)。
 
 **注意**:只能改 `name`,不能改 Key 本身。改 Key 的唯一方法是 delete + create。
 
@@ -447,7 +499,7 @@ apiKeyIDParsed, err := uuid.Parse(apiKeyID)
 teamID := auth.MustGetTeamID(c)
 
 now := time.Now()
-_, err = a.authDB.Write.UpdateTeamApiKey(ctx, authqueries.UpdateTeamApiKeyParams{
+_, err = a.authDB.UpdateTeamApiKey(ctx, authqueries.UpdateTeamApiKeyParams{
     Name:      body.Name,
     UpdatedAt: &now,
     ID:        apiKeyIDParsed,
@@ -463,7 +515,8 @@ c.Status(http.StatusAccepted)    // 注意:202,不是 200
 
 **关键点**:
 - SQL 用 `WHERE id = $1 AND team_id = $2`,**防跨 team 修改**(即使构造请求 `/api-keys/{别人 team 的 id}`,也匹配不到)。
-- 成功返回 **202 Accepted**(代码 `c.Status(http.StatusAccepted)`)。注意 OpenAPI spec 声明的是 200(`spec/openapi.yml:3686`),这是 spec 与实现的已知不一致——以代码为准。
+- 成功返回 **202 Accepted**(代码 `c.Status(http.StatusAccepted)`)。注意 OpenAPI spec 声明的是 200(`spec/openapi.yml:4181`;2026.29 为 `:3765`),这是 spec 与实现的已知不一致——以代码为准。
+- ⚠️ 2026.30 前这里是 `a.authDB.Write.UpdateTeamApiKey`(`packages/api/internal/handlers/apikey.go:46`);现在写作 `a.authDB.UpdateTeamApiKey`,**行号不变**。
 - 失败返回 404(找不到)或 500(DB 错误)。
 - 响应 body 为空(只 status code)。
 
@@ -471,7 +524,7 @@ c.Status(http.StatusAccepted)    // 注意:202,不是 200
 
 **Handler**:`APIStore.DeleteApiKeysApiKeyID` (`apikey.go:107`)
 
-**鉴权**:同 GET。
+**鉴权**:同 GET(`spec/openapi.yml:4193-4199`,含 `AdminJWTAuth` 兜底)。
 
 **流程**:
 
@@ -479,7 +532,8 @@ c.Status(http.StatusAccepted)    // 注意:202,不是 200
 apiKeyIDParsed, err := uuid.Parse(apiKeyID)
 teamID := auth.MustGetTeamID(c)
 
-deleted, err := team.DeleteAPIKey(ctx, a.authDB, teamID, apiKeyIDParsed)
+deleted, err := team.DeleteAPIKey(ctx, a.authDB, a.authService, teamID, apiKeyIDParsed)
+//                                            ^^^^^^^^^^^^^^ 2026.30 新增参数
 if !deleted {
     c.String(http.StatusNotFound, "id not found")
     return
@@ -487,22 +541,34 @@ if !deleted {
 c.Status(http.StatusNoContent)
 ```
 
-**底层 `team.DeleteAPIKey`**(`packages/api/internal/team/apikeys.go:51`):
+**底层 `team.DeleteAPIKey`**(`packages/api/internal/team/apikeys.go:52`;2026.29 为 `:51`):
 
 ```go
-func DeleteAPIKey(ctx, authDB, teamID, apiKeyID) (bool, error) {
-    ids, err := authDB.Write.DeleteTeamAPIKey(ctx, authqueries.DeleteTeamAPIKeyParams{
+// 2026.30
+func DeleteAPIKey(ctx context.Context, authDB *authdb.Client, authService sharedauth.Service,
+                  teamID uuid.UUID, apiKeyID uuid.UUID) (bool, error) {
+    hashes, err := authDB.DeleteTeamAPIKey(ctx, authqueries.DeleteTeamAPIKeyParams{
         ID:     apiKeyID,
         TeamID: teamID,    // ← WHERE id AND team_id
     })
-    return len(ids) > 0, nil
+    if err != nil { /* ... */ }
+
+    // Invalidate the auth cache so the deleted key stops authenticating
+    // immediately instead of after the cache TTL expires.
+    for _, hash := range hashes {
+        authService.InvalidateAPIKeyCache(ctx, hash)
+    }
+
+    return len(hashes) > 0, nil
 }
 ```
 
 **关键点**:
 - 同样用 `WHERE id AND team_id` 双重过滤。
 - 返回 `deleted bool` 用于决定 404 还是 204。
-- 删除后**不主动清缓存**——auth 模块的 team cache 有自己的 TTL,短期(约 5 分钟)内 Key 可能仍能用。详见 [8.3](#83-删除后缓存如何失效)。
+- **2026.30 起删除会主动清缓存**:SQL 的 `RETURNING` 从 `id` 改成 `api_key_hash`(`packages/db/pkg/auth/sql_queries/api_keys/delete_team_api_key.sql:4`),拿到 hash 后逐个调 `authService.InvalidateAPIKeyCache(ctx, hash)`,把该 key 在 Redis 里的认证缓存条目删掉。
+- ⚠️ **`DELETE /api-keys/{id}` 现在是「立即失效」的**。2026.29 的行为是「删了但缓存还在,最多 5 分钟后才真正失效」——这个旧结论已经作废。详见 [8.3](#83-删除后缓存如何失效202630-重写)。
+- 只清**这一把 key** 的缓存,不会清整个 team 的缓存(那需要 `InvalidateTeamCache(teamID)`)。
 
 ---
 
@@ -529,7 +595,7 @@ func DeleteAPIKey(ctx, authDB, teamID, apiKeyID) (bool, error) {
  │                     │                          │ 4. keys.GenerateKey() │
  │                     │                          │   (本地:rand+SHA256)  │
  │                     │                          │                       │
- │                     │                          │ 5. Write.CreateTeamAPIKey
+ │                     │                          │ 5. CreateTeamAPIKey
  │                     │                          ├──────────────────────>│
  │                     │                          │                  INSERT
  │                     │                          │<──────────────────────┤
@@ -557,7 +623,7 @@ func DeleteAPIKey(ctx, authDB, teamID, apiKeyID) (bool, error) {
  ├───────────────────>│                  │                       │
  │                    │ GET /api-keys    │                       │
  │                    ├─────────────────>│                       │
- │                    │                  │ Read.GetTeamAPIKeysWithCreator
+ │                    │                  │ GetTeamAPIKeysWithCreator
  │                    │                  ├──────────────────────>│
  │                    │                  │<──────────────────────┤
  │                    │                  │  (无 hash, 无明文)    │
@@ -575,10 +641,15 @@ func DeleteAPIKey(ctx, authDB, teamID, apiKeyID) (bool, error) {
  ├───────────────────>│                  │                       │
  │                    │ DELETE /api-keys/{id}                    │
  │                    ├─────────────────>│                       │
- │                    │                  │ Write.DeleteTeamAPIKey │
+ │                    │                  │ DeleteTeamAPIKey       │
  │                    │                  │  WHERE id AND team_id │
+ │                    │                  │  RETURNING api_key_hash│
  │                    │                  ├──────────────────────>│
  │                    │                  │<──────────────────────┤
+ │                    │                  │                       │
+ │                    │                  │ InvalidateAPIKeyCache │  ← 2026.30 新增
+ │                    │                  ├──────────────────────>│ Redis
+ │                    │                  │                       │
  │                    │ 204 No Content   │                       │
  │                    │<─────────────────┤                       │
 ```
@@ -655,7 +726,7 @@ func VerifyKey(prefix string, key string) (string, error) {
 }
 ```
 
-**调用方**:`auth.ValidateAPIKey`(`packages/auth/pkg/auth/service.go:93`)
+**调用方**:`auth.ValidateAPIKey`(`packages/auth/pkg/auth/internal/service/service.go:97`;2026.29 为 `packages/auth/pkg/auth/service.go:93`)
 
 ```go
 hashedKey, err := keys.VerifyKey(keys.ApiKeyPrefix, apiKey)
@@ -690,7 +761,7 @@ func MaskToken(prefix, token string) string {
 
 **用途**:telemetry 埋点时把明文 token 转成 `e2b_a1...wxyz` 形式,避免明文进日志。
 
-`auth.ValidateAPIKey` 里的用法:
+`ValidateAPIKey` 里的用法(2026.30 位于 `packages/auth/pkg/auth/internal/service/service.go:97`):
 
 ```go
 telemetry.SetAttributes(ginCtx.Request.Context(),
@@ -753,7 +824,7 @@ telemetry.SetAttributes(ginCtx.Request.Context(),
 
 ### 8.1 创建后,API Key 怎么被验证
 
-完整闭环(`packages/auth/pkg/auth/service.go:93`):
+完整闭环(`packages/auth/pkg/auth/internal/service/service.go:97`;2026.29 为 `packages/auth/pkg/auth/service.go:93`):
 
 ```
 用户请求 GET /sandboxes
@@ -793,21 +864,25 @@ authService.ValidateAPIKey(apiKey)
 
 ### 8.2 last_used 异步更新
 
-`packages/auth/pkg/auth/auth_store.go:42-50`:
+`packages/auth/pkg/auth/internal/service/store.go:47-54`(2026.29 为 `packages/auth/pkg/auth/auth_store.go:42-49`):
 
 ```go
-result, err := s.authDB.Read.GetTeamWithTierByAPIKey(ctx, hashedKey)
+// 2026.30
+result, err := s.authDB.GetTeamWithTierByAPIKey(ctx, hashedKey)   // :38
 // ...
+if err := internalauthteam.CheckTeamBanned(result.Team); err != nil { return nil, err }  // :43
 
-go func() {
+go func() {                                                        // :47
     // 用独立 context,避免请求结束后被 cancel
     ctx := context.WithoutCancel(ctx)
-    updateErr := s.authDB.Write.UpdateLastTimeUsed(ctx, hashedKey)
+    updateErr := s.authDB.UpdateLastTimeUsed(ctx, hashedKey)       // :50
     if updateErr != nil {
         logger.L().Error(ctx, "failed to update last time used", zap.Error(updateErr))
     }
 }()
 ```
+
+> ⚠️ 2026.30 这段代码上方新增了一段注释(`store.go:34-37`),解释了为什么这里的读**不能**走读副本:`Deleting an API key invalidates its cache entry; reading through the read replica here races replication lag and could re-cache a just-deleted key for the full cache TTL, so key revocation must be read-after-write safe.` 这正是 2026.30 移除读写分离的原因之一。
 
 **设计要点**:
 - **异步**:不阻塞请求,DB 写延迟不影响 API 响应时间。
@@ -815,39 +890,52 @@ go func() {
 - **失败只记日志**:last_used 不影响功能,丢了无所谓。
 - **每次都写**:不做去重 / 限流,所以高 QPS 的 Key 会频繁写 DB(可优化空间)。
 
-### 8.3 删除后,缓存如何失效
+### 8.3 删除后,缓存如何失效(2026.30 重写)
 
-**短回答**:不主动失效。
+> ⚠️ **本节结论在 2026.30 反转了。** 2026.29 的答案是「不主动失效,等 5 分钟 TTL」;2026.30 的答案是「**主动失效,立即生效**」。
 
-**详细分析**:
+**2026.30(当前行为)**:
 
 DELETE `/api-keys/{id}` 后:
+1. `DeleteTeamAPIKey` 在同一个 SQL 里 `DELETE ... RETURNING api_key_hash`——删的同时把 hash 带回来(`packages/db/pkg/auth/sql_queries/api_keys/delete_team_api_key.sql:4`)。
+2. `team.DeleteAPIKey` 遍历返回的 hashes,逐个调 `authService.InvalidateAPIKeyCache(ctx, hash)`(`packages/api/internal/team/apikeys.go:65-67`)。
+3. `InvalidateAPIKeyCache`(`packages/auth/pkg/auth/internal/service/service.go:294`)用 `invalidateTimeout`(45s,`internal/service/cache.go:23`)的独立 context 去 Redis 删掉该 key 的缓存条目。
+4. 结果:**下一次用这把 Key 发请求就会 401**,不再有 5 分钟窗口。
+
+**2026.29(历史行为,已作废)**:
 1. DB 里这把 Key 已经 DELETE。
-2. 但 `teamCache` 里以 hash 为 key 的 `*types.Team` 条目**还在**(默认 TTL 5 分钟,`authInfoExpiration`,见 `packages/auth/pkg/auth/cache.go:14`)。
+2. 但 `teamCache` 里以 hash 为 key 的 `*types.Team` 条目**还在**(TTL 5 分钟,`authInfoExpiration`)。
 3. 在缓存过期前,用这把 Key 调 API **仍会成功**——因为缓存命中,根本不查 DB。
 
-**为什么不主动清缓存**?
-- 主动清需要拿到 hash,但 DELETE 端点只接收 `id`(UUID),要做一次 DB 查询才能拿到 hash。
-- 增加复杂度,且 5 分钟 TTL 已经足够短。
-- 安全敏感场景应该轮换整个 `ADMIN_TOKEN` / 用户重新登录。
+**为什么 2026.29 不主动清、2026.30 又清了?**
 
-**生产实践**:
-- 如果某把 Key 泄漏需要立刻失效,**不能只 DELETE**。
-- 应该用 admin 路径的 `POST /admin/teams/{teamID}/sandboxes/kill` 等运维手段强制清理,或者用 `authService.InvalidateTeamCache(teamID)`(见 admin-module.md 的 [13.6](./admin-module.md#136-为什么-kill-sandboxes-前后各-invalidate-cache-一次))清整个 team 的缓存。
+2026.29 的顾虑是「DELETE 端点只接收 `id`(UUID),要清缓存得先查一次 hash,增加复杂度」。2026.30 的解法很直接:**让 DELETE 语句自己 `RETURNING api_key_hash`**,零额外查询。于是安全上的收益(凭证吊销立即生效)不再需要付出复杂度代价。
+
+**关于阻塞**:
+> ⚠️ `InvalidateAPIKeyCache` 是**同步**的,会等待同一个 key 上正在进行的缓存写入(`RedisCache.Delete` 的语义),最坏情况下调用方的请求可能阻塞到 `invalidateTimeout`(45s)。注释里说明这个最坏情况需要「并发刷新同一把 key 且卡在接近完整 refresh timeout,即多秒级 DB stall」才会触发,典型情况是毫秒级返回。
+
+**仍然存在的窗口**:
+- 只清**这一把 key**。如果 team 有别的 key 或 member 缓存条目,它们不受影响。
+- `InvalidateAPIKeyCache` 用的是 `context.WithoutCancel`,即使客户端断开也会执行完(`service.go:295-299` 的注释解释了原因:否则被吊销的 key 会继续认证到 TTL 到期)。
+- 需要清**整个 team** 时仍然用 `authService.InvalidateTeamCache(teamID)`(见 admin-module.md 的 [13.6](./admin-module.md#136-为什么-kill-sandboxes-前后各-invalidate-cache-一次))。
 
 ---
 
 ## 九、配置与 Feature Flag
 
-`api-keys` 模块本身**不直接挂任何 feature flag**,但相关的认证链路有以下 flag:
+`api-keys` 模块本身**不直接挂任何 feature flag**。
 
-| Flag | 默认 | 影响范围 | 说明 |
-| --- | --- | --- | --- |
-| `disable-e2b-access-token-provisioning` | false | access token(非本模块) | POST /access-tokens 打开时返回 410 |
+**2026.30 变动**:原先这里列的 `disable-e2b-access-token-provisioning` 已经**随 access token 一起删除**——access token 现在无条件不可用(端点直接返回 410),不再需要 flag 开关。
+
+| Flag | 状态 |
+| --- | --- |
+| `disable-e2b-access-token-provisioning` | ⛔ 2026.30 已删除 |
+| `disable-e2b-access-token-auth` | ⛔ 2026.30 已删除 |
 
 **环境变量**:
 - `api-keys` 模块本身无专用 env。
-- 但整个认证链路依赖 `auth-service` 的 env(详见 auth-module.md 第十一章)。
+- 认证链路依赖的 env(详见 auth-module.md 第十一章),2026.30 有一处移除:
+  > ⛔ `AUTH_DB_READ_REPLICA_CONNECTION_STRING` **已删除**(2026.29 定义在 `packages/api/internal/cfg/model.go:85` 与 `packages/dashboard-api/internal/cfg/model.go:21`)。auth DB 现在只有单个连接串 `AUTH_DB_CONNECTION_STRING`(`packages/api/internal/cfg/model.go:107`;2026.29 为 `:84`),通过 `authdb.NewClient(ctx, config.AuthDBConnectionString, ...)` 传入(`packages/api/internal/handlers/store.go:238-240`;2026.29 为 `:99-101`,当时多一个 replica DSN 参数)。
 
 ---
 
@@ -857,44 +945,53 @@ DELETE `/api-keys/{id}` 后:
 
 | 文件 | 主要函数 |
 | --- | --- |
-| `apikey.go:22` | `PatchApiKeysApiKeyID` |
-| `apikey.go:67` | `GetApiKeys` |
-| `apikey.go:107` | `DeleteApiKeysApiKeyID` |
-| `apikey.go:138` | `PostApiKeys` |
-| `store.go:389` | `GetTeamFromAPIKey`(间接被 auth 调) |
+| `apikey.go:22` | `PatchApiKeysApiKeyID`(行号与 2026.29 相同) |
+| `apikey.go:67` | `GetApiKeys`(行号与 2026.29 相同) |
+| `apikey.go:107` | `DeleteApiKeysApiKeyID`(行号与 2026.29 相同) |
+| `apikey.go:138` | `PostApiKeys`(行号与 2026.29 相同) |
+| `admin_api_keys.go:19` | `PostAdminTeamsTeamIDApiKeys`(blocked 检查在 `:53`) |
+| `admin_api_keys.go:82` | `DeleteAdminTeamsTeamIDApiKeysApiKeyID`(行号与 2026.29 相同) |
+| `store.go:531` | `GetTeamFromAPIKey`(间接被 auth 调;**2026.29 为 `:389`**) |
 
 ### 10.2 team(`packages/api/internal/team/`)
 
 | 文件 | 函数 |
 | --- | --- |
-| `apikeys.go:21` | `CreateAPIKey`(与 admin 路径共用) |
-| `apikeys.go:51` | `DeleteAPIKey`(与 admin 路径共用) |
+| `apikeys.go:22` | `CreateAPIKey`(与 admin 路径共用;2026.29 为 `:21`) |
+| `apikeys.go:52` | `DeleteAPIKey`(与 admin 路径共用;2026.29 为 `:51`)**2026.30 签名新增 `authService` 参数,并在删除后清缓存** |
 
 ### 10.3 keys 包(`packages/shared/pkg/keys/`)
 
 | 文件 | 主要 API |
 | --- | --- |
-| `constants.go` | `ApiKeyPrefix = "e2b_"`,`AccessTokenPrefix = "sk_e2b_"` |
-| `key.go:18` | `hasher = NewSHA256Hashing()`(默认 hasher) |
-| `key.go:33` | `MaskKey(prefix, value)` |
-| `key.go:66` | `GenerateKey(prefix)` |
-| `key.go:90` | `MaskToken(prefix, token)` |
-| `key.go:100` | `VerifyKey(prefix, key)` |
+| `constants.go:3` | `ApiKeyPrefix = "e2b_"`(**⛔ `AccessTokenPrefix = "sk_e2b_"` 已于 2026.30 删除**;2026.29 在 `constants.go:5`) |
+| `key.go:18` | `hasher = NewSHA256Hashing()`(默认 hasher;行号与 2026.29 相同) |
+| `key.go:34` | `MaskKey(prefix, value)`(行号与 2026.29 相同;docstring 在 `:33`) |
+| `key.go:66` | `GenerateKey(prefix)`(行号与 2026.29 相同) |
+| `key.go:90` | `MaskToken(prefix, token)`(行号与 2026.29 相同) |
+| `key.go:100` | `VerifyKey(prefix, key)`(行号与 2026.29 相同) |
 | `sha256.go` | `SHA256Hashing.Hash()` |
 | `hmac_sha256.go` | `HMACSha256Hashing`(可选,目前未默认启用) |
 
-### 10.4 auth 验证链路(`packages/auth/pkg/auth/`)
+> `packages/shared/pkg/keys/` 在 2026.30 **只改了 `constants.go` 一行**(删掉 `AccessTokenPrefix`);`key.go`、`sha256.go`、`hmac_sha256.go` 全部零改动。
 
-| 文件 | 主要函数 |
-| --- | --- |
-| `service.go:93` | `ValidateAPIKey` |
-| `service.go:140` | `ValidateAccessToken`(对照) |
-| `auth_store.go:29-54` | `GetTeamByHashedAPIKey` + 异步 UpdateLastTimeUsed |
-| `auth_store.go:104` | `GetTeamAPIKeyHashes`(缓存失效用) |
-| `service.go:261` | `InvalidateTeamCache` |
-| `middleware.go:133` | `NewApiKeyAuthenticator` |
-| `gin.go:45` | `MustGetTeamID` |
-| `gin.go:23` | `MustGetUserID` |
+### 10.4 auth 验证链路
+
+> ⚠️ **2026.30 起 `packages/auth/pkg/auth/` 下的实现文件全部搬进了 `internal/**`**,顶层只剩薄薄的重导出层(类型别名 + 转发函数)。左列是 2026.30 路径,右列是 2026.29 路径。
+
+| 2026.30 文件 | 主要函数 | 2026.29 路径 |
+| --- | --- | --- |
+| `internal/service/service.go:97` | `ValidateAPIKey` | `service.go:93` |
+| ~~`service.go:140`~~ | ⛔ `ValidateAccessToken` | **已删除** |
+| `internal/service/service.go:294` | `InvalidateAPIKeyCache`(**2026.30 新增**) | — |
+| `internal/service/service.go:258` | `InvalidateTeamCache` | `service.go:261` |
+| `internal/service/store.go:30` | `GetTeamByHashedAPIKey` + 异步 `UpdateLastTimeUsed`(`:47-54`) | `auth_store.go:29` |
+| `internal/service/store.go:105` | `GetTeamAPIKeyHashes`(缓存失效用) | `auth_store.go:104` |
+| `internal/middleware/middleware.go:221` | `NewApiKeyAuthenticator` | `middleware.go:133` |
+| `internal/authcontext/context.go:46` | `MustGetTeamID`(公开转发在 `pkg/auth/gin.go:23`) | `gin.go:45` |
+| `internal/authcontext/context.go:24` | `MustGetUserID`(公开转发在 `pkg/auth/gin.go:15`) | `gin.go:23` |
+
+> 调用方仍然写 `auth.MustGetTeamID(c)`——公开层的转发函数签名不变,所以**调用点代码不需要改**。变的是你点进去之后文件在哪。
 
 ### 10.5 DB(`packages/db/`)
 
@@ -903,7 +1000,7 @@ DELETE `/api-keys/{id}` 后:
 | `pkg/auth/sql_queries/api_keys/create_team_api_key.sql` | `CreateTeamAPIKey :one` |
 | `pkg/auth/sql_queries/api_keys/get_api_keys.sql` | `GetTeamAPIKeysWithCreator :many` |
 | `pkg/auth/sql_queries/api_keys/update_team_api_key.sql` | `UpdateTeamApiKey :one` |
-| `pkg/auth/sql_queries/api_keys/delete_team_api_key.sql` | `DeleteTeamAPIKey :many` |
+| `pkg/auth/sql_queries/api_keys/delete_team_api_key.sql` | `DeleteTeamAPIKey :many`(**2026.30 `RETURNING` 从 `id` 改为 `api_key_hash`**) |
 | `pkg/auth/sql_queries/api_keys/update_last_time_used.sql` | `UpdateLastTimeUsed :exec` |
 | `pkg/auth/sql_queries/api_keys/get_team_api_key_hashes.sql` | `GetTeamAPIKeyHashes :many` |
 | `migrations/20231124185944_create_schemas_and_tables.sql` | 建表 |
@@ -912,15 +1009,20 @@ DELETE `/api-keys/{id}` 后:
 
 ### 10.6 OpenAPI spec
 
-| 位置 | 内容 |
-| --- | --- |
-| `spec/openapi.yml:3619` | `/api-keys` GET/POST 定义 |
-| `spec/openapi.yml:3667` | `/api-keys/{apiKeyID}` PATCH/DELETE 定义 |
-| `spec/openapi.yml:1772` | `TeamAPIKey` schema |
-| `spec/openapi.yml:1802` | `CreatedTeamAPIKey` schema |
-| `spec/openapi.yml:1836` | `NewTeamAPIKey` schema |
-| `spec/openapi.yml:1844` | `UpdateTeamAPIKey` schema |
-| `spec/openapi.yml:1926` | `IdentifierMaskingDetails` schema |
+⚠️ 2026.30 的 spec 因为新增 `AdminJWTAuth` 等改动整体下移,下表所有行号都变了。
+
+| 位置(2026.30) | 内容 | 2026.29 |
+| --- | --- | --- |
+| `spec/openapi.yml:4110` | `/api-keys` GET/POST 定义 | `:3698` |
+| `spec/openapi.yml:4160` | `/api-keys/{apiKeyID}` PATCH/DELETE 定义 | `:3746` |
+| `spec/openapi.yml:4041` | `/admin/teams/{teamID}/api-keys` | `:3584` |
+| `spec/openapi.yml:2029` | `TeamAPIKey` schema | `:1805` |
+| `spec/openapi.yml:2059` | `CreatedTeamAPIKey` schema | `:1835` |
+| `spec/openapi.yml:2093` | `NewTeamAPIKey` schema | `:1869` |
+| `spec/openapi.yml:2101` | `UpdateTeamAPIKey` schema | `:1877` |
+| `spec/openapi.yml:2189` | `IdentifierMaskingDetails` schema | `:1959` |
+
+> ⚠️ 原文档给出的 `/api-keys` = `:3619`、`/api-keys/{apiKeyID}` = `:3667` 这两个数字**在 2026.29 就已经是错的**(实际为 `:3698` / `:3746`),并非 2026.30 才失效。
 
 ---
 
@@ -954,13 +1056,12 @@ DELETE `/api-keys/{id}` 后:
 
 详见 admin-module.md 的 [13.9](./admin-module.md#139-为什么-deleteapikey-同时按-id-和-team_id-过滤)。简而言之:**防跨 team 删除**,纵深防御。
 
-### 11.6 为什么创建后不主动清缓存,删除后也不主动清?
+### 11.6 为什么创建后不主动清缓存,但删除后要清?(2026.30 变动)
 
-详见 [8.3](#83-删除后缓存如何失效)。简而言之:
-- 创建后不需要清(新 hash 在缓存里没有,会自然 miss → 查 DB)。
-- 删除后清缓存代价高(要先查 hash)。
-- 5 分钟 TTL 已经足够短,业务可接受。
-- 安全敏感场景应直接 invalidateTeamCache(teamID) 整体清。
+详见 [8.3](#83-删除后缓存如何失效202630-重写)。简而言之:
+- **创建后不需要清**:新 hash 在缓存里本来就没有,会自然 miss → 查 DB。
+- **删除后必须清**:被吊销的凭证继续可用是安全问题,不能靠 TTL 兜底。2026.29 的答案是「代价高(要先查 hash),所以不清」;2026.30 让 DELETE 语句直接 `RETURNING api_key_hash`,代价归零,于是改成**主动清**。
+- 需要清整个 team 时仍然用 `InvalidateTeamCache(teamID)`。
 
 ### 11.7 为什么 POST `/api-keys` 不接受 admin auth?
 
@@ -1020,13 +1121,16 @@ type TeamAPIKey struct {
 - 提示用户在创建时立刻保存到密码管理器。
 - 如果丢失,**只能删除重建**——系统无法找回明文。
 
-### Q2: 用户报告"明明删了 key,但 CI 还在用,几分钟后才失效"
+### Q2: 用户报告"明明删了 key,但 CI 还在用"
 
-**说明**:auth 模块的 team cache(详见 [8.3](#83-删除后缓存如何失效))有约 5 分钟 TTL(`authInfoExpiration`)。在缓存过期前,这把 key 仍能通过验证。
+**说明(2026.30 起)**:这种情况**不应该再发生**。`DELETE /api-keys/{id}` 现在会同步清掉该 key 的认证缓存(`InvalidateAPIKeyCache`),下一次请求就会 401。详见 [8.3](#83-删除后缓存如何失效202630-重写)。
 
-**处理**:
-- 等待约 5 分钟。
-- **要立刻失效**的话:用 admin token 调 `POST /admin/teams/{teamID}/sandboxes/kill`(虽然这是杀沙箱,但前置会调 `InvalidateTeamCache`)。或者直接调内部 `authService.InvalidateTeamCache(teamID)` 接口。
+**如果仍然发生**,排查方向:
+1. CI 用的**不是**这把被删的 key(可能是同一个 team 的另一把 key)——用 `GET /api-keys` 对一下 mask。
+2. CI 进程把 key 缓存在了本地并走了别的路径(例如用了 team 的 member 缓存条目,那是 `InvalidateTeamCache` 的范畴)。
+3. 删除请求实际返回的不是 204 而是 404(`id not found`),即根本没删掉。
+
+**2026.29 的历史行为(供对照)**:那时删除**不**清缓存,team cache 有约 5 分钟 TTL(`authInfoExpiration`),所以确实存在「删了还能用几分钟」的窗口。要立刻失效只能调 admin 路径的 `POST /admin/teams/{teamID}/sandboxes/kill`(前置会调 `InvalidateTeamCache`)或直接调 `authService.InvalidateTeamCache(teamID)`。
 
 ### Q3: PATCH 返回 404 "id not found"
 
@@ -1113,10 +1217,12 @@ SELECT * FROM team_api_keys WHERE api_key_hash = '<hashedKey>';
 
 | 端点 | 方法 | 鉴权 | 成功 | 失败常见码 |
 | --- | --- | --- | --- | --- |
-| `/api-keys` | GET | OIDC / admin | 200 + `[TeamAPIKey]` | 401, 500 |
-| `/api-keys` | POST | OIDC only(**无 admin**) | 201 + `CreatedTeamAPIKey` | 400, 401, 500 |
-| `/api-keys/{apiKeyID}` | PATCH | OIDC / admin | 202(无 body) | 400, 401, 404, 500 |
-| `/api-keys/{apiKeyID}` | DELETE | OIDC / admin | 204(无 body) | 400, 401, 404, 500 |
+| `/api-keys` | GET | OIDC / admin token / **服务 JWT** | 200 + `[TeamAPIKey]` | 401, 500 |
+| `/api-keys` | POST | OIDC only(**无 admin,2026.30 也无服务 JWT**) | 201 + `CreatedTeamAPIKey` | 400, 401, 500 |
+| `/api-keys/{apiKeyID}` | PATCH | OIDC / admin token / **服务 JWT** | 202(无 body) | 400, 401, 404, 500 |
+| `/api-keys/{apiKeyID}` | DELETE | OIDC / admin token / **服务 JWT** | 204(无 body) | 400, 401, 404, 500 |
+
+> 「服务 JWT」= 2026.30 新增的 `AdminJWTAuth`(`Authorization: Bearer <service-jwt>`)+ `AdminTeamAuth`(`X-Team-ID`)组合,两个头都必须带。**POST 没有这一组**,因为创建 API Key 被刻意限制在用户路径上(见 [11.7](#117-为什么-post-api-keys-不接受-admin-auth))。
 
 ### A.2 Key 生命周期状态机
 
@@ -1128,12 +1234,15 @@ SELECT * FROM team_api_keys WHERE api_key_hash = '<hashedKey>';
    │ active │               │deleted │           │ cached │
    │  (DB)  │               │ (gone) │           │(5 min) │
    └────────┘               └────────┘           └────────┘
-       │                                              │
-       │ 每次鉴权                                       │ TTL 到期
-       ▼                                              ▼
-   update last_used                               cache miss
-   (异步)                                         → 查 DB → 401
+       │                         │                   │    ▲
+       │ 每次鉴权                 │ 2026.30:          │ TTL 到期
+       ▼                         │ InvalidateAPIKeyCache  │
+   update last_used              │ (立即)            ▼    │
+   (异步)                        └────────────────> cache miss
+                                                     → 查 DB → 401
 ```
+
+> ⚠️ 2026.30 起 `deleted → cached` 这条边是**立即**切断的(不再是「等 TTL 到期」)。上图的 `InvalidateAPIKeyCache` 箭头是 2026.30 新增的路径。
 
 ### A.3 字段映射:Key 结构 → DB → API 响应
 
@@ -1175,18 +1284,24 @@ SELECT * FROM team_api_keys WHERE api_key_hash = '<hashedKey>';
 | 术语 | 含义 |
 | --- | --- |
 | **API Key** | 团队级凭证,前缀 `e2b_`,44 字符,作 `X-API-Key` 头 |
-| **Access Token** | 用户级凭证(已废弃),前缀 `sk_e2b_`,作 `Authorization: Bearer` |
+| **Access Token** | ⛔ 用户级凭证,**2026.30 已整体删除**(2026.29 为 deprecated)。前缀 `sk_e2b_`,曾作 `Authorization: Bearer` |
 | **明文 / PrefixedRawValue** | key 的完整形式,只在 POST 响应里出现一次 |
 | **Hash** | `$sha256$` + 43 字符 base64(总 51),落库 + 缓存 key |
 | **Mask** | 固定窗口(前 2 + 后 4),用于 UI 展示 |
 | **`team_api_keys` 表** | team 级 key 的存储,uuid PK + hash UNIQUE |
-| **`access_tokens` 表** | user 级 token 的存储(对照) |
+| **`access_tokens` 表** | ⛔ user 级 token 的存储,**2026.30 已 DROP**(migration `20260823120000_drop_access_tokens.sql`) |
 | **createdBy** | 创建者 user ID。用户路径填,admin 路径为 nil |
 | **last_used** | 最后一次鉴权时间,异步更新,可为 null |
 | **team cache** | auth 模块的 Redis 缓存,key 是 hashedKey,value 是 Team |
 | **VerifyKey** | 验证函数:prefix 检查 + hex decode + SHA256 |
 | **GenerateKey** | 生成函数:20 字节随机 + hex + SHA256 + mask |
 | **MaskToken** | 日志辅助:把明文转成 `e2b_a1...wxyz` |
-| **`authDB.Read`** | 读副本(用于 GetTeamAPIKeysWithCreator) |
-| **`authDB.Write`** | 主库(用于 Create/Update/Delete) |
+| **`authDB.Read`** | ⛔ 读副本,**2026.30 已移除**;现统一写 `authDB.GetTeamAPIKeysWithCreator` |
+| **`authDB.Write`** | ⛔ 主库字段,**2026.30 已移除**;现统一写 `authDB.CreateTeamAPIKey` 等 |
 | **PatchApiKeys 不接受 admin** | POST 路径无 admin 兜底,代调必须走 admin 路径 |
+| **`InvalidateAPIKeyCache`** | 2026.30 新增:按 hashedKey 清单个 key 的认证缓存,删除 key 时调用 |
+| **`AdminJWTAuth`** | 2026.30 新增的安全 scheme:服务 JWT。**注意它有两种用法**——在 `/api-keys` 这类用户端点上与 `AdminTeamAuth` 组成 AND 组(需要 `X-Team-ID`);在 `/admin/teams/{teamID}/api-keys` 这类 admin 端点上则与 `AdminApiKeyAuth` 并列成 OR 组,**没有 `AdminTeamAuth`**,team 来自 path 参数 |
+
+---
+
+> **版本说明**:已同步至 **2026.30**。本文所有 `file:line` 行号均以 tag `2026.30` 为准;与 2026.29 有差异处已并列标注。2026.30 的关键变动:access token 与 `access_tokens` 表整体删除、`authDB.Read`/`Write` 读写分离取消、`AdminJWTAuth` 新增、删除 key 后同步失效认证缓存。

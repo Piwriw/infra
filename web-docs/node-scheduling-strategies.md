@@ -2,7 +2,73 @@
 
 **Sandbox 的常规选点采用 Best-of-K：随机抽取符合条件的节点，再选 CPU 评分最低者。Template 构建采用健康 builder 随机选点，并支持可回退的 CPU 型号偏好。** 两者共用部分节点发现能力，但没有共用负载评分器。依据：[Sandbox 选点:93](../packages/api/internal/orchestrator/placement/placement_best_of_K.go#L93)、[Builder 选点:215](../packages/api/internal/clusters/cluster.go#L215)、[构建 CPU 偏好及回退:111](../packages/api/internal/template-manager/template_manager.go#L111)。
 
-本文基于仓库提交 `93113e5eb`，整理日期为 2026-09-05；分析前已阅读 [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md)。下文区分数据库配置、API 选点、节点接收限制与基础设施部署策略。Feature Flag 数值均指代码中的回退值；线上 Flag、数据库记录及实际部署状态**未确认**。源码行号对应上述提交。
+本文原基于仓库提交 `93113e5eb`（2026-09-05，对应 `2026.29`），现已按 tag `2026.30` 重新核对；分析前已阅读 [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md)。下文区分数据库配置、API 选点、节点接收限制与基础设施部署策略。Feature Flag 数值均指代码中的回退值；线上 Flag、数据库记录及实际部署状态**未确认**。
+
+## 0. 2026.30 变动
+
+### 0.1 服务发现整体下沉到 `packages/shared`
+
+这是本次同步对本影响最大的一项。2026.29 时发现逻辑分散在三个目录，2026.30 全部删除并合并进 `packages/shared/pkg/servicediscovery/`：
+
+| 2026.29 路径 | 2026.30 状态 | 新位置 |
+|---|---|---|
+| `packages/api/internal/orchestrator/discovery/`（10 个文件） | ⛔ 整目录删除 | `packages/shared/pkg/servicediscovery/` |
+| `packages/api/internal/clusters/discovery/`（6 个文件） | ⛔ 整目录删除 | 同上 |
+| `packages/shared/pkg/clusters/discovery/nomad.go` | ⛔ 删除 | `packages/shared/pkg/servicediscovery/nomad/` |
+
+新包的公开面（2026.30 行号）：
+
+| 文件 | 关键导出 | 位置 |
+|---|---|---|
+| `servicediscovery.go` | `Instance`、`Discoverer` 接口、`ErrNotYetSynced`、`NoSync` | `packages/shared/pkg/servicediscovery/servicediscovery.go:27,53,89,102` |
+| `config.go` | `Config` | `packages/shared/pkg/servicediscovery/config.go:3` |
+| `cached.go` | `Cached(lister, logger)`，`cacheRefreshInterval = 10 * time.Second` | `packages/shared/pkg/servicediscovery/cached.go:11,41` |
+| `merged.go` | `NewMerged(primary, fallback)` | `packages/shared/pkg/servicediscovery/merged.go:27` |
+| `local.go` | `NewLocal(addr)`，`localInstanceID = "local"` | `packages/shared/pkg/servicediscovery/local.go:14,28` |
+| `remote.go` | `NewRemote(client)` | `packages/shared/pkg/servicediscovery/remote.go:26` |
+| `static.go` | `NewStatic(results, port)` | `packages/shared/pkg/servicediscovery/static.go:14` |
+| `provider/provider.go` | `New(...)` 与各 provider 构造、`ErrMissingStaticEndpoints` | `packages/shared/pkg/servicediscovery/provider/provider.go:33,136` |
+| `dns/dns.go` | `New(hosts, resolver, servicePort)` | `packages/shared/pkg/servicediscovery/dns/dns.go:38` |
+| `nomad/services.go` | `NewServices(client, serviceNames)` | `packages/shared/pkg/servicediscovery/nomad/services.go:33` |
+| `nomad/nodepool.go` | `NewNodePool(client, nodePool)` | `packages/shared/pkg/servicediscovery/nomad/nodepool.go:36` |
+| `nomad/allocations.go` | `NewAllocations` / `NewAllocationsOnPort` | `packages/shared/pkg/servicediscovery/nomad/allocations.go:32,38` |
+| `kube/pods.go` | `NewPods` / `NewPodsOnPort` | `packages/shared/pkg/servicediscovery/kube/pods.go:45,56` |
+| `kube/client.go` | `NewClient(ctx, endpoint)` | `packages/shared/pkg/servicediscovery/kube/client.go:43` |
+
+### 0.2 新增 `nomad+kubernetes` 组合 provider
+
+API 侧的装配被重写为「两个发现平面」结构：
+
+```text
+type serviceDiscovery struct {
+    nodes            servicediscovery.Discoverer
+    templateBuilders servicediscovery.Discoverer
+}
+```
+
+入口是 `newServiceDiscovery`（`packages/api/internal/handlers/store.go:74`），按 `cfg.ServiceDiscoveryProvider` 分派；新增的 `ServiceDiscoveryProviderNomadKubernetes = "nomad+kubernetes"`（`packages/api/internal/cfg/model.go:26`）由 `newComposedServiceDiscovery`（`store.go:90`）处理，用 `servicediscovery.NewMerged` 把 Nomad 与 K8s 两条后端在**两个平面上各自取并集**（`store.go:101-104`）。
+
+⚠️ 这意味着「provider 是单一后端」的前提在 2026.30 不再成立。`nomad+kubernetes` 模式下，同一轮发现里 Nomad 与 K8s 的结果会合并；排查「节点为什么出现在候选池里」时必须先确认是哪条后端贡献的。
+
+其余分派函数：`serviceDiscoveryProvider`（`store.go:112`）、`newKubernetesServiceDiscovery`（`store.go:124`）、`newLocalServiceDiscovery`（`store.go:144`）、`newNomadServiceDiscovery`（`store.go:158`）。K8s 两个 selector 的默认值在 `packages/api/internal/cfg/model.go:100-101`；`NOMAD_ORCHESTRATOR_SERVICE_NAMES` 在 `model.go:75`，`NOMAD_ORCHESTRATOR_LEGACY_DISCOVERY_ENABLED` 在 `model.go:87`，`LOCAL_ORCHESTRATOR_ADDRESS` 在 `model.go:93`。legacy 合并仍在 `store.go:177`（`servicediscovery.NewMerged(nodes, nomad.NewNodePool(client, "default"))`）。
+
+### 0.3 Orchestrator 侧节点状态与关停
+
+| 项目 | 2026.30 变化 | 位置（2026.30） |
+|---|---|---|
+| 节点状态枚举 | 新增 `ShuttingDown = 4` | `packages/orchestrator/info.proto:17` |
+| 关停时写入的状态 | 由 `Draining` 改为 `ShuttingDown`，并额外 sleep 15 秒 | `packages/orchestrator/pkg/factories/run.go:1085-1091`（2026.29 为 950-952，写 `Draining`） |
+| 在途工作上报 | 新增 `outstanding_work = 58` 与 `TrackWork()` | `packages/orchestrator/info.proto:55-56`、`packages/orchestrator/pkg/service/info.go:53-60` |
+| 健康映射 | `Draining`、`Standby`、`ShuttingDown` 统一报 `e2bHealth.Draining` | `packages/orchestrator/pkg/healthcheck/healthcheck.go:44-45` |
+| 节点标签配置 | `NODE_LABELS` 位置由 `cfg/model.go:90` 移到 `:89`；同文件新增 `INSTANCE_GROUP_NAME`（`InstanceGroupName`，取代原 `LaunchDarklyAPIKey`） | `packages/orchestrator/pkg/cfg/model.go:86,89` |
+| 节点侧接收限制 | `max-sandboxes-per-node` 检查在 `sandboxes.go:212-218`；启动名额 `waitForAcquire` 在 `:223`、`TryAcquire` 在 `:228`；`requestTimeout` / `acquireTimeout` 由 44/47 移到 51/52 | `packages/orchestrator/pkg/server/sandboxes.go:51,52,212,218,223,228` |
+| semaphore 刷新 | 初始化在 `server/main.go:128-129`，周期刷新在 `:407-422` | `packages/orchestrator/pkg/server/main.go` |
+
+⚠️ 因此 §6「服务 Drain」一行描述的行为在 2026.30 已经改变：节点对外暴露的状态是 `ShuttingDown` 而非 `Draining`。API 侧仍只把 `Ready` 纳入常规采样（排除 `Draining`、`Standby`、`Connecting`、`Unhealthy`），`ShuttingDown` 经健康检查被映射为 `Draining` 后同样被排除——但**前提是发现方消费的是健康检查结果而非原始枚举**。这一点是跨服务契约，必须两边同时确认。
+
+### 0.4 基础设施路径全部失效
+
+⛔ `iac/` 目录在 2026.30 被整体删除（172 个文件 → 0，commit `8a1c4888`「chore(deploy): retire Nomad-based deployment ahead of a new deploy path」），根目录 `self-host.md` 随之删除。§6 与 §7 中所有 `../iac/**` 链接（orchestrator jobspec、template-manager jobspec、autoscaler、GCP worker-cluster nodepool）**保留为历史档案，但已无法在本仓库中打开**。`packages/nomad-nodepool-apm/` 仍然存在。⚠️ `packages/docker-reverse-proxy/`（19 个文件 → 0）是**另一个更早的提交** `d153bbe9d`（Jakub Rojko，2026-08-06，`chore(docker-reverse-proxy): remove deprecated service`）删的，不在 `8a1c4888` 这批里。
 
 ## 1. 调度层次与两类任务对照
 
@@ -27,22 +93,30 @@
 | `Cluster` | 逻辑集群，包含服务实例及访问资源；本地集群 ID 为全零 UUID，远端集群通过 endpoint 连接 | 限定搜索范围 | [cluster.go:39](../packages/api/internal/clusters/cluster.go#L39)、[本地集群:37](../packages/api/internal/clusters/clusters_sync.go#L37)、[远端连接:141](../packages/api/internal/clusters/cluster.go#L141) |
 | `clusters.Instance` | 缓存 `NodeID`、`serviceInstanceID`、角色、健康状态、机器 CPU 信息；builder 直接从此池选择 | 是，builder 的候选依据 | [instance.go:30](../packages/api/internal/clusters/instance.go#L30)、[同步角色与 CPU:161](../packages/api/internal/clusters/instance.go#L161) |
 | `nodemanager.Node` | API 管理的 Sandbox 节点：连接、状态、标签、指标，以及本 API 进程内正在分配的资源记录 | 是，Best-of-K 的候选依据；多集群 map key 带集群作用域 | [node.go:98](../packages/api/internal/orchestrator/nodemanager/node.go#L98)、[集群节点包装:139](../packages/api/internal/orchestrator/nodemanager/node.go#L139)、[scopedNodeID:89](../packages/api/internal/orchestrator/client.go#L89) |
-| 发现层 ShortID／进程实例 ID | Nomad 发现使用截短的 Nomad node UUID，K8s 发现使用完整 Pod 名；`ServiceInfo` 另外报告节点 ID 与进程实例 ID | 不应把这些 ID 当成同一个字段；远端 gRPC 用进程实例 ID 路由，进程更换还参与缓存失效判断 | [Nomad ShortID:74](../packages/api/internal/orchestrator/discovery/nomad.go#L74)、[K8s ShortID:67](../packages/api/internal/orchestrator/discovery/kubernetes.go#L67)、[ServiceInfo:70](../packages/orchestrator/pkg/service/service_info.go#L70)、[实例失效:182](../packages/api/internal/orchestrator/cache.go#L182) |
-| `ServiceInfo.roles` | 由启用的服务映射为 `Orchestrator`／`TemplateBuilder` | 集群中的 orchestrator 按角色进入 Sandbox Node 池；构建要求 builder 角色 | [角色映射:40](../packages/orchestrator/pkg/service/info.go#L40)、[GetOrchestrators:259](../packages/api/internal/clusters/cluster.go#L259)、[接入 Node 池:154](../packages/api/internal/orchestrator/cache.go#L154) |
+| 发现层 `WorkloadID`／进程实例 ID | ⛔ 2026.29 的 `ShortID` 字段在 2026.30 已重命名为 `Instance.WorkloadID`；`Instance` 现含 `WorkloadID`、`NodeID`、`IPAddress`、`Port`、`Backend` 五个字段。注释要求消费方把它当作**不假设宽度的不透明字符串**，且「同一实例在多个后端取并集时必须一致」——两个 Nomad node 后端都从 node 而非 allocation 推导它 | 不应把这些 ID 当成同一个字段；远端 gRPC 用进程实例 ID 路由，进程更换还参与缓存失效判断 | [Instance:53-81](../packages/shared/pkg/servicediscovery/servicediscovery.go#L53)、[ServiceInfo:88](../packages/orchestrator/pkg/service/service_info.go#L88)、[实例失效:182](../packages/api/internal/orchestrator/cache.go#L182) |
+| `ServiceInfo.roles` | 由启用的服务映射为 `Orchestrator`／`TemplateBuilder` | 集群中的 orchestrator 按角色进入 Sandbox Node 池；构建要求 builder 角色 | [角色映射:41](../packages/orchestrator/pkg/service/info.go#L41)（2026.29 为 40）、[GetOrchestrators:259](../packages/api/internal/clusters/cluster.go#L259)、[接入 Node 池:154](../packages/api/internal/orchestrator/cache.go#L154) |
 | `teams.sandbox_scheduling_labels` | 数据库字段，非空数组，默认 `{}`；它保存团队的节点标签要求 | 只有 Sandbox 标签 Flag 启用时才进入过滤规则 | [字段迁移:3](../packages/db/migrations/20260309120000_add_team_sandbox_scheduling_labels.sql#L3)、[读取标签要求:485](../packages/api/internal/orchestrator/create_instance.go#L485) |
-| 节点 `NODE_LABELS` | 节点进程从环境变量按逗号读取，经 `ServiceInfo.labels` 上报；Nomad jobspec 从节点 metadata 注入 | Sandbox 可用；builder 选择器未读取这些标签 | [cfg/model.go:90](../packages/orchestrator/pkg/cfg/model.go#L90)、[ServiceInfo:80](../packages/orchestrator/pkg/service/service_info.go#L80)、[Nomad 注入:68](../iac/modules/job-orchestrator/jobs/orchestrator.hcl#L68)、[builder 条件:238](../packages/api/internal/clusters/cluster.go#L238) |
+| 节点 `NODE_LABELS` | 节点进程从环境变量按逗号读取，经 `ServiceInfo.labels` 上报 | Sandbox 可用；builder 选择器未读取这些标签 | [cfg/model.go:89](../packages/orchestrator/pkg/cfg/model.go#L89)（2026.29 为 90）、[ServiceInfo:88](../packages/orchestrator/pkg/service/service_info.go#L88)、[⛔ Nomad 注入:68](../iac/modules/job-orchestrator/jobs/orchestrator.hcl#L68)、[builder 条件:238](../packages/api/internal/clusters/cluster.go#L238) |
 | `env_builds.cluster_node_id`、`cpu_*` | 构建开始前保存已选 builder 节点及 CPU 描述；vCPU、RAM 等规格另存于 build | node ID 用于后续构建调用；CPU 描述用于 Sandbox 常规兼容性筛选 | [保存选点结果:145](../packages/api/internal/handlers/template_start_build_v2.go#L145)、[更新 SQL:1](../packages/db/queries/builds/update_template.sql#L1)、[读取 build CPU:325](../packages/api/internal/orchestrator/create_instance.go#L325) |
 | `snapshots.origin_node_id` | 暂停快照的来源节点；恢复数据读取后放入 `SandboxMetadata.NodeID` | 恢复时形成节点偏好，既不是节点锁定，也不保证原节点仍可用 | [恢复元数据:214](../packages/api/internal/handlers/sandbox_resume.go#L214)、[NodeID 传递:250](../packages/api/internal/handlers/sandbox_resume.go#L250)、[原节点判断:310](../packages/api/internal/orchestrator/create_instance.go#L310) |
 
 ### 2.2 节点从哪里发现
 
-| 模式 | Sandbox 节点发现 | Template builder 发现 | 源码依据 |
-|---|---|---|---|
-| Nomad，默认 provider | 查询 `NOMAD_ORCHESTRATOR_SERVICE_NAMES` 指定的原生服务，默认 `orchestrator`；合并并按 Nomad NodeID 去重，跳过空地址，采用服务登记端口。登记本身不代表健康 | 查询 running allocations，要求 task group 为 `template-manager` 且 JobID 包含 `template-manager`；读取 allocation IP，随后通过 ServiceInfo 确认角色与状态 | [provider 默认值:46](../packages/api/internal/cfg/model.go#L46)、[服务发现:41](../packages/api/internal/orchestrator/discovery/nomad.go#L41)、[builder 发现:55](../packages/api/internal/clusters/discovery/local.go#L55)、[allocation 过滤:29](../packages/shared/pkg/clusters/discovery/nomad.go#L29) |
-| Nomad 历史兼容 | `NOMAD_ORCHESTRATOR_LEGACY_DISCOVERY_ENABLED` 默认 `true`：额外列出 `default` pool 内 Status 为 ready 的节点，使用约定 gRPC 端口。按 ShortID 合并，服务登记优先；任一发现源失败使本轮发现失败 | 不走这个 Sandbox 合并分支 | [装配兼容源:174](../packages/api/internal/handlers/store.go#L174)、[Flag 默认值:67](../packages/api/internal/cfg/model.go#L67)、[旧发现条件:47](../packages/api/internal/orchestrator/discovery/nomad_node_pool.go#L47)、[合并规则:34](../packages/api/internal/orchestrator/discovery/merged.go#L34) |
-| Kubernetes | 按 namespace 与 orchestrator Pod selector 列举，只接受 Running 且 Ready 的 Pod；优先 HostIP，缺失时用 PodIP | 使用独立的 template-manager Pod selector，也要求 Running 且 Ready | [provider 装配:140](../packages/api/internal/handlers/store.go#L140)、[Sandbox Pod 筛选:40](../packages/api/internal/orchestrator/discovery/kubernetes.go#L40)、[builder Pod 筛选:40](../packages/api/internal/clusters/discovery/kubernetes.go#L40)、[默认 selectors:75](../packages/api/internal/cfg/model.go#L75) |
-| `SERVICE_DISCOVERY_PROVIDER=local` | 使用固定 `LOCAL_ORCHESTRATOR_ADDRESS`，默认 `127.0.0.1:5008` | 该 provider 明确装配空 builder 列表，因此不能据此认定本地模式具备构建节点 | [local 分支:157](../packages/api/internal/handlers/store.go#L157)、[地址默认值:73](../packages/api/internal/cfg/model.go#L73) |
-| 远端逻辑集群 | 由 Edge API 的 service discovery 返回节点；控制调用经集群 gRPC proxy，携带实例路由信息 | 复用该集群发现到的 Instance，再按 builder 角色筛选 | [远端发现:44](../packages/api/internal/clusters/discovery/remote.go#L44)、[远端客户端:141](../packages/api/internal/clusters/cluster.go#L141)、[角色筛选:238](../packages/api/internal/clusters/cluster.go#L238) |
+⚠️ 2026.30 起本表所有路径都已改写：发现实现统一在 `packages/shared/pkg/servicediscovery/`，API 侧只保留装配层（`packages/api/internal/handlers/store.go`）。表中「2026.29 路径」列仅作历史对照，链接已失效。
+
+| 模式 | Sandbox 节点发现 | Template builder 发现 | 源码依据（2026.30） | 2026.29 路径 |
+|---|---|---|---|---|
+| Nomad，默认 provider | 查询 `NOMAD_ORCHESTRATOR_SERVICE_NAMES` 指定的原生服务，默认 `orchestrator`；合并并按 Nomad NodeID 去重，跳过空地址，采用服务登记端口。登记本身不代表健康 | 查询 running allocations，要求 task group 为 `template-manager` 且 JobID 包含 `template-manager`；读取 allocation IP，随后通过 ServiceInfo 确认角色与状态 | [装配:158-182](../packages/api/internal/handlers/store.go#L158)、[服务发现:40](../packages/shared/pkg/servicediscovery/nomad/services.go#L40)、[allocation 发现:42](../packages/shared/pkg/servicediscovery/nomad/allocations.go#L42)、[服务名默认值:75](../packages/api/internal/cfg/model.go#L75) | `orchestrator/discovery/nomad.go:41`、`clusters/discovery/local.go:55`、`shared/pkg/clusters/discovery/nomad.go:29` |
+| Nomad 历史兼容 | `NOMAD_ORCHESTRATOR_LEGACY_DISCOVERY_ENABLED` 默认 `true`：额外列出 `default` pool 内 Status 为 ready 的节点，使用约定 gRPC 端口。用 `NewMerged` 合并，服务登记优先 | 不走这个 Sandbox 合并分支 | [装配兼容源:177](../packages/api/internal/handlers/store.go#L177)、[Flag 默认值:87](../packages/api/internal/cfg/model.go#L87)、[nodepool 发现:43](../packages/shared/pkg/servicediscovery/nomad/nodepool.go#L43)、[合并规则:27](../packages/shared/pkg/servicediscovery/merged.go#L27) | `orchestrator/discovery/nomad_node_pool.go:47`、`orchestrator/discovery/merged.go:34` |
+| Kubernetes | 按 namespace 与 orchestrator Pod selector 列举，只接受 Running 且 Ready 的 Pod；优先 HostIP，缺失时用 PodIP | 使用独立的 template-manager Pod selector，也要求 Running 且 Ready | [provider 装配:124-142](../packages/api/internal/handlers/store.go#L124)、[Pod 筛选:66](../packages/shared/pkg/servicediscovery/kube/pods.go#L66)、[地址选择:106](../packages/shared/pkg/servicediscovery/kube/pods.go#L106)、[默认 selectors:100-101](../packages/api/internal/cfg/model.go#L100) | `orchestrator/discovery/kubernetes.go:40`、`clusters/discovery/kubernetes.go:40` |
+| `SERVICE_DISCOVERY_PROVIDER=nomad+kubernetes`（2026.30 新增） | 用 `NewMerged(nomadPlanes.nodes, kubePlanes.nodes)` 把两条后端取并集 | 同样在 builder 平面上取并集：`NewMerged(nomadPlanes.templateBuilders, kubePlanes.templateBuilders)` | [provider 常量:26](../packages/api/internal/cfg/model.go#L26)、[组合装配:90-104](../packages/api/internal/handlers/store.go#L90)、[merged:27](../packages/shared/pkg/servicediscovery/merged.go#L27) | 不存在 |
+| `SERVICE_DISCOVERY_PROVIDER=local` | 使用固定 `LOCAL_ORCHESTRATOR_ADDRESS`，默认 `127.0.0.1:5008` | 该 provider 明确装配空 builder 列表，因此不能据此认定本地模式具备构建节点 | [local 分支:144](../packages/api/internal/handlers/store.go#L144)、[NewLocal:28](../packages/shared/pkg/servicediscovery/local.go#L28)、[地址默认值:93](../packages/api/internal/cfg/model.go#L93) | `store.go:157`、`cfg/model.go:73` |
+| 远端逻辑集群 | 由 Edge API 的 service discovery 返回节点；控制调用经集群 gRPC proxy，携带实例路由信息 | 复用该集群发现到的 Instance，再按 builder 角色筛选 | [NewRemote:26](../packages/shared/pkg/servicediscovery/remote.go#L26)、[远端客户端:141](../packages/api/internal/clusters/cluster.go#L141)、[角色筛选:238](../packages/api/internal/clusters/cluster.go#L238) | `clusters/discovery/remote.go:44` |
+| DNS（`servicediscovery/dns`，未在 API 默认分派中启用） | 按主机名解析，`dnsClient` 超时 2 秒 | 同左 | [dns:22,38,77](../packages/shared/pkg/servicediscovery/dns/dns.go#L38) | 不存在 |
+| STATIC | 由 `NewStatic(results, port)` 直接返回固定地址列表；缺地址时报 `ErrMissingStaticEndpoints` | 同左 | [static:14](../packages/shared/pkg/servicediscovery/static.go#L14)、[provider:136](../packages/shared/pkg/servicediscovery/provider/provider.go#L136) | 不存在 |
+| 缓存包装 | `Cached(lister, logger)` 以 10 秒间隔刷新；首次刷新完成前 `ListInstances` 返回 `ErrNotYetSynced` | 同左 | [cached:11,41,69](../packages/shared/pkg/servicediscovery/cached.go#L41)、[ErrNotYetSynced:27](../packages/shared/pkg/servicediscovery/servicediscovery.go#L27) | 不存在 |
+
+⚠️ `SERVICE_DISCOVERY_PROVIDER` 的合法取值由 `cfg/model.go:291` 校验；2026.30 起 `nomad+kubernetes` 是合法值之一，非法值在启动时以 `invalid_service_discovery_provider` 失败（`cfg/model.go:154`）。
 
 ### 2.3 健康状态如何影响候选集合
 
@@ -109,12 +183,13 @@ score = (本次请求 vCPU + reservedCPU + Alpha × usedCPU)
 
 | 限制 | 默认值／单位 | 校验与超限行为 | 源码依据 |
 |---|---|---|---|
-| `max-sandboxes-per-node` | 200，个 | 每次 Create 读取 Flag；当前本机 Sandbox map 的 Count 达到阈值时，返回 gRPC `ResourceExhausted`。这是入口计数检查，没有把后续尚未进入 map 的启动请求合并为原子容量预留 | [Flag:282](../packages/shared/pkg/featureflags/flags.go#L282)、[运行数检查:139](../packages/orchestrator/pkg/server/sandboxes.go#L139) |
-| `max-starting-instances-per-node` | 3，同时进行的启动／恢复操作 | 单节点可调整 semaphore；普通新建 `TryAcquire(1)`，无名额立即返回 `ResourceExhausted`；Create 结束释放名额 | [Flag:367](../packages/shared/pkg/featureflags/flags.go#L367)、[semaphore 初始化:117](../packages/orchestrator/pkg/server/main.go#L117)、[获取／释放:148](../packages/orchestrator/pkg/server/sandboxes.go#L148) |
-| 快照恢复等待名额 | 最长 15 秒，也受上游 context 限制 | `Snapshot=true` 调用阻塞 Acquire；等待失败返回 `ResourceExhausted`。不是新建请求的全局排队服务 | [acquireTimeout:44](../packages/orchestrator/pkg/server/sandboxes.go#L44)、[分支:149](../packages/orchestrator/pkg/server/sandboxes.go#L149)、[waitForAcquire:14](../packages/orchestrator/pkg/server/utils.go#L14) |
-| 同一启动名额的其他消费者 | 共享上述 semaphore | Checkpoint 也获取并释放该名额；启用暂停侧预取采集后，其临时恢复路径同样获取名额。因此默认 3 个名额并非仅供外部 Create 请求使用 | [Checkpoint:746](../packages/orchestrator/pkg/server/sandboxes.go#L746)、[预取采集开关:163](../packages/orchestrator/pkg/server/prefetch_harvest.go#L163)、[共享名额:127](../packages/orchestrator/pkg/server/prefetch_harvest.go#L127)、[获取名额:296](../packages/orchestrator/pkg/server/prefetch_harvest.go#L296) |
-| 节点 Create RPC | 最长 60 秒，也受上游 deadline 限制 | 节点为本次调用添加超时；这是启动请求的处理时间，区别于沙箱本身的存活时间 `timeout` | [requestTimeout:44](../packages/orchestrator/pkg/server/sandboxes.go#L44)、[context:75](../packages/orchestrator/pkg/server/sandboxes.go#L75)、[沙箱存活时间:61](../packages/api/internal/handlers/sandbox.go#L61) |
-| 启动名额动态变更 | 每 30 秒重读 | 启动时非正值使 semaphore 初始化失败；运行中非正值被忽略，不表示无限并发；正值用于调整 limit | [刷新周期:38](../packages/orchestrator/pkg/server/main.go#L38)、[初始化校验:23](../packages/shared/pkg/utils/resizable_semaphore.go#L23)、[刷新逻辑:336](../packages/orchestrator/pkg/server/main.go#L336) |
+| `max-sandboxes-per-node` | 200，个 | 每次 Create 读取 Flag；当前本机 Sandbox map 的 Count 达到阈值时，返回 gRPC `ResourceExhausted`。这是入口计数检查，没有把后续尚未进入 map 的启动请求合并为原子容量预留 | [Flag:282](../packages/shared/pkg/featureflags/flags.go#L282)、[运行数检查:212-218](../packages/orchestrator/pkg/server/sandboxes.go#L212)（2026.29 为 139） |
+| `max-starting-instances-per-node` | 3，同时进行的启动／恢复操作 | 单节点可调整 semaphore；普通新建 `TryAcquire(1)`，无名额立即返回 `ResourceExhausted`；Create 结束释放名额 | [Flag:367](../packages/shared/pkg/featureflags/flags.go#L367)、[semaphore 初始化:128-129](../packages/orchestrator/pkg/server/main.go#L128)（2026.29 为 117）、[获取／释放:223-235](../packages/orchestrator/pkg/server/sandboxes.go#L223)（2026.29 为 148） |
+| 快照恢复等待名额 | 最长 15 秒，也受上游 context 限制 | `Snapshot=true` 调用阻塞 Acquire；等待失败返回 `ResourceExhausted`。不是新建请求的全局排队服务 | [acquireTimeout:52](../packages/orchestrator/pkg/server/sandboxes.go#L52)（2026.29 为 44）、[分支:223-228](../packages/orchestrator/pkg/server/sandboxes.go#L223)、[waitForAcquire:14](../packages/orchestrator/pkg/server/utils.go#L14) |
+| 同一启动名额的其他消费者 | 共享上述 semaphore | Checkpoint 也获取并释放该名额；启用暂停侧预取采集后，其临时恢复路径同样获取名额。因此默认 3 个名额并非仅供外部 Create 请求使用 | [Checkpoint:1062-1066](../packages/orchestrator/pkg/server/sandboxes.go#L1062)（2026.29 为 746）、[预取采集共享名额:171](../packages/orchestrator/pkg/server/prefetch_harvest.go#L171)、[TrackWork:214](../packages/orchestrator/pkg/server/prefetch_harvest.go#L214) |
+| 节点 Create RPC | 最长 60 秒，也受上游 deadline 限制 | 节点为本次调用添加超时；这是启动请求的处理时间，区别于沙箱本身的存活时间 `timeout` | [requestTimeout:51](../packages/orchestrator/pkg/server/sandboxes.go#L51)（2026.29 为 44）、[context:133](../packages/orchestrator/pkg/server/sandboxes.go#L133)、[沙箱存活时间:61](../packages/api/internal/handlers/sandbox.go#L61) |
+| 启动名额动态变更 | 每 30 秒重读 | 启动时非正值使 semaphore 初始化失败；运行中非正值被忽略，不表示无限并发；正值用于调整 limit | [刷新周期:39](../packages/orchestrator/pkg/server/main.go#L39)、[初始化校验:23](../packages/shared/pkg/utils/resizable_semaphore.go#L23)、[刷新逻辑:407-422](../packages/orchestrator/pkg/server/main.go#L407)（2026.29 为 336） |
+| 在途工作计数（2026.30 新增） | 无阈值，纯上报 | `Server.Create`、`Update`、`Delete`、`Pause`、`Checkpoint` 等路径用 `TrackWork()` 登记并在结束时释放；节点通过 `outstanding_work` 上报。缺失表示 unknown 而非 idle | [TrackWork:53-60](../packages/orchestrator/pkg/service/info.go#L53)、[proto:55-56](../packages/orchestrator/info.proto#L55)、[Create 登记:126](../packages/orchestrator/pkg/server/sandboxes.go#L126) |
 
 ### 3.5 恢复偏好及重试细节
 
@@ -181,19 +256,21 @@ score = (本次请求 vCPU + reservedCPU + Alpha × usedCPU)
 | `sandbox-placement-optimistic-resource-accounting` | false | 控制 API 本地成功分配后的 CPU／RAM 乐观累加，独立于请求进行中的 pending 记账 | [Flag:167](../packages/shared/pkg/featureflags/flags.go#L167)、[OptimisticAdd:201](../packages/api/internal/orchestrator/nodemanager/node.go#L201) |
 | `resume-origin-node-remap` | false | 恢复请求结束且有记录到的尝试节点时，按 team／sandbox context 控制快照来源节点更新 | [Flag:213](../packages/shared/pkg/featureflags/flags.go#L213)、[判断与更新:436](../packages/api/internal/orchestrator/create_instance.go#L436) |
 | `preferred-build-node` | JSON null | 每次选 builder 读取，附加 cluster context；非空 architecture 时尝试精确 CPU 匹配，失败可放开偏好 | [Flag:497](../packages/shared/pkg/featureflags/flags.go#L497)、[读取与回退:117](../packages/api/internal/template-manager/template_manager.go#L117) |
-| `max-sandboxes-per-node`／`max-starting-instances-per-node` | 200／3 | 在节点 Sandbox RPC 中执行；前者每请求读取，后者由节点周期刷新 semaphore；不属于 Best-of-K 参数 | [运行数校验:139](../packages/orchestrator/pkg/server/sandboxes.go#L139)、[启动数校验:148](../packages/orchestrator/pkg/server/sandboxes.go#L148)、[刷新:336](../packages/orchestrator/pkg/server/main.go#L336) |
+| `max-sandboxes-per-node`／`max-starting-instances-per-node` | 200／3 | 在节点 Sandbox RPC 中执行；前者每请求读取，后者由节点周期刷新 semaphore；不属于 Best-of-K 参数 | [运行数校验:212](../packages/orchestrator/pkg/server/sandboxes.go#L212)（2026.29 为 139）、[启动数校验:223](../packages/orchestrator/pkg/server/sandboxes.go#L223)（2026.29 为 148）、[刷新:407](../packages/orchestrator/pkg/server/main.go#L407)（2026.29 为 336） |
 
 ## 6. 节点部署、扩容与 Drain
 
 这里分析基础设施把服务进程放在哪些主机、部署多少实例。它与 API 将某一次 Sandbox／build 请求分配给哪个进程，是不同层面的决策。
 
-| 层次 | 仓库中确认的策略 | 与请求调度的关系 | 源码依据 |
+⛔ **本节的部署层依据在 2026.30 已整体失效。** `iac/` 目录被全部删除（172 个文件 → 0，commit `8a1c4888`「chore(deploy): retire Nomad-based deployment ahead of a new deploy path」），根目录 `self-host.md` 随之删除。下表前四行的 `../iac/**` 链接保留为历史档案，但已无法打开；它们描述的是 2026.29 及之前的 Nomad 部署路径。`packages/nomad-nodepool-apm/` 仍然存在。
+
+| 层次 | 仓库中确认的策略（2026.29 基线） | 与请求调度的关系 | 源码依据 |
 |---|---|---|---|
-| Nomad orchestrator jobspec | `type = system`，限定 `node_pool`；非 dev 版本还有 `meta.orchestrator_job_version` 约束，使用固定服务端口 | 决定哪些主机运行哪个版本的 orchestrator；每个 Sandbox VM 仍由该进程本机创建，而非提交一个独立 Nomad job | [orchestrator.hcl:1](../iac/modules/job-orchestrator/jobs/orchestrator.hcl#L1)、[版本约束:20](../iac/modules/job-orchestrator/jobs/orchestrator.hcl#L20)、[节点本机启动:229](../packages/orchestrator/pkg/server/sandboxes.go#L229) |
-| Nomad template-manager jobspec | `type = service`，限定 `node_pool`；`distinct_hosts=true`，count 使用当前 Nomad 数量，以保留 autoscaler 管理值 | 部署层约束一个节点一个该 job allocation；不代表一个节点同时只处理一个 build | [template-manager.hcl:1](../iac/modules/job-template-manager/jobs/template-manager.hcl#L1)、[并发 goroutine:124](../packages/orchestrator/pkg/template/server/create_template.go#L124) |
-| template-manager 实例扩缩 | `update_stanza` 条件满足时启用 scaling：min 2、max 10000、每 10 秒评估、cooldown 2 分钟，pass-through 节点池计数。APM 实际只计 `ready && scheduling eligible` 的 Nomad 节点 | 目标是让服务实例数跟随可调度节点数，不是根据每个 build 的 CPU／RAM 或队列长度挑选 builder | [scaling 条件及参数:16](../iac/modules/job-template-manager/jobs/template-manager.hcl#L16)、[APM 计数:120](../packages/nomad-nodepool-apm/plugin/plugin.go#L120) |
-| GCP worker VM 扩容 | 共享 worker-cluster 模块只在 `autoscaler.size_max > cluster_size` 时创建 autoscaler；min 为 cluster_size，max 为 size_max，cooldown 240 秒，模式 `ONLY_SCALE_OUT`；可配置 CPU 与内存指标目标 | 这是宿主机数量控制。即使云层使用内存指标，API Best-of-K 仍未使用 RAM 容量评分；具体部署的 size／target **未确认** | [nodepool.tf:52](../iac/provider-gcp/nomad-cluster/worker-cluster/nodepool.tf#L52)、[CPU／内存条件:66](../iac/provider-gcp/nomad-cluster/worker-cluster/nodepool.tf#L66)、[Best-of-K:35](../packages/api/internal/orchestrator/placement/placement_best_of_K.go#L35) |
-| 服务 Drain | 退出时将 Healthy／Standby 改为 Draining，非本地环境等待 15 秒传播；然后等待在途 build。正常停止还等待现存 Sandbox 生命周期结束；ForceStop 路径跳过正常 Sandbox drain | 更新后的选择视图会停止选择 Draining 节点；现有工作在原进程收尾，这段逻辑没有把运行中的 VM／build 迁移到其他节点 | [退出流程:942](../packages/orchestrator/pkg/factories/run.go#L942)、[Sandbox 候选状态:172](../packages/api/internal/orchestrator/placement/placement_best_of_K.go#L172)、[builder 候选状态:238](../packages/api/internal/clusters/cluster.go#L238) |
+| ⛔ Nomad orchestrator jobspec | `type = system`，限定 `node_pool`；非 dev 版本还有 `meta.orchestrator_job_version` 约束，使用固定服务端口 | 决定哪些主机运行哪个版本的 orchestrator；每个 Sandbox VM 仍由该进程本机创建，而非提交一个独立 Nomad job | [⛔ orchestrator.hcl:1](../iac/modules/job-orchestrator/jobs/orchestrator.hcl#L1)、[⛔ 版本约束:20](../iac/modules/job-orchestrator/jobs/orchestrator.hcl#L20)、[节点本机启动:229](../packages/orchestrator/pkg/server/sandboxes.go#L229) |
+| ⛔ Nomad template-manager jobspec | `type = service`，限定 `node_pool`；`distinct_hosts=true`，count 使用当前 Nomad 数量，以保留 autoscaler 管理值 | 部署层约束一个节点一个该 job allocation；不代表一个节点同时只处理一个 build | [⛔ template-manager.hcl:1](../iac/modules/job-template-manager/jobs/template-manager.hcl#L1)、[并发 goroutine:124](../packages/orchestrator/pkg/template/server/create_template.go#L124) |
+| ⛔ template-manager 实例扩缩 | `update_stanza` 条件满足时启用 scaling：min 2、max 10000、每 10 秒评估、cooldown 2 分钟，pass-through 节点池计数。APM 实际只计 `ready && scheduling eligible` 的 Nomad 节点 | 目标是让服务实例数跟随可调度节点数，不是根据每个 build 的 CPU／RAM 或队列长度挑选 builder | [⛔ scaling 条件及参数:16](../iac/modules/job-template-manager/jobs/template-manager.hcl#L16)、[APM 计数:120](../packages/nomad-nodepool-apm/plugin/plugin.go#L120) |
+| ⛔ GCP worker VM 扩容 | 共享 worker-cluster 模块只在 `autoscaler.size_max > cluster_size` 时创建 autoscaler；min 为 cluster_size，max 为 size_max，cooldown 240 秒，模式 `ONLY_SCALE_OUT`；可配置 CPU 与内存指标目标 | 这是宿主机数量控制。即使云层使用内存指标，API Best-of-K 仍未使用 RAM 容量评分；具体部署的 size／target **未确认** | [⛔ nodepool.tf:52](../iac/provider-gcp/nomad-cluster/worker-cluster/nodepool.tf#L52)、[⛔ CPU／内存条件:66](../iac/provider-gcp/nomad-cluster/worker-cluster/nodepool.tf#L66)、[Best-of-K:35](../packages/api/internal/orchestrator/placement/placement_best_of_K.go#L35) |
+| 服务 Drain（2026.30 已变更） | 退出时写入 **`ShuttingDown`**（2026.30 起；2026.29 为 `Draining`），非本地环境等待 15 秒传播；然后等待在途 build。正常停止还等待现存 Sandbox 生命周期结束；ForceStop 路径跳过正常 Sandbox drain | 更新后的选择视图会停止选择该节点（`Draining`/`Standby`/`ShuttingDown` 经健康检查统一映射为 `e2bHealth.Draining`）；现有工作在原进程收尾，这段逻辑没有把运行中的 VM／build 迁移到其他节点 | [退出流程:1085-1091](../packages/orchestrator/pkg/factories/run.go#L1085)（2026.29 为 950-952）、[健康映射:44-45](../packages/orchestrator/pkg/healthcheck/healthcheck.go#L44)、[Sandbox 候选状态:172](../packages/api/internal/orchestrator/placement/placement_best_of_K.go#L172)、[builder 候选状态:238](../packages/api/internal/clusters/cluster.go#L238) |
 | builder 退出等待 | WaitGroup 等待构建结束，受 close context 限制；非本地环境结束后再留 15 秒给消费者读取最终状态 | 在途 build 的状态查询可继续按 node ID 访问池中 Draining builder；不是任务转移队列 | [Wait:158](../packages/orchestrator/pkg/template/server/main.go#L158)、[状态读取宽限:37](../packages/orchestrator/pkg/template/server/main.go#L37)、[按 ID 获取:191](../packages/api/internal/clusters/cluster.go#L191) |
 
 ## 7. 已确认的能力边界与未确认项
@@ -202,9 +279,11 @@ score = (本次请求 vCPU + reservedCPU + Alpha × usedCPU)
 |---|---|---|
 | Sandbox 是否全局最优分配、严格限制 CPU 超分？ | 当前实现是随机 K 个合格候选内取最低分；没有 Score 阈值准入，不提供全池最低负载或四倍 CPU 封顶保证 | [采样及评分:93](../packages/api/internal/orchestrator/placement/placement_best_of_K.go#L93) |
 | builder 是否按资源剩余量、缓存命中率或公平队列选点？ | 当前选择器只读取健康、角色、可选 CPU 偏好；没有这些选择条件。本机层缓存存在，但没有被这里用作节点偏好 | [builder 选择器:215](../packages/api/internal/clusters/cluster.go#L215)、[本机层缓存:135](../packages/orchestrator/pkg/template/build/phases/phase.go#L135) |
-| 是否有 builder 专用的节点级 build 并发阈值？ | 已核对的选点与 TemplateCreate 入口未实现该阈值；团队构建并发校验独立存在。不能从 activeBuilds 计数或 Nomad allocation 数量推导单机并发上限 | [TemplateCreate:108](../packages/orchestrator/pkg/template/server/create_template.go#L108)、[团队并发:73](../packages/api/internal/template/register_build.go#L73)、[Nomad 约束:10](../iac/modules/job-template-manager/jobs/template-manager.hcl#L10) |
-| 当前节点池、标签、Flag 线上取值是什么？ | **未确认**。仓库只给出配置来源与回退值；没有读取线上数据库、LaunchDarkly 或 Nomad／K8s 实时状态 | [API 配置:42](../packages/api/internal/cfg/model.go#L42)、[调度 Flag:289](../packages/shared/pkg/featureflags/flags.go#L289)、[节点标签:90](../packages/orchestrator/pkg/cfg/model.go#L90) |
-| Kubernetes 宿主机亲和性／反亲和性、真实资源 Requests 是什么？ | **未确认**。本分析确认了 API 的 Pod 发现和应用内选点；不能用发现代码中的部署注释代替实际 workload 清单 | [provider 装配:140](../packages/api/internal/handlers/store.go#L140)、[Sandbox Pod 发现:40](../packages/api/internal/orchestrator/discovery/kubernetes.go#L40)、[builder Pod 发现:40](../packages/api/internal/clusters/discovery/kubernetes.go#L40) |
+| 是否有 builder 专用的节点级 build 并发阈值？ | 已核对的选点与 TemplateCreate 入口未实现该阈值；团队构建并发校验独立存在。不能从 activeBuilds 计数或 Nomad allocation 数量推导单机并发上限 | [TemplateCreate:108](../packages/orchestrator/pkg/template/server/create_template.go#L108)、[团队并发:73](../packages/api/internal/template/register_build.go#L73)、[⛔ Nomad 约束:10](../iac/modules/job-template-manager/jobs/template-manager.hcl#L10) |
+| 当前节点池、标签、Flag 线上取值是什么？ | **未确认**。仓库只给出配置来源与回退值；没有读取线上数据库、LaunchDarkly 或 Nomad／K8s 实时状态 | [API 配置:42](../packages/api/internal/cfg/model.go#L42)、[调度 Flag:289](../packages/shared/pkg/featureflags/flags.go#L289)、[节点标签:89](../packages/orchestrator/pkg/cfg/model.go#L89)（2026.29 为 90） |
+| Kubernetes 宿主机亲和性／反亲和性、真实资源 Requests 是什么？ | **未确认**。本分析确认了 API 的 Pod 发现和应用内选点；不能用发现代码中的部署注释代替实际 workload 清单 | [provider 装配:124](../packages/api/internal/handlers/store.go#L124)（2026.29 为 140）、[Pod 发现:66](../packages/shared/pkg/servicediscovery/kube/pods.go#L66) |
+| `nomad+kubernetes` 组合模式下候选池是否去重？ | 已确认 `NewMerged` 只做并集与错误传播，**没有跨后端去重**；`Instance.WorkloadID` 的注释要求「同一实例在不同后端取并集时必须一致」，因此去重责任落在后端推导 WorkloadID 的约定上，而非合并层 | [merged:27-54](../packages/shared/pkg/servicediscovery/merged.go#L27)、[WorkloadID 注释:53-60](../packages/shared/pkg/servicediscovery/servicediscovery.go#L53) |
+| 2026.30 是否新增了节点侧容量准入？ | **未确认新增**。已确认的仍是运行数上限（`max-sandboxes-per-node`）与启动名额 semaphore（`max-starting-instances-per-node`）两项入口检查，Best-of-K 依旧不读 RAM／磁盘容量 | [运行数检查:212](../packages/orchestrator/pkg/server/sandboxes.go#L212)、[启动名额:223-228](../packages/orchestrator/pkg/server/sandboxes.go#L223)、[选点条件:167](../packages/api/internal/orchestrator/placement/placement_best_of_K.go#L167) |
 | 宿主机内存／磁盘耗尽是否一定被友好拒绝？ | **未确认统一的资源耗尽准入保障**。已确认常规选点不做 RAM／磁盘容量判断；节点入口校验运行数与启动名额，后续模板加载和 VM 操作仍可能报错，不能把它们等同容量充足证明 | [选点条件:167](../packages/api/internal/orchestrator/placement/placement_best_of_K.go#L167)、[节点入口:139](../packages/orchestrator/pkg/server/sandboxes.go#L139)、[启动错误处理:250](../packages/orchestrator/pkg/server/sandboxes.go#L250) |
 
 ## 8. 相关文档
@@ -217,3 +296,7 @@ score = (本次请求 vCPU + reservedCPU + Alpha × usedCPU)
 | [Template Build 端到端](./template-build-flow.md) | 构建阶段、层与最终产物 |
 | [Sandbox 完整生命周期](./sandbox-lifecycle.md) | 创建、运行、暂停和回收 |
 | [Artifact 存储与缓存](./artifact-storage-cache.md) | 模板／快照加载与分层缓存 |
+
+---
+
+已同步至 **2026.30**。本次同步**重点重核**了服务发现路径（`packages/shared/pkg/servicediscovery/`）、`nomad+kubernetes` 组合 provider、节点状态与关停（`ShuttingDown`、`outstanding_work`）、节点侧接收限制行号，以及 `iac/**` 失效标注；§1–§5 中未在上文列出的其余 API 选点行号仍以 2026.29 的 `93113e5eb` 为基线，尚未逐条重核。

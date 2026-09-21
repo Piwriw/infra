@@ -22,9 +22,25 @@
 Grafana -> Tempo / Mimir / Loki
 ```
 
-`packages/otel-collector` 是 CI/integration 专用的最小 Collector 启动包；生产 Collector 配置在 `iac/modules/job-otel-collector`，不要把三套配置视为同一个文件。
+`packages/otel-collector` 是 CI/integration 专用的最小 Collector 启动包；生产 Collector 配置原先在 `iac/modules/job-otel-collector`，不要把三套配置视为同一个文件。
 
-验证层也分开：包内 `*_test.go` 验证纯逻辑，`tests/integration` 驱动本机完整服务链，`tests/periodic-test` 定时验证已部署集群。
+> ⛔ **2026.30 起"生产 Collector 配置"不在本仓库了。** `iac/`（172 文件）在 2026.30 整体删除，提交 `8a1c48884406b909f64c1239c808d0bc1cbf05bf`（"chore(deploy): retire Nomad-based deployment ahead of a new deploy path"）。**"三套配置"这个区分本身仍然成立**——本地、CI、生产仍是三份——只是生产那份的路径不再可引用。
+
+验证层也分开：包内 `*_test.go` 验证纯逻辑，`tests/integration` 驱动本机完整服务链。
+
+> ⛔ **`tests/periodic-test` 在 2026.30 已删除**，配套的 `.github/workflows/periodic-test.yml` 也一并删除。**"定时验证已部署集群"这一层在 2026.30 不存在了**——不要按 2026.29 的三层结构去读。
+
+## 0. 2026.30 变动速览
+
+| 变动 | 说明 |
+| --- | --- |
+| **`tests/periodic-test/` 删除** | 连同 `.github/workflows/periodic-test.yml` |
+| **`iac/` 整体删除** | `job-otel-collector` / `job-logs-collector` 的生产配置路径全部失效 |
+| **`.github/actions/deploy-setup` 删除** | 部署相关的 composite action 随部署路径一起退场 |
+| **新增三个 composite action** | `integration-tests`、`start-databases`、`unit-tests`——CI 侧拆得更细 |
+| **新增 workflow** | `nixos-base-image.yml`、`nixos-pin-bump.yml`——只有这两个。`push-main.yml`、`pull-request.yml` 在 2026.29 就已存在，不是新增 |
+| **删除 workflow** | `periodic-test.yml`、`pr-no-generated-changes.yml`、`build-and-upload-images.yml`、`publish.yml`、`release-please.yml`、`validate-iac.yml` |
+| **`packages/local-dev/` 与 `packages/otel-collector/` 本身未变** | 两个目录在 2026.29 → 2026.30 之间**零文件差异**。本地栈怎么跑没变 |
 
 ## 2. 启动/装配
 
@@ -153,11 +169,12 @@ CI 的 integration 数据流与 Compose 类似，但为可控性逐个启动容�
 | 4 | `packages/local-dev/grafana-datasources.yaml` | Grafana 查询哪些后端？ |
 | 5 | `packages/local-dev/seed-local-database.go` | 固定本地身份和凭据如何生成？ |
 | 6 | `packages/otel-collector/tests/otel-collector.yaml` | CI 最小 Collector 验证了什么？ |
-| 7 | `iac/modules/job-otel-collector/configs/otel-collector.yaml` | 与生产 Collector 有哪些差异？ |
-| 8 | `iac/modules/job-logs-collector/configs/vector.toml` | 生产日志 fan-out 如何工作？ |
-| 9 | `tests/integration/README.md`、`internal/setup/` | 测试 client 和环境变量如何接线？ |
-| 10 | `.github/actions/start-services/action.yml` | CI 如何重建本地控制面？ |
-| 11 | `.github/workflows/periodic-test.yml` | 哪些旅程在真实集群持续运行？ |
+| 7 | `tests/integration/README.md`、`internal/setup/` | 测试 client 和环境变量如何接线？ |
+| 8 | `.github/actions/start-services/action.yml` | CI 如何重建本地控制面？ |
+| 9 | `.github/actions/start-databases/action.yml` | **2026.30 新增**：数据库依赖如何单独启动？ |
+| 10 | `.github/actions/unit-tests/action.yml`、`integration-tests/action.yml` | **2026.30 新增**：测试分层的接线点 |
+
+> ⛔ 2026.29 时这份清单的第 7、8、11 项分别是 `iac/modules/job-otel-collector/configs/otel-collector.yaml`、`iac/modules/job-logs-collector/configs/vector.toml`、`.github/workflows/periodic-test.yml`。**三个路径在 2026.30 都已删除。**
 
 ## 8. 相关深挖
 
@@ -165,4 +182,9 @@ CI 的 integration 数据流与 Compose 类似，但为可控性逐个启动容�
 - [ClickHouse package](../clickhouse-package.md)：Collector 落表、物化视图与迁移。
 - [API 模块](../api-module.md)：integration tests 驱动的主要 HTTP 入口。
 - [Client Proxy 模块](../client-proxy-module.md)：本地 auto-resume/proxy tests 对应的运行时链路。
-- [Sandbox 生命周期](../sandbox-lifecycle.md)：pause/resume 与 periodic test 验证的状态保持。
+- [Sandbox 生命周期](../sandbox-lifecycle.md)：pause/resume 的状态保持。
+- [可观测性数据管线](../observability-pipeline.md)：本地栈对应的生产链路。
+
+---
+
+*已同步至 **2026.30**。*

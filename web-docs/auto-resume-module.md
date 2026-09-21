@@ -3,6 +3,14 @@
 > 范围:当用户流量到达 client-proxy 而 sandbox 已 paused 时,系统自动触发恢复的完整链路——从配置、触发、校验、状态机到冷启动。
 >
 > 阅读建议:先看「一、概述」与「四、端到端时序图」建立全局视图,再按需深入具体章节。本文与 `sandbox-api-module.md`(REST 端点)、`client-proxy-module.md`(边缘路由)、`sandbox-management.md`(orchestrator 内部)互为补充,只在 auto-resume 这条路径上展开细节。
+>
+> 行号均按 tag `2026.30` 核对。已同步至 2026.30(2026-09-10)。
+
+> ⚠️ **2026.30 变动速览**:auto-resume 的 **gRPC 主链路(`proxy_grpc.go` 的 `SandboxService.ResumeSandbox`、`autoresume.go` 状态机、`timeout_helper.go`)在 2026.30 零 diff**,§8–§10 的全部行号依然有效。2026.30 的变化集中在**外围**:
+> 1. **client-proxy 侧**:`catalogResolution` 下移 2 行,并新增 `selectCatalog`(§7.1)。
+> 2. **REST 姊妹端点 `POST /sandboxes/{id}/resume` 行为变了**:body 变成可选、新增 409 "already running"、新增 `resolveFilesystemBoot` 前置校验(§十五)。
+> 3. **新增 flag `fs-only-resume-api`**(§11.2)。
+> 4. `buildResumeSandboxData` 签名新增 `memory *bool` 参数,行号从 `:191` 移到 `:233`(§8.8)。
 
 ## 目录
 
@@ -20,6 +28,7 @@
 - [十二、关键代码文件索引](#十二关键代码文件索引)
 - [十三、设计要点与权衡](#十三设计要点与权衡)
 - [十四、常见问题与排查](#十四常见问题与排查)
+- [十五、2026.30 变动:REST 姊妹端点 POST /sandboxes/{id}/resume](#十五202630-变动rest-姊妹端点-post-sandboxessandboxidresume)
 - [附录 A:成功条件清单](#附录-a成功条件清单)
 - [附录 B:gRPC 状态码映射](#附录-bgrpc-状态码映射)
 - [附录 C:术语表](#附录-c术语表)
@@ -354,7 +363,7 @@ if autoPauseFilesystemOnly && autoResume != nil && autoResume.Policy == types.Sa
 
 ### 7.1 入口:`catalogResolution`
 
-`packages/client-proxy/internal/proxy/proxy.go:76-95`:
+`packages/client-proxy/internal/proxy/proxy.go:74-93`(2026.29 为 `:76-95`):
 
 ```go
 func catalogResolution(ctx, sandboxId, sandboxPort, trafficAccessToken, envdAccessToken, c, pausedChecker) (string, error) {
@@ -376,9 +385,13 @@ func catalogResolution(ctx, sandboxId, sandboxPort, trafficAccessToken, envdAcce
 }
 ```
 
+> ⚠️ **2026.30 变动**:函数体逐字未改,但**传进来的 `c` 可能是两个不同 catalog 之一**。client-proxy 现在同时持有 API-owned `sandbox:catalog:{id}` 与 orchestrator-owned `sandbox:routing:{id}` 两份记录,由 `selectCatalog`(`proxy.go:136-144`)按 LD flag `orchestrator-routing-prioritized` 逐请求选择。**默认 flag 为 false,行为与 2026.29 一致**。
+>
+> **对 auto-resume 的含义**:catalog miss 的语义取决于选了哪份记录。若 `orchestrator-routing-prioritized` 已开启但 orchestrator 尚未写满一个 max sandbox lifetime,会出现"running 的 sandbox 也被判为 miss"→ 误触发 auto-resume。**rollout 顺序不能颠倒**(详见 `client-proxy-module.md` §6.5)。
+
 ### 7.2 `handlePausedSandbox` 的错误码映射
 
-`packages/client-proxy/internal/proxy/proxy.go:97-136`:
+`packages/client-proxy/internal/proxy/proxy.go:95-134`(2026.29 为 `:97-136`):
 
 | gRPC code | autoResumeResult | client-proxy 行为 |
 |---|---|---|
@@ -587,7 +600,9 @@ if nodeIP == "" {
 return &proxygrpc.SandboxResumeResponse{OrchestratorIp: nodeIP}, nil
 ```
 
-**注意 `buildResumeSandboxData`** —— 这与 REST `POST /sandboxes/{id}/resume` 共用同一个闭包(`sandbox_resume.go:192-258`)。闭包内会在 sandbox 锁内读取 snapshot 数据,避免 TOCTOU。
+**注意 `buildResumeSandboxData`** —— 这与 REST `POST /sandboxes/{id}/resume` 共用同一个闭包(`sandbox_resume.go:233-…`；2026.29 为 `:191-258`)。闭包内会在 sandbox 锁内读取 snapshot 数据,避免 TOCTOU。
+
+> ⚠️ **2026.30 变动**:`buildResumeSandboxData` 签名多了一个参数 —— `func (a *APIStore) buildResumeSandboxData(sandboxID string, autoPauseOverride, memory *bool)`(`sandbox_resume.go:233`)。`buildResumeSandboxDataFromSnapshot` 同样新增 `memory`(`:314`,2026.29 为 `:200`)。**auto-resume 路径传 `nil`**(见上方代码),即"普通 resume",所以本模块行为不受影响;`memory` 只被 REST `/resume` 与 `/connect` 用来请求显式冷启动。
 
 ---
 
@@ -771,9 +786,12 @@ func clampAutoResumeTimeout(requestedTimeout, teamPlanLimit, minAutoResumeTimeou
 
 | Flag | 类型 | 用途 |
 |---|---|---|
-| `MinAutoResumeTimeoutSeconds` | `IntFlag` | auto-resume 超时的团队级下限(秒) |
+| `MinAutoResumeTimeoutSeconds` | `IntFlag`(`"minimum-autoresume-timeout"`,默认 `300`) | auto-resume 超时的团队级下限(秒) |
+| `FsOnlyResumeAPIFlag`(2026.30 新增) | `BoolFlag`(`"fs-only-resume-api"`,默认 `false`) | 允许在 resume/connect 一个 **memory-inclusive** snapshot 时传 `memory:false`(显式冷启动救援)。**关闭时请求被 400 拒绝,绝不静默降级为 memory restore** |
 
 **无独立的 "auto-resume enabled" feature flag** —— 启用与否完全由 sandbox 级别的 `Policy` 控制。这是有意为之:auto-resume 是商业 feature,但开关放在 sandbox 配置而非团队 feature flag,意味着每个 sandbox 独立决定。
+
+> ⓘ `FsOnlyResumeAPIFlag` **只影响 REST `/resume` 与 `/connect`**(以及 §15 描述的 `resolveFilesystemBoot` 前置校验),**不影响 auto-resume 的 gRPC 路径**——后者 `memory` 恒为 `nil`。定义位置:`packages/shared/pkg/featureflags/flags.go:161-164`(2026.29 无此 flag)。
 
 ---
 
@@ -785,8 +803,9 @@ func clampAutoResumeTimeout(requestedTimeout, teamPlanLimit, minAutoResumeTimeou
 | `packages/api/internal/orchestrator/autoresume.go` | `HandleExistingSandboxAutoResume`、`ErrSandboxStillTransitioning`、`MaxAutoResumeTransitionRetries` | 状态机 |
 | `packages/api/internal/handlers/sandbox_create.go` | `buildAutoResumeConfig`、auto-resume 相关校验(line 165-185) | 创建时的配置翻译与约束 |
 | `packages/api/internal/handlers/timeout_helper.go` | `calculateAutoResumeTimeout`、`clampAutoResumeTimeout`、`calculateTimeoutSeconds`、`getTeamPlanLimit` | 超时计算 |
-| `packages/client-proxy/internal/proxy/proxy.go` | `catalogResolution`、`handlePausedSandbox` | 触发逻辑 |
-| `packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go` | `NewGRPCPausedSandboxResumer`、`grpcPausedSandboxResumer.Resume` | gRPC 客户端 |
+| `packages/client-proxy/internal/proxy/proxy.go` | `catalogResolution`(`:74-93`)、`handlePausedSandbox`(`:95-134`)、**`selectCatalog`**(`:136-144`,2026.30 新增) | 触发逻辑 |
+| `packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go` | `NewGRPCPausedSandboxResumer`、`grpcPausedSandboxResumer.Resume`(`:73-97`,两版一致) | gRPC 客户端 |
+| `packages/api/internal/handlers/sandbox_resume.go`(2026.30 变动) | `PostSandboxesSandboxIDResume`、`buildResumeSandboxData`(`:233`)、`buildResumeSandboxDataFromSnapshot`(`:314`)、`resolveFilesystemBoot`(`:285`)、`demandsFilesystemBoot`(`:273`)、`snapshotIsFilesystemOnly`(`:265`)、`resumeBackend`(`:39`)、`resumeWaitOrchestrator`(`:34-37`) | REST 姊妹端点,见 §十五 |
 | `packages/db/pkg/types/types.go` | `SandboxAutoResumeConfig`、`SandboxAutoResumePolicy`、`SandboxAutoResumeAny/Off`、`PausedSandboxConfig` | 类型定义 |
 | `packages/shared/pkg/grpc/proxy/metadata.go` | `MetadataSandboxRequestPort` 等 | gRPC metadata 常量 |
 | `packages/shared/pkg/grpc/proxy/status.go` | `SandboxStillTransitioningMessage` | 错误标识 |
@@ -943,6 +962,85 @@ connect 是用户主动的"软"恢复,auto-resume 是系统触发的"硬"恢复�
 - client-proxy 日志:`catalog miss, attempting resume via api` 之后无错误
 - ClickHouse:对应 sandbox 的 `sandbox_started` 事件,`is_resume=true`
 - Redis catalog:重新出现 sandboxID → nodeIP 映射
+
+---
+
+## 十五、2026.30 变动:REST 姊妹端点 `POST /sandboxes/{id}/resume`
+
+> 本节的端点本身属于 `sandbox-api-module.md` 的范围;此处只记录**它与 auto-resume 共享的代码路径**发生了什么变化,以及排障时需要知道的差异。
+
+auto-resume 走 gRPC `SandboxService.ResumeSandbox`(`proxy_grpc.go:127`);终端用户走 REST `PostSandboxesSandboxIDResume`(`sandbox_resume.go:47`)。两者**共用** `buildResumeSandboxData` 闭包和 `startSandbox`。2026.30 后者有三处实质变化:
+
+### 15.1 body 变为可选
+
+| | 2026.29 | 2026.30 |
+|---|---|---|
+| 解析函数 | `ginutils.ParseBody[...]`(`:47`) | `ginutils.ParseOptionalBody[...]`(`:67`) |
+| 无 body 时 | 400 `"Error when parsing request: …"` | ✅ 接受,**每个字段都有默认值** |
+| 注释原文 | — | `// The body is optional: every field defaults, so tolerate an absent one.` |
+
+同时 `timeout` 的解析从内联逻辑(`:58-67`)抽成了 `validateAndParseTimeout(body.Timeout, teamInfo.Limits.MaxLengthHours)`(`:78`)。
+
+### 15.2 新增 409 "already running"
+
+2026.29 在 `StatePausing` 分支只做 `WaitForStateChange`;2026.30 补了**两条** 409 出口:
+
+| 行 | 条件 | 响应 |
+|---|---|---|
+| `sandbox_resume.go:101-105` | `WaitForStateChange` 返回 `errors.Is(err, sandbox.ErrTransitionRestored)` | 409 `Sandbox <id> is already running` |
+| `sandbox_resume.go:117-121` | wait 结束后**重读**状态,发现已是 `StateRunning` | 409 `Sandbox <id> is already running` |
+| `sandbox_resume.go:131-141` | 进函数时状态就是 `StateRunning`(2026.29 已有) | 409 `Sandbox <id> is already running` |
+
+> ⚠️ 第二条的注释解释了为什么需要重读:`The transition can complete before the wait looks: a refused-and-restored pause leaves the sandbox running.` —— 即"被拒绝并回滚的 pause"会让 sandbox 停在 running,而 wait 可能什么也没等到。
+
+### 15.3 新增 `resolveFilesystemBoot` 前置校验
+
+`sandbox_resume.go:181-186`:
+
+```go
+// Pre-flight of the fetcher's authoritative gate so a disabled flag answers
+// 400 even when the start would otherwise join an in-flight one (409).
+if _, apiErr := resolveFilesystemBoot(ctx, a.featureFlags, body.Memory, lastSnapshot.Snapshot); apiErr != nil {
+    setMemoryOverrideOutcome(c, body.Memory, apiErr)
+    apierrors.SendAPIError(c, apiErr)
+    return
+}
+```
+
+`resolveFilesystemBoot`(`:285`)把请求里可选的 `memory` 字段(默认 `true`)映射成 create RPC 的 "filesystem boot demand":
+
+- `memory == nil || *memory` → `(false, nil)`,普通 resume。
+- snapshot 已是 `FilesystemOnly`(`snapshotIsFilesystemOnly`,`:265`)→ `(false, nil)`,它本来就冷启动。
+- 否则查 `FsOnlyResumeAPIFlag`:**关闭则返 400**,错误码 `errCodeMemoryOverrideDisabled = "sandbox_memory_override_disabled"`(`:237`)。
+
+> ⚠️ **为什么要在 `startSandbox` 之前单独做一遍**——注释写得很直白:`Pre-flight of the fetcher's authoritative gate so a disabled flag answers 400 even when the start would otherwise join an in-flight one (409).` 即**避免"flag 关闭"被"加入一个进行中的 start"掩盖成 409**。
+
+### 15.4 新增测试缝 `resumeBackend()`
+
+`sandbox_resume.go:31-45`:handler 不再直接调 `a.orchestrator`,而是通过一个只含两个方法的小接口:
+
+```go
+// resumeWaitOrchestrator is the slice of *orchestrator.Orchestrator the resume
+// handler consults before it commits to resuming: the record read and the
+// wait on an in-flight transition.
+type resumeWaitOrchestrator interface {
+    GetSandbox(ctx context.Context, teamID uuid.UUID, sandboxID string) (sandbox.Sandbox, error)
+    WaitForStateChange(ctx context.Context, teamID uuid.UUID, sandboxID string) error
+}
+
+func (a *APIStore) resumeBackend() resumeWaitOrchestrator {
+    if a.resumeBackendOverride != nil {
+        return a.resumeBackendOverride
+    }
+    return a.orchestrator
+}
+```
+
+配套的 `APIStore.resumeBackendOverride` 字段注释(`handlers/store.go:198-200`)说明用途:`tests use it to assert the gate's wiring (refusal before RemoveSandbox) without a real orchestrator.` —— **纯测试设施,生产恒为 nil**。
+
+### 15.5 auto-resume 路径是否受影响?
+
+**否**。gRPC `ResumeSandbox` 走的是 `startSandboxInternal` + `buildResumeSandboxData(sandboxID, nil)`(§8.8),`memory` 恒为 `nil` → `resolveFilesystemBoot` 直接返回 `(false, nil)`,`FsOnlyResumeAPIFlag` 不被求值。**唯一的变化是闭包多了一个恒为 nil 的参数。**
 
 ---
 

@@ -9,6 +9,23 @@
 - [Sandbox 生命周期](./sandbox-lifecycle.md)：创建、暂停、恢复和销毁
 - [Envd](./envd-module.md)：VM 内端口扫描与 localhost 转发
 
+## 0. 2026.30 变动速览
+
+这条链路上有四件事变了，其余（Host 解析规则、两层校验、错误映射、连接池语义）**在 2026.29 → 2026.30 之间没有变化**：
+
+| 变动 | 影响面 |
+| --- | --- |
+| **出现第二份路由记录** | `sandbox:catalog:{id}`（API 写）旁边多了 `sandbox:routing:{id}`（orchestrator 写）。Client Proxy 现在**持有两个 catalog**，按 flag 逐请求选一个。见 §3.3、§9.1 |
+| **Client Proxy → Orchestrator Proxy 的端口可配** | 原先硬编码 `5007`，现在读 `ORCHESTRATOR_PROXY_PORT`（默认仍是 5007）。见 §3.4、§9.2 |
+| **沙箱内端口可以是 HTTPS** | `SandboxNetworkConfig.httpsPorts`：列在这里的端口，代理用 `https://` 连过去。**公网 URL 两种情况下都是 HTTPS**，变的只是最后一跳。见 §3.4 |
+| **`iac/` 整体删除** | 本文源码导航里所有 `iac/provider-*` 路径在 2026.30 已失效（172 文件 → 0，提交 `8a1c48884406b909f64c1239c808d0bc1cbf05bf`）。**架构事实仍然成立**——DNS、TLS、LB 规则、Host 路由都还在，只是不再由本仓库的 Terraform 描述。见 §3.1、§7 |
+
+> ⚠️ **`httpsPorts` 不改变公网侧任何东西。** 无论端口是否列在 `httpsPorts` 里，用户看到的都是 `https://<port>-<sandboxID>.<domain>/`。它只决定 Client Proxy → Orchestrator Proxy → VM 这最后一跳用什么 scheme。
+>
+> ⚠️ **`httpsPorts` 里的证书不验证。** 沙箱内是自签证书，`InsecureSkipTLSVerify` 只要 `httpsPorts` 非空就打开。这不是配置疏漏，是设计如此。
+>
+> ⚠️ **envd 端口（49983）不能列进 `httpsPorts`。** API 在创建时就拒绝，orchestrator 侧的 `schemeForPort` 还会再兜一层：**端口等于 49983 时无条件返回 `http`**，哪怕配置里写了它。这层兜底是给绕过 API 直接调 gRPC 的调用方准备的。
+
 ## 1. URI 与访问前提
 
 标准 Public URI 的形式是：
@@ -98,7 +115,9 @@ Response 沿反向链路返回
 | GCP | HTTPS Load Balancer 直接将 `*.<domain>` 送到 session backend，即 Client Proxy `:3002` |
 | AWS | ALB 将请求送到 Traefik ingress，再由最低优先级的通配路由送到 Client Proxy |
 
-GCP 的 Host 规则和 session backend 见 [`iac/provider-gcp/nomad-cluster/network/main.tf`](../iac/provider-gcp/nomad-cluster/network/main.tf)。AWS 的 ALB 和 Traefik 服务发现分别见 [`iac/provider-aws/alb.tf`](../iac/provider-aws/alb.tf) 与 [`iac/modules/job-client-proxy/jobs/client-proxy.hcl`](../iac/modules/job-client-proxy/jobs/client-proxy.hcl)。
+GCP 的 Host 规则和 session backend 原先见 `iac/provider-gcp/nomad-cluster/network/main.tf`；AWS 的 ALB 和 Traefik 服务发现原先见 `iac/provider-aws/alb.tf` 与 `iac/modules/job-client-proxy/jobs/client-proxy.hcl`。
+
+> ⛔ **上面三个路径在 2026.30 都已随 `iac/` 删除。** 但**表里描述的路由结构本身没有变**：GCP 仍是 HTTPS LB → session backend → Client Proxy `:3002`；AWS 仍是 ALB → Traefik → 最低优先级通配路由 → Client Proxy。变的是这些规则的**声明位置**不在本仓库了。
 
 ### 3.2 Client Proxy 解析 Public URI
 
@@ -124,10 +143,17 @@ E2b-Sandbox-Port: 3000
 
 ### 3.3 Redis catalog 定位节点
 
-Client Proxy 用 `sandboxID` 查询 Redis routing catalog：
+Client Proxy 用 `sandboxID` 查询 Redis routing catalog。**2026.30 起有两份记录**：
+
+| key | 写入方 | 状态 |
+| --- | --- | --- |
+| `sandbox:catalog:<sandboxID>` | API | 原有记录 |
+| `sandbox:routing:<sandboxID>` | orchestrator | **2026.30 新增**，受 `orchestrator-routing-publish` flag 门控 |
+
+两份记录的 value 结构相同：
 
 ```text
-sandbox:catalog:i7fa3
+sandbox:catalog:i7fa3        （或 sandbox:routing:i7fa3）
   -> orchestrator_id
   -> orchestrator_ip
   -> execution_id
@@ -135,31 +161,63 @@ sandbox:catalog:i7fa3
   -> sandbox_max_length_in_hours
 ```
 
-Sandbox 创建完成后，API 将这条记录写入 catalog；Client Proxy 只读取它，不参与 Sandbox 放置。实现见：
+Client Proxy 逐请求决定读哪个——`orchestrator-routing-prioritized` 打开时读 orchestrator 那份，否则读 API 那份（详见 [Client Proxy 模块](components/05-client-proxy.md) §3）。Client Proxy 只读，不参与 Sandbox 放置。实现见：
 
-- [`packages/api/internal/orchestrator/lifecycle.go`](../packages/api/internal/orchestrator/lifecycle.go)：写入节点路由
-- [`packages/shared/pkg/sandbox-catalog/catalog_redis.go`](../packages/shared/pkg/sandbox-catalog/catalog_redis.go)：Redis 读写
-- [`packages/client-proxy/internal/proxy/proxy.go`](../packages/client-proxy/internal/proxy/proxy.go)：解析 catalog 结果
+- [`packages/api/internal/orchestrator/lifecycle.go`](../packages/api/internal/orchestrator/lifecycle.go)：API 侧写入 `sandbox:catalog:`
+- [`packages/orchestrator/pkg/routing/publisher.go`](../packages/orchestrator/pkg/routing/publisher.go)：**2026.30 新增**，orchestrator 侧写入 `sandbox:routing:`（`MarkRunning` 写、`MarkStopping` 删）
+- [`packages/shared/pkg/sandbox-catalog/catalog_redis.go`](../packages/shared/pkg/sandbox-catalog/catalog_redis.go)：Redis 读写，两个 key 前缀共用同一类型
+- [`packages/client-proxy/internal/proxy/proxy.go`](../packages/client-proxy/internal/proxy/proxy.go)：`selectCatalog` 与 catalog 结果解析
+
+> ⚠️ **两个 flag 必须按顺序开。** `orchestrator-routing-publish` 先开并等过一个最长 Sandbox 生命周期，才能开 `orchestrator-routing-prioritized`。切换期间两份记录并存，所以"某条 key 不存在"本身不能直接判定 Sandbox 已暂停——**要看 Client Proxy 当前在读哪份**。
 
 catalog 命中后，Client Proxy 得到 owning node 的 IP，并将请求转发到：
 
 ```text
-http://<orchestratorIP>:5007
+http://<orchestratorIP>:<ORCHESTRATOR_PROXY_PORT>     # 默认 5007
 ```
 
 请求的 method、path、query、body 和业务 header 会继续传递。连接池按下游节点管理连接。
 
 ### 3.4 Orchestrator Proxy 定位 Sandbox
 
-每个 Sandbox 节点上的 Orchestrator Proxy 监听 `:5007`。它再次从请求中解析 `sandboxID` 和 `port`，然后在节点内存的 sandbox map 中查找当前 Sandbox 实例。
+每个 Sandbox 节点上的 Orchestrator Proxy 监听 `ORCHESTRATOR_PROXY_PORT`（**2026.30 起可配**，默认 `5007`）。它再次从请求中解析 `sandboxID` 和 `port`，然后在节点内存的 sandbox map 中查找当前 Sandbox 实例。
 
 找到实例后，目标地址被设置为：
 
 ```text
-http://<sandbox-slot-host-IP>:<port>
+<scheme>://<sandbox-slot-host-IP>:<port>
 ```
 
 这里不是 Sandbox 的公网 IP。每个 Sandbox 使用独立 network namespace、veth、tap 和唯一 slot IP；节点内 NAT 再把流量送入对应的 Firecracker microVM。实现见 [`packages/orchestrator/pkg/proxy/proxy.go`](../packages/orchestrator/pkg/proxy/proxy.go) 和 [`packages/orchestrator/pkg/sandbox/network/network.go`](../packages/orchestrator/pkg/sandbox/network/network.go)。
+
+**`<scheme>` 由 `httpsPorts` 决定（2026.30 新增）**：
+
+```go
+// envd speaks plaintext, so its port stays HTTP even when the config lists it.
+// The API refuses it at create time; this covers direct gRPC callers.
+func schemeForPort(ingress *orchestrator.SandboxNetworkIngressConfig, port uint64) string {
+    if port == uint64(consts.DefaultEnvdServerPort) {
+        return "http"
+    }
+
+    for _, httpsPort := range ingress.GetHttpsPorts() {
+        if uint64(httpsPort) == port {
+            return "https"
+        }
+    }
+
+    return "http"
+}
+```
+
+`SandboxNetworkConfig.httpsPorts`（[`spec/openapi.yml:472`](../spec/openapi.yml)）的约束：
+
+- 最多 128 个、元素唯一、范围 1–65535。
+- **公网 URL 无论如何都是 HTTPS**，这个字段只影响最后一跳。
+- **证书不验证**（`InsecureSkipTLSVerify` 在 `httpsPorts` 非空时为 true），自签证书可以正常工作。
+- **envd 端口 49983 不能列入**：API 创建时拒绝，orchestrator 的 `schemeForPort` 还会无条件兜一层。
+
+> ⚠️ `InsecureSkipTLSVerify` 是按 destination 算的（`len(ingress.GetHttpsPorts()) > 0`），也就是**只要这个 Sandbox 配了任意一个 HTTPS 端口，所有 destination 都不验证证书**。它安全的前提是 ingress 在生命周期内固定、且连接池按生命周期 ID 建 key。
 
 ### 3.5 VM 内端口到用户服务
 
@@ -345,13 +403,14 @@ curl -i \
 | 阶段 | 主要实现 |
 |---|---|
 | Public URI schema | [`spec/openapi.yml`](../spec/openapi.yml) |
-| GCP DNS、TLS、LB | [`iac/provider-gcp/nomad-cluster/network/main.tf`](../iac/provider-gcp/nomad-cluster/network/main.tf) |
-| AWS DNS、TLS、ALB | [`iac/provider-aws/domain.tf`](../iac/provider-aws/domain.tf)、[`iac/provider-aws/alb.tf`](../iac/provider-aws/alb.tf) |
+| GCP DNS、TLS、LB | ⛔ 原先 `iac/provider-gcp/nomad-cluster/network/main.tf`，2026.30 已删除 |
+| AWS DNS、TLS、ALB | ⛔ 原先 `iac/provider-aws/domain.tf`、`iac/provider-aws/alb.tf`，2026.30 已删除 |
 | Host/header 解析 | [`packages/shared/pkg/proxy/host.go`](../packages/shared/pkg/proxy/host.go) |
 | Client Proxy 路由 | [`packages/client-proxy/internal/proxy/proxy.go`](../packages/client-proxy/internal/proxy/proxy.go) |
-| Redis catalog | [`packages/shared/pkg/sandbox-catalog/catalog_redis.go`](../packages/shared/pkg/sandbox-catalog/catalog_redis.go) |
+| Redis catalog | [`packages/shared/pkg/sandbox-catalog/catalog_redis.go`](../packages/shared/pkg/sandbox-catalog/catalog_redis.go)（两个 key 前缀） |
+| Orchestrator 路由发布 | [`packages/orchestrator/pkg/routing/publisher.go`](../packages/orchestrator/pkg/routing/publisher.go)（**2026.30 新增**） |
 | Paused Sandbox 恢复 | [`packages/api/internal/handlers/proxy_grpc.go`](../packages/api/internal/handlers/proxy_grpc.go) |
-| Orchestrator Proxy | [`packages/orchestrator/pkg/proxy/proxy.go`](../packages/orchestrator/pkg/proxy/proxy.go) |
+| Orchestrator Proxy | [`packages/orchestrator/pkg/proxy/proxy.go`](../packages/orchestrator/pkg/proxy/proxy.go)（含 `schemeForPort`） |
 | Sandbox 网络 | [`packages/orchestrator/pkg/sandbox/network/network.go`](../packages/orchestrator/pkg/sandbox/network/network.go) |
 | VM 内 localhost 转发 | [`packages/envd/internal/port/forward.go`](../packages/envd/internal/port/forward.go) |
 
@@ -433,26 +492,47 @@ Client Proxy 的 destination 计算顺序如下：
 ```text
 HTTP request
   -> GetTargetFromRequest
-  -> Redis sandbox:catalog:<sandboxID>
+  -> selectCatalog(flag)   # 2026.30 起先决定读哪份记录
+       orchestrator-routing-prioritized 开 -> sandbox:routing:<sandboxID>
+       否则                                -> sandbox:catalog:<sandboxID>
   -> 命中: 得到 orchestratorIP
   -> 未命中: 调用 API ResumeSandbox
   -> 得到 orchestratorIP
-  -> <orchestratorIP>:5007
+  -> <orchestratorIP>:<ORCHESTRATOR_PROXY_PORT>
 ```
 
-Client Proxy 不读取节点内 sandbox map，也不决定 slot IP。Redis catalog value 包含 `orchestrator_id`、`orchestrator_ip`、`execution_id`、启动时间和最大生命周期，key 固定为 `sandbox:catalog:<sandboxID>`。记录由 API/orchestrator 生命周期代码写入，TTL 使用 Sandbox 最大生命周期小时数。
+Client Proxy 不读取节点内 sandbox map，也不决定 slot IP。Redis catalog value 包含 `orchestrator_id`、`orchestrator_ip`、`execution_id`、启动时间和最大生命周期，TTL 使用 Sandbox 最大生命周期小时数。
+
+**2026.30 起有两个 key 前缀，由两个构造函数产生**（[`packages/shared/pkg/sandbox-catalog/catalog_redis.go`](../packages/shared/pkg/sandbox-catalog/catalog_redis.go)）：
+
+| 构造函数 | key 前缀 | 写入方 | 备注 |
+|---|---|---|---|
+| `NewRedisSandboxCatalog` | `sandbox:catalog:` | API 生命周期代码 | 原有记录 |
+| `NewRedisSandboxRoutingCatalog` | `sandbox:routing:` | **orchestrator**（`pkg/routing/publisher.go`） | **2026.30 新增** |
+
+两份记录**不是主备**，而是同一事实的两个写入方；Client Proxy 用 `selectCatalog` 逐请求挑一份。选择受 `orchestrator-routing-prioritized` 门控，而 orchestrator 是否写新记录受 `orchestrator-routing-publish` 门控。
+
+> ⚠️ **`orchestrator-routing-publish` 必须先于 `orchestrator-routing-prioritized` 打开，且间隔至少一个最长 Sandbox 生命周期。** 反过来会让长期运行的 Sandbox 在切换瞬间两份记录都没有。
+>
+> ⚠️ **切换窗口内"key 不存在"不能直接判定 Sandbox 已暂停。** 两份记录并存期间，某个前缀下缺失只说明那份没写，要看 Client Proxy 当前在读哪份。只有当前读取的那份 miss 才进入 auto-resume。
 
 Redis 的单次读、写、删操作都有 1 秒 context timeout。读超时、空 IP 或其他 catalog 错误不会被当作“可以恢复”；Client Proxy 最终把无法得到节点路由的情况映射成 Sandbox not found 页面，避免把半成品路由发给下游。
 
+> ⚠️ **两个 catalog 共用同一个 Redis client 和同一个类型。** 区分它们的只是 key 前缀，所以 Redis 故障会同时打掉两份记录，不存在"一份可用一份不可用"的中间态。
+
 ### 9.2 Orchestrator Proxy：sandbox map 与 slot
 
-节点侧 `:5007` 收到请求后再次解析 ID/端口，并从内存 sandbox map 查找当前生命周期。命中后目标地址是：
+节点侧入口（默认 `:5007`）收到请求后再次解析 ID/端口，并从内存 sandbox map 查找当前生命周期。命中后目标地址是：
 
 ```text
-<sandbox-slot-host-ip>:<requested-port>
+<scheme>://<sandbox-slot-host-ip>:<requested-port>
 ```
 
 它不是节点的公网 IP，也不是固定的 `5007`。`5007` 只代表 Client Proxy 到 Orchestrator Proxy 的这一跳；请求端口仍然保持原值，最终连接到 VM 内同号 TCP 端口。
+
+> ⚠️ **2026.30 起这一跳的入口端口可配**：Client Proxy 侧的常量 `orchestratorProxyPort = 5007` 被删除，改为环境变量 `ORCHESTRATOR_PROXY_PORT`（默认仍是 `5007`，`Parse()` 校验必须 `> 0`）。改端口现在不需要重新编译。
+>
+> ⚠️ **`scheme` 也不再硬编码为 `http`。** 2026.30 新增 `schemeForPort`：端口等于 envd 的 `49983` 时强制 `http`（envd 只会明文），否则看该端口是否在 ingress 的 `httpsPorts` 里，是则 `https`，否则 `http`。API 在创建时就会拒绝把 envd 端口写进 `httpsPorts`，这个函数只是兜住绕过 API 直连 gRPC 的调用方。
 
 节点侧还负责：
 
@@ -635,9 +715,9 @@ upstream Host: api.example.com:3000
 1. **DNS/TLS**：确认完整 Host 解析到正确负载均衡器，证书覆盖通配域名或自定义域名。
 2. **LB/ingress**：确认 GCP session backend 或 AWS Traefik route 收到请求，且健康检查通过。
 3. **Host parser**：从 Client Proxy 日志确认 `sandboxID`、`port`；若是 `400`，停止向后排查。
-4. **Redis catalog**：检查 `sandbox:catalog:<id>` 是否存在、IP 是否非空、TTL 是否覆盖当前生命周期。暂停实例应观察到 catalog miss 后的 `ResumeSandbox` 调用。
+4. **Redis catalog**：**先确认 Client Proxy 当前读的是哪份记录**（`orchestrator-routing-prioritized` 开则读 `sandbox:routing:<id>`，否则读 `sandbox:catalog:<id>`），再检查该 key 是否存在、IP 是否非空、TTL 是否覆盖当前生命周期。暂停实例应观察到 catalog miss 后的 `ResumeSandbox` 调用。
 5. **API auto-resume**：检查 snapshot、policy、filesystem-only、OAuth scope、team/cluster 和 token 分支。
-6. **Node route**：从 Client Proxy 到 `<orchestratorIP>:5007` 的 TCP 连接是否成功；注意 Client Proxy 只重试一次。
+6. **Node route**：从 Client Proxy 到 `<orchestratorIP>:<ORCHESTRATOR_PROXY_PORT>`（默认 `5007`）的 TCP 连接是否成功；注意 Client Proxy 只重试一次。端口被改过时，这里是"连不上但节点健康"的常见原因。
 7. **Sandbox map/ingress**：节点是否有同一生命周期的 sandbox map 项，业务 token 是否通过 constant-time compare。
 8. **VM port**：用户进程是否监听目标 TCP 端口；localhost 监听还要确认 envd scanner/Forwarder 已经建立 socat。
 
@@ -645,7 +725,7 @@ upstream Host: api.example.com:3000
 
 | 信号 | 代码位置/名称 | 用途 |
 |---|---|---|
-| Redis trace | `sandbox-catalog-get/store/delete` | 判断 catalog 延迟、miss 或写入失败 |
+| Redis trace | `sandbox-catalog-get/store/delete` | 判断 catalog 延迟、miss 或写入失败；**两个 key 前缀共用同一套 trace 名，要按 key 区分是哪份记录** |
 | Client Proxy log | `catalog miss, attempting resume via api` | 证明请求进入 auto-resume 分支 |
 | gRPC connection observer | `api-resumer` | 查看 API resumer 连接状态 |
 | Proxy pool metrics | client/orchestrator pool connections、pool size | 区分连接堆积和单次 dial 失败 |
@@ -687,7 +767,7 @@ curl -sv \
 | Orchestrator Proxy | [`packages/orchestrator/pkg/proxy/proxy.go`](../packages/orchestrator/pkg/proxy/proxy.go) | 共享 proxy 测试覆盖 pool/handler；节点级行为需结合 sandbox smoke test |
 | VM localhost 转发 | [`packages/envd/internal/port/scan.go`](../packages/envd/internal/port/scan.go)、[`packages/envd/internal/port/forward.go`](../packages/envd/internal/port/forward.go) | [`web-docs/envd-module.md`](./envd-module.md) §8 |
 | Public URI 配置 | [`spec/openapi.yml`](../spec/openapi.yml) | [`web-docs/sandbox-api-module.md`](./sandbox-api-module.md) 网络配置章节 |
-| 部署入口 | [`iac/provider-gcp/nomad-cluster/network/main.tf`](../iac/provider-gcp/nomad-cluster/network/main.tf)、[`iac/provider-aws/alb.tf`](../iac/provider-aws/alb.tf) | [`web-docs/sandbox-traffic-routing.md`](./sandbox-traffic-routing.md) |
+| 部署入口 | ⛔ 原先 `iac/provider-gcp/nomad-cluster/network/main.tf`、`iac/provider-aws/alb.tf`，2026.30 已删除 | [`web-docs/sandbox-traffic-routing.md`](./sandbox-traffic-routing.md) |
 
 更细的 Host 语法、连接池和错误模板说明见 [`sandbox-traffic-routing.md`](./sandbox-traffic-routing.md)；auto-resume 状态机见 [`auto-resume-module.md`](./auto-resume-module.md)。本篇保留端到端视角，只记录会改变排障结论的实现细节。
 
@@ -718,6 +798,8 @@ upstream X-Forwarded-Host = 3000-i7fa3.sandbox.example.com
 **已实现：** transport 设置 `ForceAttemptHTTP2: false`。Client Proxy 到 Orchestrator Proxy 的普通连接因此按 HTTP/1.1 建立；Orchestrator Proxy 到 VM 也沿用同一 transport。入口 server 通过 `httpserver.ConfigureH2C` 开启 h2c 能力，实际是否使用 h2c 由入口负载均衡器和后端配置决定，而不是由 Public URI 的端口号决定。
 
 **已实现：** GCP 网络模块为 `session` backend 同时创建可选 H2C backend，`protocol = "H2C"` 且 `compression_mode = "DISABLED"`。同一个配置文件明确提醒：WebSocket upgrade 路径应继续留在 HTTP/1.1 backend，除非另行拆分 backend。因此，看到普通 HTTP/2 成功不能推断 WebSocket 在所有部署中都会成功。
+
+> ⛔ **这段配置的声明位置在 2026.30 已不在本仓库**（`iac/` 整体删除，172 文件 → 0）。**协议事实本身没变**——h2c backend 仍在、WebSocket 仍走 HTTP/1.1——但排障时不能再按旧路径去读那份 Terraform。
 
 **可推导：** 对长响应、SSE 或 WebSocket，连接 limiter 的释放点仍是 proxy handler 返回之后，而不是收到 response headers 的时刻。入口 LB、客户端和用户服务任何一层提前关闭连接，才会让 handler 提前返回；只要 body 还在读取，整个 slot 仍计入并发数。
 
@@ -970,6 +1052,10 @@ metadata:
 
 ### 20.6 文档边界和配置变更规则
 
-**已实现：** 本文只描述源码和当前 IaC 能证明的行为；端口、域名、最大生命周期、feature flag、LB timeout、health path、OAuth issuer 和是否启用 edge auth 都是配置驱动。部署升级时应重新检查对应变量和环境注入，而不是把示例中的 `3000`、`3002`、`3003`、`5007` 或 `49983` 当作所有环境的常量。
+**已实现：** 本文只描述源码和当前 IaC 能证明的行为；端口、域名、最大生命周期、feature flag、LB timeout、health path、OAuth issuer 和是否启用 edge auth 都是配置驱动。部署升级时应重新检查对应变量和环境注入，而不是把示例中的 `3000`、`3002`、`3003`、`5007` 或 `49983` 当作所有环境的常量。**2026.30 起 `5007` 尤其不能当常量**——它是 `ORCHESTRATOR_PROXY_PORT` 的默认值。
 
 **建议方案：** 新增 ingress 行为时同时更新三处：OpenAPI 的网络配置说明、本文的端到端边界、以及对应的单元/集成测试。若引入 DNS alias、private ingress gateway、全局 connection limiter 或 HTTP request retry，还应先定义数据存储、token 生命周期和旧生命周期清理语义，再添加实现；单独增加一条路由规则无法解决这些跨服务一致性问题。
+
+---
+
+*已同步至 **2026.30**。*

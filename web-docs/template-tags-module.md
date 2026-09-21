@@ -16,6 +16,10 @@
 > - `packages/api/internal/cache/templates/alias_cache.go` — 别名缓存
 > - `packages/db/queries/templates/` — 4 个 sqlc 查询
 > - `spec/openapi.yml` 中 `tags: [tags]` 和 `GET /templates/aliases/{alias}` 端点
+>
+> 文档版本:已同步至 **2026.30**。本文所有 `file:line` 行号均以 tag `2026.30` 为准;与 2026.29 有差异处已并列标注。
+>
+> **2026.30 变动摘要**:`template_tags.go` 与 `template_alias.go` 两个文件在 `2026.29` → `2026.30` 之间**逐字节未变**,`packages/api/internal/cache/templates/`、`packages/shared/pkg/id/id.go` 同样未变,4 个 sqlc 查询与相关 migration 也未变。本文唯一的改动是**修正 `spec/openapi.yml` 的行号**(模板路由族整体下移约 79 行,三个端点分别从 `:3320`/`:3380`/`:3411` 变为 `:3740`/`:3804`/`:3837`)。
 
 ## 目录
 
@@ -1006,6 +1010,8 @@ TTL 与 positive 一样(5 分钟)。
 | `id.go:143` | `WithNamespace` |
 | `id.go:157` | `ValidateNamespaceMatchesTeam` |
 
+> 上表 8 行在 2026.30 全部保持不变(`id.go` 无改动)。**2026.30 新增了同目录下的 `object.go` / `object_test.go` / `README.md`**(共 387 行),但它们是 project/workspace/secret 的**公开 TypeID 前缀**(`prj_` / `wrk_` / `sec_`)工具,**与 template tag/alias 无关**,不影响本文任何流程。列在这里只是为了避免看到 `id` 包新增文件时误以为本文范围有变。
+
 ### 10.3 cache(`packages/api/internal/cache/templates/`)
 
 | 文件 | 主要 API |
@@ -1031,11 +1037,11 @@ TTL 与 positive 一样(5 分钟)。
 
 ### 10.5 OpenAPI spec
 
-| 位置 | 内容 |
-| --- | --- |
-| `spec/openapi.yml:3241` | `/templates/tags` POST + DELETE |
-| `spec/openapi.yml:3301` | `/templates/{templateID}/tags` GET |
-| `spec/openapi.yml:3332` | `/templates/aliases/{alias}` GET |
+| 位置(2026.30) | 2026.29 | 内容 |
+| --- | --- | --- |
+| `spec/openapi.yml:3740` | `:3320` | `/templates/tags` POST + DELETE |
+| `spec/openapi.yml:3804` | `:3380` | `/templates/{templateID}/tags` GET |
+| `spec/openapi.yml:3837` | `:3411` | `/templates/aliases/{alias}` GET |
 | `AssignTemplateTagsRequest` schema | `{target: str, tags: [str]}` |
 | `DeleteTemplateTagsRequest` schema | `{name: str, tags: [str]}` |
 | `AssignedTemplateTags` schema | `{tags: [str], buildID: uuid}` |

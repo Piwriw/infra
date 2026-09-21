@@ -4,6 +4,96 @@
 >
 > envd 还提供 Process 与 Filesystem Connect RPC;这些 RPC 不属于 `ServerInterface`,参见 [envd-module.md](./envd-module.md)。
 
+## 2026.30 变动
+
+> ⓘ 本节逐项对照 tag `2026.30` 核实;正文中的行号一律以 2026.30 为准。
+
+### 1. 契约变化总览
+
+| 项 | 2026.29 | 2026.30 |
+|---|---|---|
+| `ServerInterface` 方法数 | 12 | 12(不变) |
+| `ServerInterface` 在 `api.gen.go` 的行号 | 行 251 | 行 358 |
+| `api.gen.go` 总行数 | 876 | 962 |
+| `spec/envd.yaml` 总行数 | 524 | 649 |
+| `PostFreeze` 签名 | `(w, r)` | `(w, r, params PostFreezeParams)` |
+| `POST /freeze` 查询参数 | 无 | `mode` / `maxCgroups` / `maxWaitMs` |
+| `POST /freeze` 成功返回 | 恒 `204` | 无 `maxWaitMs` 时 `204`;有 `maxWaitMs` 时 `200` + `FreezeResult` |
+| 新增 model | — | `FreezeResult`(行 132)、`FreezeResultMode`(行 174)、`PostFreezeParams`(行 287)、`PostFreezeParamsMode`(行 318) |
+| `/init` 响应头 | 无 | `X-Envd-Version` / `X-Envd-Handover` / `X-Envd-Freeze-Audit` / `X-Envd-Defaults` / `X-Envd-Memory` |
+| `x-internal: true` 标记 | 无 | 6 条控制面路径(`/init`、`/freeze`、`/unfreeze`、`/collapse`、`/fsfreeze`、`/fsthaw`) |
+
+### 2. 新增端点:`POST /upgrade`
+
+| 项 | 内容 |
+|---|---|
+| 路径 | `POST /upgrade` |
+| 是否在 `spec/envd.yaml` 里 | **否** |
+| 注册位置 | `packages/envd/main.go:402`,`m.Post("/upgrade", ...)` 直挂在 chi mux 上 |
+| 作用 | 接收替换用的 envd 二进制,写到 `/usr/bin/envd.next`,冻结 workload 后同 PID `execve` 换镜像 |
+| 鉴权 | 常规 access token 中间件(`/upgrade` 不在豁免表里) |
+| 为什么不在 spec 里 | 它不走生成的 spec handler,因此**无法用 `x-internal` 标记**;orchestrator 只能手工把它列进 `packages/orchestrator/pkg/sandbox/envd/internal_routes.go` 的 `unspecifiedInternalPaths`,否则 sandbox proxy 会把它当普通路径放行 |
+
+> ⚠️ 这个"spec 之外的路由对 proxy 不可见"的问题有测试兜底:`packages/envd/routes_test.go` 用 AST 扫描 `main.go` 里的 chi 路由注册,凡是没写进 spec 的路由都必须在 `handRegisteredRoutes` 里显式声明,否则构建失败。它目前的唯一成员就是 `/upgrade`。
+
+### 3. `/freeze` 语义变化:从"两个 cgroup"到"整棵 cgroup 树"
+
+```text
+2026.29:  POST /freeze
+            → cgroupManager.Freeze(user)
+            → cgroupManager.Freeze(pty)
+
+2026.30:  POST /freeze?mode=hierarchy&maxCgroups=512&maxWaitMs=2000
+            → workloadFreezer.Freeze(ctx, FreezeOptions{Mode, MaxCgroups, MaxWait})
+              ├─ 沿 cgroup 树遍历,冻结 envd 祖先链之外的子树
+              ├─ 跳过 livenessAllowlist(init.scope / systemd-journald / rpcbind / rpc-statd / socats)
+              ├─ 轮询 cgroup.events 的 frozen 字段等待"真正停住"
+              └─ 返回 FreezeResult
+```
+
+`FreezeResult` 的关键字段:
+
+| 字段 | 含义 |
+|---|---|
+| `mode` | 本次用的遍历模式 |
+| `requested` / `frozen` / `notFrozen` | 请求冻结 / 已落定 / 未落定 |
+| `preFrozen` | 动手前就已经是冻结的 |
+| `failed` | 真正失败(不含 vanished) |
+| `vanished` / `vanishedPaths` | 遍历期间被移除的 cgroup |
+| `unobservable` / `scanFailed` | 读不到冻结状态 / 扫描失败 |
+| `visited` / `allowlisted` / `truncated` | 访问数 / allowlist 跳过数 / 是否触到上限 |
+| `sweepMs` / `waitMs` | 遍历耗时 / 等待耗时 |
+
+> ⚠️ `500` 的语义**没有变**:仍然是"至少有一个 cgroup 操作失败",不代表没有发生任何状态变化。但 2026.30 起"cgroup 在遍历途中消失"**不再**计入失败——它是 guest 自己在动的正常现象,把它算失败会让 orchestrator 无谓地放弃一次本可成功的 pause。
+
+### 4. `/init` 新增 5 个响应头
+
+`PostInit` 在返回 204 之前回写:
+
+| 响应头 | 内容 |
+|---|---|
+| `X-Envd-Version` | 当前 envd 二进制版本(`pkg.Version`) |
+| `X-Envd-Handover` | 本次是否为热升级后的首次 `/init`,以及交接结果 JSON |
+| `X-Envd-Freeze-Audit` | cgroup 树上仍处于冻结状态的路径采样 |
+| `X-Envd-Defaults` | 实际生效的默认 user / workdir |
+| `X-Envd-Memory` | cgroup 上实际生效的 `memory.max` / `high` / `min` / `low` |
+
+### 5. 鉴权新增"热升级 fail-closed 窗口"
+
+热升级后的新镜像在收到第一次 `/init` 之前,**只放行 `GET /health` 与 `POST /init`**,其余一律 `401 {"message":"envd not initialized"}`。注意这比常规豁免表更严:**`GET/POST /files` 在这个窗口里也被拒绝**(它们在常规路径下是豁免的)。
+
+`initialized` 在 `PostInit` 完成 `SetData` **之后**才置位,所以"配置已应用"和"可以接受其他请求"是同一个原子时刻。
+
+### 6. 没有变的东西
+
+- 12 个 `ServerInterface` 方法本身**没有增删**,只有 `PostFreeze` 的签名变了。
+- `GET /files`、`POST /files`、`POST /files/compose`、`GET /envs`、`GET /health`、`GET /metrics`、`POST /collapse`、`POST /fsfreeze`、`POST /fsthaw` 的行为、参数、返回码**全部未变**。
+- 签名算法仍是 `v1_ + sha256Hex(path:operation:username:token[:expiration])`,未改。
+- 监听端口仍是 `49983`。
+- `POST /unfreeze` 的参数与返回码未变(内部改走 `workloadFreezer.Unfreeze`,但对外契约相同)。
+
+> ⚠️ "离线替换 envd"(`envd-offline-upgrade-target` + `debugfs` 改写 rootfs 里的 `/usr/bin/envd`)是 **orchestrator 侧**行为,不是 envd 的 HTTP 能力,本文不展开;见 [snapshots.md §7.4](./snapshots.md)。
+
 ## 目录
 
 - [一、接口全景](#一接口全景)
@@ -32,7 +122,7 @@
 
 ### 1.1 `ServerInterface`
 
-[`api.gen.go`](../packages/envd/internal/api/api.gen.go) 由 OpenAPI 生成,当前服务端契约是:
+[`api.gen.go`](../packages/envd/internal/api/api.gen.go) 由 OpenAPI 生成,当前服务端契约是(2026.30 起 `ServerInterface` 位于行 358;2026.29 为行 251):
 
 ```go
 type ServerInterface interface {
@@ -47,7 +137,7 @@ type ServerInterface interface {
 	// (POST /files/compose)
 	PostFilesCompose(w http.ResponseWriter, r *http.Request)
 	// (POST /freeze)
-	PostFreeze(w http.ResponseWriter, r *http.Request)
+	PostFreeze(w http.ResponseWriter, r *http.Request, params PostFreezeParams)  // ← 2026.30 新增 params
 	// (POST /fsfreeze)
 	PostFsfreeze(w http.ResponseWriter, r *http.Request)
 	// (POST /fsthaw)
@@ -72,6 +162,8 @@ type ServerInterface interface {
 | 状态与指标 | `GET /health`、`GET /metrics` | liveness 与 guest 资源采样 |
 | pause 协作 | `POST /freeze`、`POST /unfreeze`、`POST /collapse`、`POST /fsfreeze`、`POST /fsthaw` | 冻结进程、整理 envd 堆、冻结 rootfs 及失败回滚 |
 
+> ⚠️ `ServerInterface` 只覆盖 spec 里描述的路由。2026.30 新增的 `POST /upgrade` **不在这里**——它直挂在 chi mux 上,所以本文档的端点表格会把它单独标出来。
+
 ### 1.2 架构位置
 
 ```text
@@ -88,7 +180,8 @@ Firecracker guest
     └─ chi.Router
          ├─ OpenAPI REST ServerInterface
          ├─ Process Connect RPC
-         └─ Filesystem Connect RPC
+         ├─ Filesystem Connect RPC
+         └─ POST /upgrade（直挂,不在 spec 里）
 ```
 
 REST 与 Connect RPC 共享同一个 `chi.Router`、监听地址和端口。`ServerInterface` 只描述 REST 路由,不代表 envd 的全部对外能力。
@@ -98,9 +191,11 @@ REST 与 Connect RPC 共享同一个 `chi.Router`、监听地址和端口。`Ser
 | 调用者 | 主要端点 | 特征 |
 |---|---|---|
 | SDK/文件客户端 | `/files`、`/files/compose`、`/envs` | 面向 sandbox 内文件与用户上下文 |
-| Orchestrator | `/init`、`/metrics`、五个 pause 端点 | 面向 VM 生命周期,使用 slot IP 直连 envd |
+| Orchestrator | `/init`、`/metrics`、五个 pause 端点、`/upgrade` | 面向 VM 生命周期,使用 slot IP 直连 envd |
 
 `/health` 可由探针直接访问。pause 端点不是通用用户控制面;`/unfreeze` 与 `/fsthaw` 尤其只属于失败回滚路径。
+
+> ⚠️ 2026.30 起 6 条控制面路由(`/init`、`/freeze`、`/unfreeze`、`/collapse`、`/fsfreeze`、`/fsthaw`)在 spec 里标了 `x-internal: true`。orchestrator 用 `gen_internal_routes.go` 解析这个标记生成 `specInternalPaths`,sandbox proxy 据此拒绝从公网 URL 到达的控制面请求。`/upgrade` 因为不在 spec 里,只能手工登记在 `unspecifiedInternalPaths`。
 
 ---
 
@@ -194,6 +289,37 @@ token 存在 `memguard.LockedBuffer` 中,替换或销毁时会擦除旧 buffer;�
 
 通用中间件明确豁免 `GET /health`、`GET /files`、`POST /files`、`POST /init`。豁免只表示这些请求不在外层被拦截;`/init` 和 `/files` 仍有自己的校验。
 
+### 3.2.1 热升级后的 fail-closed 窗口(2026.30)
+
+热升级让 envd 用同一个 PID `execve` 换成新镜像,新镜像的 token 来源是 handover blob 或 orchestrator 随后的 `/init`。在拿到之前它**没有可信身份**,所以 2026.30 引入了一个比常规豁免表更严的窗口:
+
+```go
+var handoverPreInitAllowedPaths = map[string]struct{}{
+    "GET/health": {},
+    "POST/init":  {},
+}
+
+// WithAuthorization 内的判断
+if a.handover != nil && !a.initialized.Load() {
+    if _, ok := handoverPreInitAllowedPaths[r.Method+"/"+r.URL.Path]; !ok {
+        jsonError(w, "envd not initialized", http.StatusUnauthorized)
+        return
+    }
+}
+```
+
+要点:
+
+| 项 | 说明 |
+|---|---|
+| 生效条件 | `a.handover != nil`(本次启动确实是一次热升级)且 `!a.initialized.Load()` |
+| 放行集合 | 只有 `GET /health` 和 `POST /init` |
+| `GET/POST /files` | ⚠️ **不放行**——它们在常规 `authExcludedPaths` 里是豁免的,但在这个窗口里会被 401 |
+| 退出窗口 | `PostInit` 完成 `SetData` **之后**执行 `a.initialized.Store(true)` |
+| 响应 | `401` + `{"message":"envd not initialized"}` |
+
+因此"配置已应用"和"可以接受其他请求"是同一个原子时刻。非热升级的正常启动不走这条路径(`a.handover == nil`),行为与 2026.29 一致。
+
 ### 3.3 文件签名
 
 文件接口可不用 header token,改用 query 签名。签名原文是:
@@ -265,14 +391,32 @@ POST /init
   ├─ 读取完整 body,JSON decode,退出时擦除原始 bytes
   ├─ 获取 initLock
   ├─ 校验 request token / MMDS hash
-  │    └─ 未授权:401,且不允许触发 unfreeze
-  ├─ 注册 deferred user/pty unfreeze
+  │    └─ 未授权:401,且不允许触发 thaw
+  ├─ 注册 deferred workloadFreezer.Unfreeze(...)
   ├─ timestamp 为空或严格大于 lastSetTime?
   │    ├─ 是:SetData
-  │    └─ 否:跳过旧配置,仍执行 deferred unfreeze
+  │    └─ 否:跳过旧配置,仍执行 deferred thaw
+  ├─ 回写 5 个 X-Envd-* 诊断响应头            ← 2026.30
+  ├─ a.initialized.Store(true)               ← 2026.30,关闭 fail-closed 窗口
   ├─ 后台重新轮询 MMDS metadata,最多 60s
   └─ 204 No Content + Cache-Control:no-store
 ```
+
+### 4.2.1 五个诊断响应头(2026.30)
+
+`PostInit` 在写 204 之前把 envd 自己的运行时判断回给 orchestrator:
+
+| 响应头 | 内容 | 实现 |
+|---|---|---|
+| `X-Envd-Version` | `pkg.Version` | 直接取常量 |
+| `X-Envd-Handover` | 本次是不是热升级后的首次 `/init`,以及交接结果 JSON(`failed` / `procs` / `procs_failed` / `retained` / `retained_failed` / `watchers` / `watchers_failed`) | `SetHandoverResult` 写入的 `handoverResult` |
+| `X-Envd-Freeze-Audit` | cgroup 树上仍处于冻结状态的路径采样 | `auditFrozenSet`(`init.go:871`) |
+| `X-Envd-Defaults` | 实际生效的默认 user / workdir | `reportEffectiveDefaults`(`init.go:319`) |
+| `X-Envd-Memory` | cgroup 上实际生效的 `memory.max` / `high` / `min` / `low` | `reportMemoryProtection`(`init.go:346`) |
+
+> ⚠️ `SetData` 还会设置 `a.defaults.UserDelivered = true`。这是个**来源标记**而不是值比较——空串和"orchestrator 从没发过默认用户"在值上无法区分。热升级后新镜像据此决定要不要沿用 handover blob 里的 `HandoverDefaults`。
+
+> ⚠️ 2026.30 起 `PostFreeze` 会先调 `logFlusher.FlushAndPurge(ctx)` 把内存里的日志推到 collector **再**冻结。否则 snapshot 里的日志缓冲会连同 workload 一起冻住,直到 resume 才可能发出去。`api/store.go` 为此新增了 `LogFlusher` 接口与 `NewNoopLogFlusher()`。
 
 认证发生在 unfreeze defer 之前,因此旧但合法的重试可以解冻,未授权请求不能借 `/init` 解冻进程。
 
@@ -549,38 +693,87 @@ Orchestrator 以短 timeout 轮询每个 live sandbox 的 `/metrics`,再转成�
 
 ### 10.1 为什么不通过 Process RPC
 
-pause 前可能有大量用户进程和系统负载。如果通过 Process RPC 启动 shell 再写 cgroup 文件,会引入进程创建、调度和 shell timeout 开销。原生端点直接调用 cgroup manager:
+pause 前可能有大量用户进程和系统负载。如果通过 Process RPC 启动 shell 再写 cgroup 文件,会引入进程创建、调度和 shell timeout 开销。原生端点直接调用 cgroup 层:
 
 ```text
-POST /freeze
-  → Freeze(user)
-  → Freeze(pty)
+2026.29:  POST /freeze
+            → Freeze(user)
+            → Freeze(pty)
+
+2026.30:  POST /freeze?mode=hierarchy&maxCgroups=512&maxWaitMs=2000
+            → workloadFreezer.Freeze(ctx, FreezeOptions{Mode, MaxCgroups, MaxWait})
+              ├─ 沿 cgroup 树遍历,冻结 envd 祖先链之外的子树
+              ├─ 跳过 livenessAllowlist
+              └─ 轮询 cgroup.events 直到真正停住或预算耗尽
 ```
 
-`system` 和 `socat` cgroup 不冻结。envd 自身必须继续响应 pause 协议;端口转发也不能被历史版本中的错误 freeze 破坏。
+`system` 和 `socat` 仍不冻结。envd 自身必须继续响应 pause 协议;端口转发也不能被错误 freeze 破坏。
 
 ### 10.2 部分执行语义
 
-`PostFreeze` 和 `PostUnfreeze` 都会尝试 `user`、`pty` 两类,不会因第一类失败就跳过第二类。错误通过 `errors.Join` 汇总,只要任一类失败就返回 `500`。
+`PostFreeze` 与 `PostUnfreeze` 仍然"尽力做完能做的":不会因为一棵子树失败就跳过其余。错误汇总后,只要有任何一类失败就返回 `500`。
 
-因此 `500` 不表示“没有发生任何状态变化”:可能一个 cgroup 已冻结/解冻,另一个失败。调用方必须按幂等方式补偿。
+因此 `500` 不表示"没有发生任何状态变化":可能一部分 cgroup 已冻结/解冻,另一部分失败。调用方必须按幂等方式补偿。
+
+> ⚠️ 2026.30 起 **"cgroup 在遍历途中消失"不再算失败**。guest 自己会不停创建/销毁 cgroup(systemd 每个 timer tick 都可能退休一个 transient unit),把它计为 `failed` 会让 orchestrator 无谓地放弃一次本可成功的 pause。`FreezeResult` 用独立的 `vanished` 字段记录它,`vanished(err)` 只认 `ENOENT` 与 `ENODEV` 两个 errno——刻意不写成"任何 error",因为 `failed` 是有人要据此决策的计数。
+
+### 10.2.1 `/freeze` 的请求参数(2026.30)
+
+```http
+POST /freeze?mode=hierarchy&maxCgroups=512&maxWaitMs=2000
+```
+
+| 参数 | 类型 | 含义 |
+|---|---|---|
+| `mode` | `legacy` \| `hierarchy` | 遍历模式;`legacy` 只冻 envd 自己的静态 cgroup,`hierarchy` 沿树遍历。缺省用 envd 的默认模式 |
+| `maxCgroups` | int | 遍历上限;触到上限时结果里 `truncated = true` |
+| `maxWaitMs` | int64 | 等待 workload **真正静止**的预算 |
+
+返回码因此变成两态:
+
+| 条件 | 返回 |
+|---|---|
+| 未传 `maxWaitMs` | `204 No Content`(与 2026.29 一致) |
+| 传了 `maxWaitMs` | `200` + `FreezeResult` JSON |
+
+`FreezeResult` 的字段(`api.gen.go:132`):
+
+| 字段 | 含义 |
+|---|---|
+| `mode` | 实际跑的哪种遍历。**回显**而不是让调用方从请求推断,这样调用方能确认 envd 真的照做了 |
+| `requested` | 本次写了 `cgroup.freeze` 的 cgroup 数 |
+| `frozen` | 在预算内从 `cgroup.events` 读回 `frozen 1` 的——它们的任务**已经停了** |
+| `notFrozen` | 预算耗尽时仍读回 `frozen 0` 的——任务可能还在跑,此时做 snapshot 会拍到活的 workload |
+| `preFrozen` | sweep 之前 guest 自己就冻上的(`docker pause` 会写 `cgroup.freeze`)。**不写、且 thaw 时刻意保留** |
+| `failed` | 因为"写被拒"或"状态读不出"而失败的。envd 自己的静态 cgroup 消失也算在这里 |
+| `vanished` / `vanishedPaths` | 遍历期间被 guest 移除的 cgroup。注意这只是关于 **cgroup** 的断言——移除前迁移出去的任务可能还在跑 |
+| `unobservable` | 这台 guest 没有 cgroup manager,写被接受了但读不回来,所以既不算 frozen 也不算 notFrozen |
+| `scanFailed` | 扫描阶段的失败 |
+| `visited` / `allowlisted` / `truncated` | 访问数 / 被 allowlist 跳过的 / 是否触到上限 |
+| `sweepMs` / `waitMs` | 写 `cgroup.freeze` 的耗时 / 轮询 `cgroup.events` 的耗时。`waitMs` 是**结果中立**的:预算内停住和预算耗尽都会结束等待 |
+
+> ⚠️ `requested` 与 `frozen + notFrozen + vanished` **不会自动对上**:在 settle 轮询期间被移除的会同时计入 `requested` 和 `vanished`,而在写之前就被移除的从来没进过 `requested`。
 
 ### 10.3 `/unfreeze` 的限定用途
 
-正常 pause 成功后,冻结状态进入 memory snapshot;resume 时由已认证 `/init` 的 deferred unfreeze 恢复。`POST /unfreeze` 只在 pause 失败、VM 仍存活时由 Orchestrator cleanup 调用。
+正常 pause 成功后,冻结状态进入 memory snapshot;resume 时由已认证 `/init` 的 deferred thaw 恢复。`POST /unfreeze` 只在 pause 失败、VM 仍存活时由 Orchestrator cleanup 调用。
 
 这一区分很重要:
 
 ```text
-pause 成功 → resume → /init → unfreeze
+pause 成功 → resume → /init → thaw
 pause 失败 → cleanup → /unfreeze
 ```
 
 如果把正常恢复改成独立 `/unfreeze`,就会绕过 `/init` 的配置收敛与授权顺序,让用户进程在 token/env/NFS/CA 尚未恢复前运行。
 
+> ⚠️ 2026.30 的 thaw 有一条**反直觉的保留规则**:`guest_frozen_cgroups` 里记的那些(guest 自己冻的)会被**跳过**,不会被解冻。解冻它们等于把用户刻意挂起的容器重新跑起来。这份记录会随 handover blob 跨热升级传递;记录丢失时降级为"全部解冻"——宁可多解冻,也不能让 guest 卡死。
+
 ### 10.4 版本门控
 
 Orchestrator 只对 envd `>= 0.6.3` 使用 native cgroup freeze。`0.6.0-0.6.2` 曾同时冻结 socat,因此虽然端点已存在,仍不满足正确的 resume 行为。
+
+2026.30 新增的 `mode` / `maxCgroups` / `maxWaitMs` 参数与 `FreezeResult` 响应**只对 `>= 0.8.0` 的 envd 可用**;旧版本收到这些查询参数会忽略它们并照旧返回 204。
 
 ---
 
@@ -661,7 +854,9 @@ envd 对 mountpoint `/` 打开 fd,调用 Linux ioctl:
 | `/fsfreeze` | `FIFREEZE` | `EBUSY` | 已冻结,按成功处理 |
 | `/fsthaw` | `FITHAW` | `EINVAL` | 未冻结,按成功处理 |
 
-两个端点由独立的 `fsFreezeLock` 串行化。它与 cgroup `freezeLock` 分开,因为冻结进程和 quiesce filesystem 是不同资源与失败域。
+两个端点由独立的 `fsFreezeLock` 串行化。它与 cgroup 侧的串行化**分开**,因为冻结进程和 quiesce filesystem 是不同资源与失败域。
+
+> ⓘ 2026.29 的 cgroup 侧串行化用的是 `API.freezeLock`(`semaphore.Weighted(1)`);2026.30 删掉了这个字段,改由 `WorkloadFreezer` 内部的锁承担,并且它与 `process.Service` **共用同一个 `WorkloadFreezer` 实例**,所以"热升级前的冻结"和"pause 前的冻结"也不会互相插队。`fsFreezeLock` 不受影响。
 
 ### 12.3 成功路径和回滚路径
 
@@ -681,7 +876,10 @@ Orchestrator 对 envd `>= 0.6.6` 使用 `/fsfreeze`;旧版本回退到强制 gue
 Orchestrator                     envd / guest
      │
      ├─ stop health checks
-     ├─ POST /freeze ───────────► Freeze user + pty cgroups
+     ├─ POST /freeze ───────────► workloadFreezer.Freeze（沿 cgroup 树）
+     │                             ├─ 冻结前记录 guest 自己冻的 cgroup
+     │                             ├─ flush 日志
+     │                             └─ 轮询等待真正停住（带 maxWaitMs 时）
      ├─ POST /collapse ─────────► Collapse envd anonymous heap
      ├─ optional reclaim ───────► fstrim/sync/drop_caches/compact_memory
      ├─ Firecracker Pause
@@ -692,10 +890,12 @@ Orchestrator                     envd / guest
      ├─ restore VM + MMDS token hash
      └─ POST /init ─────────────► validate token
                                   apply newer config
-                                  deferred Unfreeze(user + pty)
+                                  deferred thaw（保留 guest 自冻项）
 ```
 
 `/freeze` 与 `/collapse` 受 feature flag 和 envd version gate 控制,属于 best-effort reclaim。即使它们失败,Orchestrator 仍可继续 pause。
+
+> ⚠️ 2026.30 起如果 orchestrator 给 `/freeze` 传了 `maxWaitMs` 并拿到 `200` + `FreezeResult`,它就能在 snapshot 前**确认**workload 真的停了。`notFrozen > 0` 是一个明确的信号:此刻做 snapshot 会拍到还在跑的进程。不传 `maxWaitMs` 则保持 2026.29 的"写完即返回 204"语义,不做确认。
 
 ### 13.2 memory snapshot 失败
 
@@ -704,7 +904,7 @@ POST /freeze
   → 后续 pause/snapshot 失败
     → Cleanup.Run
       → POST /unfreeze
-        → live VM 恢复 user + pty
+        → live VM 恢复（跳过 guest 自冻项）
 ```
 
 cleanup 使用脱离已取消 parent context 的调用,因为原始 pause context 失败不能成为跳过补偿的理由。
@@ -722,6 +922,25 @@ best-effort /freeze + /collapse + reclaim
 
 任何中途错误会运行 `/fsthaw` 与 `/unfreeze` cleanup,使仍存活的 VM 回到可用状态。成功路径不 thaw:旧 VM 被丢弃,新 boot 的 filesystem 和 cgroups 天然未冻结。
 
+### 13.4 在线热升级(2026.30 新增,不经过 HTTP pause 端点)
+
+```text
+Orchestrator                     envd
+     │
+     ├─ POST /upgrade {new bin} ─► 写 /usr/bin/envd.next
+     │                             ├─ workloadFreezer.Freeze（HandoverMaxWait = 2s）
+     │                             ├─ 快照进程表（snapshotMu 写锁）
+     │                             ├─ 序列化 HandoverState → /run/e2b/envd-handover.pb
+     │                             └─ syscall.Exec(self, ["--resume-handover"])  ← PID 不变
+     │
+     │  ... 新镜像启动,重新认领进程 / watcher / mount / socat ...
+     │
+     └─ POST /init ─────────────► 关闭 fail-closed 窗口
+                                   deferred thaw（保留 guest 自冻项）
+```
+
+新镜像还会武装一个 `handoverFallbackThawTimeout = 60 * time.Second` 的兜底定时器:如果 orchestrator 的 `/init` 一直没来,就主动解冻,避免升级失败把 sandbox 冻死。
+
 ---
 
 ## 十四、并发、取消与幂等边界
@@ -732,14 +951,17 @@ best-effort /freeze + /collapse + reclaim
 |---|---|---|
 | `initLock` | `/init` 配置收敛 episode | `/init` |
 | `lastSetTime` | 最新配置 timestamp | `/init` |
-| `freezeLock` | user/pty cgroup sweep | `/freeze`、`/unfreeze`、`/init` deferred unfreeze |
+| `WorkloadFreezer` 内部锁 | cgroup 树的 freeze/thaw sweep | `/freeze`、`/unfreeze`、`/init` deferred thaw、`POST /upgrade` 的前置冻结 |
 | `fsFreezeLock` | rootfs freeze state | `/fsfreeze`、`/fsthaw` |
 | `hyperloopLock` | `/etc/hosts` rewrite | `/init` 异步 Hyperloop setup |
 | `isMountingNFS` | 单轮 NFS mount episode | `/init` |
 | `mountedPaths` | path → lifecycleID | `/init` NFS 收敛 |
 | `SecureToken.mu` | token buffer 生命周期 | 鉴权、签名、`/init` token 更新 |
+| `initialized`(atomic.Bool) | 热升级后的鉴权窗口 | `WithAuthorization`、`PostInit` |
 
-`/init` 先持有 `initLock`,退出时执行 deferred unfreeze 并获取 `freezeLock`;`/freeze` 和 `/unfreeze` 不反向获取 `initLock`,避免锁顺序环。
+> ⛔ 2026.29 的 `freezeLock`(`semaphore.Weighted(1)`)已删除,其职责由 `WorkloadFreezer` 内部的锁承担——而且它同时被 `process.Service` 用于热升级前的冻结,所以两条路径天然互斥。
+
+`/init` 先持有 `initLock`,退出时执行 deferred thaw 并获取 `WorkloadFreezer` 的锁;`/freeze` 和 `/unfreeze` 不反向获取 `initLock`,避免锁顺序环。
 
 ### 14.2 request cancellation
 
@@ -748,24 +970,28 @@ best-effort /freeze + /collapse + reclaim
 | 操作 | 使用 request context | 原因 |
 |---|---|---|
 | `/init` initLock | 是 | 请求在等待配置收敛锁时被取消会返回 `503` |
-| `/freeze` lock | 是 | 调用者放弃后不必等待尚未开始的 freeze |
+| `/freeze`(`WorkloadFreezer` 锁) | 是 | 调用者放弃后不必等待尚未开始的 freeze;`context.Canceled`/`DeadlineExceeded` 映射为 `503` |
 | `/collapse` work | 是 | timeout 后停止额外 madvise |
 | `/fsfreeze` lock | 是 | 调用者放弃后不开始新的 freeze |
 | `/unfreeze` lock | `WithoutCancel` | 补偿必须尽量完成 |
 | `/fsthaw` lock | `WithoutCancel` | 不能因断连留下 frozen rootfs |
 | `/init` deferred unfreeze | `WithoutCancel` | 合法 init 一旦进入就要恢复用户进程 |
+| `POST /upgrade` 前置冻结 | 是 | 冻结失败就不换镜像;但一旦进入 `execve` 就没有取消点 |
 | NFS mount | `WithoutCancel` + 10s timeout | 避免半完成,同时保证有界 |
+
+> ⚠️ `/freeze` 的 `maxWaitMs` 预算**属于调用方**:调用方自己持有 request timeout,所以 envd 不会把等待延长到超过它;等待被中断时返回 `503`,此时 `FreezeResult` 的计数只描述"读到了什么",不代表 workload 的真实状态。
 
 ### 14.3 幂等矩阵
 
 | 端点 | 重复调用结果 |
 |---|---|
-| `/init` | 新 timestamp 收敛;旧 timestamp 不覆盖配置但仍 unfreeze |
-| `/freeze` | cgroup manager 应允许重复 freeze;部分失败仍可能改变状态 |
-| `/unfreeze` | 未冻结时应为 no-op |
+| `/init` | 新 timestamp 收敛;旧 timestamp 不覆盖配置但仍 thaw |
+| `/freeze` | 可重复;`preFrozen` 计数会把"本来就已经冻着"的识别出来,不重复写;部分失败仍可能改变状态 |
+| `/unfreeze` | 未冻结时应为 no-op;`guest_frozen_cgroups` 记录的项会被保留 |
 | `/fsfreeze` | `EBUSY` 视为成功 |
 | `/fsthaw` | `EINVAL` 视为成功 |
 | `/collapse` | 可重复,后续更多项会落入 `alreadyHuge`;不是无副作用 no-op |
+| `/upgrade` | ⚠️ **不是幂等的**:它把进程镜像换掉,重复调用等于再升一次级。每次调用都重新冻结 → 序列化 → `execve` |
 | `/files` GET | 只读,但结果受并发文件修改影响 |
 | `/files` POST | 可覆盖,不是原子;重复 multipart 可能重复部分副作用 |
 | `/files/compose` | source 成功后通常被删,所以同一请求一般不可直接重放 |
@@ -807,15 +1033,17 @@ X-Content-Type-Options: nosniff
 
 | 状态 | 典型来源 |
 |---|---|
-| `200` | envs、files、compose、metrics、collapse |
-| `204` | health、init、freeze/unfreeze、fsfreeze/fsthaw |
+| `200` | envs、files、compose、metrics、collapse、**带 `maxWaitMs` 的 `/freeze`**、**`/upgrade`** |
+| `204` | health、init、**不带 `maxWaitMs` 的 `/freeze`**、unfreeze、fsfreeze/fsthaw |
 | `400` | body/query/path/content type/metadata 不合法 |
-| `401` | token/signature/user 校验失败 |
+| `401` | token/signature/user 校验失败;**热升级后第一次 `/init` 之前的 fail-closed 窗口** |
 | `404` | 下载或 compose source 不存在 |
 | `406` | 无可接受 download encoding |
-| `500` | syscall、文件、采样或全局 collapse 失败 |
-| `503` | 初始化/冻结相关锁等待被取消或并发初始化仍在进行 |
+| `500` | syscall、文件、采样或全局 collapse 失败;`/unfreeze` 解冻失败 |
+| `503` | 初始化/冻结相关锁等待被取消或并发初始化仍在进行;`/freeze` 的等待被调用方取消 |
 | `507` | file body、inode 或 xattr 空间不足 |
+
+> ⚠️ 2026.30 的 `/freeze` **不再对部分失败返回 `500`**:单个 cgroup 写 `cgroup.freeze` 失败是预期情况,失败数进入 `FreezeResult.failed` 与日志,而不是把整个 pause 判为失败。只有"锁等待被取消"才返回 `503`。
 
 ---
 
@@ -843,7 +1071,15 @@ timestamp 只防止旧配置覆盖新配置。合法 `/init` 还是 resume hands
 
 ### 16.6 `/freeze` 返回 500 后是否可以假设没冻结
 
-不可以。handler 尝试两个 cgroup 并聚合错误,一个成功另一个失败也返回 500。pause 失败路径应继续执行幂等 `/unfreeze`。
+⚠️ 2026.30 起 `/freeze` 基本不再返回 `500`。要看的是 `200` + `FreezeResult` 里的计数:
+
+- `notFrozen > 0` 或 `failed > 0` → 冻结不完整,snapshot 可能捕获到仍在运行的 workload。
+- `vanished > 0` → 有些 cgroup 在 sweep 过程中消失,被计数而不是判失败;哪个消失了看 debug 日志的 `vanished_paths`。
+- `truncated = true` → 遍历撞到 `maxCgroups` 上限,后面的 cgroup 根本没检查。
+- `unobservable > 0` → 这个 guest 根本无法读取 `cgroup.events` 的冻结状态,冻结"发出了但无法验证"。
+- `scanFailed > 0` → 无法区分"guest 自己冻的"和"envd 冻的",这些项在 resume 时会被 thaw 掉。
+
+无论哪种情况,pause 失败路径都应继续执行幂等的 `/unfreeze`。
 
 ### 16.7 filesystem-only pause 卡住写操作
 
@@ -852,6 +1088,14 @@ timestamp 只防止旧配置覆盖新配置。合法 `/init` 还是 resume hands
 ### 16.8 `/collapse` 的 collapsed 很低是不是失败
 
 不一定。查看 `alreadyHuge` 和 `skipped`:heap 可能已被 THP 覆盖,也可能多数 2 MiB window 为空或不满足 collapse 条件。endpoint 的目标是减少 resume frame faults,不能只用单次 collapsed 数判断收益。
+
+### 16.9 热升级后所有请求都返回 401
+
+这是**故意的 fail-closed 窗口**:新镜像在第一次 `/init` 之前只放行 `GET /health` 与 `POST /init`(见 §3.2.1)。等 orchestrator 完成一次 `/init` 后 `initialized` 置位,其余 endpoint 恢复正常。若长期停在 401,检查 orchestrator 的 init 重试是否还在跑。
+
+### 16.10 热升级后 `/upgrade` 的 blob 读不回来
+
+handover blob 落在 tmpfs `/run/e2b/envd-handover.pb`,**不跨 VM 重启存活**;如果新镜像读到的 `schema` 比自己支持的 `handoverSchema` 大,它会直接放弃升级而不是猜测字段布局(`execve` 之后没有回退路径)。此时应确认新旧镜像的版本差是否跨过了 schema 上限(当前为 3)。
 
 ---
 
@@ -863,7 +1107,14 @@ timestamp 只防止旧配置覆盖新配置。合法 `/init` 还是 resume hands
 | [`internal/api/api.gen.go`](../packages/envd/internal/api/api.gen.go) | 生成模型、ServerInterface、query binding 与 chi 路由 |
 | [`internal/api/store.go`](../packages/envd/internal/api/store.go) | API 状态、锁、health、metrics |
 | [`internal/api/auth.go`](../packages/envd/internal/api/auth.go) | 通用 token 中间件与文件签名 |
-| [`internal/api/init.go`](../packages/envd/internal/api/init.go) | `/init`、cgroup freeze/unfreeze、NFS/Hyperloop 初始化 |
+| [`internal/api/init.go`](../packages/envd/internal/api/init.go) | `/init`、`/freeze`、`/unfreeze`、NFS/Hyperloop 初始化、5 个 `X-Envd-*` 诊断头 |
+| [`internal/api/mounts_handover.go`](../packages/envd/internal/api/mounts_handover.go) | NFS mount ledger 的 handover 导出/导入 |
+| [`internal/services/cgroups/freeze.go`](../packages/envd/internal/services/cgroups/freeze.go) | `WorkloadFreezer`:层级化 sweep、settle 轮询、thaw watchdog |
+| [`internal/services/cgroups/hierarchy.go`](../packages/envd/internal/services/cgroups/hierarchy.go) | cgroup 树遍历、liveness allowlist、祖先链、freeze 审计 |
+| [`internal/services/cgroups/memory.go`](../packages/envd/internal/services/cgroups/memory.go) | cgroup v2 内存保护读取(`X-Envd-Memory`) |
+| [`spec/upgrade/handover.proto`](../packages/envd/spec/upgrade/handover.proto) | 热升级交接契约(只有 message,没有 service) |
+| [`internal/services/process/upgrade.go`](../packages/envd/internal/services/process/upgrade.go) | `POST /upgrade` 的冻结、序列化与 `execve` |
+| [`internal/services/process/handler/readopt.go`](../packages/envd/internal/services/process/handler/readopt.go) | incoming 侧重新认领子进程与 fd |
 | [`internal/api/download.go`](../packages/envd/internal/api/download.go) | 文件下载、Range、gzip |
 | [`internal/api/upload.go`](../packages/envd/internal/api/upload.go) | raw/multipart 上传、owner 与 metadata |
 | [`internal/api/compose.go`](../packages/envd/internal/api/compose.go) | zero-copy compose 与 destination rename |
@@ -889,11 +1140,14 @@ timestamp 只防止旧配置覆盖新配置。合法 `/init` 还是 resume hands
 | `POST` | `/files/compose` | `200` | header token | 发布 destination、删除 source |
 | `GET` | `/health` | `204` | 豁免 | 无 |
 | `GET` | `/metrics` | `200` | header token | 即时资源采样 |
-| `POST` | `/freeze` | `204` | header token | freeze user/pty cgroups |
-| `POST` | `/unfreeze` | `204` | header token | unfreeze user/pty cgroups |
+| `POST` | `/freeze` | `204`(无 `maxWaitMs`)/ `200`(有) | header token | 按 cgroup 树 freeze workload |
+| `POST` | `/unfreeze` | `204` | header token | 按 cgroup 树 unfreeze(保留 guest 自己的冻结) |
+| `POST` | `/upgrade` | `200` | header token | 冻结 workload → 写 handover blob → 同 PID `execve` |
 | `POST` | `/collapse` | `200` | header token | 整理 envd anonymous heap |
 | `POST` | `/fsfreeze` | `204` | header token | flush 并冻结 `/` filesystem |
 | `POST` | `/fsthaw` | `204` | header token | thaw `/` filesystem |
+
+> ⓘ `POST /upgrade` 是唯一**不经 OpenAPI spec** 的路径:它直接注册在 chi mux 上,因此 orchestrator 侧的 `unspecifiedInternalPaths` 手工把它列为 internal(见 [`orchestrator/pkg/sandbox/envd/internal_routes.go`](../packages/orchestrator/pkg/sandbox/envd/internal_routes.go))。`packages/envd/routes_test.go` 用 AST 扫描路由注册,一旦出现新的 spec-less 路由就会构建失败。
 
 ## 附录 B:关键不变量
 
@@ -901,9 +1155,19 @@ timestamp 只防止旧配置覆盖新配置。合法 `/init` 还是 resume hands
 2. 合法但 stale 的 `/init` 不覆盖新配置,仍执行 resume unfreeze。
 3. 正常 resume 通过 `/init` unfreeze;`/unfreeze` 只用于 pause 失败补偿。
 4. filesystem-only pause 成功不调用 `/fsthaw`;失败且 VM 仍存活时必须补偿 thaw。
-5. cgroup freeze 不包含 `system` 和 `socat`。
+5. cgroup freeze 不包含 `system` 和 `socat`,以及 allowlist 上的 liveness 关键单元(`init.scope`、`systemd-journald`、`rpcbind`、`rpc-statd`)——否则连"用来解冻的控制面"都会被冻住。
 6. `/collapse` 只整理 envd 自身匿名可写映射,且 `chunks = collapsed + alreadyHuge + skipped`。
 7. `/files` 覆盖上传不是原子发布;`/files/compose` 只保证 destination rename 的原子可见性。
 8. 上传 metadata 替换完整 `user.e2b.*` 集合,不会删除其他 namespace 的 xattr。
 9. 文件签名绑定原始 path、operation、原始 username 字段和可选 expiration。
 10. token 为空时通用鉴权开放是 bootstrap 行为,不是已初始化 sandbox 的常态。
+11. 热升级后的新镜像在第一次 `/init` 之前 **fail closed**:只有 `GET /health` 与 `POST /init` 放行。
+12. 热升级的 schema 契约是单向的:读方拒绝"比自己新"的 schema 并放弃升级;`execve` 之后没有回退路径。
+13. thaw 时**保留 guest 自己冻的 cgroup**(`guest_frozen_cgroups`);记录丢失时宁可多解冻,也不让 guest 卡在冻结里。
+14. `/freeze` 的部分失败通过 `FreezeResult` 计数上报,不返回 `500`——一个 cgroup 拒绝写是预期情况。
+15. handover blob 落在 tmpfs,不跨 VM 重启存活;它只是同一次进程镜像替换的交接单,不是持久化格式。
+16. `POST /upgrade` 不是幂等操作,重复调用等于再升一次级。
+
+---
+
+**已同步至 2026.30**(对照 tag `2026.30` 核实;行号引用以 2026.30 为准,与 2026.29 不同处在正文中以"行 N(2026.30;2026.29 为 M)"标出)。

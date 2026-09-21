@@ -12,8 +12,70 @@
 
 ---
 
+## 2026.30 变动
+
+> ⓘ 本节逐项对照 tag `2026.30` 核实,正文中所有行号一律以 2026.30 为准。
+
+### 版本号
+
+| 项 | 2026.29 | 2026.30 |
+| --- | --- | --- |
+| [`packages/envd/pkg/version.go`](../packages/envd/pkg/version.go) | `Version = "0.6.10"` | `Version = "0.8.0"`(`version.go:3`,带 `// x-release-please-version` 注解) |
+
+`0.6.10 → 0.8.0` 之间还经历了 **0.6.11 → 0.6.12 → 0.6.13 → 0.7.0** 四轮 bump,每一轮都对应行为变更(`version.go` 的注释要求"任何行为变更都必须 bump,注释/文档变更不算")。逐版本链条与对应 commit 见 [envd-package.md §1.3](envd-package.md)。
+
+### 新增能力
+
+| 能力 | 主要位置 | 说明 |
+| --- | --- | --- |
+| **在线热升级(handover 协议)** | [`spec/upgrade/handover.proto`](../packages/envd/spec/upgrade/handover.proto)、[`internal/services/process/upgrade.go`](../packages/envd/internal/services/process/upgrade.go) | 新增 `POST /upgrade`:envd 冻结 workload → 把 `HandoverState` 序列化到 tmpfs `/run/e2b/envd-handover.pb` → 以**同一个 PID** `execve` 到 `/usr/bin/envd.next`;新镜像带 `--resume-handover` 启动并重新接管进程、watcher、NFS mount ledger 与端口转发。**不是 sandbox 在 orchestrator 之间的迁移**,是同一次 VM 内的镜像替换 |
+| **层级化 cgroup freeze/thaw** | [`internal/services/cgroups/freeze.go`](../packages/envd/internal/services/cgroups/freeze.go)、[`hierarchy.go`](../packages/envd/internal/services/cgroups/hierarchy.go) | 从"按 `ProcessType` 写单点 `cgroup.freeze`"升级为**按 cgroup 树遍历**:冻结 envd 祖先链之外的全部子树,跳过一张 liveness allowlist |
+| **`WorkloadFreezer`** | `internal/services/cgroups/freeze.go:154` | 取代裸的 `Manager.Freeze/Unfreeze` 调用:统一承担 settle 轮询、`FreezeResult` 统计、thaw watchdog,并被 `/freeze`、`/init` deferred thaw 与热升级**共用同一个实例** |
+| **freeze 审计 / 内存保护上报** | [`internal/api/init.go`](../packages/envd/internal/api/init.go)、[`internal/services/cgroups/memory.go`](../packages/envd/internal/services/cgroups/memory.go) | `/init` 新增 5 个响应头:`X-Envd-Version`、`X-Envd-Handover`、`X-Envd-Freeze-Audit`、`X-Envd-Defaults`、`X-Envd-Memory` |
+| **进程退出保留缓存** | `internal/services/process/service.go:30` | `terminatedRetentionTTL = 30s`:进程退出后终态事件仍保留一段时间,晚到的 `Connect` 能补拿退出码 |
+| **`StartErrorCode` errno 映射** | [`internal/services/process/handler/start_error.go`](../packages/envd/internal/services/process/handler/start_error.go) | 启动失败不再统一 `InvalidArgument`,按 errno 映射(`EAGAIN`/`ENOMEM`/`EMFILE`/`ENFILE`/`ENOSPC` → `ResourceExhausted` 等) |
+| **`x-internal` 控制面标记** | [`spec/envd.yaml`](../packages/envd/spec/envd.yaml) | 6 条 orchestrator 控制面路径标 `x-internal: true`,orchestrator 据此生成 sandbox proxy 的拒绝列表 |
+| **release-please 驱动版本** | [`pkg/version.go`](../packages/envd/pkg/version.go)、`packages/envd/CHANGELOG.md` | `Version` 改由 release-please 用 `// x-release-please-version` 注解维护;`Makefile` 的 `UPLOAD_VERSION` 让上传产物命名为 `envd.v<version>` 而不是 `envd.<7-char-sha>` |
+
+### 变更
+
+| 项 | 2026.29 | 2026.30 |
+| --- | --- | --- |
+| `POST /freeze` | 无参数,恒返回 `204` | 接受 `mode` / `maxCgroups` / `maxWaitMs` 查询参数;带 `maxWaitMs` 时返回 `200` + `FreezeResult`,否则仍 `204`。**部分失败不再返回 `500`**,改为在 `FreezeResult` 里计数 |
+| `cgroups.Manager` | `Freeze` / `Unfreeze` / `GetFileDescriptor` / `Close` | 新增 `Frozen(ProcessType) (bool, error)`;另拆出 `PathManager` 接口(`iface.go:26`:`Root`/`PathOf`/`ChildrenOf`/`FreezeAt`/`UnfreezeAt`/`FrozenAt`/`FreezeRequestedAt`) |
+| `ProcessType` 取值 | `"system"` / `"user"` / `"PTY"` / `"socat"` | `"system"` / `"user"` / `"pty"` / `"socat"`(`iface.go:57-61`,PTY 改为小写) |
+| `logs.NewLogger` | `(ctx, isFC, verbose, mmdsChan)` | `(verbose, writers ...io.Writer)`;exporter 的构造移到 `main.go` |
+| `process.Handle` | `(server, l, defaults)` | `(server, l, defaults, workloadFreezer)`(`service.go:160`) |
+| `filesystem.Handle` | 返回值不持有 watcher 锁 | 新增 `watchersMu *sync.Mutex`(`service.go:28`),串行化 watcher 成员变更 |
+| `api.New` | `(l, defaults, mmdsChan, isNotFC, cgroupManager)` | `(l, defaults, mmdsChan, isNotFC, workloadFreezer, logFlushers ...LogFlusher)`(`store.go:135`) |
+| `internal/port/scanSubscriber.go` | 文件名 | 重命名为 [`internal/port/scan_subscriber.go`](../packages/envd/internal/port/scan_subscriber.go) |
+| `Scanner` 扫描循环 | `time.Sleep(period)` | `time.NewTicker(period)` + `select scanExit`(`scan.go:38`),`Signal(processes, s.scanExit)` 让不消费的订阅者不能挂住广播 |
+| `PortToForward` | 只记 `socat *exec.Cmd` | 新增 `socatPid int`(`forward.go:37`)与 `socatPID()`(`forward.go:49`),停止转发时按 pid 精确回收 |
+| OOM wrapper | 直接写 `ionice -c2 -n4` | `ioniceNicePrefix`(`handler.go:173`)用 `exec.LookPath` 探测,minimal/busybox 镜像(Alpine、UBI)缺 `ionice` 时降级而不是以 127 退出 |
+
+### 已删除
+
+| 项 | 说明 |
+| --- | --- |
+| `main.go` 的 `defaultUser` 常量 | ⛔ 2026.29 在 `main.go:43`;2026.30 的默认用户改由 `execcontext.BuiltinDefaultUser` 承担 |
+| `API.freezeLock` | ⛔ 2026.29 的 `semaphore.Weighted(1)`;职责移交 `WorkloadFreezer` 内部的锁 |
+| `init.go` 的 `userCgroupsToFreeze` | ⛔ 2026.29 在 `init.go:248`;静态的 user/ptys 列表被层级遍历取代(`WorkloadProcessTypes` 仍在 `freeze.go:18`,作为 legacy 模式的目标集) |
+
+### 未变
+
+- 监听端口仍是 `0.0.0.0:49983`(`main.go:39` 的 `defaultPort`)。
+- `idleTimeout = 640 * time.Second`(`main.go:36`)未变。
+- `spec/process/process.proto` 与 `spec/filesystem/filesystem.proto` **都没有改动**:没有新增 RPC,也没有新增字段。
+- 新增的 `spec/upgrade/handover.proto` **只定义 message,不定义 service**,所以 2026.30 **没有新增 Connect RPC service**。
+- `spec/buf.gen.yaml`、`spec/buf.gen.shared.yaml`、`spec/generate.go` 未变。
+
+> ⚠️ "离线替换 envd"(`envd-offline-upgrade-target` feature flag + 在 jailed 环境用 `debugfs` 改写 `/usr/bin/envd`)是 **orchestrator 侧**行为,不在 envd 进程内实现,因此本文不展开;细节见 [snapshots.md §7.4](snapshots.md)。envd 侧只提供 §13.5 描述的在线 `POST /upgrade`。
+
+---
+
 ## 目录
 
+- [2026.30 变动](#202630-变动)
 - [一、概述](#一概述)
 - [二、核心概念](#二核心概念)
 - [三、启动流程与架构](#三启动流程与架构)
@@ -107,15 +169,18 @@ envd 是 **每个 E2B Firecracker microVM 内必驻的代理进程**,运行在 m
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │ main.go(入口)                                                  │
-│  ├─ flag 解析(isNotFC、port、cgroup-root、no-cgroups、verbose)│
-│  ├─ 构造 execcontext.Defaults{User: "root", EnvVars}             │
+│  ├─ flag 解析(isNotFC、port、cgroup-root、no-cgroups、verbose、 │
+│  │             resume-handover)                                  │
+│  ├─ 构造 execcontext.Defaults{User: BuiltinDefaultUser, EnvVars} │
 │  ├─ 启动 host.PollForMMDSOpts goroutine(50ms 轮询 MMDS)        │
 │  ├─ 创建 zerolog Logger + HTTPLogsExporter                      │
+│  ├─ 创建 cgroupManager + WorkloadFreezer(装 thaw watchdog)     │
 │  ├─ 创建 chi.Router,挂载:                                      │
 │  │   ├─ filesystemRpc.Handle(FilesystemService)                 │
-│  │   ├─ processRpc.Handle(ProcessService)                       │
+│  │   ├─ processRpc.Handle(ProcessService, workloadFreezer)      │
 │  │   ├─ api.HandlerFrommux(REST OpenAPI handlers)               │
 │  │   └─ authn middleware + CORS + WithAuthorization             │
+│  ├─ 直挂 m.Post("/upgrade")(唯一不经 OpenAPI spec 的路由)      │
 │  ├─ 启动 port.Scanner(1s 扫描 listening sockets)              │
 │  ├─ 启动 port.Forwarder(为每个端口 spawn socat)               │
 │  └─ http.Server.ListenAndServe(:49983)                          │
@@ -174,6 +239,13 @@ envd 把自己 spawn 出来的进程分成 4 类,每类放进独立的 cgroup,�
 | `pty` | PTY 进程(交互式) | ✓ |
 | `socat` | socat 端口转发进程 | ✗ |
 
+> ⚠️ 2026.30 起"是否参与 freeze"要分模式看(见 [§9.5](#95-freeze--unfreeze)):
+>
+> - `legacy` 模式:freeze 的目标集是 `WorkloadProcessTypes = {user, pty}`(`freeze.go:18`),即上表。
+> - `hierarchy` 模式:freeze 的目标集是 **envd 自身祖先链之外、且不在 `livenessAllowlist` 上的全部子树**。`socat` 之所以仍不被冻,是因为它按名字落在 allowlist 里(`hierarchy.go:46` 的 `"socats"`),而不是因为"它不是 user/pty"。
+>
+> 常量值在 `iface.go:57-61`;2026.29 的 `pty` 拼作 `"PTY"`(大写),2026.30 改为小写。
+
 详见 [`internal/services/cgroups/iface.go`](../packages/envd/internal/services/cgroups/iface.go)。
 
 ### 2.5 工作目录、默认用户、env vars
@@ -182,10 +254,10 @@ envd 启动时的默认值:
 
 | 项 | 默认值 | 来源 |
 |----|--------|------|
-| `User` | `"root"` | `main.go:43 defaultUser` |
+| `User` | `"root"` | `execcontext.BuiltinDefaultUser`(⛔ 2026.29 用的是 `main.go:43` 的 `defaultUser` 常量,2026.30 已删除) |
 | `EnvVars` | 由 build 时打包 + MMDS 注入 | `utils.EnvVars` |
-| `Workdir` | (空) → 用户 home | `execcontext.go:15 ResolveDefaultWorkdir` |
-| `Port` | `49983` | `main.go:37 defaultPort` |
+| `Workdir` | (空) → 用户 home | `execcontext/context.go:32 ResolveDefaultWorkdir`(2026.29 为 `execcontext.go:15`) |
+| `Port` | `49983` | `main.go:39 defaultPort`(2026.29 为 `main.go:37`) |
 
 这些值会被 SDK 通过 `/init` 覆盖。
 
@@ -198,67 +270,81 @@ envd 启动时的默认值:
 文件:[`packages/envd/main.go`](../packages/envd/main.go)
 
 ```
-1. flag.Parse()
+1. main() → flag.Parse() → run()(main.go:155, 175)
        │
-       ├─ isNotFC      (非 Firecracker 环境,本地测试用)
-       ├─ port         (默认 49983)
-       ├─ cgroupRoot   (默认 /sys/fs/cgroup)
-       ├─ noCgroups    (禁用 cgroup)
-       └─ verbose      (打印日志到 stdout)
+       ├─ isNotFC         (非 Firecracker 环境,本地测试用)
+       ├─ port            (默认 49983)
+       ├─ cgroupRoot      (默认 /sys/fs/cgroup)
+       ├─ noCgroups       (禁用 cgroup)
+       ├─ verbose         (打印日志到 stdout)
+       └─ resumeHandover  (2026.30 新增:本次是热升级后的新镜像,main.go:68, 122)
        │
        ▼
-2. 构造 execcontext.Defaults{User: "root", EnvVars: NewEnvVars()}
+2. 构造 execcontext.Defaults{User: BuiltinDefaultUser, EnvVars: NewEnvVars()}
        │
        ▼
 3. 写 /run/e2b 目录 + .E2B_SANDBOX 标记文件
-   (main.go:163-175)
        │
        ▼
 4. 启动 MMDS 轮询 goroutine(仅 !isNotFC)
-   go host.PollForMMDSOpts(ctx, mmdsChan)
-   (main.go:178-181)
+   go host.PollForMMDSOpts(ctx, mmdsChan, envVars)
        │
        ▼
-5. 创建 zerolog Logger
-   logs.NewLogger(isFC, mmdsChan, verbose)
-   (main.go:183)
+5. 创建 zerolog Logger + logFlusher
+   logs.NewLogger(verbose, logWriters...)
+   (main.go:206;2026.29 是 logs.NewLogger(ctx, isFC, verbose, mmdsChan))
        │
        ▼
-6. 创建 chi.Router,withCORS + authn + WithAuthorization
-   (main.go:185, 115-137)
-       │
-       ▼
-7. 挂载 Connect RPC 服务
-   ├─ filesystemRpc.Handle(...)
-   └─ processRpc.Handle(..., cgroupManager)
-   (main.go:188-200)
-       │
-       ▼
-8. 挂载 REST API(api.HandlerFromMux)
-   (main.go:202-204)
-       │
-       ▼
-9. 创建 cgroupManager
+6. 创建 cgroupManager
    createCgroupManager()  (无参,通过 host.GetMetrics() 读内存)
-   (main.go:191, 237-298)
+   (main.go:214, 460)
    ├─ 查询 host 内存,预留 1/8(≤128MB)
    ├─ 为 ptys/socats/user 三类各创建 cgroup
    └─ 失败时回退 NoopManager
        │
        ▼
-10. 启动端口扫描器和转发器
-    go scanner.ScanAndBroadcast()    (1s 轮询)
-    go forwarder.StartForwarding()
-    (main.go:220-227)
+7. 构造 WorkloadFreezer 并安装 thaw watchdog
+   cgroups.NewWorkloadFreezer(cgroupManager)          (main.go:225)
+   workloadFreezer.SetThawWatchdog(DefaultThawWatchdogWindow, ...)
+                                                       (main.go:229)
        │
        ▼
-11. http.Server{IdleTimeout: 640s}.ListenAndServe(":49983")
-    (main.go:206-229)
+8. 挂载 Connect RPC 服务
+   ├─ filesystemRpc.Handle(...)
+   └─ processRpc.Handle(..., defaults, workloadFreezer)
+                                                     (main.go:239)
+       │
+       ▼
+9. 创建 OpenAPI API 并把 generated routes 挂到同一个 router
+   api.New(&envLogger, defaults, mmdsChan, isNotFC,
+           workloadFreezer, logFlusher)               (main.go:277)
+       │
+       ▼
+10. 若 resumeHandover(main.go:249, 278)
+    从 /run/e2b/envd-handover.pb 恢复进程/watcher/mount/forward,
+    并武装一个 60s 的兜底 thaw(handoverFallbackThawTimeout,
+    main.go:47, 298)——防止新镜像启动后迟迟等不到 /init
+       │
+       ▼
+11. 直挂 POST /upgrade
+    m.Post("/upgrade", ...)                          (main.go:402)
+    这是唯一不经 OpenAPI spec 的路由(见 §5.2)
+       │
+       ▼
+12. 启动端口扫描器和转发器
+    portScanner := publicport.NewScanner(portScannerInterval)  (main.go:322)
+    go portScanner.ScanAndBroadcast()                          (main.go:337)
+    go portForwarder.StartForwarding(ctx)
+    (resumeHandover 时先 ImportForwards,main.go:327)
+       │
+       ▼
+13. http.Server{IdleTimeout: 640s}.ListenAndServe(":49983")
+    (main.go:318, 452)
 ```
 
 ### 3.2 关键常量
 
-文件:[`main.go:33-49`](../packages/envd/main.go)
+文件:[`main.go:33-51`](../packages/envd/main.go)(2026.29 为 `main.go:33-49`)
 
 ```go
 const (
@@ -269,12 +355,16 @@ const (
 
     portScannerInterval = 1000 * time.Millisecond  // 端口扫描周期
 
-    defaultUser = "root"             // 默认用户
+    // handoverFallbackThawTimeout bounds how long a live-upgraded envd keeps
+    // its workload frozen waiting for the post-upgrade /init.
+    handoverFallbackThawTimeout = 60 * time.Second  // 2026.30 新增(main.go:47)
 
     kilobyte = 1024
     megabyte = 1024 * kilobyte
 )
 ```
+
+> ⛔ 2026.29 这里的 `defaultUser = "root"`(`main.go:43`)已删除:默认用户改由 `execcontext.BuiltinDefaultUser` 提供,`main.go` 不再持有一份重复常量。
 
 ### 3.3 路由层的中间件栈
 
@@ -282,30 +372,33 @@ const (
 HTTP Request
     │
     ▼
-withCORS                                (main.go:115)
+withCORS                                (main.go:131;2026.29 为 main.go:115)
     │ rs/cors:AllowedOrigins=["*"]
     │ ExposedHeaders: Location, Cache-Control, X-Content-Type-Options + connect 的 list
     │ MaxAge: 2h
     ▼
-service.WithAuthorization(...)          (api/auth.go:33)
+service.WithAuthorization(...)          (api/auth.go:47;2026.29 为 api/auth.go:33)
     │ 如果 accessToken 已设:
     │   1. 检查 path 是否在 authExcludedPaths
     │   2. 否则要求 X-Access-Token 头匹配
     │   3. /files 走 HMAC 签名
+    │   4. 2026.30:热升级后的新镜像在 initialized 置位前 fail closed,
+    │      只放行 handoverPreInitAllowedPaths(GET /health、POST /init)
     ▼
-authn.NewMiddleware(AuthenticateUsername)  (permissions/authenticate.go)
+authn.NewMiddleware(AuthenticateUsername)  (permissions/authenticate.go:14)
     │ HTTP Basic Auth 的 username → 解析为 unix user
     │ 无 auth info → 默认 root
     ▼
 chi handler
     │
     ├─ Connect RPC 路径(/process.Service/...)
-    └─ REST OpenAPI 路径(/init, /files, ...)
+    ├─ REST OpenAPI 路径(/init, /files, ...)
+    └─ 直挂路径(/upgrade,不经 OpenAPI spec)
 ```
 
 ### 3.4 为什么要 IdleTimeout = 640s
 
-注释:[`main.go:33`](../packages/envd/main.go)
+注释:[`main.go:35`](../packages/envd/main.go)(2026.29 为 `main.go:33`)
 
 > Downstream timeout should be greater than upstream (in orchestrator proxy).
 
@@ -356,13 +449,14 @@ client.Start(StartRequest{process, pty?, tag?, stdin?})
        │
        ▼
 1. 读 Connect-Timeout-Ms header(默认无超时)
-   (start.go:196)
+   (start.go:222 determineTimeoutFromHeader)
        │
        ▼
 2. handler.New(...)
    ├─ 包装命令为 /bin/sh -c
    │   预设 oom_score_adj=100、ionice -c2 -n4、nice
-   │   (handler/handler.go:105-108)
+   │   (handler/handler.go:197-201;ionice 部分由
+   │    ioniceNicePrefix 用 exec.LookPath 探测,handler.go:173)
    ├─ 设置 SysProcAttr.Credential(uid/gid/groups)
    ├─ applyCgroupFD(把进程放进 cgroup)
    └─ 如果 PTY:creack/pty 启动;否则 stdout/stderr pipe(32KiB chunk)
@@ -371,6 +465,7 @@ client.Start(StartRequest{process, pty?, tag?, stdin?})
 3. 启动 keepalive ticker
    permissions.GetKeepAliveTicker
    (从 Keepalive-Ping-Interval header 读,默认 90s)
+   (start.go:105)
        │
        ▼
 4. 推送 StartEvent{pid}
@@ -378,15 +473,17 @@ client.Start(StartRequest{process, pty?, tag?, stdin?})
        ▼
 5. 后台 goroutine 读 stdout/stderr/pty
    每读到数据 → 推送 DataEvent + reset keepalive ticker
-   (start.go:142)
+   (start.go:144;2026.29 为 start.go:142)
        │
        ▼
 6. 进程退出 → 推送 EndEvent{exit_code, status}
+   (2026.30 起终态事件在 terminatedRetentionTTL=30s 内仍可被
+    晚到的 Connect 补拿到,service.go:30)
 ```
 
 #### handler 的进程归类
 
-文件:[`internal/services/process/handler/handler.go:340`](../packages/envd/internal/services/process/handler/handler.go)
+文件:[`internal/services/process/handler/handler.go:453`](../packages/envd/internal/services/process/handler/handler.go)(2026.29 为 `handler.go:340`)
 
 ```go
 // 注意:是包级函数,不是 Handler 方法;接收 *StartRequest 而非 Handler。
@@ -447,6 +544,8 @@ Process stdout ──► MultiplexedChannel[DataEvent]
 | 实现 | `watch.go` | `watch_sync.go` |
 
 `watch_sync` 的设计目的是避免某些 HTTP/2 proxy 在长连接 idle 时关闭连接,导致 stream watch 失败。
+
+> ⚠️ 2026.30 起 `filesystem.Service` 增加 `watchersMu *sync.Mutex`(`service.go:28`),串行化 `CreateWatcher`/`GetWatcherEvents`/`RemoveWatcher` 这类 watcher 成员变更;`Handle` 的返回值从无状态值变成**持有这把锁的 `Service` 值**(`service.go:31`)。热升级时 watcher 的重新认领也走这条路径(`watch_handover.go`)。
 
 ### 4.3 Memory Collapse
 
@@ -510,8 +609,8 @@ REST 端点:`POST /fsfreeze`、`POST /fsthaw`,作用在 rootfs mountpoint `/`。
 
 #### 实现
 
-- `interceptor.go:15`:检查 `User-Agent == "connect-python"`,设置 `X-E2B-Legacy-SDK: true`
-- `conversion.go:21`:对设置了 legacy flag 的响应,只保留 `EntryInfo` 的 `Name/Type/Path` 字段,丢弃其他
+- `interceptor.go:11,15`:常量 `brokenUserAgent = "connect-python"`,`shouldHideChanges` 据此设置 `X-E2B-Legacy-SDK: true`
+- `conversion.go:16,57`:对设置了 legacy flag 的响应,只保留 `EntryInfo` 的 `Name/Type/Path` 字段,丢弃其他(`init()` 在 57 行注册 converter)
 - `stream.go`:对 streaming handler conn 的 `Send` 包装转换
 
 **注意**:这是给**老 SDK** 的兜底,新 SDK 不会触发。
@@ -522,7 +621,7 @@ REST 端点:`POST /fsfreeze`、`POST /fsthaw`,作用在 rootfs mountpoint `/`。
 
 ### 5.1 OpenAPI spec 与代码生成
 
-- spec 文件:[`packages/envd/spec/envd.yaml`](../packages/envd/spec/envd.yaml)(524 行,OpenAPI 3.0.0)
+- spec 文件:[`packages/envd/spec/envd.yaml`](../packages/envd/spec/envd.yaml)(649 行,OpenAPI 3.0.0;2026.29 为 524 行)
 - 代码生成配置:[`packages/envd/internal/api/cfg.yaml`](../packages/envd/internal/api/cfg.yaml)
 - 代码生成入口:[`packages/envd/internal/api/generate.go:3`](../packages/envd/internal/api/generate.go)(`//go:generate oapi-codegen`)
 - 生成产物:[`packages/envd/internal/api/api.gen.go`](../packages/envd/internal/api/api.gen.go)
@@ -539,22 +638,27 @@ generate:
 
 ### 5.2 完整端点列表
 
-文件:[`internal/api/api.gen.go:838-873`](../packages/envd/internal/api/api.gen.go)
+文件:[`internal/api/api.gen.go:893-930`](../packages/envd/internal/api/api.gen.go)(2026.29 为 `api.gen.go:838-873`)
 
-| Method | Path | Handler | 鉴权 |
-|--------|------|---------|------|
-| `POST` | `/init` | `PostInit` | 特殊(MMDS hash) |
-| `GET` | `/health` | `GetHealth` | 豁免 |
-| `GET` | `/envs` | `GetEnvs` | 需要 token |
-| `GET` | `/files` | `GetFiles` | HMAC 签名 |
-| `POST` | `/files` | `PostFiles` | HMAC 签名 |
-| `POST` | `/files/compose` | `PostFilesCompose` | 需要 token |
-| `GET` | `/metrics` | `GetMetrics` | 需要 token |
-| `POST` | `/collapse` | `PostCollapse` | 需要 token |
-| `POST` | `/freeze` | `PostFreeze` | 需要 token |
-| `POST` | `/unfreeze` | `PostUnfreeze` | 需要 token |
-| `POST` | `/fsfreeze` | `PostFsfreeze` | 需要 token |
-| `POST` | `/fsthaw` | `PostFsthaw` | 需要 token |
+| Method | Path | Handler | 鉴权 | `x-internal` |
+|--------|------|---------|------|--------------|
+| `POST` | `/init` | `PostInit` | 特殊(MMDS hash) | ✓ |
+| `GET` | `/health` | `GetHealth` | 豁免 | ✗ |
+| `GET` | `/envs` | `GetEnvs` | 需要 token | ✗ |
+| `GET` | `/files` | `GetFiles` | HMAC 签名 | ✗ |
+| `POST` | `/files` | `PostFiles` | HMAC 签名 | ✗ |
+| `POST` | `/files/compose` | `PostFilesCompose` | 需要 token | ✗ |
+| `GET` | `/metrics` | `GetMetrics` | 需要 token | ✗ |
+| `POST` | `/collapse` | `PostCollapse` | 需要 token | ✓ |
+| `POST` | `/freeze` | `PostFreeze(w, r, params PostFreezeParams)` | 需要 token | ✓ |
+| `POST` | `/unfreeze` | `PostUnfreeze` | 需要 token | ✓ |
+| `POST` | `/fsfreeze` | `PostFsfreeze` | 需要 token | ✓ |
+| `POST` | `/fsthaw` | `PostFsthaw` | 需要 token | ✓ |
+| `POST` | `/upgrade` | (不经 `ServerInterface`,直挂在 chi mux 上) | 需要 token | ✓(手工列入) |
+
+> ⚠️ `x-internal: true` 是 2026.30 新增的标记,`envd.yaml` 里恰好有 **6** 条路径带它(`/init`、`/collapse`、`/freeze`、`/unfreeze`、`/fsfreeze`、`/fsthaw`——即上表前 6 个 ✓,`/upgrade` 的 ✓ 是 orchestrator 手工列的)。orchestrator 侧据此生成 [`internal_routes.gen.go`](../packages/orchestrator/pkg/sandbox/envd/internal_routes.gen.go) 的 `specInternalPaths`,用于让 sandbox 公网 proxy 拒绝这些控制面路径。
+>
+> ⚠️ `POST /upgrade` **不在 spec 里**(它注册在 envd 自己的 mux 上),所以它的 internal 身份由 orchestrator 手工维护在 [`internal_routes.go`](../packages/orchestrator/pkg/sandbox/envd/internal_routes.go) 的 `unspecifiedInternalPaths`。`packages/envd/routes_test.go` 用 AST 扫描 chi 路由注册,一旦出现新的 spec-less 路由就会构建失败——注释里写明 `/upgrade` 正是"这样溜进生产"的。
 
 ### 5.3 关键端点详解
 
@@ -570,7 +674,7 @@ generate:
 GET /files?path=...
     │
     ├─ Accept-Encoding 含 gzip?
-    │   YES → 流式 gzip 写出(151-170)
+    │   YES → 流式 gzip 写出(150-166;2026.29 为 151-170)
     │   NO  → http.ServeContent(支持 Range, 172)
     │
     ├─ 如果有 Range / If-Modified-Since / If-None-Match / If-Range
@@ -637,7 +741,27 @@ dest: dst
 
 #### POST /freeze / /unfreeze
 
-freeze `user` 和 `pty` 两类 cgroup(不 freeze `system`/`socat`)。配合 pause/resume 用,详见 [§十三](#十三pause--resume-配合)。
+2026.29:freeze `user` 和 `pty` 两类 cgroup(不 freeze `system`/`socat`)。
+
+2026.30:委托给 `WorkloadFreezer`,按**模式**决定目标集,并新增 3 个查询参数:
+
+| 参数 | 取值 | 含义 |
+|------|------|------|
+| `mode` | `legacy`(默认)/ `hierarchy` | 空或未知值都按 `legacy` 处理,这样"早于该参数"的 orchestrator 保持原有冻结集 |
+| `maxCgroups` | 整数 | 一次层级遍历最多访问多少个 cgroup;`0`/缺省用 `DefaultFreezeMaxCgroups = 512`(`freeze.go:92`),且被 `DefaultThawMaxCgroups = 8192` 兜住 |
+| `maxWaitMs` | 整数 | 等待"真正冻结完成"的预算(毫秒)。**这个参数同时是两种调用方的判别器**:带它 → 返回 `200` + `FreezeResult`;不带 → 原样 `204` |
+
+`FreezeResult` 字段:`mode`、`visited`、`allowlisted`、`truncated`、`preFrozen`、`requested`、`frozen`、`notFrozen`、`failed`、`vanished`、`unobservable`、`sweepMs`、`waitMs`。
+
+> ⚠️ 写 `cgroup.freeze` 只是"**请求**冻结",真正的冻结完成要看 `cgroup.events` 的 `frozen` 字段,所以 2026.30 加了 `freezePollInterval = 2ms`(`freeze.go:133`)的 settle 轮询。`AllFrozen()` 的定义是 `NotFrozen == 0 && Failed == 0`(`freeze.go:471`)。
+>
+> ⚠️ **部分失败不再返回 `500`**:一个 cgroup 拒绝写 `cgroup.freeze` 是预期情况,失败数进入 `failed` 计数与日志。只有"锁等待被调用方取消"才返回 `503`。
+
+配合 pause/resume 用,详见 [§十三](#十三pause--resume-配合)。
+
+#### POST /upgrade(2026.30 新增)
+
+`POST /upgrade` 接收替换用的二进制,只允许写到 `/usr/bin/envd.next`。详见 [§13.5](#135-在线热升级post-upgrade202630-新增)。
 
 #### POST /fsfreeze / /fsthaw
 
@@ -679,6 +803,14 @@ envd 的鉴权分三层,按请求类型走不同路径:
 请求进来
     │
     ▼
+0. 2026.30:热升级后的新镜像还没完成第一次 /init?
+   (a.handover != nil && !a.initialized.Load())
+   ├─ 路径在 handoverPreInitAllowedPaths(GET /health、POST /init)
+   │                          → 继续往下走
+   └─ 否则                   → 401 "envd not initialized"
+                              (auth.go:65, 79)
+       │
+       ▼
 1. 路径豁免?
    ├─ GET /health            → 直接放行
    ├─ POST /init             → 走 MMDS hash 验证
@@ -690,6 +822,8 @@ envd 的鉴权分三层,按请求类型走不同路径:
    ├─ 是 → 放行
    └─ 否 → 401
 ```
+
+> ⚠️ 第 0 步是 **fail closed** 而非 fail open:`authExcludedPaths` 里本来包含 `/files`,但热升级窗口里 `/files` **也**要被拒——新镜像此时还没拿到 access token,放行等于开一个无鉴权窗口。`/init` 之所以被允许,是因为它自己用 MMDS hash 做鉴权,而 `initialized` 正是在 `PostInit` 里"token 恢复之后"才置位的(`init.go:274-294`)。
 
 ### 6.2 Access Token(SecureToken)
 
@@ -733,7 +867,7 @@ token **只在内存**。microVM pause → resume 后:
 
 ### 6.3 HMAC 签名(/files 专用)
 
-文件:[`internal/api/auth.go:55-129`](../packages/envd/internal/api/auth.go)
+文件:[`internal/api/auth.go:88-129`](../packages/envd/internal/api/auth.go)(2026.29 为 `auth.go:55-129`;`generateSignature` 在 88 行,`validateSigning` 在 107 行)
 
 #### 签名串构造
 
@@ -792,7 +926,8 @@ func AuthenticateUsername(_ context.Context, req authn.Request) (any, error) {
 func GetAuthUser(ctx context.Context, defaultUser string) (*user.User, error) {
     // 1. 从 ctx 取 AuthenticateUsername 设的 *user.User
     // 2. 没有则用 execcontext.ResolveDefaultUsername(nil, defaultUser)
-    // 3. 默认 "root"(由 main.go 的 defaults.User 传入)
+    // 3. 默认 "root"(由 main.go 构造的 defaults.User 传入,
+    //    2026.30 起其初值来自 execcontext.BuiltinDefaultUser)
 }
 ```
 
@@ -832,7 +967,7 @@ func GetKeepAliveTicker[T any](req *connect.Request[T]) (*time.Ticker, func()) {
 }
 ```
 
-`process.start` 每次推送 DataEvent 都会 reset ticker(`start.go:142`),所以 idle 时才会触发 Keepalive 推送。
+`process.start` 每次推送 DataEvent 都会 reset ticker(`start.go:144`;2026.29 为 `start.go:142`),所以 idle 时才会触发 Keepalive 推送。
 
 ---
 
@@ -860,7 +995,7 @@ ProcessService.Start(StartRequest)
      echo 100 > /proc/self/oom_score_adj  (优先被 OOM kill)
      ionice -c2 -n4                       (低 IO 优先级)
      nice                                (低 CPU 优先级)
-   (handler.go:105-108)
+   (handler.go:197-201;2026.29 为 handler.go:105-108)
        │
        ▼
 4. exec.Cmd 设置
@@ -953,26 +1088,33 @@ E2B sandbox 没有事先注册的端口映射。用户进程在 VM 内监听任�
 
 ```go
 type Scanner struct {
-    Processes chan net.ConnectionStat   // 兼容旧接口
-    scanExit  chan struct{}             // Destroy() 时关闭,用于退出循环
-    subs      *smap.Map[*ScannerSubscriber]  // 并发安全的订阅者表(不是 slice)
-    period    time.Duration
+    scanExit chan struct{}                   // Destroy() 时关闭,用于退出循环
+    subs     *smap.Map[*ScannerSubscriber]   // 并发安全的订阅者表(不是 slice)
+    period   time.Duration
 }
 
 // 注意:不接收 ctx,通过 s.scanExit 退出。
 func (s *Scanner) ScanAndBroadcast() {
+    ticker := time.NewTicker(s.period)
     for {
         processes, _ := net.Connections("tcp")  // gopsutil,IPv4+IPv6
         for _, sub := range s.subs.Items() {
-            sub.Signal(processes)
+            // 把 scanExit 一起传下去:不消费的订阅者不能把广播挂住
+            sub.Signal(processes, s.scanExit)
         }
         select {
-        case <-s.scanExit: return
-        default: time.Sleep(s.period)  // 1s
+        case <-scanExit: return
+        case <-ticker.C:
         }
     }
 }
 ```
+
+> ⚠️ 2026.30 的三点差异(`scan.go:11-50`):
+>
+> - ⛔ `Processes chan net.ConnectionStat` 这个"兼容旧接口"字段已删除。
+> - `time.Sleep(period)` 换成 `time.NewTicker(period)` + `select`。
+> - `ScannerSubscriber.Signal` 增加第二个参数 `exit <-chan struct{}`(`scan_subscriber.go:26`),避免一个停止消费的订阅者永久阻塞整个广播循环。
 
 `net.Connections("tcp")` 返回所有 TCP 连接(IPv4 + IPv6),每秒一次。
 
@@ -1015,17 +1157,21 @@ type Forwarder struct {
 }
 
 type PortToForward struct {
-    socat  *exec.Cmd    // socat 进程
-    pid    int32        // 用户进程 pid
-    family uint32       // 4 / 6
-    state  PortState    // FORWARD / DELETE
-    port   uint32       // 监听端口
+    socat    *exec.Cmd  // socat 进程
+    pid      int32      // 用户进程 pid
+    family   uint32     // 4 / 6
+    state    PortState  // FORWARD / DELETE
+    port     uint32     // 监听端口
+    socatPid int        // 2026.30:热升级时"重新认领"的 socat pid
 }
+
+// socatPID 优先返回重新认领来的 socatPid,否则回退到 p.socat.Process.Pid。
+func (p *PortToForward) socatPID() int { ... }   // forward.go:49
 ```
 
 #### 主循环
 
-`StartForwarding` (`forward.go:73-139`):
+`StartForwarding` (`forward.go:93-166`;2026.29 为 `forward.go:73-139`):
 
 ```
 for {
@@ -1040,7 +1186,7 @@ for {
 
 #### startPortForwarding
 
-`forward.go:141-187`:
+`forward.go:168-214`(2026.29 为 `forward.go:141-187`):
 
 ```go
 cmd := exec.CommandContext(ctx,
@@ -1056,6 +1202,8 @@ cmd.SysProcAttr = &syscall.SysProcAttr{
 applyCgroupFD(cmd.SysProcAttr, cgroupFD, ok)  // 仅当 ok=true 才启用 CLONE_INTO_CGROUP
 ```
 
+> ⚠️ 2026.30 停止转发时(`stopPortForwarding`,`forward.go:216`)按 `p.socatPID()` **精确回收**该 socat,而不是按进程组盲杀;`socat`/`socatPid` 会在收尾时一起清零(`forward.go:222`)。热升级时 outgoing 侧用 `ExportForwards`/`ExportForwardsHold`(`forward.go:251`、`266`)把 `socat_pid` 写进 handover blob,incoming 侧用 `ImportForwards`(`forward.go:299`)**重新认领**已经在跑的 socat,而不是再 spawn 一个重复的。
+
 #### 为什么用 socat
 
 - **稳定**:socat 是几十年验证过的网络工具
@@ -1064,7 +1212,7 @@ applyCgroupFD(cmd.SysProcAttr, cgroupFD, ok)  // 仅当 ok=true 才启用 CLONE_
 
 #### gateway IP `169.254.0.21`
 
-`forward.go:28`:
+`forward.go:30`(2026.29 为 `forward.go:28`):
 
 ```go
 var defaultGatewayIP = net.IPv4(169, 254, 0, 21)
@@ -1095,7 +1243,7 @@ envd **只支持 cgroup v2**(`cgroup2.go`),非 Linux 平台用 stub(`cgroup2_stu
 
 #### 检测
 
-`cgroup2.go:65`:
+`cgroup2.go:70`(2026.29 为 `cgroup2.go:65`):
 
 ```go
 var stat unix.Statfs_t
@@ -1105,7 +1253,7 @@ if stat.Type != unix.CGROUP2_SUPER_MAGIC {
 }
 ```
 
-### 9.2 Manager 接口
+### 9.2 Manager 与 PathManager 接口
 
 文件:[`internal/services/cgroups/iface.go`](../packages/envd/internal/services/cgroups/iface.go)
 
@@ -1113,18 +1261,36 @@ if stat.Type != unix.CGROUP2_SUPER_MAGIC {
 type Manager interface {
     // 注意:返回 (fd, bool) 而非 (int, error) — bool 表示该 type 是否配置了 cgroup
     GetFileDescriptor(procType ProcessType) (int, bool)
-    // Freeze/Unfreeze 都带 ProcessType 参数(sandbox pause 时只冻 user+pty,不动 socat)
+    // Freeze/Unfreeze 都带 ProcessType 参数
     Freeze(procType ProcessType) error
     Unfreeze(procType ProcessType) error
+    // 2026.30 新增:查询某个 ProcessType 是否处于冻结态
+    Frozen(procType ProcessType) (bool, error)   // iface.go:76
     Close() error
 }
 ```
+
+2026.30 另拆出一个 **`PathManager`** 接口(`iface.go:26`),把"按路径操作 cgroup 树"的能力与"按 ProcessType 操作"分开——层级遍历只需要前者:
+
+```go
+type PathManager interface {
+    Root() string                                  // cgroup2.go:164
+    PathOf(procType ProcessType) (string, bool)    // cgroup2.go:168
+    ChildrenOf(path string) ([]string, error)      // cgroup2.go:179
+    FreezeAt(path string) error                    // cgroup2.go:195
+    UnfreezeAt(path string) error                  // cgroup2.go:199
+    FrozenAt(path string) (bool, error)            // cgroup2.go:205
+    FreezeRequestedAt(path string) (bool, error)   // cgroup2.go:216
+}
+```
+
+> ⚠️ `Root()` 返回的是 `filepath.Clean(c.rootPath)`(`cgroup2.go:164`),保证遍历时的路径比较不会因为尾斜杠/`..` 而误判"这个 cgroup 是不是 envd 自己"。
 
 `GetFileDescriptor(type)` 返回 type 对应 cgroup 目录的只读 fd + 是否启用的 bool,用于 `CLONE_INTO_CGROUP`。
 
 ### 9.3 三类 cgroup 配置
 
-文件:[`main.go:266-285`](../packages/envd/main.go)
+文件:[`main.go:488-507`](../packages/envd/main.go)(2026.29 为 `main.go:266-285`)
 
 | ProcessType | 路径 | 配置 |
 |-------------|------|------|
@@ -1138,7 +1304,7 @@ type Manager interface {
 
 ### 9.4 资源预留
 
-文件:[`main.go:237-298 createCgroupManager`](../packages/envd/main.go)
+文件:[`main.go:460-521 createCgroupManager`](../packages/envd/main.go)(2026.29 为 `main.go:237-298`)
 
 ```go
 // 1. 通过 host.GetMetrics() 查询内存(不是 mem.VirtualMemory())
@@ -1154,7 +1320,9 @@ memoryHigh := memoryMax
 
 ### 9.5 Freeze / Unfreeze
 
-文件:[`internal/services/cgroups/cgroup2.go:153-168`](../packages/envd/internal/services/cgroups/cgroup2.go)
+#### 9.5.1 单点写(底层原语,未变)
+
+文件:[`internal/services/cgroups/cgroup2.go:225-270`](../packages/envd/internal/services/cgroups/cgroup2.go)(2026.29 为 `cgroup2.go:153-168`)
 
 ```go
 // 注意:带 procType 参数;实际通过 setFreezeState → writeCgroupProp 写 cgroup.freeze 文件。
@@ -1173,13 +1341,69 @@ func (c Cgroup2Manager) setFreezeState(procType ProcessType, value string) error
 
 cgroup v2 freeze 把 cgroup 内所有任务瞬间暂停(不可调度、不消耗 CPU),但内存保留。这是 pause 操作的关键 — 不需要 stop 进程,恢复时 thaw 即可。
 
+#### 9.5.2 层级化 sweep(2026.30 新增)
+
+文件:[`internal/services/cgroups/freeze.go`](../packages/envd/internal/services/cgroups/freeze.go)、[`hierarchy.go`](../packages/envd/internal/services/cgroups/hierarchy.go)
+
+2026.29 的 freeze 只是"对 user 和 ptys 两个静态路径各写一次 `cgroup.freeze`"。2026.30 把这件事交给 **`WorkloadFreezer`**,它有两种模式:
+
+| 模式 | 目标集 | 说明 |
+|------|--------|------|
+| `legacy`(默认) | `WorkloadProcessTypes = {user, pty}`(`freeze.go:18`) | 与 2026.29 的冻结集保持一致,供"早于 `mode` 参数"的 orchestrator 使用 |
+| `hierarchy` | **envd 自身祖先链之外、且不在 allowlist 上的全部子树** | `DescendSet`(`hierarchy.go:134`)生成待冻结集合,`AncestorChain`(`hierarchy.go:95`)生成要排除的祖先链 |
+
+`livenessAllowlist`(`hierarchy.go:46`)只放"**resume 路径上真的会用到**"的东西,每条都有代码依据:
+
+| 条目 | 为什么不能冻 |
+|------|--------------|
+| `init.scope` | 里面是 systemd(PID 1)。`/init` 的 thaw 是 deferred 的,跑在 `setupNFS` 之后;NFSv3 挂载要 `rpc.statd`,而它由 systemd 启动。冻了 PID 1,每个挂 volume 的 sandbox 都会卡到 NFS mount 超时 |
+| `system.slice/systemd-journald.service` | envd 的日志写进它的 socket。冻住之后 socket buffer 一满,envd 自己的日志写入就会阻塞,把"慢 resume"变成"卡死的 resume" |
+| `system.slice/rpcbind.service`、`rpcbind.socket` | 本地 portmapper 及其 socket 激活对。NFSv3 挂载不带 `nolock`,所以 `mount.nfs` 会起 `rpc.statd`,后者向**本地** portmapper 注册 |
+| `system.slice/rpc-statd.service` | 同上 |
+| `socats` | envd 的端口转发;2026.29 也不冻它(`ProcessTypeSocat` 不在 `WorkloadProcessTypes` 里),这里只是把既有行为显式化 |
+
+> ⚠️ **envd 自己的祖先链不在 allowlist 里**:遍历是**结构化排除**它的(`DescendSet` 从 envd 的 `SelfCgroupPath` 反推),而不是按名字匹配。这样即使 systemd unit 改名也不会漂移——这比名单匹配是更强的保证。
+>
+> ⚠️ 反过来,`DescendSet` **必须包含 allowlist 条目的祖先**,而且**不能包含条目本身**:冻结是层级生效的,如果遍历停在 `system.slice` 就会连 `rpcbind` 一起冻上;而把 `system.slice/rpcbind.service` 本身加进遍历集又等于去冻它。源码里的做法是"对每个 allowlist 条目,只把它**父目录**的祖先链加进来"(`hierarchy.go:148-153`)。
+>
+> ⚠️ 配套的 `allowlisted`(`hierarchy.go:168`)判的是"条目**或其子树**",不是精确路径——因为冻结一个 cgroup 会连带冻住它的后代,所以 sweep 跳过某个 allowlisted 路径时不会继续下降,它下面的东西合法地保持运行。精确匹配反而会把这些子 cgroup 报成"漏网的"。这正是"按 cgroup 树操作"与"按单点写"最本质的差别。
+
+#### 9.5.3 settle 轮询:写 ≠ 冻完
+
+> ⚠️ 写 `cgroup.freeze` 只是"**请求**冻结"。真正冻完要看 `cgroup.events` 的 `frozen` 字段。所以 2026.30 加了 `freezePollInterval = 2ms`(`freeze.go:133`)的 settle 轮询,`FreezeResult` 里的 `waitMs` 就是等待时长。
+>
+> `FrozenAt`(`cgroup2.go:205`)读 `cgroup.events`,`FreezeRequestedAt`(`cgroup2.go:216`)读 `cgroup.freeze`——**thaw 时必须用前者而不是后者**:一个 cgroup 的 `cgroup.events` 会在"只有祖先被冻"时也报 `frozen=1`,照它解冻会解掉不该解的。
+
+#### 9.5.4 guest 自己冻的 cgroup 要保留
+
+> ⚠️ 容器运行时用写 `cgroup.freeze` 实现 `docker pause`。如果 envd 在 thaw 时无差别清掉所有 `cgroup.freeze`,就会把 guest 自己冻的容器**意外解冻**。
+>
+> 所以冻结前会先用 `ScanGuestFrozen`(`hierarchy.go:423`)把 guest 的既有冻结状态记下来(`FreezeResult.preFrozen`),存进 `guest_frozen_cgroups`(`WorkloadFreezer.GuestFrozenPaths`/`SetGuestFrozenPaths`,`freeze.go:877`/`903`),thaw 时跳过它们。
+>
+> 兜底方向是"**宁可多解冻**":如果这份记录丢了(`scanFailed > 0`),thaw 会清掉它看到的一切冻结状态,绝不让 guest 卡在冻结里。
+
+#### 9.5.5 边界与 watchdog
+
+| 常量 | 值 | 位置 | 含义 |
+|------|-----|------|------|
+| `DefaultFreezeMaxCgroups` | 512 | `freeze.go:92` | 一次层级 freeze 最多访问多少 cgroup;超过则 `FreezeResult.truncated = true` |
+| `DefaultThawMaxCgroups` | 8192 | `freeze.go:80` | thaw 递归遍历的上限(故意远大于 freeze 的上限:freeze 时被 `maxCgroups` 挡住的 cgroup 必须能被 thaw 到) |
+| `DefaultThawWatchdogWindow` | 10 分钟 | `freeze.go:64` | 一次 freeze 之后迟迟没有对应 thaw(比如 pause 中途失败)时,watchdog 主动解冻 |
+| `HandoverMaxWait` | 2 秒 | `freeze.go:143` | 热升级前的冻结等待上限,策略比 pause 严格:冻不住就不换镜像 |
+| `freezePollInterval` | 2ms | `freeze.go:133` | settle 轮询间隔 |
+
+**消失的 cgroup 不算失败**:`vanished(err)`(仅 `ENOENT`/`ENODEV`)会被计数到 `FreezeResult.vanished` 而不是 `failed`——遍历途中一个瞬时 unit 退出是常态。例外是 envd 自己那几个静态 cgroup:在 legacy 模式下它们就是全部轮询集,那里消失说明有人从 envd 的任务底下把 cgroup 删了(`freezeTarget.tolerateVanish`)。
+
+**无法观测也不算失败**:某些 guest 读不到 `cgroup.events`,此时冻结"发出了但无法验证",计入 `FreezeResult.unobservable`。
+
 ### 9.6 应用场景
 
 | 场景 | 调用 |
 |------|------|
-| **pause(snapshot)** | `POST /freeze` → freeze user + ptys cgroup |
-| **resume** | `POST /init` 的 defer → unfreeze user + ptys cgroup |
+| **pause(snapshot)** | `POST /freeze` → `WorkloadFreezer.Freeze(mode, maxCgroups, maxWaitMs)` |
+| **resume** | `POST /init` 的 defer → `WorkloadFreezer.Unfreeze` |
 | **filesystem-only pause** | `POST /fsfreeze` + freeze + collapse + 内存丢弃 |
+| **在线热升级** | `POST /upgrade` → `HandoverMaxWait` 内的严格 freeze(见 [§13.5](#135-在线热升级post-upgrade202630-新增)) |
 
 ---
 
@@ -1272,7 +1496,7 @@ orchestrator 的网络代理可能插入 iptables 规则,意外阻断 MMDS 路�
 
 ### 10.5 /init 用 MMDS hash 验证
 
-文件:[`internal/api/init.go:76-113 checkMMDSHash`](../packages/envd/internal/api/init.go)
+文件:[`internal/api/init.go:78-115 checkMMDSHash`](../packages/envd/internal/api/init.go)(2026.29 为 `init.go:76-113`)
 
 ```go
 // orchestrator 在 resume 前把新 token 的 hash 写进 MMDS
@@ -1305,6 +1529,8 @@ envd 进程内:
            - level(Debug 起步)
            - 注入 MMDS opts(SandboxID, TemplateID)
 ```
+
+> ⚠️ 2026.30 起 exporter 的构造移到 `main.go`,`logs.NewLogger` 只接收 `(verbose, writers ...io.Writer)`(`main.go:206`)——这样"往哪写"由调用方决定,logger 不再自己持有 `mmdsChan`。同时新增 `api.LogFlusher`(`logFlushTimeout = 2s`,`init.go:42`),在 `/freeze` 里**先 flush 再 purge**,把 pause 前的日志尽量推出去。
 
 ### 11.2 HTTPLogsExporter
 
@@ -1426,24 +1652,24 @@ type Metrics struct {
 
 ### 12.2 完整流程
 
-文件:[`internal/api/init.go:115 PostInit`](../packages/envd/internal/api/init.go)
+文件:[`internal/api/init.go:178 PostInit`](../packages/envd/internal/api/init.go)(2026.29 为 `init.go:115`)
 
 ```
 POST /init { User, EnvVars, Workdir, Access Token, ... }
        │
        ▼
-1. memguard.WipeBytes(body)(返回时擦明文,init.go:127)
+1. memguard.WipeBytes(body)(返回时擦明文)
        │
        ▼
-2. 获取 initLock(1-slot semaphore,store.go:72)
+2. 获取 initLock(1-slot semaphore,store.go:55, 153)
    保证全局只一个 init 在跑
        │
        ▼
-3. defer unfreezeUserCgroups(ctx)(总 thaw,init.go:168)
+3. defer unfreezeUserCgroups(ctx)(总 thaw,init.go:619)
    即使本次 init 失败,也确保 pause 后能 thaw
        │
        ▼
-4. validateInitAccessToken:
+4. validateInitAccessToken(init.go:48):
    ├─ body.Token == 已存 token → OK
    ├─ body.Token 的 hash == MMDS hash → OK
    ├─ MMDS hash == hash("") → OK(重置)
@@ -1454,7 +1680,7 @@ POST /init { User, EnvVars, Workdir, Access Token, ... }
    防重放:时间戳必须单调递增
        │
        ▼
-6. SetData(条件性):
+6. SetData(条件性)(init.go:356;2026.29 为 init.go:191):
    ├─ 设置系统时钟(若漂移 > 50ms 落后 / > 5s 提前)
    ├─ EnvVars.ReplaceUserVars(替换 user env vars)
    ├─ accessToken.TakeFrom(token)
@@ -1464,11 +1690,19 @@ POST /init { User, EnvVars, Workdir, Access Token, ... }
    └─ setupNFS(挂载 NFS volumes, 10s 超时)
        │
        ▼
-7. 异步:host.PollForMMDSOpts(60s 超时)
+7. 2026.30:回写 5 个诊断响应头(见 §12.6)
+       │
+       ▼
+8. 异步:host.PollForMMDSOpts(60s 超时)
    重新拉 MMDS,确保 env vars 最新
        │
        ▼
-8. 204 No Content
+9. initialized.Store(true)(init.go:294)
+   ⚠️ 顺序很重要:token 恢复之后才置位,
+   否则 fail-closed 窗口会提前打开
+       │
+       ▼
+10. 204 No Content
 ```
 
 ### 12.3 关键设计:为什么 init 是 defer unfreeze
@@ -1486,7 +1720,7 @@ T5: SDK 调 POST /init → defer unfreeze → 进程恢复执行
 
 ### 12.4 SetData 详解
 
-文件:[`init.go:191-245`](../packages/envd/internal/api/init.go)
+文件:[`init.go:356-416`](../packages/envd/internal/api/init.go)(2026.29 为 `init.go:191-245`)
 
 ```go
 // 注意:接收 PostInitJSONBody(SDK 传入),不是自定义 InitRequest;
@@ -1537,10 +1771,10 @@ func (a *API) SetData(ctx context.Context, logger zerolog.Logger, data PostInitJ
 
 ### 12.5 shouldSetSystemTime
 
-文件:[`init.go:38-41, 572`](../packages/envd/internal/api/init.go)
+文件:[`init.go:864`](../packages/envd/internal/api/init.go)(2026.29 为 `init.go:572`)
 
 ```go
-// 实际常量名(注意与"drift"不同):
+// 实际常量名(注意与"drift"不同),init.go:40-41:
 const (
     maxTimeInPast   = 50 * time.Millisecond   // sandbox 落后 host 上限
     maxTimeInFuture = 5 * time.Second         // sandbox 提前 host 上限
@@ -1559,6 +1793,20 @@ func shouldSetSystemTime(sandboxTime, hostTime time.Time) bool {
 - 提前 5s 内:可能 init 请求刚发出,network latency 解释,不调
 - 超过这些阈值:用 SDK 的时钟强行覆盖(`setSystemTime` → `unix.ClockSettime`)
 
+### 12.6 诊断响应头(2026.30 新增)
+
+`/init` 成功后回写 5 个响应头,把 envd 自己的运行时判断暴露给 orchestrator——以前这些只存在于 envd 的日志里,orchestrator 看不到:
+
+| Header | 常量位置 | 内容 |
+|--------|----------|------|
+| `X-Envd-Version` | `init.go:184` | `pkg.Version`,即本次运行的 envd 版本 |
+| `X-Envd-Handover` | `init.go:198` | 本次是不是热升级后的第一次 `/init`(JSON) |
+| `X-Envd-Freeze-Audit` | `freezeAuditHeader`,`init.go:126` | resume 时对 cgroup 树上"仍被冻结的路径"的采样审计(`auditFrozenSet`,`init.go:871`) |
+| `X-Envd-Defaults` | `defaultsHeader`,`init.go:147` | **实际生效**的默认用户/工作目录(`reportEffectiveDefaults`,`init.go:319`) |
+| `X-Envd-Memory` | `memoryHeader`,`init.go:176` | envd 所在 cgroup 链上的内存保护配置(`reportMemoryProtection`,`init.go:346`,数据来自 `cgroups.ReadMemoryProtection`) |
+
+> ⚠️ `X-Envd-Defaults` 报的是"**生效值**"而不是"请求值":`/init` 的 `defaultUser`/`defaultWorkdir` 是可选字段,空串表示不修改,所以 orchestrator 拿到的可能是上一次 init 留下的值。
+
 ---
 
 ## 十三、pause / resume 配合
@@ -1570,8 +1818,9 @@ orchestrator 决定 pause sandbox
        │
        ▼
 1. POST /freeze → envd
-   envd: cgroupManager.Freeze(user + ptys)
-   → 用户进程瞬间冻结
+   envd: workloadFreezer.Freeze(mode, maxCgroups, maxWaitMs)
+   → 按 cgroup 树冻结(默认 legacy 模式则只冻 user + ptys)
+   → 带 maxWaitMs 时等到 settle 完成再返回 200 + FreezeResult
        │
        ▼
 2. POST /fsfreeze(只 filesystem-only pause)
@@ -1612,6 +1861,7 @@ orchestrator 决定 resume sandbox
 5. envd PostInit:
    ├─ checkMMDSHash 验证新 token
    ├─ SetData 配置新 env vars / user / workdir
+   ├─ auditFrozenSet → X-Envd-Freeze-Audit
    └─ defer unfreezeUserCgroups → 进程恢复执行!
 ```
 
@@ -1621,6 +1871,74 @@ orchestrator 决定 resume sandbox
 - **token 可重置**:MMDS hash 机制让 orchestrator 能在 resume 后强制换 token
 - **状态从内存恢复**:envd 不依赖磁盘持久化,所有状态(memory + MMDS)
 - **/init 是必经**:resume 后必须有一次 /init,否则 cgroup 还冻着
+- **2026.30 追加**:thaw 时保留 `guest_frozen_cgroups` 记录的项(guest 自己冻的容器不能被顺手解冻)
+- **2026.30 追加**:freeze 之后若迟迟没有 thaw,`DefaultThawWatchdogWindow`(10 分钟)的 watchdog 会主动解冻
+
+### 13.4 为什么 freeze 不能"只冻 user/ptys"了
+
+2026.29 的静态列表有一个隐含假设:**用户的 workload 只会在 `user` 和 `ptys` 这两个 cgroup 里**。
+
+这个假设在 2026.30 不成立——sandbox 里可能跑容器运行时、systemd unit、或者用户自己 `mkdir` 出来的 cgroup 子树,它们都不在 `user`/`ptys` 下。只冻两个静态路径会让这些进程在 snapshot 时**继续运行**,快照里捕获的是一个"正在动"的状态。
+
+层级遍历就是为了覆盖这棵树:冻 envd 祖先链之外的**全部**子树,再用一张**有代码依据**的 allowlist 排除掉 resume 路径真正需要的东西(见 [§9.5.2](#952-层级化-sweep202630-新增))。
+
+> ⚠️ 代价是 freeze 变成了 O(cgroup 数)的遍历,所以有了 `DefaultFreezeMaxCgroups = 512` 这个上界与 `FreezeResult.truncated` 这个信号。`truncated = true` 意味着"有 cgroup 根本没被检查",而不是"检查了但失败了"。
+
+### 13.5 在线热升级(`POST /upgrade`,2026.30 新增)
+
+**这是 envd 的自我替换,不是 sandbox 迁移。** 整条链在**同一个 VM、同一个 PID** 内完成:
+
+```
+orchestrator ── POST /upgrade(body = 新 envd 二进制)──▶ 旧 envd
+                                                          │
+1. 把二进制写到 /usr/bin/envd.next(只允许这个路径)      │
+2. workloadFreezer.Freeze(HandoverMaxWait = 2s)          │
+   ⚠️ 策略比 pause 严格:冻不住就不换镜像                  │
+3. 序列化 HandoverState → /run/e2b/envd-handover.pb      │
+   (tmpfs,不跨 VM 重启存活)                              │
+4. 把要交接的 fd 挪到固定槽位(fdBase = 200,           │
+   每进程 5 个:stdout/stderr/stdin/tty)                  │
+   用 dupKeep + dup3 在 syscall.ForkLock 下做,           │
+   并清掉 CLOEXEC                                        │
+5. syscall.Exec("/usr/bin/envd.next",                   │
+                "--resume-handover")                     │
+   ⚠️ PID 不变 → 子进程、socat、NFS mount、listener 全活 │
+                                                          ▼
+                                        新 envd(--resume-handover)
+                                                          │
+6. ResumeFromHandover() 读回 blob                        │
+7. 重新认领:进程(pidfd)、watcher、NFS mount ledger、   │
+   端口转发(凭 socat_pid 认领而非重新 spawn)             │
+8. fail closed:initialized 未置位前只放行 /health、/init│
+9. 等 orchestrator 的 /init → thaw + initialized         │
+   ⚠️ 兜底:60s 内等不到就 handoverFallbackThawTimeout   │
+   主动解冻(main.go:47, 298)                            │
+```
+
+**兼容契约靠 proto 里的 `schema` 字段**,而不是靠版本号比较:
+
+| 常量 | 值 | 位置 |
+|------|-----|------|
+| `handoverSchemaBase` | 1 | `process/upgrade.go:55` |
+| `handoverSchemaGuestFrozen` | 2 | 同上 |
+| `handoverSchemaDefaults` | 3 | 同上(当前上限 `handoverSchema = 3`) |
+
+- 写方(`schemaFor()`)只写"**能表达当前内容的最低 schema**"——比如没有 guest-frozen 记录就不写 2,没有 defaults 就不写 3。这样**旧镜像也能读新镜像写的 blob**。
+- 读方在 `schema > handoverSchema` 时**直接拒绝**。⚠️ 因为 `execve` 之后没有回退路径,宁可升级失败也不猜字段布局。
+
+`HandoverState`(`spec/upgrade/handover.proto`)交接的对象:
+
+| 字段 | 内容 |
+|------|------|
+| `processes` | 每个 `HandoverProc` 的 pid、tag、cgroup 类型、config、4 个 fd 槽位、timeout |
+| `terminated` | 已退出但仍在保留期内的进程(`HandoverExit`:end、remaining_ms) |
+| `watchers` | filesystem watcher 的 id/path/recursive/include_entry_info/pending_events |
+| `mounts` | NFS mount ledger(`MountEntry`:path、lifecycle_id) |
+| `forwards` | 端口转发(`ForwardedPort`:key、port、listener_pid、family、socat_pid) |
+| `guest_frozen_cgroups` | guest 自己冻的 cgroup 路径,供 thaw 时保留 |
+| `defaults` | `HandoverDefaults`:user、workdir、has_workdir |
+
+> ⛔ 与"离线替换 envd"区分:`envd-offline-upgrade-target` flag + `debugfs` 改写 rootfs 里的 `/usr/bin/envd` 是 **orchestrator 侧**行为(cold boot 时生效),不在 envd 进程内,本文不展开;见 [snapshots.md §7.4](snapshots.md)。
 
 ---
 
@@ -1628,7 +1946,7 @@ orchestrator 决定 resume sandbox
 
 ### 14.1 背景
 
-早期 connect-python SDK 的 UserAgent 标识错误(`brokenUserAgent`,`legacy/interceptor.go:11`),导致 server 端发的某些 proto 字段(尤其 `EntryInfo` 新增的 `size/mode/permissions/owner/group`)无法被反序列化。
+早期 connect-python SDK 的 UserAgent 标识错误(`brokenUserAgent = "connect-python"`,`legacy/interceptor.go:11`),导致 server 端发的某些 proto 字段(尤其 `EntryInfo` 新增的 `size/mode/permissions/owner/group`)无法被反序列化。
 
 ### 14.2 兜底机制
 
@@ -1638,7 +1956,7 @@ orchestrator 决定 resume sandbox
 请求进来
     │
     ▼
-interceptor.go:15
+interceptor.go:15 shouldHideChanges
    if User-Agent == "connect-python"(broken):
        set X-E2B-Legacy-SDK: true
     │
@@ -1672,14 +1990,16 @@ stream.go:
 
 ```
 packages/envd/spec/
-├── envd.yaml                          # OpenAPI 3.0 spec(REST)
+├── envd.yaml                          # OpenAPI 3.0 spec(REST,649 行)
 ├── buf.gen.yaml                       # Connect RPC 生成配置(envd-local)
 ├── buf.gen.shared.yaml                # Connect RPC 生成配置(shared with SDK)
 ├── generate.go                        # //go:generate 入口
 ├── process/
-│   └── process.proto                  # Process service proto
-└── filesystem/
-    └── filesystem.proto               # Filesystem service proto
+│   └── process.proto                  # Process service proto(2026.30 未变)
+├── filesystem/
+│   └── filesystem.proto               # Filesystem service proto(2026.30 未变)
+└── upgrade/                           # 2026.30 新增
+    └── handover.proto                 # 热升级交接契约(只有 message,无 service)
 ```
 
 ### 15.2 生成产物
@@ -1692,16 +2012,23 @@ packages/envd/internal/services/spec/
 │       ├── filesystem.connect.go     # Connect RPC client/server stubs
 │       └── mocks/
 │           └── mocks.go              # 自动生成的 mock(用于测试)
-└── process/
-    ├── process.pb.go
-    └── processconnect/
-        ├── process.connect.go
-        └── mocks/
-            └── mocks.go
+├── process/
+│   ├── process.pb.go
+│   └── processconnect/
+│       ├── process.connect.go
+│       └── mocks/
+│           └── mocks.go
+└── upgrade/                          # 2026.30 新增
+    └── handover.pb.go                # ⚠️ 只有 .pb.go,没有 *connect 子包
 
 packages/shared/pkg/grpc/envd/        # 给 SDK / orchestrator 用
-└── (同上结构)
+├── filesystem/  (同上结构)
+├── process/     (同上结构)
+└── upgrade/
+    └── handover.pb.go                # ⚠️ 同样没有 *connect 子包
 ```
+
+> ⚠️ `upgrade/handover.proto` **只定义 message,不定义 service**,所以生成产物里没有 `upgradeconnect/` 目录,2026.30 也**没有新增任何 Connect RPC service**。它是一份"磁盘上的一次性交接单"的格式定义,不是网络契约。
 
 ### 15.3 两份生成配置
 
@@ -1717,7 +2044,7 @@ packages/shared/pkg/grpc/envd/        # 给 SDK / orchestrator 用
 
 ### 15.4 修改 proto 的流程
 
-1. 编辑 `spec/process/process.proto` 或 `spec/filesystem/filesystem.proto`
+1. 编辑 `spec/process/process.proto`、`spec/filesystem/filesystem.proto` 或 `spec/upgrade/handover.proto`
 2. 运行 `make generate`(在 packages/envd/)
 3. 两份生成代码自动更新
 4. **重要**:`pkg/version.go` 的 `Version` 必须 bump — orchestrator 检查版本兼容性
@@ -1727,13 +2054,15 @@ packages/shared/pkg/grpc/envd/        # 给 SDK / orchestrator 用
 文件:[`packages/envd/pkg/version.go`](../packages/envd/pkg/version.go)
 
 ```go
-const Version = "0.6.8"
+const Version = "0.8.0" // x-release-please-version
 ```
 
 - envd 的 `ServiceInfoResponse` 不上报 version(那是 orchestrator 的事)
 - 但 template metadata 记录 `EnvdVersion`
 - orchestrator 启动 sandbox 时,根据 template 的 `EnvdVersion` 选择兼容的 envd 二进制
 - **bump 规则**:任何 proto 字段、RPC、行为变化都要 bump;纯注释/文档变更不需要
+- 2026.30 起 `Version` 由 **release-please** 通过 `// x-release-please-version` 注解自动维护,`packages/envd/CHANGELOG.md` 也是自动生成的;`Makefile` 的 `UPLOAD_VERSION` 让上传产物命名为 `envd.v<version>`,取代了 `envd.<7-char-sha>`
+- 2026.29 → 2026.30 的实际链条是 `0.6.10 → 0.6.11 → 0.6.12 → 0.6.13 → 0.7.0 → 0.8.0`,每一档都对应一次行为变更
 
 ---
 
@@ -1741,7 +2070,7 @@ const Version = "0.6.8"
 
 ### 16.1 命令行 flags
 
-文件:[`main.go:62-113 parseFlags`](../packages/envd/main.go)
+文件:[`main.go:71-129 parseFlags`](../packages/envd/main.go)(2026.29 为 `main.go:62-113`)
 
 | Flag | 默认 | 用途 |
 |------|------|------|
@@ -1750,6 +2079,7 @@ const Version = "0.6.8"
 | `-cgroup-root` | `/sys/fs/cgroup` | cgroup v2 根目录 |
 | `-no-cgroups` | `false` | 禁用 cgroup(用 NoopManager) |
 | `-verbose` | `false` | 日志同时输出到 stdout |
+| `-resume-handover` | `false` | 2026.30 新增(`main.go:68, 122`):本次是热升级后的新镜像,启动时从 `/run/e2b/envd-handover.pb` 恢复 |
 | `-version` | (print) | 打印 version 退出 |
 | `-commit` | (print) | 打印 commit SHA 退出 |
 
@@ -1782,6 +2112,8 @@ envd 注入给用户进程的:
 | `/run/e2b/.E2B_SANDBOX` | sandbox 标记文件 |
 | `/run/e2b/.E2B_SANDBOX_ID` | sandbox ID 持久化 |
 | `/run/e2b/.E2B_TEMPLATE_ID` | template ID 持久化 |
+| `/run/e2b/envd-handover.pb` | 2026.30:热升级交接 blob(tmpfs,**不跨 VM 重启存活**) |
+| `/usr/bin/envd.next` | 2026.30:`POST /upgrade` 允许写入的**唯一**目标路径 |
 | `/sys/fs/cgroup/e2b/` | envd 管理的 cgroup 根 |
 | `/sys/fs/cgroup/e2b/ptys/` | PTY 进程 cgroup |
 | `/sys/fs/cgroup/e2b/socats/` | socat 进程 cgroup |
@@ -1789,7 +2121,9 @@ envd 注入给用户进程的:
 | `/etc/ssl/certs/ca-certificates.crt` | CA 证书 bundle(tmpfs bind-mount) |
 | `/usr/local/share/ca-certificates/e2b-ca.crt` | envd 安装的 CA 证书 |
 
-### 16.4 HTTP Headers(envd 识别的)
+### 16.4 HTTP Headers
+
+**envd 识别的请求头:**
 
 | Header | 用途 |
 |--------|------|
@@ -1802,6 +2136,16 @@ envd 注入给用户进程的:
 | `X-Metadata-<key>` | `/files` 上传时写入 xattr |
 | `Accept-Encoding` | gzip 协商 |
 | `signature`, `signature_expiration` | `/files` HMAC 签名 |
+
+**envd 回写的响应头(2026.30 新增,见 §12.6):**
+
+| Header | 出现位置 |
+|--------|----------|
+| `X-Envd-Version` | `/init` |
+| `X-Envd-Handover` | `/init` |
+| `X-Envd-Freeze-Audit` | `/init` |
+| `X-Envd-Defaults` | `/init` |
+| `X-Envd-Memory` | `/init` |
 
 ---
 
@@ -1829,6 +2173,11 @@ envd 注入给用户进程的:
 | [`internal/services/process/handler/handler.go`](../packages/envd/internal/services/process/handler/handler.go) | 进程 wrapper(命令包装、cgroup、PTY) |
 | [`internal/services/process/handler/multiplex.go`](../packages/envd/internal/services/process/handler/multiplex.go) | fan-out 广播(Start+Connect 共享订阅) |
 | [`internal/services/process/handler/cgroupfd_linux.go`](../packages/envd/internal/services/process/handler/cgroupfd_linux.go) | `CLONE_INTO_CGROUP` 设置 |
+| [`internal/services/process/handler/readopt.go`](../packages/envd/internal/services/process/handler/readopt.go) | **2026.30**:热升级后重新认领子进程与 fd |
+| [`internal/services/process/handler/pidfd_linux.go`](../packages/envd/internal/services/process/handler/pidfd_linux.go) | **2026.30**:pidfd 收尸,避免 PID 复用误判 |
+| [`internal/services/process/handler/start_error.go`](../packages/envd/internal/services/process/handler/start_error.go) | **2026.30**:启动失败 errno → Connect code 映射 |
+| [`internal/services/process/upgrade.go`](../packages/envd/internal/services/process/upgrade.go) | **2026.30**:`POST /upgrade` 的冻结、序列化与 `execve` |
+| [`internal/services/process/dup3_linux.go`](../packages/envd/internal/services/process/dup3_linux.go) | **2026.30**:fd 搬迁(`dupKeep`/`dup3`) |
 | [`internal/services/filesystem/service.go`](../packages/envd/internal/services/filesystem/service.go) | `FilesystemService` 主体 |
 | [`internal/services/filesystem/stat.go`](../packages/envd/internal/services/filesystem/stat.go) | `Stat` |
 | [`internal/services/filesystem/dir.go`](../packages/envd/internal/services/filesystem/dir.go) | `MakeDir`/`ListDir`/`EnsureDirs` |
@@ -1836,6 +2185,7 @@ envd 注入给用户进程的:
 | [`internal/services/filesystem/remove.go`](../packages/envd/internal/services/filesystem/remove.go) | `Remove` |
 | [`internal/services/filesystem/watch.go`](../packages/envd/internal/services/filesystem/watch.go) | `WatchDir`(流式 watch) |
 | [`internal/services/filesystem/watch_sync.go`](../packages/envd/internal/services/filesystem/watch_sync.go) | `CreateWatcher`/`GetWatcherEvents`/`RemoveWatcher`(非流式) |
+| [`internal/services/filesystem/watch_handover.go`](../packages/envd/internal/services/filesystem/watch_handover.go) | **2026.30**:watcher 的 handover 导出/导入 |
 | [`internal/services/filesystem/utils.go`](../packages/envd/internal/services/filesystem/utils.go) | 共用工具 |
 
 ### 17.3 内存与文件系统操作
@@ -1859,17 +2209,21 @@ envd 注入给用户进程的:
 
 | 文件 | 作用 |
 |------|------|
-| [`internal/services/cgroups/iface.go`](../packages/envd/internal/services/cgroups/iface.go) | `Manager` interface + `ProcessType` 枚举 |
+| [`internal/services/cgroups/iface.go`](../packages/envd/internal/services/cgroups/iface.go) | `Manager` / `PathManager` interface + `ProcessType` 枚举 |
 | [`internal/services/cgroups/cgroup2.go`](../packages/envd/internal/services/cgroups/cgroup2.go) | Linux cgroup v2 实现 |
 | [`internal/services/cgroups/cgroup2_stub.go`](../packages/envd/internal/services/cgroups/cgroup2_stub.go) | 非 Linux stub |
 | [`internal/services/cgroups/noop.go`](../packages/envd/internal/services/cgroups/noop.go) | no-op fallback |
+| [`internal/services/cgroups/freeze.go`](../packages/envd/internal/services/cgroups/freeze.go) | **2026.30**:`WorkloadFreezer`、两种 FreezeMode、settle 轮询、thaw watchdog |
+| [`internal/services/cgroups/hierarchy.go`](../packages/envd/internal/services/cgroups/hierarchy.go) | **2026.30**:cgroup 树遍历、liveness allowlist、祖先链、freeze 审计 |
+| [`internal/services/cgroups/memory.go`](../packages/envd/internal/services/cgroups/memory.go) | **2026.30**:cgroup v2 内存保护读取(供 `X-Envd-Memory`) |
 
 ### 17.6 REST API 层
 
 | 文件 | 作用 |
 |------|------|
 | [`internal/api/store.go`](../packages/envd/internal/api/store.go) | `API` server struct + `New` + `GetHealth`/`GetMetrics` |
-| [`internal/api/init.go`](../packages/envd/internal/api/init.go) | `POST /init`(最复杂)+ freeze/unfreeze + SetData |
+| [`internal/api/init.go`](../packages/envd/internal/api/init.go) | `POST /init`(最复杂)+ `/freeze`/`/unfreeze` + SetData + 5 个 `X-Envd-*` 诊断头 |
+| [`internal/api/mounts_handover.go`](../packages/envd/internal/api/mounts_handover.go) | **2026.30**:NFS mount ledger 的 handover 导出/导入 |
 | [`internal/api/auth.go`](../packages/envd/internal/api/auth.go) | `WithAuthorization` middleware + HMAC 签名 |
 | [`internal/api/secure_token.go`](../packages/envd/internal/api/secure_token.go) | `SecureToken`(memguard) |
 | [`internal/api/upload.go`](../packages/envd/internal/api/upload.go) | `POST /files` |
@@ -1888,10 +2242,11 @@ envd 注入给用户进程的:
 | 文件 | 作用 |
 |------|------|
 | [`internal/port/scan.go`](../packages/envd/internal/port/scan.go) | `Scanner`(gopsutil) |
-| [`internal/port/scanSubscriber.go`](../packages/envd/internal/port/scanSubscriber.go) | `ScannerSubscriber` |
+| [`internal/port/scan_subscriber.go`](../packages/envd/internal/port/scan_subscriber.go) | `ScannerSubscriber`(2026.30 由 `scanSubscriber.go` 改名) |
 | [`internal/port/scanfilter.go`](../packages/envd/internal/port/scanfilter.go) | `ScannerFilter`(loopback LISTEN) |
-| [`internal/port/forward.go`](../packages/envd/internal/port/forward.go) | `Forwarder`(socat per port) |
+| [`internal/port/forward.go`](../packages/envd/internal/port/forward.go) | `Forwarder`(socat per port)+ `ExportForwards`/`ImportForwards` |
 | [`internal/port/forward_cgroupfd_linux.go`](../packages/envd/internal/port/forward_cgroupfd_linux.go) | socat 归入 cgroup |
+| [`internal/port/forward_reap_linux.go`](../packages/envd/internal/port/forward_reap_linux.go) | **2026.30**:按 `socatPid` 精确回收转发的 socat |
 
 ### 17.8 host 交互
 
@@ -1930,8 +2285,9 @@ envd 注入给用户进程的:
 
 | 文件 | 作用 |
 |------|------|
-| [`spec/process/process.proto`](../packages/envd/spec/process/process.proto) | Process service proto |
-| [`spec/filesystem/filesystem.proto`](../packages/envd/spec/filesystem/filesystem.proto) | Filesystem service proto |
+| [`spec/process/process.proto`](../packages/envd/spec/process/process.proto) | Process service proto(2026.30 未变) |
+| [`spec/filesystem/filesystem.proto`](../packages/envd/spec/filesystem/filesystem.proto) | Filesystem service proto(2026.30 未变) |
+| [`spec/upgrade/handover.proto`](../packages/envd/spec/upgrade/handover.proto) | **2026.30**:热升级交接契约(只有 message,无 service) |
 | [`spec/envd.yaml`](../packages/envd/spec/envd.yaml) | OpenAPI 3.0 spec(REST) |
 | [`spec/buf.gen.yaml`](../packages/envd/spec/buf.gen.yaml) | Connect RPC 生成配置(local) |
 | [`spec/buf.gen.shared.yaml`](../packages/envd/spec/buf.gen.shared.yaml) | Connect RPC 生成配置(shared) |
@@ -2064,6 +2420,35 @@ memguard 提供:
 
 需要 atomic 语义的用 `/files/compose`。
 
+### 18.9 为什么热升级要用 `execve` 而不是"起新进程 + 交接"
+
+**换进程的代价**:envd 持有大量"绑在 PID 上"的东西——子进程的父子关系(收尸)、socat 的进程组、NFS mount 的归属、listener fd。如果新 envd 用另一个 PID 启动:
+
+- 旧 envd 退出后,子进程会被 reparent 到 PID 1,新 envd 再想收尸只能靠轮询
+- listener fd 要重新 bind,中间有窗口(端口被占/请求被拒)
+- socat 要重新 spawn,已经建立的连接会断
+
+**`execve` 的代价**是"内存里的所有 Go 状态都没了",所以必须把状态显式序列化出来(这就是 `handover.proto` 存在的理由)。
+
+> ⚠️ 真正棘手的是 **fd 跨 `execve` 存活**:Go 默认给所有 fd 设 `CLOEXEC`,`execve` 时会被关掉。所以 outgoing 侧必须在 `syscall.ForkLock` 下用 `dupKeep`/`dup3` 把要交接的 fd 搬到固定槽位(`fdBase = 200`,每进程 5 个槽),并清掉 `CLOEXEC`。这是整个 handover 里唯一"不能靠重试兜底"的一步。
+
+### 18.10 为什么 handover 的 schema 是"写最低、读拒绝更高"
+
+朴素的版本协商是"双方各报版本,取交集"。但这里**读方在 `execve` 之后**——如果读失败,没有回退路径(旧镜像已经被替换掉了)。
+
+所以规则被设计成**单向且保守**的:
+
+- 写方只写"能表达当前内容的最低 schema"(`schemaFor()`),这样**旧镜像也能读新镜像写的 blob**(向后兼容);
+- 读方遇到 `schema > handoverSchema` 直接**放弃升级**,而不是"尽力解析已知字段"。⚠️ 猜字段布局在二进制协议里等于静默数据损坏,而失败只是"这次升级没成"。
+
+### 18.11 为什么 `initialized` 要放在 `PostInit` 里置位
+
+热升级后的新镜像处于一个尴尬状态:**它已经在监听端口了,但还没有 access token**。
+
+如果这个窗口里放行所有请求,就等于开了一个无鉴权窗口(连 `/files` 这种平时豁免签名的路径都不能放行)。所以 2026.30 选择 **fail closed**:只放行 `GET /health`(让 orchestrator 知道进程活着)和 `POST /init`(唯一能恢复 token 的路径)。
+
+`initialized` 的置位点必须**在 token 恢复之后**(`init.go:274-294`),否则窗口会在 token 还没写进去的时候就打开。
+
 ---
 
 ## 十九、常见问题与排查
@@ -2089,6 +2474,7 @@ memguard 提供:
 2. 检查 cwd 是否存在:用户传的 cwd 路径有效吗?
 3. 检查命令本身:在 sandbox 内手动跑一次
 4. 看 envd log:启动失败会写日志
+5. **2026.30**:看 Connect error code 而不是错误文本——`ResourceExhausted` 表示 errno 是 `EAGAIN`/`ENOMEM`/`EMFILE`/`ENFILE`/`ENOSPC`(资源耗尽,重试有意义),`DeadlineExceeded` 表示超时,`InvalidArgument` 才是"命令/路径/user 本身不对"
 
 ### 19.3 端口转发不工作
 
@@ -2122,8 +2508,41 @@ memguard 提供:
 2. 检查 cgroup.freeze 状态:`cat /sys/fs/cgroup/e2b/user/cgroup.freeze`(应为 0)
 3. 如果是 1,手动调 `POST /unfreeze`
 4. 看 envd log:`unfreezeUserCgroups` 是否执行
+5. **2026.30**:如果是层级模式(`mode=hierarchy`),冻结集不止 `user`/`ptys`,要沿 cgroup 树找;`X-Envd-Freeze-Audit` 响应头会给出 resume 时**仍被冻结**的路径采样
+6. **2026.30**:如果 `/freeze` 之后一直没等到 `/init`,watchdog 会在 10 分钟后主动解冻(`DefaultThawWatchdogWindow`)——"卡了很久自己好了"就是这个机制
 
-### 19.6 文件上传失败
+### 19.6 热升级后所有请求 401
+
+**症状**:`POST /upgrade` 之后(或 VM 恢复后)除了 `/health` 以外全部返回 401,body 是 `envd not initialized`
+
+**排查**:
+
+1. 这是**故意的 fail-closed 窗口**(`auth.go:65,79`):新镜像要等第一次成功的 `/init` 才会打开其余 endpoint
+2. 确认 orchestrator 的 init 重试还在跑;若 60 秒内始终等不到,新镜像的兜底 thaw(`handoverFallbackThawTimeout`)会先解冻 workload,但 endpoint 仍然是关的
+3. 若长期停在 401,检查 `/init` 是否一直在 401:`X-Envd-Handover` 响应头能确认"本次确实是热升级后的第一次 init"
+
+### 19.7 热升级后 `/upgrade` 的 blob 读不回来
+
+**症状**:升级后进程/端口/watcher 没被接管,或 envd 直接放弃升级
+
+**排查**:
+
+1. blob 在 tmpfs `/run/e2b/envd-handover.pb`,**不跨 VM 重启存活**——VM 重启后它就不在了
+2. 检查新旧镜像的 schema 差:读方在 `schema > handoverSchema`(当前 3)时直接放弃,这是设计行为而不是 bug
+3. 检查 fd 槽位:`fdBase = 200`,每进程 5 个槽(`stdout/stderr/stdin/tty`);`dup3` 失败会让交接中断
+
+### 19.8 `/freeze` 返回 200 但 workload 没冻住
+
+**症状**:`FreezeResult` 里 `notFrozen > 0` 或 `failed > 0`
+
+**排查**:
+
+1. 看 `truncated`:撞到 `maxCgroups` 上限时后面的 cgroup 根本没检查,调大 `maxCgroups` 或修 `DefaultFreezeMaxCgroups`
+2. 看 `unobservable`:这个 guest 读不到 `cgroup.events`,冻结"发出了但无法验证"
+3. 看 `vanished`:有些 cgroup 在 sweep 中消失,被计数而不是失败;debug 日志的 `vanished_paths` 会给出具体路径
+4. 看 `scanFailed`:无法区分"guest 自己冻的"和"envd 冻的",这些项在 resume 时会被 thaw 掉
+
+### 19.9 文件上传失败
 
 **症状**:`POST /files` 报 507 或其他错误
 
@@ -2134,7 +2553,7 @@ memguard 提供:
 3. 检查路径是否存在:EnsureDirs 创建父目录失败?
 4. 检查 multipart 格式:`Content-Disposition: filename` 是否带相对路径?
 
-### 19.7 日志收集不到
+### 19.10 日志收集不到
 
 **症状**:Loki 里看不到 sandbox 日志
 
@@ -2145,7 +2564,7 @@ memguard 提供:
 3. 看 envd log:HTTPLogsExporter 失败会有 rate-limited 错误
 4. 检查 collector 是否运行(otel-collector 或 Loki)
 
-### 19.8 PTY resize 不生效
+### 19.11 PTY resize 不生效
 
 **症状**:`Update` RPC 后终端大小没变
 
@@ -2169,10 +2588,13 @@ memguard 提供:
 | `POST` | `/files/compose` | token | 零拷贝拼接多个文件 |
 | `GET` | `/metrics` | token | CPU/mem/disk 指标 |
 | `POST` | `/collapse` | token | 内存 THP 整理 |
-| `POST` | `/freeze` | token | freeze user+ptys cgroup |
-| `POST` | `/unfreeze` | token | unfreeze user+ptys cgroup |
+| `POST` | `/freeze` | token | 按 cgroup 树 freeze workload(`204`;带 `maxWaitMs` 时 `200` + `FreezeResult`) |
+| `POST` | `/unfreeze` | token | 按 cgroup 树 unfreeze(保留 guest 自己的冻结) |
+| `POST` | `/upgrade` | token | **2026.30**:冻结 → 写 handover blob → 同 PID `execve` |
 | `POST` | `/fsfreeze` | token | FIFREEZE rootfs |
 | `POST` | `/fsthaw` | token | FITHAW rootfs |
+
+> ⓘ `POST /upgrade` 是唯一不经 OpenAPI spec 的路径(直挂在 chi mux 上),它的 internal 身份由 orchestrator 侧手工维护。
 
 ---
 
@@ -2229,9 +2651,16 @@ memguard 提供:
 | pause / resume | sandbox 快照暂停 / 恢复 |
 | Legacy SDK | 早期 connect-python SDK,需要 proto 字段裁剪兜底 |
 | Keepalive | Connect RPC 心跳,防止 idle stream 被关 |
+| handover | 2026.30 的在线热升级协议:同 VM、同 PID 用 `execve` 换 envd 镜像 |
+| HandoverState | `spec/upgrade/handover.proto` 定义的交接单(message only,无 service) |
+| WorkloadFreezer | 2026.30 统一承担 freeze/thaw sweep、settle 轮询与 thaw watchdog |
+| FreezeMode | `legacy`(静态 user/ptys)或 `hierarchy`(按 cgroup 树遍历) |
+| livenessAllowlist | 层级 freeze 中必须保持运行的 cgroup 名单(有代码依据,不是"求稳") |
+| guest_frozen_cgroups | guest 自己冻的 cgroup,thaw 时必须保留 |
+| `x-internal` | 2026.30 的 OpenAPI 标记,标出 orchestrator 控制面路径 |
 
 ---
 
-**文档版本**:基于代码库 HEAD(2026-07-11)
+**已同步至 2026.30**(对照 tag `2026.30` 核实;行号引用以 2026.30 为准,与 2026.29 不同处在正文中以"行 N(2026.30;2026.29 为 M)"标出)。
 
 **维护**:如有疑问或发现文档过期,请对照 [`packages/envd/`](../packages/envd/) 的最新代码核对。

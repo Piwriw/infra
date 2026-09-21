@@ -324,7 +324,7 @@ SELECT * FROM envs WHERE deleted_at IS NULL;
 | `ready_cmd` | text NULL | 沙盒"就绪"判定命令 |
 | `vcpu` | bigint | CPU 核数 |
 | `ram_mb` | bigint | 内存 MB |
-| `free_disk_size_mb` | bigint | 用户可用磁盘 |
+| `free_disk_size_mb` | bigint NOT NULL | **build 后要求的 rootfs 空闲空间(MiB)**,2026.30 起由 `team.LimitFreeDiskSize` 按配额解析后写入(见 §7.2 Step 5) |
 | `total_disk_size_mb` | bigint NULL | 实际磁盘大小 |
 | `kernel_version` | text | 内核版本(默认 `vmlinux-5.10.186`) |
 | `firecracker_version` | text | Firecracker 版本 |
@@ -431,6 +431,17 @@ ALTER TABLE tiers
 ```
 
 用于限制 team 的并发 build 数。
+
+**2026.30 新增:磁盘配额列(两个 migration)**
+
+| migration | 新增列 | 说明 |
+|-----------|--------|------|
+| [`20260714091414_add_template_disk_entitlements.sql`](../packages/db/migrations/20260714091414_add_template_disk_entitlements.sql) | `tiers.default_free_disk_size_mb`、`tiers.max_disk_size_mb`、`addons.extra_max_disk_size_mb` | 回填 `default_free_disk_size_mb = disk_mb`、`max_disk_size_mb = disk_mb + 25000`;`default_free_disk_size_mb` 与 `max_disk_size_mb` 加 `NOT NULL` + CHECK(`>= 0`、`> 0`、`default <= max`) |
+| [`20260826075153_add_free_disk_limit_columns.sql`](../packages/db/migrations/20260826075153_add_free_disk_limit_columns.sql) | `tiers.max_free_disk_size_mb`、`addons.extra_max_free_disk_size_mb`、`project_limits.max_free_disk_size_mb` | 这三个列**保持 nullable**——应用层双写部署完成前,旧读写方仍可能省略它们;并 `CREATE OR REPLACE VIEW team_limits` 追加 `max_free_disk_size_mb` |
+
+> ⚠️ 第二个 migration 里 `team_limits` 视图同时输出 `max_disk_size_mb` 和 `max_free_disk_size_mb`,**两者取的是同一个表达式**(`COALESCE(pl.max_disk_size_mb, tier.max_disk_size_mb + a.extra_max_disk_size_mb)`)。`max_free_disk_size_mb` 是"更清晰的名字",旧列在兼容期仍权威。视图列只能追加不能删,所以 Down 迁移必须 `DROP VIEW` 再重建。
+
+> ⚠️ **`disk_mb` 与 `max_disk_size_mb` 不是同一件事**:`disk_mb` 是历史的总盘上限列,`max_disk_size_mb` 是"逻辑 rootfs 在加 addon 之前的天花板";`default_free_disk_size_mb` 才是**默认的 build 后空闲空间目标**,和 §8.3.1 的 `FreeDiskSizeMB` 直接对应。team 侧的有效值通过 `team_limits` 视图计算。
 
 ### 3.10 ER 关系图
 
@@ -589,13 +600,32 @@ build 时根据 `version` 字段决定走哪个流程:
 
 这些版本不写在 `versions.go`,而是通过 feature flag 控制:
 
-- `BuildFirecrackerVersion` — build 用的 Firecracker 版本
-- `BuildKernelVersion` — build 用的 kernel 版本
-- `envd_version` — envd 的版本(每次 envd 行为变化都要 bump)
+- `BuildFirecrackerVersion`(`build-firecracker-version`,[`flags.go:743`](../packages/shared/pkg/featureflags/flags.go))— build 用的 Firecracker 版本
+- `BuildKernelVersion`(`build-kernel-version`,[`flags.go:744`](../packages/shared/pkg/featureflags/flags.go))— build 用的 kernel 版本
+- `BuildEnvdVersion`(`build-envd-version`,2026.30 新增,[`flags.go:756`](../packages/shared/pkg/featureflags/flags.go))— build 烘进 rootfs 的 envd 二进制
+- `BuildIoEngine`(`build-io-engine`,[`flags.go:757`](../packages/shared/pkg/featureflags/flags.go))— 默认 `Sync`
 
-默认值(运行时,见 `packages/shared/pkg/featureflags/flags.go:462, 467-472`):
-- Kernel: `vmlinux-6.1.158`(`DefaultKernelVersion`)
-- Firecracker: `v1.14.1_431f1fc`(`DefaultFirecrackerVersion`,等于 `DefaultFirecrackerV1_14Version`)
+默认值(运行时,见 [`packages/shared/pkg/featureflags/flags.go`](../packages/shared/pkg/featureflags/flags.go)):
+
+| 项 | 默认值 | 常量 / 行号(2026.30) |
+|----|--------|----------------------|
+| Kernel | `vmlinux-6.1.158` | `DefaultKernelVersion`,[:705](../packages/shared/pkg/featureflags/flags.go)(2026.29 为 :473) |
+| Firecracker | `v1.14-0.2.0` | `DefaultFirecrackerVersion`,[:731](../packages/shared/pkg/featureflags/flags.go)(2026.29 为 :482) |
+| envd | `promoted` | `DefaultEnvdVersion`,[:712](../packages/shared/pkg/featureflags/flags.go)(2026.30 新增) |
+
+> ⚠️ **Firecracker 默认版本在 2026.30 换了 release line**。2026.29 时 `DefaultFirecrackerVersion = DefaultFirecrackerV1_14Version = "v1.14.1_431f1fc"`;2026.30 改成 `DefaultFirecrackerVersion = DefaultFirecrackerV1_14_0Version = "v1.14-0.2.0"`([`flags.go:726,731`](../packages/shared/pkg/featureflags/flags.go))。**已存在的 build 仍在自己那条 line 内解析**(`FirecrackerVersionMap` 的 `key == LDKey(value)` 不变量禁止跨 line 漂移),跨 line 升级只能由运维通过 `firecracker-versions` flag 显式做。
+
+> ⚠️ `DefaultEnvdVersion = "promoted"` 表示"用节点本地已晋升的二进制"(`HOST_ENVD_PATH`)——也就是所有 build 一直以来的行为。因此没有 LaunchDarkly 的部署(dev、self-host)行为不变。只有显式 pin 一个具体版本 id 才会去取 staged 二进制。
+
+**envd 二进制的解析**(2026.30 新增,[`build/core/envd/resolve.go`](../packages/orchestrator/pkg/template/build/core/envd/resolve.go)):
+
+`ResolveBuildBinary(ctx, target, hostEnvdPath)`([`resolve.go:34`](../packages/orchestrator/pkg/template/build/core/envd/resolve.go))的规则:
+
+1. `target` 为空或 `"promoted"` → 直接用 `hostEnvdPath`。
+2. 否则 `target` 必须匹配 `buildVersionRe = ^[a-zA-Z0-9][a-zA-Z0-9.-]*$`([`resolve.go:16`](../packages/orchestrator/pkg/template/build/core/envd/resolve.go)),然后依次尝试两种 staged 布局:flat 的 `envd.<target>` 兄弟文件,和 release bucket 的 `<target>/envd` 目录。
+3. **promoted 二进制只有在它烘进去的版本就等于 `target` 时才被接受**(比较时去掉前导 `v`,[`resolve.go:58`](../packages/orchestrator/pkg/template/build/core/envd/resolve.go));否则 **build 直接失败**。
+
+> ⚠️ 这是刻意的 fail-fast:feature gate 是按"烘进去的版本"来分流的,静默替换成别的 envd 会导致 gate 误判。错误文案形如 `build-envd-version target %q is not staged under %q (tried %v), and the promoted binary is v%s, not the target`。
 
 > 注:数据库列(`env_builds.kernel_version` 等)在 `20240315165236_create_env_builds.sql` 中的 DEFAULT 仍是 `vmlinux-5.10.186` / `v1.7.0-dev_8bb88311`,但那只是历史遗留的 schema 默认,运行时实际使用上面的 feature flag 默认值。
 
@@ -729,17 +759,22 @@ build 时根据 `version` 字段决定走哪个流程:
 | 子目录 | 职责 |
 |--------|------|
 | `build/` | 核心构建逻辑(builder.go、phases/、commands/、layer/ 等) |
+| `build/core/envd/` | **2026.30 新增**:`build-envd-version` 目标二进制的解析(`resolve.go`) |
+| `build/phases/base/distro/` | **2026.30 新增**:distro 感知的 base image provisioning(见 §8.3) |
 | `cache/` | `BuildCache`(短期 build 状态缓存,TTL 10 分钟) |
 | `constants/` | 服务名常量 |
 | `metadata/` | `metadata.json` 的数据结构 |
 | `server/` | gRPC 服务端入口 |
 | `template/` | template 删除函数 |
 
+> ⛔ **2026.30 删除了 `build/utils/utils.go`**。该文件只有一个 `GetFileHash`,在 2026.29 就已经没有任何调用方(死代码)。
+
 **关键文件**:
 
-- [`build/builder.go`](../packages/orchestrator/pkg/template/build/builder.go) — `Builder.Build` 方法,完整 build 流程
+- [`build/builder.go`](../packages/orchestrator/pkg/template/build/builder.go) — `Builder.Build` 方法,完整 build 流程;phase 编排在 `runBuild` 的 [`builder.go:427-450`](../packages/orchestrator/pkg/template/build/builder.go)
+- [`build/result.go`](../packages/orchestrator/pkg/template/build/result.go) — **2026.30 新增**:`ClassifyBuildResult`([:18](../packages/orchestrator/pkg/template/build/result.go))把 build 结果分成三类——`success`(无错且有 result)、`user_error`(错误链里有 `PhaseBuildError`,即用户命令/脚本/拉镜像失败或 build 级取消超时)、`internal_error`(其余)。这是**"到底是谁的错"唯一做判断的地方**;结果同时用作 `template_build_result_total` 的 `result` label 和 span 上的 `build.result` 属性(调用点 [`builder.go:151-152`](../packages/orchestrator/pkg/template/build/builder.go),span 属性 [`builder.go:163-165`](../packages/orchestrator/pkg/template/build/builder.go))
 - [`server/main.go`](../packages/orchestrator/pkg/template/server/main.go) — `ServerStore` 初始化
-- [`server/create_template.go`](../packages/orchestrator/pkg/template/server/create_template.go) — gRPC `TemplateCreate` 实现
+- [`server/create_template.go`](../packages/orchestrator/pkg/template/server/create_template.go) — gRPC `TemplateCreate` 实现;2026.30 起用 `ServiceInfo.TrackWork()`([`create_template.go:43,177`](../packages/orchestrator/pkg/template/server/create_template.go))登记未完成工作
 
 #### 6.2.5 `packages/orchestrator/pkg/sandbox/template/`
 
@@ -755,24 +790,17 @@ build 时根据 `version` 字段决定走哪个流程:
 | [`storage.go`](../packages/orchestrator/pkg/sandbox/template/storage.go) | `Storage` 类型,封装 memfile/rootfs 的块设备读 |
 | [`storage_file.go`](../packages/orchestrator/pkg/sandbox/template/storage_file.go) | `storageFile`,用于 snapfile/metadata 这种整文件对象 |
 
-#### 6.2.6 `packages/orchestrator/pkg/server/template_cache.go`
+#### 6.2.6 `packages/orchestrator/pkg/server/template_cache.go` — ⛔ 已于 2026.30 删除
 
-**职责**:gRPC 服务端的"列出本节点已缓存 builds"接口。
-
-**核心方法**:[`ListCachedBuilds`](../packages/orchestrator/pkg/server/template_cache.go) — 用于 autoscaler 或调度器查询每个 orchestrator node 上缓存了哪些 template,以便把沙盒调度到"已有缓存"的 node。
-
-```go
-func (s *Server) ListCachedBuilds(ctx context.Context, _ *emptypb.Empty) (*orchestrator.SandboxListCachedBuildsResponse, error) {
-    var builds []*orchestrator.CachedBuildInfo
-    for key, item := range s.templateCache.Items() {
-        builds = append(builds, &orchestrator.CachedBuildInfo{
-            BuildId:        key,
-            ExpirationTime: timestamppb.New(item.ExpiresAt()),
-        })
-    }
-    return &orchestrator.SandboxListCachedBuildsResponse{Builds: builds}, nil
-}
-```
+> ⛔ **整个文件连同它实现的 RPC 一起在 2026.30 退役**。删除范围:
+>
+> - 文件 `packages/orchestrator/pkg/server/template_cache.go` 本身;
+> - `orchestrator.proto` 里的 `rpc ListCachedBuilds(google.protobuf.Empty) returns (SandboxListCachedBuildsResponse)`(2026.29 在 [`orchestrator.proto:217`](../packages/orchestrator/orchestrator.proto))与消息 `CachedBuildInfo` / `SandboxListCachedBuildsResponse`(2026.29 在 `:200`、`:205`);
+> - gRPC handler 与 dummyserver 中的对应实现。
+>
+> 2026.30 的 `service SandboxService`([`orchestrator.proto:258-264`](../packages/orchestrator/orchestrator.proto))只剩 6 个 RPC:`Create`、`Update`、`List`、`Delete`、`Pause`、`Checkpoint`。节点侧的"我缓存了什么"信息改由 `ServiceInfo.OutstandingWork()` 等带内信号承载(见 [node-module.md](./node-module.md))。
+>
+> **本文旧版本曾把 `ListCachedBuilds` 描述为"给调度器参考的节点缓存视图"。该职责从未真正被调度器消费**——调度只看 `cachedBuilds` 之外的信号。template cache 本身仍然存在,唯一实现是 [`pkg/sandbox/template/cache.go`](../packages/orchestrator/pkg/sandbox/template/cache.go)(见 §6.2.5、§12.3)。
 
 #### 6.2.7 `packages/shared/pkg/grpc/template-manager/`
 
@@ -860,7 +888,7 @@ const (
 
 #### Step 1: 请求解析
 
-解析 `TemplateBuildRequestV3` body,从 body 拿 name/alias/tags/cpu/memory 等。
+解析 `TemplateBuildRequestV3` body,从 body 拿 name/alias/tags/cpu/memory 等。**2026.30 新增 `minFreeDiskMb`**(见 [`spec/openapi.yml:1531`](../spec/openapi.yml) → `MinFreeDiskMb` schema 在 [`:389-398`](../spec/openapi.yml)),它映射到 `RegisterBuildData.MinFreeDiskMb *int32`([`register_build.go:48`](../packages/api/internal/template/register_build.go))。
 
 #### Step 2: Team 鉴权 + limit 检查
 
@@ -896,6 +924,15 @@ err = template.RegisterBuild(ctx, a.templateCache, a.sqlcDB, buildReq)
 ```
 
 `RegisterBuild` 的事务结构:并发检查在事务外,事务内 6 步原子操作(详见 [6.2.2](#622-packagesapiinternaltemplate))。
+
+> ⚠️ **2026.30 起,`minFreeDiskMb` 的配额校验发生在并发检查和事务之前**([`register_build.go:91-113`](../packages/api/internal/template/register_build.go))。`team.LimitFreeDiskSize(team.Limits, minFreeDiskMb)`([`free_disk.go:16`](../packages/api/internal/team/free_disk.go))的规则:
+>
+> - `nil` → 用 team 的 `DefaultFreeDiskSizeMb`;
+> - **显式 `0` 是合法值**,表示"不要额外增长",必须原样保留 0(所以任何地方都不能把 0 当"未设置");
+> - 负数 → 400 `Minimum free disk can't be negative`;
+> - 超过 `MaxFreeDiskSizeMb` → 400 `Minimum free disk can't be higher than %d MiB (if you need to increase this limit, please contact support)`。
+>
+> 解析结果写进 `env_builds.free_disk_size_mb`([`register_build.go:295`](../packages/api/internal/template/register_build.go) 的 `FreeDiskSizeMb: freeDiskSizeMB`),并打上 `build.free_disk.default_mb` / `max_mb` / `requested_mb` / `mb` 四个 span 属性。
 
 #### Step 6: 缓存失效
 
@@ -1105,22 +1142,88 @@ Builder.Build 的工作流(见 [`builder.go`](../packages/orchestrator/pkg/templ
 10. 上传 template(以及未上传的 layers)到远端存储
 ```
 
-**Phases 编排**(见 `builder.go` 的 `runBuild`):
+**Phases 编排**(见 `builder.go` 的 `runBuild`,2026.30 在 [`builder.go:427-450`](../packages/orchestrator/pkg/template/build/builder.go)):
 
 | Phase | 说明 | 输出 |
 |-------|------|------|
-| `base` | 基础镜像处理 + 装 systemd + envd | rootfs layer |
+| `base` | 基础镜像处理 + 装 systemd + envd(**2026.30 起 distro 感知**,见 §8.3.1) | rootfs layer |
 | `user` | 创建默认用户(v2+) | user layer |
 | `steps[]` | 用户的自定义 step(每个 step 一个 layer) | step layers |
-| `resize-disk` | flag 开启时在 user steps 后离线扩容 ext4 rootfs,使其接近 `DiskSizeMB` 指定的目标空闲 MiB | filesystem-only resize layer(可能是 empty diff) |
+| `resize-disk` | flag 开启时在 user steps 后离线扩容 ext4 rootfs,使其接近 **`FreeDiskSizeMB`** 指定的目标空闲 MiB | filesystem-only resize layer(可能是 empty diff) |
 | `finalize` (postProcessing) | 配置脚本(swap、user、permissions)+ start cmd + ready cmd | finalize layer |
 | `optimize` | 计算 prefetch mapping,优化启动 | optimize layer + 最终 snapshot |
 
 每个 phase 都是独立的 builder,跑完把自己的 layer 上传到配置的远端存储。Layer 是内容寻址的(content-addressed),所以相同的 step 不会重复构建。
 
-`resize-disk` 受 `build-ensure-free-disk-space` 控制,顺序固定为 `base → user → steps → resize-disk → finalize → optimize`。它把静止的 COW rootfs 通过 NBD 暴露,回放 ext4 journal 并按 block group 统计空闲块;不足时依次执行 `e2fsck → resize2fs → e2fsck`,最后只导出变化 block。无需扩容时仍产出可缓存的 empty-diff artifact。该 layer 标为 filesystem-only,因此后续 `finalize` 会 cold boot。`DiskSizeMB` 不是最终磁盘总大小,而是 **user steps 完成后、finalize 开始前的 rootfs 目标空闲空间(MiB)**;ext4 metadata 和 finalize 写入可能使最终可用空间略低于目标。缓存 hash 包含 source hash、`resize-disk` 和 `DiskSizeMB`,扩容及 `e2fsck` 也有独立 trace span。
+`resize-disk` 受 `build-ensure-free-disk-space`([`flags.go:385`](../packages/shared/pkg/featureflags/flags.go);2026.29 在 :237)控制,顺序固定为 `base → user → steps → resize-disk → finalize → optimize`。它把静止的 COW rootfs 通过 NBD 暴露,回放 ext4 journal 并按 block group 统计空闲块;不足时依次执行 `e2fsck → resize2fs → e2fsck`,最后只导出变化 block。无需扩容时仍产出可缓存的 empty-diff artifact。该 layer 标为 filesystem-only,因此后续 `finalize` 会 cold boot。缓存 hash 包含 source hash、`resize-disk` 和磁盘目标([`ensurefreedisk/builder.go:80`](../packages/orchestrator/pkg/template/build/phases/ensurefreedisk/builder.go)),扩容及 `e2fsck` 也有独立 trace span。
 
 构建 step 的目录 `COPY` 遵循 Docker 合并语义:复制到已存在目录时合并内容并覆盖同名文件,保留目标目录及已存在子目录的 metadata。实现使用 tar pipe,并通过 `--keep-directory-symlink` 正确处理 usrmerge 一类的目标目录 symlink;文件和 symlink source 仍移动到精确目标路径。
+
+#### 8.3.1 `DiskSizeMB` 与 `FreeDiskSizeMB` 的分工(2026.30 变动)
+
+> ⚠️ **2026.30 把"build 期目标空闲空间"从 `diskSizeMB` 里拆了出来**。旧文档说"`DiskSizeMB` 不是最终磁盘总大小,而是目标空闲空间"——这在 2026.29 是对的,但 2026.30 起这句话只描述 `FreeDiskSizeMB`。
+
+| 字段 | proto | 归属 | 含义 |
+|------|-------|------|------|
+| `diskSizeMB` | [`template-manager.proto:68`](../packages/orchestrator/template-manager.proto) | `config.Config.DiskSizeMB`([`config/config.go:41`](../packages/orchestrator/pkg/template/build/config/config.go)) | **base phase** 的扩容目标(仍在用,[`core/rootfs/rootfs.go:197`](../packages/orchestrator/pkg/template/build/core/rootfs/rootfs.go)、[`phases/base/provision.go:227`](../packages/orchestrator/pkg/template/build/phases/base/provision.go)) |
+| `freeDiskSizeMB` | [`template-manager.proto:93`](../packages/orchestrator/template-manager.proto) | `config.Config.FreeDiskSizeMB`([`config/config.go:45`](../packages/orchestrator/pkg/template/build/config/config.go)) | **`resize-disk` phase** 的目标空闲空间([`ensurefreedisk/builder.go:163`](../packages/orchestrator/pkg/template/build/phases/ensurefreedisk/builder.go)) |
+
+proto 里 `freeDiskSizeMB` 是 `optional int32 = 17`,注释写明:**滚动升级期间可以缺席;缺席时 template-manager 退回用 `diskSizeMB` 当 post-build 空闲空间目标**([`template-manager.proto:91-92`](../packages/orchestrator/template-manager.proto))。回退逻辑在 [`server/create_template.go:248-253`](../packages/orchestrator/pkg/template/server/create_template.go) 的 `resolveFreeDiskSizeMB`:
+
+```go
+func resolveFreeDiskSizeMB(cfg *templatemanager.TemplateConfig) int64 {
+    if cfg.FreeDiskSizeMB != nil {
+        return int64(cfg.GetFreeDiskSizeMB())
+    }
+    return int64(cfg.GetDiskSizeMB())
+}
+```
+
+> ⚠️ 注意 `freeDiskSizeMB` 用 `optional`,所以 **`0` 是一个合法且有意义的值**(显式要求"不扩" ),与"未设置"可区分。`resolveFreeDiskSizeMB` 的单元测试 [`server/template_status_test.go:27-34`](../packages/orchestrator/pkg/template/server/template_status_test.go) 专门覆盖了这一点:传 `&zero` 得到 `0`,传 `nil` 得到 `diskSizeMB`。
+
+#### 8.3.2 distro 感知的 base image provisioning(2026.30 新增)
+
+2026.29 之前 base phase 假定 base image 是 Debian/Ubuntu 系(用 `apt-get` 装包、用 systemd 做 init)。2026.30 引入 [`build/phases/base/distro/`](../packages/orchestrator/pkg/template/build/phases/base/distro/),把"这是哪个发行版"变成 provisioning 的第一步:
+
+- [`distro.go`](../packages/orchestrator/pkg/template/build/phases/base/distro/distro.go) 定义 `Profile`(`:33`)与 `Profiles`(`:49`),覆盖 debian / rhel / arch / alpine / nixos;`Version = "1"`(`:18`),`Fingerprint()`(`:22`)把整个 profile 表折成一个 hash key,**profile 表一改所有 base layer 的缓存自动失效**。
+- 选择逻辑由 `ShellSelector()`([`:202`](../packages/orchestrator/pkg/template/build/phases/base/distro/distro.go))生成的 shell 片段执行:读 `/etc/os-release` 的 `ID`;未知 id 再逐个试 `ID_LIKE` 的 token。
+- **`RejectedIDs = []string{"rhel", "ol", "amzn"}`**([`:193`](../packages/orchestrator/pkg/template/build/phases/base/distro/distro.go)):这些 id 的 `ID_LIKE` 指向 fedora,但内核/工具链差异使它们不能按 fedora 处理,所以**显式拒绝而不是被 ID_LIKE 兜住**。`SupportedIDs()`([`:180`](../packages/orchestrator/pkg/template/build/phases/base/distro/distro.go))是官方支持列表。
+- 通过 `ID_LIKE` 猜中时**只发 warning 不算成功**([`:264`](../packages/orchestrator/pkg/template/build/phases/base/distro/distro.go)):`[provision] WARNING: base image distribution ID='...' is not officially supported; provisioning it as '...' from ID_LIKE. This is best effort and untested.`;既不在 `RejectedIDs` 也不匹配任何 profile、或镜像没有 `/etc/os-release`,**直接 exit 1**。
+- 结果写进 `/usr/local/share/e2b/distro.env`([`provision.sh:44`](../packages/orchestrator/pkg/template/build/phases/base/provision.sh))。
+- 选择器接到 build 流程:[`phases/base/files.go:52`](../packages/orchestrator/pkg/template/build/phases/base/files.go) 的 `DistroSelector: distro.ShellSelector()`;并进入 base layer 的缓存 hash([`phases/base/hash.go:45`](../packages/orchestrator/pkg/template/build/phases/base/hash.go))。
+
+**init system 也 distro 化**([`distro/init.go`](../packages/orchestrator/pkg/template/build/phases/base/distro/init.go)):`InitSystem` 有 `systemd` / `openrc` / `nixos` 三个值([`:13-17`](../packages/orchestrator/pkg/template/build/phases/base/distro/init.go)),`initSetup` map([`:23`](../packages/orchestrator/pkg/template/build/phases/base/distro/init.go))给出每个 init system 对应的 provisioning 片段——Alpine 走 busybox init → OpenRC,用烘进去的 `/etc/init.d/envd`;NixOS 用**预制 base image**(见 [`distro/nixos-base-image/`](../packages/orchestrator/pkg/template/build/phases/base/distro/nixos-base-image/):`README.md`、`build.sh`、`configuration.nix`),provisioning 只负责摘掉烘进去的 systemd drop-in,因为它是声明式配置的。
+
+#### 8.3.3 envd 内存保护(2026.30 新增)
+
+`build-envd-memory-protection`([`flags.go:493`](../packages/shared/pkg/featureflags/flags.go),默认 false)开启后,base phase 会往 rootfs 写一个 systemd drop-in,给 `system.slice` 里的 envd 申请内存下限,避免客户 workload 把 envd 挤到 OOM:
+
+- 模板文件 [`core/rootfs/files/system.slice.d-envd.conf.tpl`](../packages/orchestrator/pkg/template/build/core/rootfs/files/system.slice.d-envd.conf.tpl) 渲染出 `/etc/systemd/system/system.slice.d/10-e2b-envd.conf`,内容 `[Slice] MemoryMin={{ .EnvdMemoryMinMiB }}M` / `MemoryLow={{ .EnvdMemoryLowMiB }}M`,整段被 `{{- if .EnvdMemoryProtection -}}` 包住。
+- 两个阈值是常量([`core/rootfs/templates.go:78-79`](../packages/orchestrator/pkg/template/build/core/rootfs/templates.go)):`EnvdMemoryMinMiB = 128`、`EnvdMemoryLowMiB = 256`;渲染开关见 [`templates.go:82-83`](../packages/orchestrator/pkg/template/build/core/rootfs/templates.go),数据来源是 `BuildContext.EnvdMemoryProtection`([`buildcontext/context.go:31-34`](../packages/orchestrator/pkg/template/build/buildcontext/context.go))。
+- **它也进 base layer 的缓存 hash**([`phases/base/hash.go:96,147-148`](../packages/orchestrator/pkg/template/build/phases/base/hash.go)):hash key 里带上 `EnvdMemoryMinMiB:EnvdMemoryLowMiB`,所以调阈值会正确触发 base layer 重建,而不是复用旧 layer。
+
+> ⚠️ **cgroup v2 的保护是自顶向下授予的**。envd 自己 cgroup 的 `memory.min` 再大,只要它上层某一级的 `memory.min` 是 0,保护就不会落地。运行期由 envd 通过 `X-Envd-Memory` 头上报 `EnvdMemoryProtection{Request, Low, Floor, Partial}`([`pkg/sandbox/envd_memory.go:21,32-46`](../packages/orchestrator/pkg/sandbox/envd_memory.go)),orchestrator 据此把 sandbox 分成 `protected` / `unprotected` / `unknown` 三个 cohort([`envd_memory.go:58-65,77-81`](../packages/orchestrator/pkg/sandbox/envd_memory.go)):**`Floor > 0` 判 protected(优先于 `Partial`),`Partial` 判 unknown,其余判 unprotected**。用三值而不是布尔,是为了不让"读不到"被误算成"没有保护"。详见 [snapshots.md](./snapshots.md) 与 [sandbox-lifecycle.md](./sandbox-lifecycle.md)。
+
+#### 8.3.4 guest kernel cmdline 按 team 注入(2026.30 新增)
+
+`build-kernel-cmdline-args`([`flags.go:777`](../packages/shared/pkg/featureflags/flags.go),默认空)让某个 team 的 template build 在内核命令行上追加一段参数,形如 `psi=1` 或 `psi=1 nokaslr`([`flags.go:759-776`](../packages/shared/pkg/featureflags/flags.go))。**没被 flag 命中的 team 命令行逐字节不变**;加参数是一次 flag 编辑,不需要改 orchestrator、也不需要部署。
+
+解析与校验在 [`pkg/sandbox/fc/kernel_args.go`](../packages/orchestrator/pkg/sandbox/fc/kernel_args.go):
+
+- `type KernelArgs map[string]string`([`:12`](../packages/orchestrator/pkg/sandbox/fc/kernel_args.go))。
+- `ParseCmdlineArgs`([`:46`](../packages/orchestrator/pkg/sandbox/fc/kernel_args.go))**按内核的方式解析**:空白分隔参数、第一个 `=` 分隔 name 与 value、没有 `=` 的参数 value 为空。
+- `ValidateCmdlineArgs`([`:71`](../packages/orchestrator/pkg/sandbox/fc/kernel_args.go))对照 `reservedCmdlineParams`([`:24-35`](../packages/orchestrator/pkg/sandbox/fc/kernel_args.go))——`init`、`clocksource`、`root`、`ip`、`console`、`rootflags`、`panic`、`reboot`、`loglevel`、`quiet`——**只要碰了保留参数,整段 fragment 被拒绝并退回默认命令行,而不是让 build 失败**。
+- 最终命令行由 `buildKernelArgs`([`:84`](../packages/orchestrator/pkg/sandbox/fc/kernel_args.go))组装,**overlay 最后应用并再次校验**([`:129-132`](../packages/orchestrator/pkg/sandbox/fc/kernel_args.go))。
+
+> ⚠️ 解析后的参数会记进 template 的 metadata,**filesystem-only 快照冷启动时会重放**。所以快照永远按它被构建时的命令行启动,即使这个 flag 之后改了。
+
+#### 8.3.5 ext4 htree dir_index(2026.30 新增)
+
+`build-ext4-dir-index`([`flags.go:390`](../packages/shared/pkg/featureflags/flags.go),默认 false)接线在 [`core/rootfs/rootfs.go:169`](../packages/orchestrator/pkg/template/build/core/rootfs/rootfs.go) 的 `DirIndex: r.featureFlags.BoolFlag(ctx, featureflags.BuildExt4DirIndex)`,最终落到 [`core/filesystem/ext4.go:52-53,81`](../packages/orchestrator/pkg/template/build/core/filesystem/ext4.go) 的 `MakeOptions.DirIndex`。
+
+> ⚠️ **语义是反的,别按直觉读**:`mkfs.ext4` **默认就会**建 htree 目录索引,这个 flag 是"**保留**它"。所以 **flag 为 false(默认)时会主动把 htree 索引剥掉**([`ext4.go:81`](../packages/orchestrator/pkg/template/build/core/filesystem/ext4.go) 的 `if !opts.DirIndex`),true 才是维持 mkfs 的原有行为。
+
+> ⚠️ 它在 **mkfs 时读取**,只影响翻转之后新建的 rootfs 镜像;已经建好的镜像不会变。特性一旦烘进文件系统也不能在运行期关掉。两侧行为由 [`core/filesystem/ext4_test.go:22-31`](../packages/orchestrator/pkg/template/build/core/filesystem/ext4_test.go) 的 `TestMakeDirIndex` 钉住。
 
 ### 8.4 Build 状态同步
 
@@ -1375,8 +1478,10 @@ AND (eba.tag = COALESCE(@tag, 'default') OR eba.build_id = try_cast_uuid(@tag))
 
 bucket URL 只允许 bucket,不支持 key prefix;未知 query 参数直接报错。URL 不接收 credentials:GCS 使用 ADC/Workload Identity,S3 使用 AWS 环境凭据。未设置 URL 时仍兼容 `STORAGE_PROVIDER`、`TEMPLATE_BUCKET_NAME`、`LOCAL_TEMPLATE_STORAGE_BASE_PATH` 和 `S3_USE_PATH_STYLE`,并将旧配置转换为同一个 URL 解析流程。
 
-- GCP 生产:`{bucket_prefix}fc-templates`(见 [`iac/provider-gcp/init/buckets.tf`](../iac/provider-gcp/init/buckets.tf))
+- GCP 生产:`{bucket_prefix}fc-templates`(见 `iac/provider-gcp/init/buckets.tf`)
 - 本地开发:用 `LOCAL_TEMPLATE_STORAGE_BASE_PATH`
+
+> ⛔ **`iac/**` 整个目录已在 2026.30 删除**(提交 `8a1c4888`,"retire Nomad-based deployment ahead of a new deploy path"):2026.29 有 172 个文件,2026.30 为 0。同批删除的还有根目录 `self-host.md`,以及根 `Makefile` 里的全部 Terraform/Nomad 目标。⚠️ **但 `packages/docker-reverse-proxy/`(19 → 0 个文件)不属于这一批**——它由更早的独立提交 `d153bbe9d`(Jakub Rojko, 2026-08-06, `chore(docker-reverse-proxy): remove deprecated service`)删除,与 `iac/` 退役相差一个月。**注意 `packages/nomad-nodepool-apm/` 仍然存在**(2026.29 的 10 个文件在 2026.30 变成 12 个),不要跟着一起写死。本文凡是引用 `iac/**` 的地方都只是**历史档案**,链接已不可点。
 
 ### 11.2 目录结构
 
@@ -1582,6 +1687,7 @@ key = "{templateID}:{tag}"
 
 - `TemplateFeatureFlag` / `SnapshotFeatureFlag` 开启时,template 文件先经过本地 NFS cache
 - `storage.WrapInNFSCache` 包装 StorageProvider
+- 压缩 frame 的写入并发受 `max-cache-writer-concurrency` 限制(2026.30 起,[`flags.go:472`](../packages/shared/pkg/featureflags/flags.go),`MaxCacheWriterConcurrencyFlag = NewIntFlag("max-cache-writer-concurrency", 10)`;2026.29 在 :298)。默认 10 个并发 writer。
 
 ### 12.5 Build Diff Store
 
@@ -1591,6 +1697,12 @@ key = "{templateID}:{tag}"
 - eviction 延迟 = 60 秒
 - 文件:[`packages/orchestrator/pkg/sandbox/build/cache.go`](../packages/orchestrator/pkg/sandbox/build/cache.go)(`DiffStore` struct 定义在 L42)
 
+**2026.30 新增:延迟 seal 的 rootfs/memfile diff**([`build/deferred_diff.go`](../packages/orchestrator/pkg/sandbox/build/deferred_diff.go))。`NewDeferredDiff`([`:40`](../packages/orchestrator/pkg/sandbox/build/deferred_diff.go))返回一个 `deferredDiff{cacheKey, blockSize, inner}`,把真正的 seal(落盘/封存)推迟到第一次真正需要读它的时候;`sealed()`([`:60`](../packages/orchestrator/pkg/sandbox/build/deferred_diff.go))查询状态。底层是一个 `utils.SetOnce[Diff]`——**seal 只可能成功一次**,重复 seal 是 no-op。seal 失败时返回 `ErrDeferredSealFailed`([`:18`](../packages/orchestrator/pkg/sandbox/build/deferred_diff.go),文案 `deferred rootfs seal failed`)。
+
+消费点:memfile 在 [`sandbox.go:2757`](../packages/orchestrator/pkg/sandbox/sandbox.go),rootfs 在 [`sandbox.go:3410`](../packages/orchestrator/pkg/sandbox/sandbox.go);是否启用由 `defer-rootfs-export`(`DeferRootfsExportFlag`,2026.30 新增,[`flags.go:275`](../packages/shared/pkg/featureflags/flags.go),默认 false)控制,读取点在 [`pkg/server/sandboxes.go:943`](../packages/orchestrator/pkg/server/sandboxes.go) 与 [`:1206`](../packages/orchestrator/pkg/server/sandboxes.go)(`deferRootfsExport := s.featureFlags.BoolFlag(ctx, featureflags.DeferRootfsExportFlag)`)。
+
+> ⚠️ **deferred 的价值在于把"必须先落盘才能返回"的窗口变成 CoW 窗口**:在 seal 真正发生之前,guest 仍在写自己的 COW,所以快照看到的是**seal 那一刻**的一致状态,而不是 pause 请求那一刻的状态。这正是 [snapshots.md](./snapshots.md) §4.2.0 里两条 checkpoint 路径的区别所在。细节见 [artifact-storage-cache.md](./artifact-storage-cache.md)。
+
 ### 12.6 Peer-to-Peer Chunk Transfer
 
 由 feature flag `PeerToPeerChunkTransferFlag` 控制:
@@ -1598,6 +1710,16 @@ key = "{templateID}:{tag}"
 - 开启时,orchestrator 之间直接传 chunk
 - 通过 Redis 注册每个 buildID 的"拥有者 node"
 - 见 [`peerclient/`](../packages/orchestrator/pkg/sandbox/template/peerclient/) 和 [`peerserver/`](../packages/orchestrator/pkg/sandbox/template/peerserver/)
+
+**2026.30 新增:chunk 分片逻辑抽到公共文件** [`peerserver/chunk.go`](../packages/orchestrator/pkg/sandbox/template/peerserver/chunk.go)。此前 `file.go`、`header.go`、`metadata.go` 各自内联一份分片 writer;现在统一为:
+
+- `sendChunkSize = 1 << 20`(1 MiB,[`chunk.go:9`](../packages/orchestrator/pkg/sandbox/template/peerserver/chunk.go))——单次 `Sender.Send` 的 payload 上界(gRPC 自己有 message size 限制)。
+- `sendChunked(sender, data)`([`:14`](../packages/orchestrator/pkg/sandbox/template/peerserver/chunk.go)):把整块 data 按 1 MiB 切片发出去。
+- `chunkWriter`([`:31`](../packages/orchestrator/pkg/sandbox/template/peerserver/chunk.go)):`Write`([`:36`](../packages/orchestrator/pkg/sandbox/template/peerserver/chunk.go))攒够 1 MiB 就发一次,`flush`([`:56`](../packages/orchestrator/pkg/sandbox/template/peerserver/chunk.go))由调用方负责把尾巴发完。
+
+消费方是 [`file.go:62`](../packages/orchestrator/pkg/sandbox/template/peerserver/file.go)、[`header.go:70`](../packages/orchestrator/pkg/sandbox/template/peerserver/header.go)、[`metadata.go:42`](../packages/orchestrator/pkg/sandbox/template/peerserver/metadata.go)。
+
+> ⚠️ **`file.go` 没有被删除**,它只是失去了内联的 `chunkWriter`。把"新增 `chunk.go`"读成"替换掉 `file.go`"是错的。
 
 ### 12.7 缓存失效时机
 
@@ -1638,7 +1760,7 @@ service TemplateService {
 
 #### TemplateConfig / TemplateCreateRequest
 
-`TemplateCreateRequest` 包含 `TemplateConfig` + 可选 `cacheScope` + `version`。`TemplateConfig` 的字段(见 [`template-manager.proto:62-90`](../packages/orchestrator/template-manager.proto)):
+`TemplateCreateRequest` 包含 `TemplateConfig` + 可选 `cacheScope` + `version`。`TemplateConfig` 的字段(见 [`template-manager.proto:62-94`](../packages/orchestrator/template-manager.proto);2026.29 为 `62-90`):
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
@@ -1646,7 +1768,8 @@ service TemplateService {
 | `buildID` | string | build ID |
 | `memoryMB` | int32 | 内存 MB |
 | `vCpuCount` | int32 | CPU 核数 |
-| `diskSizeMB` | int32 | user steps 后、finalize 前的目标 rootfs 空闲空间(MiB),不是总磁盘大小 |
+| `diskSizeMB` | int32 | **base phase** 的扩容目标;2026.30 起还兼作 `freeDiskSizeMB` 缺席时的回退值 |
+| `freeDiskSizeMB` | optional int32 | **(2026.30 新增,field 17)** `resize-disk` phase 的目标 rootfs 空闲空间(MiB),不是总磁盘大小;缺席时回退到 `diskSizeMB`(见 §8.3.1) |
 | `kernelVersion` | string | *(deprecated)* 内核版本,template-manager 自行决定 |
 | `firecrackerVersion` | string | *(deprecated)* Firecracker 版本,同上 |
 | `startCommand` | string | 启动命令 |
@@ -1674,7 +1797,7 @@ service TemplateService {
 
 #### TemplateBuildMetadata
 
-build 完成时返回(见 proto 第 128-139 行):
+build 完成时返回(见 proto 第 132-149 行;2026.29 为第 128-139 行):
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
@@ -1686,12 +1809,18 @@ build 完成时返回(见 proto 第 128-139 行):
 
 ### 13.3 orchestrator gRPC 服务(与 template 相关)
 
-orchestrator gRPC 服务(端口通常 5008)提供:
+orchestrator gRPC 服务(端口通常 5008)的 `SandboxService` 在 2026.30 只剩 6 个 RPC([`orchestrator.proto:258-264`](../packages/orchestrator/orchestrator.proto)):
 
 | RPC | 用途 |
 |-----|------|
 | `Sandbox.Create` | 创建沙盒(消费 template) |
-| `Sandbox.ListCachedBuilds` | 列出本节点已缓存的 builds |
+| `Sandbox.Update` | 更新沙盒配置 |
+| `Sandbox.List` | 列出本节点沙盒 |
+| `Sandbox.Delete` | 删除沙盒 |
+| `Sandbox.Pause` | 暂停沙盒 |
+| `Sandbox.Checkpoint` | 快照/checkpoint |
+
+> ⛔ **`Sandbox.ListCachedBuilds` 已于 2026.30 删除**(连同 `CachedBuildInfo` 与 `SandboxListCachedBuildsResponse` 消息)。详见 §6.2.6。
 
 ### 13.4 服务交互关系
 
@@ -1706,7 +1835,6 @@ orchestrator gRPC 服务(端口通常 5008)提供:
 │         │                                             ▲
 │         │ ──Sandbox.Create()─────────────────────────┤
 │         │                                             │
-│         │ ──Sandbox.ListCachedBuilds()───────────────┤
 └─────────┘                                             │
                                                         │
                        共享 sbxtemplate.Cache ◀─────────┘
@@ -1821,7 +1949,9 @@ COMMIT;
 
 ### 15.2 IaC 配置
 
-**GCS Bucket 创建**:[`iac/provider-gcp/init/buckets.tf`](../iac/provider-gcp/init/buckets.tf)
+> ⛔ **本节内容自 2026.30 起已是历史档案**。`iac/` 目录在 2026.30 被整体删除(2026.29 有 172 个文件,2026.30 为 0),下面的 `iac/**` 路径**已不存在、链接不可点**。同一提交还删掉了根目录 `self-host.md`,以及根 `Makefile` 里的全部 Terraform/Nomad 目标(⚠️ `packages/docker-reverse-proxy/` 不在此列,它由更早的 `d153bbe9d` 删除)(`make init`、`make plan`、`make apply`、`make plan-only-jobs` 等)。**`make switch-env` / `make set-env` / `make build-and-upload/*` 仍然保留**,所以 §15.3 依旧有效。
+
+**GCS Bucket 创建**(历史):`iac/provider-gcp/init/buckets.tf`
 
 ```hcl
 # 第 135 行附近
@@ -1846,22 +1976,31 @@ make switch-env ENV=dev      # 切换到 dev
 
 ## 十六、Feature Flags
 
-E2B 使用 LaunchDarkly 做 feature flag 管理。template 相关的 flag:
+E2B 使用 LaunchDarkly 做 feature flag 管理。template 相关的 flag(行号均为 2026.30 的 [`packages/shared/pkg/featureflags/flags.go`](../packages/shared/pkg/featureflags/flags.go)):
 
-| Flag | 用途 |
-|------|------|
-| `BuildFirecrackerVersion` | 决定 build 用的 Firecracker 版本 |
-| `BuildKernelVersion` | 决定 build 用的 kernel 版本 |
-| `TemplateFeatureFlag` | 是否启用 NFS cache(template) |
-| `SnapshotFeatureFlag` | 是否启用 NFS cache(snapshot) |
-| `UseNFSCacheForBuildingTemplatesFlag` | build 时是否用 NFS cache |
-| `PeerToPeerChunkTransferFlag` | 是否启用 orchestrator 之间 P2P chunk 传输 |
-| `FreePageReportingFlag` | Firecracker free page reporting 优化 |
-| `FreePageHintingFlag` | Firecracker free page hinting 优化 |
-| `BYOPProxyEnabledFlag` | BYOP egress proxy |
-| `BuildNodeInfo` | 指定 build node 的机器配置(CPU family 等) |
-| `BuildEnsureFreeDiskSpace`(`build-ensure-free-disk-space`) | 在 user steps 与 finalize 之间启用 `resize-disk`,默认 false |
-| `MaxSandboxesPerNode` | 每 node 最大沙盒数 |
+| Flag | LD key | 行号 | 用途 |
+|------|--------|------|------|
+| `BuildFirecrackerVersion` | `build-firecracker-version` | [:743](../packages/shared/pkg/featureflags/flags.go) | 决定 build 用的 Firecracker 版本 |
+| `BuildKernelVersion` | `build-kernel-version` | [:744](../packages/shared/pkg/featureflags/flags.go) | 决定 build 用的 kernel 版本 |
+| `BuildEnvdVersion` | `build-envd-version` | [:756](../packages/shared/pkg/featureflags/flags.go) | **(2026.30 新增)** build 烘进 rootfs 的 envd 二进制,默认 `promoted` |
+| `BuildKernelCmdlineArgs` | `build-kernel-cmdline-args` | [:777](../packages/shared/pkg/featureflags/flags.go) | **(2026.30 新增)** 按 team 追加 guest kernel 命令行参数,默认空 |
+| `BuildEnvdMemoryProtection` | `build-envd-memory-protection` | [:493](../packages/shared/pkg/featureflags/flags.go) | **(2026.30 新增)** 给 envd 写 systemd `MemoryMin`/`MemoryLow` drop-in,默认 false |
+| `BuildExt4DirIndex` | `build-ext4-dir-index` | [:390](../packages/shared/pkg/featureflags/flags.go) | **(2026.30 新增)** 是否保留 mkfs 默认的 htree 目录索引,默认 false(= 剥掉) |
+| `BuildEnsureFreeDiskSpace` | `build-ensure-free-disk-space` | [:385](../packages/shared/pkg/featureflags/flags.go)(2026.29 :237) | 在 user steps 与 finalize 之间启用 `resize-disk`,默认 false |
+| `MaxCacheWriterConcurrencyFlag` | `max-cache-writer-concurrency` | [:472](../packages/shared/pkg/featureflags/flags.go)(2026.29 :298) | 压缩 frame 写入 cache 的最大并发,默认 10 |
+| `DeferRootfsExportFlag` | `defer-rootfs-export` | [:275](../packages/shared/pkg/featureflags/flags.go) | **(2026.30 新增)** 把 rootfs diff seal 推迟到 CoW 窗口,默认 false |
+| `TemplateFeatureFlag` | `use-nfs-for-templates` | [:147](../packages/shared/pkg/featureflags/flags.go) | 是否启用 NFS cache(template) |
+| `SnapshotFeatureFlag` | `use-nfs-for-snapshots` | [:146](../packages/shared/pkg/featureflags/flags.go) | 是否启用 NFS cache(snapshot) |
+| `UseNFSCacheForBuildingTemplatesFlag` | `use-nfs-for-building-templates` | [:149](../packages/shared/pkg/featureflags/flags.go) | build 时是否用 NFS cache |
+| `PeerToPeerChunkTransferFlag` | `peer-to-peer-chunk-transfer` | [:262](../packages/shared/pkg/featureflags/flags.go) | 是否启用 orchestrator 之间 P2P chunk 传输 |
+| `FreePageReportingFlag` | `free-page-reporting` | [:279](../packages/shared/pkg/featureflags/flags.go) | Firecracker free page reporting 优化 |
+| `BYOPProxyEnabledFlag` | `byop-proxy-enabled` | [:349](../packages/shared/pkg/featureflags/flags.go) | BYOP egress proxy |
+| `BuildNodeInfo` | `preferred-build-node` | [:848](../packages/shared/pkg/featureflags/flags.go)(2026.29 :497) | 指定 build node 的机器配置(CPU family 等) |
+| `MaxSandboxesPerNode` | `max-sandboxes-per-node` | [:435](../packages/shared/pkg/featureflags/flags.go)(2026.29 :282) | 每 node 最大沙盒数 |
+
+> ⚠️ **`FreePageHintingFlag` 这个变量名不存在**——2026.29 和 2026.30 都没有它。free page hinting 的开关是一个**就地注册的 JSON flag** `free-page-hinting-config`(LD key 带 `-config` 后缀),注册点在 [`cmd/create-build/main.go:107`](../packages/orchestrator/cmd/create-build/main.go) 与 [`cmd/resume-build/fph_bench.go:109`](../packages/orchestrator/cmd/resume-build/fph_bench.go),**不在 `flags.go` 的集中清单里**。这也是为什么它容易被写成不存在的变量名。
+>
+> ⚠️ 同理,`BuildNodeInfo` 的 LD key 是 `preferred-build-node`,不是变量名的 kebab-case。
 
 **Feature flag 客户端**:[`packages/shared/pkg/featureflags/`](../packages/shared/pkg/featureflags/)
 
@@ -1882,6 +2021,10 @@ E2B 使用 LaunchDarkly 做 feature flag 管理。template 相关的 flag:
 | [`packages/db/migrations/20260211120000_add_snapshot_templates.sql`](../packages/db/migrations/20260211120000_add_snapshot_templates.sql) | 创建 snapshot_templates 表 |
 | [`packages/db/migrations/20260305130000_create_active_template_builds.sql`](../packages/db/migrations/20260305130000_create_active_template_builds.sql) | 创建 active_template_builds 表 |
 | [`packages/db/migrations/20260628120000_add_env_deleted_at.sql`](../packages/db/migrations/20260628120000_add_env_deleted_at.sql) | 引入软删除 + active_envs 视图 |
+| [`packages/db/migrations/20260714091414_add_template_disk_entitlements.sql`](../packages/db/migrations/20260714091414_add_template_disk_entitlements.sql) | **(2026.30 新增)** tiers/addons 的磁盘配额列 + CHECK + 回填 |
+| [`packages/db/migrations/20260826075153_add_free_disk_limit_columns.sql`](../packages/db/migrations/20260826075153_add_free_disk_limit_columns.sql) | **(2026.30 新增)** `max_free_disk_size_mb` 系列列 + 重建 `team_limits` 视图 |
+| [`packages/auth/pkg/types/limits.go`](../packages/auth/pkg/types/limits.go) | **(2026.30 新增字段)** `TeamLimits.DefaultFreeDiskSizeMb` / `MaxFreeDiskSizeMb`(:14-15) |
+| [`packages/api/internal/team/free_disk.go`](../packages/api/internal/team/free_disk.go) | **(2026.30 新增)** `LimitFreeDiskSize`(:16) — 把请求的 `minFreeDiskMb` 解析到 team 配额内 |
 | [`packages/db/pkg/types/types.go`](../packages/db/pkg/types/types.go) | BuildStatus / BuildStatusGroup 等类型定义 |
 | [`packages/db/queries/templates/get_template_with_build_by_tag.sql`](../packages/db/queries/templates/get_template_with_build_by_tag.sql) | 核心 SQL:按 templateID + tag 查询 |
 | [`packages/db/queries/templates/create_template.sql`](../packages/db/queries/templates/create_template.sql) | CreateOrUpdateTemplate 等 |
@@ -1920,7 +2063,15 @@ E2B 使用 LaunchDarkly 做 feature flag 管理。template 相关的 flag:
 | [`packages/orchestrator/pkg/sandbox/template/storage_template.go`](../packages/orchestrator/pkg/sandbox/template/storage_template.go) | `storageTemplate` — Template interface 实现 |
 | [`packages/orchestrator/pkg/template/metadata/template_metadata.go`](../packages/orchestrator/pkg/template/metadata/template_metadata.go) | `metadata.Template` 数据结构 |
 | [`packages/orchestrator/pkg/server/sandboxes.go`](../packages/orchestrator/pkg/server/sandboxes.go) | gRPC `Sandbox.Create` — 沙盒启动入口 |
-| [`packages/orchestrator/pkg/server/template_cache.go`](../packages/orchestrator/pkg/server/template_cache.go) | gRPC `ListCachedBuilds` |
+| [`packages/orchestrator/pkg/template/build/core/envd/resolve.go`](../packages/orchestrator/pkg/template/build/core/envd/resolve.go) | **(2026.30 新增)** `ResolveBuildBinary` — `build-envd-version` 目标解析 |
+| [`packages/orchestrator/pkg/template/build/phases/base/distro/`](../packages/orchestrator/pkg/template/build/phases/base/distro/) | **(2026.30 新增)** distro profile / init system / NixOS 预制镜像 |
+| [`packages/orchestrator/pkg/template/build/result.go`](../packages/orchestrator/pkg/template/build/result.go) | **(2026.30 新增)** `ClassifyBuildResult` — build 结果分类指标 |
+| [`packages/orchestrator/pkg/sandbox/fc/kernel_args.go`](../packages/orchestrator/pkg/sandbox/fc/kernel_args.go) | **(2026.30 新增)** guest kernel cmdline 解析/校验/overlay |
+| [`packages/orchestrator/pkg/sandbox/build/deferred_diff.go`](../packages/orchestrator/pkg/sandbox/build/deferred_diff.go) | **(2026.30 新增)** 延迟 seal 的 diff |
+
+> ⛔ **`packages/orchestrator/pkg/server/template_cache.go` 已于 2026.30 删除**(连同 `ListCachedBuilds` RPC)。旧版本本文在此处列过它,现仅作历史记录。详见 §6.2.6。
+>
+> ⛔ **`packages/orchestrator/pkg/template/build/utils/utils.go` 已于 2026.30 删除**(2026.29 起已是无调用方的死代码)。
 
 ### 17.4 共享层
 
@@ -2043,6 +2194,42 @@ CREATE OR REPLACE TRIGGER trg_compute_status_group
 ```
 
 migration 还包含一个 `backfill_status_group()` 存储过程,用 50000 行一批 + `pg_sleep(10)` 的方式把历史行回填,避免长事务锁表。
+
+### 18.9 2026.30 变动速览
+
+按影响面排序,便于快速定位。
+
+**新增能力**
+
+| 主题 | 一句话 | 详见 |
+|------|--------|------|
+| 磁盘目标拆分 | `TemplateConfig` 新增 `freeDiskSizeMB`,与 `diskSizeMB` 分工;缺席时回退 | §8.3.1、§13.2 |
+| distro 感知 base | 按 `/etc/os-release` 选 profile 与 init system,systemd/OpenRC/NixOS 三分支 | §8.3.2、§6.2.4 |
+| envd 版本可 pin | `build-envd-version` 让 build 烘指定的 staged envd;pin 不中直接 fail | §5.5、§16 |
+| envd 内存保护 | `build-envd-memory-protection` 写 systemd `MemoryMin`/`MemoryLow` drop-in | §8.3.3、§16 |
+| kernel cmdline 注入 | `build-kernel-cmdline-args` 按 team 追加参数,保留参数被拒则整段回退 | §8.3.4、§16 |
+| ext4 htree 开关 | `build-ext4-dir-index`(默认 false = **剥掉** mkfs 默认的索引) | §8.3.5、§16 |
+| 延迟 rootfs seal | `defer-rootfs-export` + `NewDeferredDiff` 把 seal 推到 CoW 窗口 | §12.5、§16 |
+| build 结果指标 | `ClassifyBuildResult` → `template_build_result_total` | §6.2.4 |
+| cache writer 限流 | `max-cache-writer-concurrency`(默认 10)限制压缩 frame 写入并发 | §12.4、§16 |
+| 磁盘配额列 | 两个 migration 加 tiers/addons/project_limits 的 free-disk 列,重建 `team_limits` 视图 | §3.9、§17.1 |
+| P2P 分片抽公共 | 新增 `peerserver/chunk.go`(`sendChunkSize = 1 MiB`) | §12.6 |
+
+**变动 / 修正**
+
+| 主题 | 一句话 | 详见 |
+|------|--------|------|
+| Firecracker 默认版本换线 | `DefaultFirecrackerVersion` 从 `v1.14.1_431f1fc` 改为 `v1.14-0.2.0`;跨 line 升级只由运维 flag 决定 | §5.5 |
+| `diskSizeMB` 语义收窄 | 它不再等于"目标空闲空间",只是 base phase 的扩容目标 + 回退值 | §8.3.1 |
+| 未完成工作计数 | `ServiceInfo.TrackWork()` 登记 template-manager 的未完成工作 | §6.2.4 |
+
+**删除(⛔)**
+
+| 主题 | 一句话 | 详见 |
+|------|--------|------|
+| `ListCachedBuilds` RPC | 连同 `CachedBuildInfo` / `SandboxListCachedBuildsResponse` 与 `pkg/server/template_cache.go` 一起删除;`SandboxService` 只剩 6 个 RPC | §6.2.6、§13.3 |
+| `build/utils/utils.go` | 无调用方的死代码 | §6.2.4、§17.3 |
+| `iac/` 部署目录 | 172 → 0 个文件;同批删除 `self-host.md`、根 Makefile 的 Terraform/Nomad 目标。⚠️ `packages/docker-reverse-proxy/`（19 → 0）由更早的 `d153bbe9d` 删除,不属同批 | §11.1、§15.2 |
 
 ---
 
@@ -2268,7 +2455,7 @@ make connect-orchestrator
 
 ### B.4 gRPC 调试
 
-可以用 `grpcurl` 直接调用 template-manager gRPC 服务(默认端口 5008,见 `iac/provider-gcp/variables.tf:335`):
+可以用 `grpcurl` 直接调用 template-manager gRPC 服务(默认端口 5008,原先记录在 `iac/provider-gcp/variables.tf:335` — **该文件已在 2026.30 随 `iac/` 删除,见 §15.2**):
 
 ```bash
 # 列出服务
@@ -2308,6 +2495,6 @@ grpcurl -plaintext -d '{
 
 ---
 
-**文档版本**:已同步至 2026.29
+**文档版本**:已同步至 **2026.30**。本文所有 `file:line` 行号均以 tag `2026.30` 为准;行号与 2026.29 有差异处已并列标注。2026.30 的变动清单见 [18.9 节](#189-202630-变动速览)。
 
 **维护**:如有疑问或发现文档过期,请对照 [`packages/db/migrations/`](../packages/db/migrations/) 和 [`packages/api/internal/template/`](../packages/api/internal/template/) 的最新代码核对。

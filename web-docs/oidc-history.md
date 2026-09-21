@@ -3,7 +3,20 @@
 本文件汇总 E2B Infrastructure 仓库中所有与 OIDC（OpenID Connect）相关的提交，按时间顺序梳理设计决策、影响范围与行为变化，并在最后一章给出从旧版（Supabase HMAC JWT）到新版（多 issuer OIDC）的完整迁移升级方案。
 
 > 数据来源：`git log --all -i --grep="oidc|openid|ory|auth_provider|user_identities|identity_lookup|wif"`
-> 截止日期：2026-07-09（分支 `learn/brain`），共 17 个核心 PR(#2673 起按时间顺序)
+> 截止日期：2026-09-10（tag `2026.30`），共 17 个核心 PR(#2673 起按时间顺序)+ 2026.30 的 OIDC 相关重构（见 §3.17）
+
+> ⛔ **本文的 IaC 引用已全部失效（2026.30 删除）。**
+>
+> 2026.30 期间退役了整块部署侧资产，但**分两次提交**：`8a1c48884406b909f64c1239c808d0bc1cbf05bf`（Tomas Virgl，2026-09-09，"chore(deploy): retire Nomad-based deployment ahead of a new deploy path"）退役 `iac/` 与 `self-host.md`；`packages/docker-reverse-proxy/` 则由更早的 `d153bbe9d1e2ccd5e087d7c1dece5b8974175b54`（Jakub Rojko，2026-08-06，"chore(docker-reverse-proxy): remove deprecated service"）删除。**本文中所有 `iac/**` 路径、`packages/docker-reverse-proxy/**` 路径、`self-host.md` 都是历史档案，链接/路径在 2026.30 的仓库里已不存在,保留仅为让旧 PR 的描述可回溯。** 具体删除清单:
+>
+> - `iac/`（含 `iac/provider-gcp/`、`iac/provider-aws/`、`iac/modules/job-*/`）**整体删除**：2026.29 有 172 个文件,2026.30 为 **0**。
+> - `packages/docker-reverse-proxy/`（含本文 §3.15 提到的 `Makefile`、`main.go`、`Dockerfile`）**整体删除**：2026.29 有 19 个文件,2026.30 为 **0**。⚠️ **归属 `d153bbe9d`（2026-08-06），不是 `8a1c4888`。**
+> - 根目录 `self-host.md` 删除。
+> - 根 `Makefile` 移除了全部 Terraform / Nomad 目标：`init`、`plan`、`apply`、`plan-only-jobs`、`plan-without-jobs`、`setup-ssh`、`connect-orchestrator`、`state-migrate`、`import`、`move`、`provider-login`、`apply-init`、`gcloud-ingress-dashboard`（13 个,2026.29 全部存在,2026.30 一个不剩）。
+> - `.github/workflows/` 移除了 `publish.yml`、`release-please.yml`、`validate-iac.yml`、`build-and-upload-images.yml`（另删除 `periodic-test.yml`、`pr-no-generated-changes.yml`）。
+> - ⚠️ **例外**：`packages/nomad-nodepool-apm/`（12 个文件）**仍然存在**,不要一起写死。
+>
+> 因此本文 §4.6「IaC 层」与 §5「迁移升级方案」里的 Terraform 步骤**描述的是 2026.29 及更早的部署方式**,在 2026.30 已无对应代码。新的部署路径尚未落在本仓库中。
 
 ---
 
@@ -51,6 +64,7 @@ E2B 早期的 dashboard 与 API 服务使用 Supabase 颁发的 HMAC 签名 JWT 
 | 2026-06-29 | `00ad04b13` | [#3133](https://github.com/e2b-dev/infra/pull/3133) | fix(dashboard-api): set Ory external_id only after the bootstrap commit | fix / 关键 |
 | 2026-07-01 | `61e16bf4b` | [#3167](https://github.com/e2b-dev/infra/pull/3167) | Rp reverse proxy（GitHub Actions → GCP Artifact Registry 的 WIF OIDC） | infra / 间接 |
 | 2026-07-09 | `dbd098f9f` | [#3094](https://github.com/e2b-dev/infra/pull/3094) | feat(dashboard-api): map Ory SSO organizations to E2B teams（`teams.ory_organization_id` 字段，SSO 用户自动入组） | feat / 企业 SSO |
+| **2026-07-21 ~ 09-10** | 见 §3.17 | — | **2026.30 窗口期的 OIDC 相关重构**：包结构下沉 `internal/`、验证器拆成三层、新增 Service JWT、audience 空配置语义、read replica 移除 | refactor / feat |
 
 ---
 
@@ -354,7 +368,7 @@ dashboard 前端在登录后短时间内可能多次触发 bootstrap 请求，�
 | `packages/auth/pkg/auth/consts.go` | 删除 Supabase 相关常量 |
 | `packages/db/pkg/supabase/` | **整个包删除**（`client.go`、`queries/`、`schema/`、`sql_queries/`） |
 | `packages/db/sqlc.yaml` | 删除 supabase 配置 |
-| `packages/dashboard-api/internal/userprofile/supabase.go`、`supabase_test.go`、`mode.go`、`creator_context.go` | 删除 Supabase provider 与「双模式」开关；profile 解析变为 Ory-only。**注**：`creator_context.go` 后在 2026-07-02 的 `a160ab26f`（"rename userprofile package to identity"）中被重新引入,当前主分支仍存在于 `packages/dashboard-api/internal/userprofile/creator_context.go` |
+| `packages/dashboard-api/internal/userprofile/supabase.go`、`supabase_test.go`、`mode.go`、`creator_context.go` | 删除 Supabase provider 与「双模式」开关；profile 解析变为 Ory-only。**注**：`creator_context.go` 后在 2026-07-02 的 `a160ab26f`（"rename userprofile package to identity"）中被重新引入,**整个包同时改名为 `identity`**,所以 2026.29 / 2026.30 的路径是 `packages/dashboard-api/internal/identity/creator_context.go`（不是 `.../userprofile/creator_context.go`——`userprofile/` 目录在两个 tag 里都已为 0 文件） |
 | `spec/openapi.yml`、`spec/openapi-dashboard.yml` | 删除 `SupabaseTokenAuth` 等 scheme；删除相关 header |
 | `packages/api/internal/api/api.gen.go`、`packages/dashboard-api/internal/api/api.gen.go` | oapi-codegen 再生成（净删除 ~800 行） |
 | IaC | `iac/provider-gcp/`、`iac/provider-aws/init/secrets.tf` 删除 `supabase_jwt_secret`、`supabase_*` 相关 secret |
@@ -456,6 +470,51 @@ dashboard 前端在登录后短时间内可能多次触发 bootstrap 请求，�
 
 ---
 
+### 3.17 2026.30 的 OIDC 相关重构（2026-07-21 ~ 2026-09-10，tag `2026.29` → `2026.30`）
+
+这一段不是单个 PR,而是从 `2026.29`(2026-07-16)到 `2026.30`(2026-09-10)之间与 OIDC 直接相关的若干次提交。**没有一项改变"`(iss, sub)` → `user_identities` → `users.id`"这条主干**,改变的是验证器的分层、包结构、以及"未配置"与"空配置"的语义。
+
+| 日期 | Commit | PR | 标题 | 类型 |
+|---|---|---|---|---|
+| 2026-07-21 | `0f72030b3` | [#3314](https://github.com/e2b-dev/infra/pull/3314) | feat: add workspace admin API foundations | feat / 间接 |
+| 2026-07-22 | `76857966d` | [#3338](https://github.com/e2b-dev/infra/pull/3338) | refactor(auth): nest internal packages under pkg/auth | refactor / 破坏性(import 路径) |
+| 2026-07-22 | `cda31bf6f` | [#3339](https://github.com/e2b-dev/infra/pull/3339) | feat(auth): re-export OIDC and provider verifiers through the public facade | feat |
+| 2026-07-22 | `23ada3e85` | [#3327](https://github.com/e2b-dev/infra/pull/3327) | refactor(db): remove read replica support | refactor |
+| 2026-07-27 | `f68e7131b` | [#3423](https://github.com/e2b-dev/infra/pull/3423) | feat(auth): verifiers on one axis, and a reusable authenticator constructor | feat / 关键 |
+| 2026-08-19 | `c09b59246` | — | feat(auth): share the security-requirements error selection | feat |
+| 2026-08-23 | `458031191` | — | feat(api): remove deprecated E2B access token auth | feat / 破坏性 |
+| 2026-08-24 | `84362fc62` | — | feat(auth): return a distinct 401 message for malformed API keys | feat |
+| 2026-09-02 | `688657215` | — | feat(auth): allow issuers without configured audiences | feat / 语义变化 |
+| 2026-09-02 | `9071aac3e` | — | feat(api): add service JWT authentication | feat / 新增凭证 |
+| 2026-09-05 | `25d454329` | — | chore(auth): remove legacy access token remnants | chore |
+
+#### 变更摘要
+
+| 层 | 文件 / 目录（2026.30 路径） | 影响 |
+|---|---|---|
+| 包结构 | `packages/auth/pkg/auth/internal/**`（`token/`、`service/`、`team/`、`middleware/`、`authcontext/`） | [#3338](https://github.com/e2b-dev/infra/pull/3338) 把全部实现下沉到 `internal/`；`packages/auth/pkg/auth/*.go` 只剩 type alias + 转发函数,行数从 24~287 缩到 13~99。**外部 import 路径不变**(仍是 `packages/auth/pkg/auth`),但 `auth.Verifier` 这个名字消失 |
+| 验证器分层 | `internal/token/jwks/verifier.go`、`internal/token/oidc/oidc.go`、`internal/token/provider.go` | [#3423](https://github.com/e2b-dev/infra/pull/3423) 把 `oidc/` 拆成"纯 JWKS"与"discovery+claims"两族,并组合出 `JWKSVerifier` / `OIDCVerifier` / `LinkedOIDCVerifier` 三个类型（见 §4.3.1） |
+| 新增凭证 | `internal/token/jwks_verifier.go`（`JWKSVerifier`）、`internal/middleware/middleware.go:263`（`NewAdminJWTAuthenticator`） | `9071aac3e` 新增 `AdminJWTAuth` scheme：服务间 JWT 只验 `iss`/`exp`/`aud`/签名,**不做身份映射**。配置项 `ADMIN_AUTH_PROVIDER_CONFIG`（`packages/api/internal/cfg/model.go:136`） |
+| audience 语义 | `internal/token/jwks/audience.go`、`internal/token/jwks/config.go` | `688657215` 让 `audiences` 为空成为**合法配置且真的不校验 `aud`**。⚠️ 2026.29 的"空 `audiences` 不校验 aud"是**不可达分支**（空 `audiences` 会在配置校验阶段被拒） |
+| 错误选择 | `packages/auth/pkg/auth/security.go`（`ProcessSecurityErrors`） | `c09b59246` 把"从多个失败 scheme 里挑哪一个报给客户端"抽成公共函数：team forbidden / blocked 优先,否则取第一个真正尝试过的 scheme。前缀常量 `ForbiddenErrPrefix` / `BlockedErrPrefix` |
+| 认证失败状态码 | `internal/middleware/middleware.go`（`authFailureStatusContextKey`） | `62e67d48f` 让"缺 header 的兜底 401"只在前面的方案还没记录过失败时才写。⚠️ 保护**只覆盖缺 header 分支**,业务验证失败分支仍无条件写状态码 |
+| 读写分离移除 | `packages/db/pkg/auth/client.go` | `23ada3e85` 删除 read replica：`Client` 改为内嵌 `*authqueries.Queries`,`NewClient` 丢掉 `replicaURL` 参数,`AUTH_DB_READ_REPLICA_CONNECTION_STRING` 删除。**OIDC bootstrap 的复制时延赛跑问题随之消失** |
+| Access Token 退役 | 迁移 `20260823120000_drop_access_tokens.sql`、`keys.AccessTokenPrefix` | `458031191` + `25d454329` 彻底删除 `sk_e2b_` 凭证链路。⚠️ **与 OIDC 主干无关**,但它删掉了 `oidc.Verifier` 曾经的邻居 `ValidateAccessToken`,以及 `pkg/tests/sign_token.go`（`SignTestToken`） |
+| 测试辅助 | ⛔ `packages/auth/pkg/tests/` | 整个目录删除,`SignTestToken` 在 2026.30 全仓库零引用 |
+
+#### 一次"加了又撤回"
+
+`b77218304`（feat(auth): honor an explicitly set OIDC discovery URL for JWKS lookup）在窗口期内被 `061964710`（Revert 同标题）撤回。所以 **2026.30 的最终状态里没有这项行为**,排查时不要按它来推断。
+
+#### 未变化（明确记录，避免误判）
+
+- `public.user_identities` 表结构、PK `(oidc_iss, oidc_sub)`、`IdentityLookup` 接口语义：**未变**。
+- `packages/db/pkg/auth/sql_queries/user_identities/*` 与 `teams/get_team.sql`：**逐字节未变**。
+- discovery document 的拉取方式、`iss` 与 `issuer.url` 的交叉校验、loopback 的 http 豁免：**未变**（只是文件从 `oidc/oidc.go` 搬到 `internal/token/jwks/verifier.go`）。
+- `audienceMatchPolicy = "MatchAll"` 仍被 validator 拒绝（2026.29 如此,2026.30 亦如此）。
+
+---
+
 ## 4. 架构演进与影响面
 
 ### 4.1 数据库层
@@ -476,37 +535,75 @@ dashboard 前端在登录后短时间内可能多次触发 bootstrap 请求，�
 | 单一 Supabase issuer | `jwt[]` 数组，支持多 issuer | 每 issuer 独立 cache duration、audience 策略 |
 | 无 | `OIDC_ISSUER` / `OIDC_SUBJECT` (local-dev) | seed 脚本可配置 |
 | 无 | `ORY_PROJECT_API_TOKEN` (dashboard-api) | [#2840](https://github.com/e2b-dev/infra/pull/2840) 引入，[#2922](https://github.com/e2b-dev/infra/pull/2922) 改为由独立 Ory Terraform 维护的 GCP secret |
+| 无 | `ADMIN_AUTH_PROVIDER_CONFIG`（2026.30 新增） | 与 `AUTH_PROVIDER_CONFIG` **同结构**（`sharedauth.ProviderConfig`），但喂给 `NewJWKSVerifier` 而非 `NewLinkedOIDCVerifier`：只验 `iss`/`exp`/`aud`/签名,**不查 `user_identities`**。用于服务间 JWT（`AdminJWTAuth`）。空 / unset 时进程照常启动,但每个 Admin JWT 请求 401 |
+
+⚠️ 两者的**空配置语义不同**：`AUTH_PROVIDER_CONFIG` 为空时 `NewVerifier` 返回 `(nil, nil)`,由 `ValidateAuthProviderToken` 在运行时转成 401；`ADMIN_AUTH_PROVIDER_CONFIG` 为空时 `NewJWKSVerifier` 同样返回 `(nil, nil)`,但 `JWKSVerifier.Verify` 自己处理 nil 接收者并返回 `service token verifier is not configured`。**两者都不会导致启动失败**；只有 JSON 解析失败才会。
 
 `AUTH_PROVIDER_CONFIG` 通过自定义 `env.UnmarshalFunc` 解析；在 Nomad jobspec 中以 `replace(jsonencode(...), "\"", "\\\"")` 转义双引号后注入。
 
-### 4.3 代码包结构（当前主分支状态）
+### 4.3 代码包结构（tag `2026.30` 状态）
+
+2026.29 的平铺结构（`oidc/` + `verifier.go` + `identity_lookup.go` + …）在 2026.30 被整体下沉到 `internal/**`,并把"验证器"拆成三层。**下图中路径全部是 2026.30 的**：
 
 ```
 packages/auth/pkg/auth/
-├── oidc/                # 基于 discovery 的 JWT 验证
-│   ├── config.go        # Config / Issuer / AudienceMatchPolicy
-│   ├── oidc.go          # Verifier + validateURL (含 loopback 豁免)
-│   ├── audience.go      # MatchAny / MatchAll
-│   └── testserver.go    # 测试用 OIDC server
-├── identity_lookup.go   # authqueries → oidc.IdentityLookup 适配
-├── verifier.go          # 聚合 strategy（[#3042] 后只剩 OIDC strategy）
-├── service.go           # ValidateAuthProviderToken
-└── middleware.go        # Gin authenticator（[#3042] 删除 Supabase middleware）
+├── token.go             # 公开重导出：ProviderConfig / JWKSVerifier / OIDCVerifier / LinkedOIDCVerifier …
+├── service.go           # 公开重导出：Service / AuthService / NewAuthService
+├── middleware.go        # 公开重导出：7 个 Authenticator 构造函数
+├── team.go / gin.go / security.go / error.go / consts.go / testing.go
+└── internal/
+    ├── token/
+    │   ├── provider.go          # ProviderConfig + 三个 verifier 的组合逻辑
+    │   ├── jwks_verifier.go     # JWKSVerifier（2026.30 新增，服务间 JWT）
+    │   ├── provider_config_parse.go
+    │   ├── jwks/                # 纯 JWKS 校验（不拉 discovery）
+    │   │   ├── verifier.go      # Verifier / NewVerifier / NewVerifierFromIssuerJWKS
+    │   │   ├── config.go        # Config / Issuer / AudienceMatchPolicy
+    │   │   ├── audience.go      # MatchAny / MatchAll
+    │   │   └── testserver.go    # 测试用 OIDC server
+    │   └── oidc/                # discovery + claims 校验 + 身份映射接口
+    │       └── oidc.go          # Verifier / IdentityLookup / TokenIdentity
+    ├── service/
+    │   ├── service.go           # ValidateAuthProviderToken / ValidateAuthProviderTeam
+    │   ├── store.go             # authqueries → types.Team
+    │   ├── identity_lookup.go   # authqueries → oidc.IdentityLookup 适配
+    │   └── cache.go             # Redis team cache
+    ├── team/                    # CheckTeamBanned / CheckTeamBlocked / EnforceBlockedTeam
+    ├── middleware/              # commonAuthenticator + CreateAuthenticationFunc
+    └── authcontext/             # SetUserID / SetTeamInfo / SetServiceIssuer …
 
 # 已删除：
 # - jwt.go             ([#2673] 删除)
 # - legacy/            ([#3042] 删除)
+# - pkg/tests/         (2026.30 删除，SignTestToken 一并消失)
 ```
 
+⚠️ 2026.29 → 2026.30 的路径对照：`oidc/oidc.go` → `internal/token/oidc/oidc.go`（身份部分）**加上** `internal/token/jwks/verifier.go`（验签部分）；`oidc/config.go` / `audience.go` / `testserver.go` → `internal/token/jwks/` 下同名文件；`verifier.go` → `internal/token/provider.go`；`identity_lookup.go` → `internal/service/identity_lookup.go`；`service.go` → `internal/service/service.go`；`middleware.go` → `internal/middleware/middleware.go`。
+
+### 4.3.1 三个 verifier 的分工（2026.30 新增）
+
+| 类型 | 是否拉 discovery | 是否校验 claims | 是否做 `(iss, sub) → user_id` | 用途 |
+|---|---|---|---|---|
+| `JWKSVerifier` | ❌（直接走 issuer 的常规 JWKS 路径） | `exp`（必需）、`iss`、`aud`、签名方法 | ❌ | `AdminJWTAuth`（服务间 JWT） |
+| `OIDCVerifier` | ✅ | 同上 + 返回 token 自己声称的 `TokenIdentity` | ❌ | 给需要"token 说了什么"但不需要内部用户的调用方 |
+| `LinkedOIDCVerifier` | ✅ | 同上 | ✅（`IdentityLookup`） | `AuthProviderBearerAuth`（即 2026.29 的 `Verifier`） |
+
+⚠️ 2026.29 只有第三种（那时叫 `Verifier`），且它**强依赖** `IdentityLookup`（`NewVerifier` 在没有 lookup 时直接返回错误）。2026.30 拆出前两种,并把"必须有 lookup"改成只在配置了 issuer 时才强制——空配置下 `NewLinkedOIDCVerifier` 返回 `(nil, nil)` 而不是报错。
+
 ### 4.4 OpenAPI / 鉴权 scheme（当前主分支状态）
+
+tag `2026.30` 状态（`spec/openapi.yml:10-33`）：
 
 | Scheme | Header | 说明 |
 |---|---|---|
 | `ApiKeyAuth` | `X-API-Key` | 不变 |
-| `AccessTokenAuth` | `Authorization: Bearer e2b_at_…` | 不变 |
-| `AuthProviderBearerAuth` | `Authorization: Bearer …`（OIDC JWT） | [#2673](https://github.com/e2b-dev/infra/pull/2673) 引入。**注**：#2673 commit message 写的是 `AuthProviderTokenAuth`,但实际 spec / 生成代码从一开始就是 `AuthProviderBearerAuth`(spec/openapi.yml:25 有注释说明 "B before T" 命名约定) |
-| `AuthProviderTeamAuth` | `X-Team-ID` | [#2673](https://github.com/e2b-dev/infra/pull/2673) 引入；[#2723](https://github.com/e2b-dev/infra/pull/2723) 大小写统一 |
-| ~~`SupabaseTokenAuth`~~ | ~~`Authorization: Bearer …`~~ | [#3042](https://github.com/e2b-dev/infra/pull/3042) 删除 |
+| `AuthProviderBearerAuth` | `Authorization: Bearer …`（OIDC JWT） | [#2673](https://github.com/e2b-dev/infra/pull/2673) 引入。**注**：#2673 commit message 写的是 `AuthProviderTokenAuth`,但实际 spec / 生成代码从一开始就是 `AuthProviderBearerAuth`（`spec/openapi.yml:15-16` 有注释说明 "B before T" 命名约定；2026.29 为 `:23-24`） |
+| `AuthProviderTeamAuth` | `X-Team-ID` | [#2673](https://github.com/e2b-dev/infra/pull/2673) 引入；[#2723](https://github.com/e2b-dev/infra/pull/2723) 大小写统一。⚠️ spec 里的 header 名是 `X-Team-ID`（大写 `ID`），不是 `X-Team-Id` |
+| `AdminJWTAuth`（2026.30 新增） | `Authorization: Bearer …`（服务 JWT） | 走 `JWKSVerifier`：只验 `iss`/`exp`/`aud`/签名，**不查 `user_identities`**。配置项是 `ADMIN_AUTH_PROVIDER_CONFIG`。⚠️ 在 spec 里**从不单独出现**——48 处使用全部与 `AdminTeamAuth` 成 AND 组，所以必须同时带 `X-Team-ID` |
+| `AdminApiKeyAuth` | `X-Admin-Token` | 与 OIDC 无关的静态 admin token |
+| `AdminTeamAuth` | `X-Team-ID` | admin 代某 team |
+| ⛔ ~~`AccessTokenAuth`~~ | ~~`Authorization: Bearer sk_e2b_…`~~ | 2026.30 删除（[`20260823120000_drop_access_tokens.sql`](../packages/db/migrations/20260823120000_drop_access_tokens.sql)）。**注**：本表此前写作 `e2b_at_…`,**在 2026.29 就是错的**——`keys.AccessTokenPrefix` 的值是 `sk_e2b_` |
+| ⛔ ~~`SupabaseTokenAuth`~~ | ~~`Authorization: Bearer …`~~ | [#3042](https://github.com/e2b-dev/infra/pull/3042) 删除 |
 
 ### 4.5 Dashboard API 路由
 
@@ -516,7 +613,9 @@ packages/auth/pkg/auth/
 | 2026-06-01 (`6a7a59ee0`) | `POST /admin/users/bootstrap` | OIDC 用户预置 |
 | 2026-06-15 (`ecc1291ad`) | `DELETE /admin/users/{userId}` | 删除用户（Ory 模式） |
 
-### 4.6 IaC 层
+### 4.6 IaC 层 —— ⛔ 整个 `iac/` 已于 2026.30 删除
+
+> ⛔ **本节全部路径在 2026.30 已不存在**（见文首删除清单）。以下内容描述的是 **2026.29 及更早**的部署方式,保留作为历史档案。行号均针对 2026.29 的 `iac/` 树。
 
 - `iac/provider-gcp/main.tf`：`local.default_auth_provider_config`（第 63 行）默认 `{ jwt = [] }`；`local.auth_provider_config`（第 71 行）是条件表达式,`var.auth_provider_config != null ? jsondecode(jsonencode(var.auth_provider_config)) : local.default_auth_provider_config`；最终在 `AUTH_PROVIDER_CONFIG` env（第 85 行）注入并供 `dashboard-api.tf` 等下游消费。
 - `iac/provider-gcp/dashboard-api.tf`：dashboard-api job 注入 `AUTH_PROVIDER_CONFIG` 与 `ORY_PROJECT_API_TOKEN`。
@@ -528,6 +627,10 @@ packages/auth/pkg/auth/
 ---
 
 ## 5. 迁移升级方案
+
+> ⛔ **本章的部署步骤针对 2026.29 及更早。** 2026.30 删除了整个 `iac/` 与根 `Makefile` 的全部 Terraform / Nomad 目标（见文首删除清单），所以 **步骤 4（写 Terraform 变量）与步骤 6（`make plan` / `make apply`）在 2026.30 已无对应代码**；步骤 5 提到的 `supabase_jwt_secret` 变量同样属于那个已退役的部署体系。
+>
+> 本章仍然有效的部分是**配置本身**：`AUTH_PROVIDER_CONFIG` 的 JSON 结构、`issuer.url` 与 discovery `issuer` 的一致性要求、`audienceMatchPolicy` 只接受 `MatchAny`、`cacheDuration` 默认 5 分钟——这些在 2026.30 的 `internal/token/jwks/config.go` 里完全一致。**怎么把这份 JSON 送进服务**（Terraform tfvars → Nomad job → env）需要按新部署路径重写。
 
 本章面向两类读者：
 
@@ -753,13 +856,20 @@ auth_provider_config = {
 
 ## 附录：相关文件索引
 
-- 验证器核心：`packages/auth/pkg/auth/oidc/oidc.go`、`packages/auth/pkg/auth/verifier.go`
-- 服务层：`packages/auth/pkg/auth/service.go`、`identity_lookup.go`、`middleware.go`
-- 数据库迁移：`packages/db/migrations/20260515120000_create_user_identities_table.sql`
-- sqlc 查询：`packages/db/pkg/auth/sql_queries/user_identities/upsert_public_identity.sql`、`get_user_identities_by_subjects.sql`、`get_user_identities_by_user_ids.sql`
-- IaC：`iac/provider-gcp/main.tf:63-85`、`iac/provider-gcp/variables.tf:225`、`iac/provider-gcp/dashboard-api.tf`、`iac/provider-aws/main.tf:114`、`iac/provider-gcp/init/secrets.tf`
+> 路径按 **tag `2026.30`** 列出；括号内是 2026.29 的旧路径。
+
+- 验证器核心：`packages/auth/pkg/auth/internal/token/jwks/verifier.go`、`internal/token/oidc/oidc.go`、`internal/token/provider.go`、`internal/token/jwks_verifier.go`（2026.29：`packages/auth/pkg/auth/oidc/oidc.go`、`packages/auth/pkg/auth/verifier.go`）
+- 服务层：`packages/auth/pkg/auth/internal/service/service.go`、`internal/service/identity_lookup.go`、`internal/middleware/middleware.go`（2026.29：`packages/auth/pkg/auth/service.go`、`identity_lookup.go`、`middleware.go`）
+- 数据库迁移：`packages/db/migrations/20260515120000_create_user_identities_table.sql`（未变）
+- sqlc 查询：`packages/db/pkg/auth/sql_queries/user_identities/upsert_public_identity.sql`、`get_user_identities_by_subjects.sql`、`get_user_identities_by_user_ids.sql`（未变）
+- IaC：⛔ `iac/**` 已于 2026.30 **整体删除**（2026.29 有 172 个文件,2026.30 为 0）。下列路径仅供历史参考：`iac/provider-gcp/main.tf:63-85`、`iac/provider-gcp/variables.tf:225`、`iac/provider-gcp/dashboard-api.tf`、`iac/provider-aws/main.tf:114`、`iac/provider-gcp/init/secrets.tf`
 - OpenAPI：`spec/openapi-dashboard.yml`、`spec/openapi.yml`
-- Dashboard bootstrap handler：`packages/dashboard-api/internal/handlers/admin_users_bootstrap.go`、`utils_team_provisioning.go`、`admin_users_delete.go`
-- Ory provider：`packages/dashboard-api/internal/userprofile/ory.go`、`provider.go`、`providers.go`
+- Dashboard bootstrap handler：`packages/dashboard-api/internal/handlers/admin_users_bootstrap.go`、`admin_users_delete.go`（`utils_team_provisioning.go` 已随 userprofile 一起删除,见下）
+- Ory provider：⛔ `packages/dashboard-api/internal/userprofile/ory.go`、`provider.go`、`providers.go` —— **这个包在 2026.29 就已经不存在了**（`packages/dashboard-api/internal/userprofile/` 在 2026.29 与 2026.30 均为 0 文件）。相关逻辑迁到了 `packages/dashboard-api/internal/identity/`
 - 本地 seed：`packages/local-dev/seed-local-database.go`
-- 已删除（仅供历史参考）：`packages/auth/pkg/auth/legacy/`、`packages/auth/pkg/auth/jwt.go`、`packages/db/pkg/supabase/`、`packages/dashboard-api/internal/userprofile/supabase.go`、`packages/dashboard-api/internal/userprofile/mode.go`。**注**：`packages/dashboard-api/internal/userprofile/creator_context.go` 由 [#2967](https://github.com/e2b-dev/infra/pull/2967) 创建、[#3042](https://github.com/e2b-dev/infra/pull/3042) 删除,2026-07-02 又由 commit `a160ab26f` 重新引入,当前仍存在
+- 已删除（仅供历史参考）：`packages/auth/pkg/auth/legacy/`、`packages/auth/pkg/auth/jwt.go`、`packages/db/pkg/supabase/`、`packages/dashboard-api/internal/userprofile/`（整个目录）、`packages/dashboard-api/internal/handlers/utils_team_provisioning.go`。**注**：`packages/dashboard-api/internal/identity/creator_context.go` 由 [#2967](https://github.com/e2b-dev/infra/pull/2967) 创建、[#3042](https://github.com/e2b-dev/infra/pull/3042) 删除,2026-07-02 又由 commit `a160ab26f` 连同包改名一起重新引入（`userprofile/` → `identity/`）,在 2026.29 与 2026.30 都存在
+- 2026.30 新增/搬迁的 auth 路径：`packages/auth/pkg/auth/internal/**`（见 §4.3）
+
+---
+
+> **版本说明**:已同步至 **2026.30**(tag `2026.30`,提交 `f32ee8a2a50052f32e3632ceb451111a98dd5104`)。本文所有 `file:line` 均以 tag `2026.30` 为准;与 2026.29 有差异处已并列标注。2026.30 的关键变动:`packages/auth/pkg/auth/` 拆成公开重导出层 + `internal/**` 实现(§4.3)、`AccessTokenAuth` 删除、`AdminJWTAuth` 与 `JWKSVerifier` 新增(§4.3.1)、`ADMIN_AUTH_PROVIDER_CONFIG` 新增(§4.2)、`iac/**` 整体删除(§4.6)。

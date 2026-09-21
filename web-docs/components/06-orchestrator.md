@@ -2,6 +2,22 @@
 
 `orchestrator` 是每台 sandbox 节点上的运行时控制器：它把 gRPC 生命周期请求落实为网络槽、磁盘、内存与 Firecracker 进程，并同时承载该节点的 sandbox 流量入口。
 
+## 0. 2026.30 变动
+
+| 能力 | 2026.30 变化 | 位置（2026.30） |
+|---|---|---|
+| 节点状态 | 新增 `ShuttingDown = 4`；关停时不再写 `Draining`，而是写 `ShuttingDown` 并 sleep 15s | `packages/orchestrator/info.proto:17`、`packages/orchestrator/pkg/factories/run.go:1085-1091` |
+| 在途工作 | 新增 `outstanding_work` 上报字段与 `TrackWork()` 配对登记 | `packages/orchestrator/info.proto:55-56`、`packages/orchestrator/pkg/service/info.go:53-60` |
+| 路由发布 | 新增 `pkg/routing/`，orchestrator 自己写删 `sandbox:routing:{id}`；API 自有的 `sandbox:catalog:{id}` 仍并存 | `packages/orchestrator/pkg/routing/publisher.go` |
+| 网络数据面 | 新增 `NETWORK_VERSION`（默认 `1`）与 `pkg/sandbox/network/v2/`（nftables + host sets + eBPF） | `packages/orchestrator/pkg/sandbox/network/pool.go:92` |
+| 冷启动前置 | `RebootSandbox` 先做 ext4 journal 回放与离线 envd 换装 | `packages/orchestrator/pkg/sandbox/reboot.go:207-209` |
+| checkpoint | 拆成 `checkpointInPlace` 与 `checkpointResumeFresh` 两条路径，并新增快照准入闸门 | `packages/orchestrator/pkg/server/sandboxes.go:1188,1271` |
+| 入口代理 | 按 `https_ports` 选 scheme，并拒绝 envd 内部路径 | `packages/orchestrator/pkg/proxy/proxy.go:43-55,86-88` |
+| RPC 契约 | ⛔ `ListCachedBuilds` RPC 及其两条消息被删除 | `packages/orchestrator/orchestrator.proto:258-264` |
+| 槽位存储 | ⛔ `storage_kv.go`（Consul KV）与 `storage_memory.go` 被删除 | `packages/orchestrator/pkg/sandbox/network/` |
+
+⚠️ 上表所有新能力都由 feature flag 控制且默认关闭（`in-place-checkpoint`、`orchestrator-routing-publish`、`preboot-fs-recovery` 等），网络 v2 也只允许在 canary 节点开启。因此 2026.30 的默认运行行为与 2026.29 高度接近，差异主要体现在**新增的可选路径与可观测字段**上。
+
 ## 1. 系统位置
 
 ```text
@@ -36,7 +52,7 @@ API / scheduler -- gRPC :5008 --> orchestrator node
 7. 启动 ingress proxy、egress proxy、hyperloop、可选 NFS proxy 和监控服务。
 8. 用 `cmux` 在 `GRPC_PORT` 上区分 HTTP/1 health/upload 与其余 gRPC 流量。
 
-收到关闭信号后，节点先进入 draining；非强制模式等待 live sandbox 自行退出和 lifecycle cleanup 完成，再按逆序关闭依赖。
+收到关闭信号后，节点先进入 `ShuttingDown`（2026.30 起；此前写 `Draining`），非 local 环境额外等待 15 秒让消费者停止派发工作，再等 live sandbox 自行退出和 lifecycle cleanup 完成，最后按逆序关闭依赖。节点同时通过 `outstanding_work` 上报在途工作计数。
 
 ## 3. 核心机制与关键对象
 
@@ -60,9 +76,13 @@ Factory 把模板设备、network slot、cgroup、rootfs provider、UFFD memory 
 - `lifecycles`：尚未完成 cleanup 的所有 lifecycle；checkpoint 时同一 sandbox ID 可同时存在旧、新 lifecycle。
 - `network`：VM host IP 到 sandbox 的映射，供防火墙和 host-side 服务反查。
 
+2026.30 起 `MapSubscriber` 接口新增 `OnStopping(ctx, *Sandbox)`，`MarkStopping` 改为返回 `bool` 并把退出的 sandbox 投递给订阅者。orchestrator 自有的路由发布器就是靠这个回调删 Redis 记录。
+
 ### 存储与恢复
 
 rootfs 通过 NBD overlay 按需读取；内存恢复由 UFFD 按页服务。template cache 把对象存储、节点本地缓存与可选 peer chunk transfer 统一成可读模板。
+
+2026.30 新增 `pkg/routing/publisher.go`：节点在 sandbox 进入 live 时写自己的 `sandbox:routing:{sandboxID}` 记录，退出 live 时严格删除。它与 API 自有的 `sandbox:catalog:{sandboxID}` **并存**，client-proxy 只在 `orchestrator-routing-prioritized` flag 打开时优先读前者。
 
 ## 4. 主请求或数据流
 
@@ -73,14 +93,17 @@ SandboxService.Create
   -> 准入限制 + templateCache.GetTemplate
   -> 读取 snapshot metadata
   -> filesystem-only ? RebootSandbox : ResumeSandbox
+       RebootSandbox 前置：ext4 journal 回放 + 离线 envd 换装（2026.30 新增）
   -> 分配 network / rootfs / memory / cgroup
   -> 启动或恢复 Firecracker
   -> POST envd /init，等待 204
-  -> MarkRunning
+  -> MarkRunning（并发布节点自有路由记录）
   -> 返回 client ID 与 scheduling metadata
 ```
 
 请求字段 `sandbox.snapshot` 决定事件语义是 created 还是 resumed；真正选择热恢复或冷启动的是快照自身的 `IsFilesystemOnly()` 元数据。
+
+⚠️ 2026.30 的判定式变成 `filesystemBoot(meta, req) = meta.IsFilesystemOnly() || req.GetFilesystemBoot()`（`packages/orchestrator/pkg/server/sandboxes.go:97`）。请求侧新增的 `filesystem_boot` 字段**确实可以把一个含内存的 memory 快照强制走冷启动**：安全门 `rebootAllowed(meta, requestFilesystemBoot)` 在「快照是 fs-only」或「请求显式要求」二者之一成立时就放行（`packages/orchestrator/pkg/sandbox/reboot.go:63`），代价是接受 rootfs 的 crash-consistent 语义。源码注释写明原因：memory 快照的 rootfs 可能缺少只存在于 guest page cache 中的写入，冷启动它最多只能得到崩溃一致的磁盘。实际结果通过响应字段 `filesystem_boot_applied` 回报。
 
 ### 暂停与恢复
 
@@ -118,7 +141,7 @@ Delete -> live.Get -> MarkStopping -> 立即返回
 - `LifecycleID` 而非 sandbox ID 隔离连接池和 cleanup，防止 pause/resume 期间旧 lifecycle 清掉新实例。
 - Pause/Delete 先 `MarkStopping` 再做耗时清理；调用成功返回不等于所有 host 资源已经释放。
 - Pause 先把 snapshot 放入本地 cache，再注册和启动远端上传；上传异步失败会记录指标，但 Pause 已可能返回成功。
-- filesystem-only snapshot 不能进入 memory resume；`RebootSandbox` 还会再次校验快照元数据。
+- filesystem-only snapshot 不能进入 memory resume；`RebootSandbox` 还会再次校验（`rebootAllowed`）。反向例外是调用方显式置位 `filesystem_boot`，此时含内存的快照也允许冷启动，但 rootfs 只保证 crash-consistent。
 - Firecracker 版本、kernel、rootfs 和 memfile 元数据必须兼容；恢复错误不会降级为任意冷启动。
 - `Close` 的 cleanup 链负责 FC、UFFD、NBD、cgroup、文件和 network slot；生命周期等待使用 `lifecycles`，不能只观察 live 数量。
 - ingress proxy 只接受 live map 中的 sandbox，并按 lifecycle key 禁止复用已经回收 IP 上的旧连接。
@@ -135,6 +158,8 @@ Delete -> live.Get -> MarkStopping -> 立即返回
 | 对象存储 / peer | 生成 diff、cache 与上传任务 | 持久化和跨节点提供 snapshot chunk |
 | Nomad / host | 暴露健康与 drain 行为 | 部署节点进程、发送终止信号 |
 
+⛔ 2026.30 已整体退役基于 Nomad 的部署路径：`iac/` 目录被全部删除（172 个文件 → 0，commit `8a1c4888`「chore(deploy): retire Nomad-based deployment ahead of a new deploy path」），根目录 `self-host.md` 随之删除。上表的「Nomad / host」一行保留为历史档案：进程仍需外部编排器发送终止信号并消费健康/`outstanding_work` 状态，但具体由 Nomad 承担的 jobspec 与 autoscaler 已不在本仓库中。`packages/nomad-nodepool-apm/` 仍然存在。
+
 ## 7. 源码阅读顺序
 
 | 顺序 | 文件 | 阅读目标 |
@@ -149,6 +174,10 @@ Delete -> live.Get -> MarkStopping -> 立即返回
 | 8 | `packages/orchestrator/pkg/sandbox/map.go` | 看 live/lifecycle/network 三索引 |
 | 9 | `packages/orchestrator/pkg/proxy/proxy.go` | 看节点 ingress、鉴权与连接隔离 |
 | 10 | `packages/orchestrator/pkg/sandbox/fc/process.go` | 最后下钻 Firecracker API 交互 |
+| 11 | `packages/orchestrator/pkg/routing/publisher.go` | 看 2026.30 新增的节点自有路由记录发布 |
+| 12 | `packages/orchestrator/pkg/service/info.go` | 看 `ShuttingDown`、`outstanding_work` 与 `TrackWork` |
+| 13 | `packages/orchestrator/pkg/sandbox/rootfs/fs_recover_linux.go` | 看冷启动前的 ext4 journal 回放 |
+| 14 | `packages/orchestrator/pkg/sandbox/network/v2/network.go` | 看 v2 nftables 数据面（先读同目录 `OPERATIONS.md`） |
 
 ## 8. 下一章：源码专章
 
@@ -161,3 +190,7 @@ Delete -> live.Get -> MarkStopping -> 立即返回
 - [Sandbox 流量路由详解](../sandbox-traffic-routing.md)
 - [Template Build 流程](../template-build-flow.md)
 - [Orchestrator 底层实现说明](../orchestrator-module.md)
+
+---
+
+已同步至 **2026.30**

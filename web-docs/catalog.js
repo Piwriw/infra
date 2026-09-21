@@ -34,7 +34,7 @@ window.LEARNING_CATALOG = (() => {
       phase: 'control',
       path: './components/02-auth.md',
       sourcePath: 'web-docs/components/02-auth.md',
-      summary: '理解 OIDC、API Key、Access Token 与 team 授权上下文。',
+      summary: '理解 OIDC、API Key、Admin JWT 与 team 授权上下文。',
       duration: 16,
       tags: ['OIDC', '认证', '授权'],
       codeRoot: 'packages/auth'
@@ -149,28 +149,28 @@ window.LEARNING_CATALOG = (() => {
     {
       id: 'iac',
       order: 10,
-      title: 'IaC：从组件到生产拓扑',
+      title: 'IaC：从组件到生产拓扑（已退役）',
       shortTitle: 'IaC',
       phase: 'operations',
       path: './components/10-iac.md',
       sourcePath: 'web-docs/components/10-iac.md',
-      summary: '理解 Terraform provider、Nomad job module 和云资源边界。',
+      summary: '2026.30 已退役：Nomad/Terraform 部署路径的删除清单与历史档案。',
       duration: 20,
-      tags: ['Terraform', 'Nomad', 'GCP/AWS'],
-      codeRoot: 'iac'
+      tags: ['Terraform', 'Nomad', 'Deprecated', 'History'],
+      codeRoot: 'iac（2026.30 已删除）'
     },
     {
       id: 'docker-reverse-proxy',
       order: 11,
-      title: 'Docker Reverse Proxy：镜像仓库入口',
+      title: 'Docker Reverse Proxy：镜像仓库入口（已退役）',
       shortTitle: 'Docker Proxy',
       phase: 'operations',
       path: './components/11-docker-reverse-proxy.md',
       sourcePath: 'web-docs/components/11-docker-reverse-proxy.md',
-      summary: '理解 registry token、Artifact Registry 路由与代理边界。',
+      summary: '2026.30 已退役：本包已整体删除，保留为 registry 网关设计的历史档案。',
       duration: 11,
-      tags: ['Registry', 'Token', 'Proxy'],
-      codeRoot: 'packages/docker-reverse-proxy'
+      tags: ['Registry', 'Token', 'Deprecated', 'History'],
+      codeRoot: 'packages/docker-reverse-proxy（2026.30 已删除）'
     },
     {
       id: 'nomad-nodepool-apm',
@@ -211,7 +211,7 @@ window.LEARNING_CATALOG = (() => {
     ['auth-deep', '认证子系统深度剖析', 'security', './auth-module.md', 'web-docs/auth-module.md', '认证器组合、缓存、OIDC 与 team 上下文。', ['Auth', 'OIDC']],
     ['cli-auth', 'CLI 登录与凭证签发', 'security', './cli-auth-flow.md', 'web-docs/cli-auth-flow.md', 'CLI 从 OIDC 登录到长期凭证的调用链。', ['CLI', 'Token']],
     ['api-keys', 'API Key 管理', 'security', './api-keys-module.md', 'web-docs/api-keys-module.md', 'API Key 的生成、哈希、掩码与 team 绑定。', ['API Key', 'Security']],
-    ['access-tokens', 'Access Token 管理', 'security', './access-tokens-module.md', 'web-docs/access-tokens-module.md', '用户级 token 与兼容路径。', ['Token', 'Compatibility']],
+    ['access-tokens', 'Access Token 退役档案(2026.30)', 'security', './access-tokens-module.md', 'web-docs/access-tokens-module.md', '用户级 token 已于 2026.30 完全退役:删除清单、410 兜底与迁移指引,附带弃用期的设计档案。', ['Token', 'Deprecated', 'Migration']],
     ['admin', 'Admin 管理面', 'security', './admin-module.md', 'web-docs/admin-module.md', '内部管理端点与管理员认证边界。', ['Admin', 'Authorization']],
     ['auth-request-lifecycle', 'Auth 请求生命周期', 'security', './auth-request-lifecycle.md', 'web-docs/auth-request-lifecycle.md', '从请求进入中间件到 team 上下文和 handler 授权的完整链路。', ['Auth', 'Request']],
     ['oidc-history', 'OIDC 认证演进历史', 'security', './oidc-history.md', 'web-docs/oidc-history.md', 'OIDC 迁移、兼容性和身份模型演进。', ['OIDC', 'History']],
@@ -242,8 +242,8 @@ window.LEARNING_CATALOG = (() => {
     ['observability-pipeline', '可观测性数据管线', 'observability', './observability-pipeline.md', 'web-docs/observability-pipeline.md', 'OTel、Vector、Loki、ClickHouse 与 sandbox 事件的流转。', ['OTel', 'ClickHouse']],
     ['clickhouse-deep', 'ClickHouse 包详解', 'observability', './clickhouse-package.md', 'web-docs/clickhouse-package.md', '查询接口、事件投递和批处理实现。', ['ClickHouse', 'Events']],
     ['api-changes', 'API 变更摘要', 'control', './api-changes-2026.16-2026.28.md', 'web-docs/api-changes-2026.16-2026.28.md', '2026.16 到 2026.28 的 API、认证和数据库契约变化。', ['API', 'History']],
-    ['docker-proxy-deep', 'Docker Reverse Proxy 详解', 'operations', './docker-reverse-proxy.md', 'web-docs/docker-reverse-proxy.md', 'Registry 协议、token 验证与 Artifact Registry。', ['Registry', 'Proxy']],
-    ['releasing', '发布流程', 'operations', './RELEASING.md', 'web-docs/RELEASING.md', 'release-please、版本 tag 与制品发布恢复流程。', ['Release', 'Operations']]
+    ['docker-proxy-deep', 'Docker Reverse Proxy 详解（已退役）', 'operations', './docker-reverse-proxy.md', 'web-docs/docker-reverse-proxy.md', '2026.30 已退役：本包已整体删除，保留 Registry 协议、token 验证与 Artifact Registry 的设计说明。', ['Registry', 'Proxy', 'Deprecated', 'History']],
+    ['releasing', '发布流程（只读镜像）', 'operations', './RELEASING.md', 'web-docs/RELEASING.md', '只读镜像视角：制品清单、monorepo 侧 release-please/tag 流程与恢复。', ['Release', 'Operations']]
   ].map(([id, title, topic, path, sourcePath, summary, tags, navigation = {}], index) => ({
     id,
     order: index + 1,
@@ -301,7 +301,7 @@ window.LEARNING_CATALOG = (() => {
       id: 'template-path',
       label: '模板构建',
       description: '理解模板如何变成可启动的 rootfs。',
-      docs: ['api', 'template', 'template-build', 'db', 'orchestrator-deep', 'docker-reverse-proxy']
+      docs: ['api', 'template', 'template-build', 'db', 'orchestrator-deep', 'artifact-storage-cache']
     },
     {
       id: 'identity-path',
@@ -312,8 +312,8 @@ window.LEARNING_CATALOG = (() => {
     {
       id: 'operate-path',
       label: '部署与观测',
-      description: '把代码组件映射到真实云资源和遥测链。',
-      docs: ['iac', 'shared', 'local-dev-observability', 'clickhouse', 'team-metrics', 'nomad-nodepool-apm']
+      description: '把代码组件映射到部署拓扑、本地依赖栈和遥测链。',
+      docs: ['architecture-overview', 'local-dev-observability', 'shared', 'clickhouse', 'team-metrics', 'nomad-nodepool-apm']
     }
   ];
 
@@ -350,7 +350,7 @@ window.LEARNING_CATALOG = (() => {
         ['api', 'API', '串行化生命周期动作'],
         ['orchestrator', 'Orchestrator', '冻结、快照或加载状态'],
         ['db', 'Metadata', '保存 snapshot 与状态事实'],
-        ['iac', 'Object storage', '保存大体积构建/快照产物'],
+        ['artifact-storage-cache', 'Object storage', '保存大体积构建/快照产物'],
         ['shared', 'Catalog', '移除或重新发布运行路由']
       ]
     },

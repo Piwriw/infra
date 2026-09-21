@@ -1,6 +1,16 @@
 # E2B Hyperloop API 模块详解
 
 > 范围:本文描述 Orchestrator 节点上的 Hyperloop HTTP 服务,包括 sandbox 到 host 的网络路径、`GET /me`、`POST /logs`、基于源 IP 的身份识别、日志 payload 防伪和 collector 转发。这里的 Hyperloop 是 sandbox 内部控制/事件通道,不是 Edge API,也不是 Firecracker API。
+>
+> 行号均按 tag `2026.30` 核对。已同步至 2026.30(2026-09-10)。
+
+> ⚠️ **2026.30 变动速览**:`POST /logs` 在 2026.30 被大幅改造,新增四项能力,并**纠正了一处旧行为**:
+> 1. **过期时间戳丢弃**(§8.4):payload 的 `timestamp` 早于本 lifecycle 的 `LifecycleStartedAt` → 400 `"Log timestamp predates this sandbox's resume"`。
+> 2. **动态日志路由**(§9.1):目标地址不再固定为 `LOGS_COLLECTOR_ADDRESS`,改由 LD JSON flag `logs-write-config` 解析,1 秒 TTL 缓存。
+> 3. **shadow 写入**(§9.5):best-effort 的 fire-and-forget 第二/三/四路转发,有并发上限。
+> 4. **⛔ 修正旧描述**:2026.29 版本的本文 §9.3 / §十六 Q4 / 附录 B 第 5 条都说"Hyperloop 不检查 collector 的 HTTP status code"。**2026.30 起这条不成立了**——`forwardLogs`(`logs.go:228-232`)会对非 2xx 返回错误,`POST /logs` 随之返回 500。详见 §9.4。
+>
+> `GET /me`、身份模型、网络路径、中间件链、payload 覆盖规则均未变。
 
 ## 目录
 
@@ -96,10 +106,13 @@ hyperloopSrv, err := hyperloopserver.NewHyperloopServer(
     config.NetworkConfig.HyperloopProxyPort,
     globalLogger,
     sandboxes,
+    featureFlags,   // ← 2026.30 新增
 )
 ```
 
 服务作为 Orchestrator 的一个受管组件启动,shutdown 时调用 `http.Server.Shutdown`。
+
+> ⚠️ **2026.30 变动**:`NewHyperloopServer`(`hyperloopserver/server.go:26`；2026.29 为 `:25`)新增第 5 个参数 `featureFlags *featureflags.Client`,并把它透传给 `handlers.NewHyperloopStore(logger, sandboxes, sandboxCollectorAddr, featureFlags)`(`server.go:28`)。**这是 §9 动态日志路由的入口**——没有它,Hyperloop 只能用固定的 `LOGS_COLLECTOR_ADDRESS`。
 
 ### 3.2 HTTP server
 
@@ -288,15 +301,24 @@ err := c.ShouldBindJSON(&payload)
 
 ### 7.2 完整处理顺序
 
+2026.30 版本(`handlers/logs.go:66-170`):
+
 ```text
-1. RemoteAddr → sandbox.Map.GetByHostPort
-2. JSON body → map[string]any
-3. payload.instanceID 必须等于来源 sandbox ID
-4. 覆盖 instanceID/envID/teamID
-5. 重新 JSON marshal
-6. POST 到 LOGS_COLLECTOR_ADDRESS
-7. collector 请求成功建立并收到响应 → 返回 200
+ 1. RemoteAddr → sandbox.Map.GetByHostPort                        :68
+ 2. JSON body → map[string]any                                    :80
+ 3. payload.instanceID 必须等于来源 sandbox ID                     :87
+ 4. 过期时间戳检查 → 400 + 丢弃计数（2026.30 新增）                  :97
+ 5. 覆盖 instanceID/envID/teamID                                   :110-112
+ 6. 重新 JSON marshal                                              :114
+ 7. 解析动态路由 route := logWriteConfig.Resolve(ctx)（2026.30 新增） :125
+ 8. shadow 转发：fire-and-forget goroutine，满则丢弃（2026.30 新增）   :134-157
+ 9. 主转发 forwardLogs(route.PrimaryURL, route.Timeout)             :160
+10. 主转发成功 → 200；失败 → 500                                    :167-169
 ```
+
+> ⚠️ **顺序很重要**:过期时间戳检查(第 4 步)在**覆盖归属字段之前**、也在**任何转发之前**——所以一条过期日志**不会**产生任何下游请求,只产生一个计数与一条限流 warning。
+>
+> ⚠️ **shadow 在主转发之前发起**(第 8 步先于第 9 步),但它们是 goroutine,**不阻塞也不影响**主转发的响应。见 §9.5。
 
 ### 7.3 服务端覆盖字段
 
@@ -340,52 +362,210 @@ otherwise                          → continue
 
 这两个字段不要求请求体存在,也不比较请求值,直接由 Runtime metadata 覆盖。这样即使 guest 被修改,也不能把日志写到其他 template/team。
 
+### 8.4 (2026.30 新增) 过期时间戳丢弃
+
+`hasStaleLogTimestamp`(`logs.go:270-286`)检查 payload 的 `timestamp` 是否**早于本 lifecycle 的起点**:
+
+```go
+// Matches envd's zerolog timestamp format.
+const envdTimestampLayout = time.RFC3339Nano
+
+// Allows normal host/guest clock skew.
+const clockSkewTolerance = time.Minute
+
+func hasStaleLogTimestamp(payload map[string]any, lifecycleStart time.Time) bool {
+    if lifecycleStart.IsZero() {
+        return false
+    }
+    raw, ok := payload["timestamp"].(string)
+    if !ok {
+        return false          // 缺 timestamp 或不是 string → 不判过期
+    }
+    ts, err := time.Parse(envdTimestampLayout, raw)
+    if err != nil {
+        return false          // 解析失败 → 不判过期
+    }
+    return ts.Before(lifecycleStart.Add(-clockSkewTolerance))
+}
+```
+
+触发时(`logs.go:97-107`):
+
+| 项 | 值 |
+|---|---|
+| HTTP | 400 |
+| message | `Log timestamp predates this sandbox's resume` |
+| 指标 | `orchestrator.hyperloop.log_forward.write_count` 带 `route=ingest`、`result=dropped`、`reason=stale_timestamp` |
+| 日志 | `staleWarnLogger.Warn("dropping envd log with a stale pre-resume timestamp")` |
+
+> ⚠️ **四个反直觉点**:
+> 1. **只对 "有 timestamp 且能解析" 的 payload 生效**。缺字段、类型错、格式不对**都放行**——这是一个"能判就判,判不了不拦"的宽松策略,不会因为 guest 换了日志库就丢日志。
+> 2. **容忍 1 分钟时钟偏斜**(`clockSkewTolerance`)。所以"比 resume 早 59 秒"的日志**仍会被接受**。
+> 3. **比对基准是 `sbx.LifecycleStartedAt`**(`sandbox.go:368`,由 `sandbox.go:1014` / `:1581` 用 `time.Now().UTC()` 赋值),不是 sandbox 创建时间——snapshot/resume 会刷新它,所以 pause 前发出的迟到日志会被正确丢弃。
+> 4. **warning 是被限流的**。`staleWarnLogger` 由 `zapcore.NewSamplerWithOptions(core, staleLogWarningInterval, 1, 0)` 包装(`handlers/store.go:38-40`),`staleLogWarningInterval = 30 * time.Second`(`logs.go:45`)。源码注释明确承认了一个已知权衡:*sampler 按 wall clock 分桶,系统时钟回拨后 warning 会持续被抑制,直到时钟追回——静默时长约等于回拨幅度,时钟恢复后自愈*。**每个丢弃都有指标计数,不受限流影响;但 warning 日志会丢,别拿它当计数依据。**
+
 ---
 
 ## 九、Collector 转发
 
 ### 9.1 目标地址
 
-目标来自环境变量:
+**2026.30 起目标地址是动态的**,由 LD JSON flag `logs-write-config` 解析:
 
-```text
-LOGS_COLLECTOR_ADDRESS
+```go
+// Resolve log destinations from LaunchDarkly (cached behind a short TTL),
+// falling back to the fixed collector address. This lets operators retarget
+// logs without a redeploy.
+route := h.logWriteConfig.Resolve(ctx)
 ```
 
-`NewHyperloopStore` 在启动时保存地址,并创建一个 timeout 为 10 秒的 `http.Client`。
+`logWriteConfig` 是 `*featureflags.LogWriteConfigResolver`(`handlers/store.go:30`),由 `NewLogWriteConfigResolver(featureFlags, sandboxCollectorAddr)` 构造(`store.go:50`)。
+
+解析结果 `LogWriteConfig`(`packages/shared/pkg/featureflags/flags.go:946-957`):
+
+| 字段 | 含义 |
+|---|---|
+| `PrimaryURL` | **同步、决定成败**的目标 |
+| `ShadowURLs` | best-effort、fire-and-forget 的附加目标 |
+| `Timeout` | 单次写入超时 |
+| `MaxInflightShadowWrites` | shadow 并发上限 |
+
+**JSON flag 的形状**(`ResolveLogWriteConfig`,`flags.go:962-1070`):
+
+```json
+{
+  "mode": "primary_and_shadow",
+  "primary_url": "http://...",
+  "shadow_urls": ["http://...", "http://..."],
+  "timeout_ms": 2000,
+  "max_inflight_shadow_writes": 1024
+}
+```
+
+| 约束 | 值 | 位置 |
+|---|---|---|
+| 合法 `mode` | `primary_only` / `primary_and_shadow` | `flags.go:913-916` |
+| `timeout_ms` 默认 / 上限 | 2000 ms / 10000 ms | `flags.go:920` / `:922` |
+| `shadow_urls` 数量上限 | 4 | `flags.go:924` |
+| `max_inflight_shadow_writes` 默认 | 1024 | `flags.go:926` |
+| flag 求值缓存 TTL | **1 秒** | `logrouting_resolver.go:17` |
+
+> ⚠️ **五条容易踩的规则**:
+> 1. **任何一处不合法 → 整个配置回退到 legacy**(只写 `LOGS_COLLECTOR_ADDRESS`,`Timeout = 0`)。触发回退的原因会记在 `log_write_config_resolution_count` 指标的 `reason` label 上:`nil_client` / `null` / `non_object` / `mode_not_string` / `unknown_mode` / `primary_not_string` / `unsafe_primary` / `shadow_not_array` / `too_many_shadows` / `shadow_not_string` / `unsafe_shadow`。
+> 2. **`timeout_ms` 只在 flag 显式配置时生效**。legacy 回退路径下 `Timeout = 0`,调用方**跳过** per-request `WithTimeout`,完全依赖 HTTP client 自己的 10 秒超时——源码注释说这是为了"与 flag 出现之前的行为逐字一致"。
+> 3. **`shadow_urls` 与 `primary_url` 重复会被去重**(`seen` map 以 primary 预置,`flags.go:1037`)。
+> 4. **不安全的 URL 会让整份配置作废**。注释原文:`An unsafe shadow URL invalidates the whole config: fail safe to legacy rather than silently exfiltrating to an external host.`(`flags.go:1046-1047`)。
+> 5. **`Resolve` 有 1 秒缓存**,且带双检锁(`logrouting_resolver.go:53-79`)。所以 flag 变更到生效最多滞后 1 秒。
+
+> ⓘ **2026.29 行为**:目标只来自环境变量 `LOGS_COLLECTOR_ADDRESS`,`NewHyperloopStore` 在启动时保存它(`store.go:23` `collectorAddr` 字段)。该字段在 2026.30 **已被删除**,取而代之的是 `logWriteConfig` 与 `shadowInflight atomic.Int64`。
 
 ### 9.2 转发请求
 
+2026.30 起统一走 `forwardLogs`(`logs.go:205-235`):
+
 ```go
-request, err := http.NewRequestWithContext(
-    c,
-    http.MethodPost,
-    h.collectorAddr,
-    bytes.NewBuffer(logs),
-)
-request.Header.Set("Content-Type", "application/json")
-response, err := h.collectorClient.Do(request)
+// forwardLogs POSTs the marshaled logs payload to url, bounded by timeout.
+func (h *APIStore) forwardLogs(ctx context.Context, url string, payload []byte, timeout time.Duration) error {
+    if timeout > 0 {
+        var cancel context.CancelFunc
+        ctx, cancel = context.WithTimeout(ctx, timeout)
+        defer cancel()
+    }
+    request, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(payload))
+    ...
+    request.Header.Set("Content-Type", "application/json")
+    response, err := h.collectorClient.Do(request)
+    ...
+}
 ```
+
+调用点:`h.forwardLogs(c.Request.Context(), route.PrimaryURL, logs, route.Timeout)`(`logs.go:160`)。
 
 原请求 headers 不会透传。转发只保留重写后的 JSON body 和 `Content-Type`。
 
 ### 9.3 下游 status 行为
 
-当前 handler 只检查 `Do` 是否返回 transport error,**不检查 collector 的 HTTP status code**。只要收到了 HTTP response,就关闭 body 并向 guest 返回 200。
+> ⛔ **2026.29 版本的本文在这里写的是"Hurloop 只检查 `Do` 是否返回 transport error,不检查 collector 的 HTTP status code"——2026.30 起这句话不成立了。**
 
-因此:
+2026.30 的 `forwardLogs` 在拿到 response 后**会检查状态码**(`logs.go:228-232`):
 
-| Collector 结果 | Hyperloop 响应 |
-|---|---|
-| 2xx | 200 |
-| 4xx/5xx,但正常收到 response | 200 |
-| DNS/connect/timeout/transport error | 500 |
+```go
+// Always drain so the transport can reuse the connection; the body itself
+// is never surfaced in the returned error (it may echo request content).
+drainErr := drainLogForwardResponse(response.Body)
 
-排查日志丢失时不能仅凭 guest 收到 200 判断 collector 已接受数据。
+if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusMultipleChoices {
+    statusErr := fmt.Errorf("error forwarding sandbox logs: unexpected HTTP status %d", response.StatusCode)
+    return errors.Join(statusErr, drainErr)
+}
+return drainErr
+```
+
+因此 `POST /logs` 的响应变为:
+
+| Collector 结果 | Hyperloop 响应(2026.30) | Hyperloop 响应(2026.29) |
+|---|---|---|
+| 2xx | 200 | 200 |
+| 3xx / 4xx / 5xx,但正常收到 response | **500** `Error when forwarding sandbox logs` | 200 |
+| DNS/connect/timeout/transport error | 500 | 500 |
+| 2xx 但 body drain 失败 | **500** | 200 |
+
+> ⚠️ **两点必须记住**:
+> 1. **`response.Body` 永远会被 drain**(`drainLogForwardResponse`,`logs.go:237-243`),即使状态码不对——这样 transport 才能复用连接。
+> 2. **body 内容不会进入错误消息**。注释原文:`the body itself is never surfaced in the returned error (it may echo request content)`——**错误消息里只有状态码数字**,排障时要自己去看 collector 的日志。
+>
+> ⓘ **排查日志丢失的老建议仍然有效**:guest 收到 200 只说明**主转发**拿到了 2xx,**不覆盖 shadow 目标**。见 §9.5。
 
 ### 9.4 Response body
 
-Collector response body 不读取、不转发,只在 defer 中关闭。
+Collector response body **读取后被丢弃**(`io.Copy(io.Discard, body)`),不转发给 guest。
+
+> ⓘ 2026.29 版本这里是"不读取、只在 defer 中关闭"。2026.30 改为**必须 drain**,否则 keep-alive 连接会因残留 body 而无法复用。
+
+### 9.5 (2026.30 新增) Shadow 写入
+
+`logs.go:127-157`。当 `mode = primary_and_shadow` 时,每个 `shadow_urls` 目标都会收到一份**独立的、异步的**转发:
+
+```go
+maxInflight := route.MaxInflightShadowWrites
+if maxInflight <= 0 {
+    maxInflight = defaultMaxInflightShadowWrites   // 1024（handlers/store.go:22）
+}
+for _, shadowURL := range route.ShadowURLs {
+    if !h.tryAcquireShadow(maxInflight) {
+        recordLogForwardWrite(ctx, "shadow", "dropped", "saturated")
+        continue
+    }
+    recordLogForwardShadowInflight(ctx, 1)
+    go func(url string, payload []byte) {
+        defer func() {
+            h.shadowInflight.Add(-1)
+            recordLogForwardShadowInflight(context.WithoutCancel(ctx), -1)
+        }()
+        shadowCtx := context.WithoutCancel(ctx)
+        if err := h.forwardLogs(shadowCtx, url, payload, route.Timeout); err != nil {
+            recordLogForwardWrite(shadowCtx, "shadow", "failure", "send_error")
+            return
+        }
+        recordLogForwardWrite(shadowCtx, "shadow", "success", "")
+    }(shadowURL, logs)
+}
+```
+
+> ⚠️ **四个反直觉点**:
+> 1. **shadow 的成败绝不影响响应**。源码注释:`Fire-and-forget shadow writes: never affect the response.`
+> 2. **`context.WithoutCancel(ctx)`**——这是刻意的:guest 的请求 context 在响应返回后就被取消,如果直接复用,shadow goroutine 会在刚启动时被取消掉。用 `WithoutCancel` 剥掉取消信号,只保留 values。
+> 3. **并发上限用 CAS 自旋实现**(`tryAcquireShadow`,`logs.go:172-182`),**拿不到名额就直接丢弃**,不排队、不阻塞。注释解释了原因:*avoid unbounded goroutine growth (and a shadow log storm) under high volume*。
+> 4. **丢包有指标**:`recordLogForwardWrite(ctx, "shadow", "dropped", "saturated")`。所以"shadow 目标没收到日志"的第一诊断点就是这个 `reason=saturated`。
+
+**2026.30 新增的两个指标**(`logs.go:25-35`):
+
+| 指标 | 类型 | 标签 |
+|---|---|---|
+| `orchestrator.hyperloop.log_forward.write_count` | Int64Counter | `route`(`ingest` / `primary` / `shadow`)、`result`(`success` / `failure` / `dropped`)、`reason`(`stale_timestamp` / `saturated` / `send_error` / 空) |
+| `hyperloop_log_forward_shadow_inflight` | Int64UpDownCounter | 无(当前在途 shadow 转发数) |
+
+> ⓘ 注意 `route=ingest` 只用于 §8.4 的过期时间戳丢弃——它表示"还没进入转发阶段就被丢掉了"。
 
 ---
 
@@ -451,9 +631,11 @@ Cold boot/reboot 路径会在 MMDS 写入:
 | 源 IP 无法映射 sandbox | 400 | `Error when finding source sandbox` |
 | JSON 解析失败 | 400 | `Invalid body for logs` |
 | instanceID 缺失/类型错误/不匹配 | 400 | `Invalid sandboxID in logs payload` |
+| **时间戳早于本 lifecycle(2026.30 新增)** | **400** | **`Log timestamp predates this sandbox's resume`** |
 | payload JSON marshal 失败 | 500 | `Error when parsing logs payload` |
 | collector request 构造失败 | 500 | `Error when creating request to forwarding sandbox logs` |
 | collector transport/timeout | 500 | `Error when forwarding sandbox logs` |
+| **collector 返回非 2xx(2026.30 行为变更)** | **500** | **`Error when forwarding sandbox logs`** |
 
 `GET /me` 只有第一类 400;`POST /logs` 可能触发全部错误。
 
@@ -517,17 +699,20 @@ guest             iptables            Hyperloop             sandbox.Map
 ### 13.3 `POST /logs`
 
 ```text
-guest        Hyperloop             sandbox.Map          logs collector
-  │ POST /logs  │                       │                     │
-  ├────────────►│ source IP lookup      │                     │
-  │             ├──────────────────────►│                     │
-  │             │◄──── Sandbox metadata ┤                     │
-  │             │ validate instanceID                         │
-  │             │ overwrite instanceID/envID/teamID           │
-  │             │ POST sanitized JSON                         │
-  │             ├─────────────────────────────────────────────►│
-  │             │◄──────────── HTTP response ──────────────────┤
-  │◄──── 200 ───┤                                             │
+guest        Hyperloop             sandbox.Map       primary        shadow(s)
+  │ POST /logs  │                       │              │               │
+  ├────────────►│ source IP lookup      │              │               │
+  │             ├──────────────────────►│              │               │
+  │             │◄──── Sandbox metadata ┤              │               │
+  │             │ validate instanceID                  │               │
+  │             │ stale timestamp? ──► 400 (2026.30)   │               │
+  │             │ overwrite instanceID/envID/teamID    │               │
+  │             │ Resolve(logs-write-config) (2026.30) │               │
+  │             │ spawn shadow goroutines ─────────────┼──────────────►│
+  │             │ POST sanitized JSON (primary)        │               │
+  │             ├─────────────────────────────────────►│               │
+  │             │◄──────────── HTTP response ──────────┤               │
+  │◄─ 200/500 ──┤  (2xx→200, 非2xx→500；2026.30)       │               │
 ```
 
 ---
@@ -538,13 +723,20 @@ guest        Hyperloop             sandbox.Map          logs collector
 |---|---|---|
 | `SANDBOX_ORCHESTRATOR_IP` | `192.0.2.1` | Guest 看到的 host 地址 |
 | `SANDBOX_HYPERLOOP_PROXY_PORT` | `5010` | Host Hyperloop listen/redirect port |
-| `LOGS_COLLECTOR_ADDRESS` | 环境变量,无代码默认值 | `/logs` 转发目标 |
-| `CollectorExporterTimeout` | 10 秒 | Collector HTTP client timeout |
+| `LOGS_COLLECTOR_ADDRESS` | 环境变量,无代码默认值 | `/logs` 转发的 **legacy fallback** 目标(2026.30 起不再是唯一目标) |
+| `logs-write-config`(LD flag,2026.30 新增) | `null` → legacy | JSON,覆盖主目标 + shadow 目标 + 超时 + 并发上限 |
+| `CollectorExporterTimeout` | 10 秒 | Collector HTTP client timeout(legacy 路径下是唯一超时) |
+| `logWriteConfigCacheTTL`(2026.30 新增) | 1 秒 | LD flag 求值缓存 TTL |
+| `staleLogWarningInterval`(2026.30 新增) | 30 秒 | 过期时间戳 warning 的 sampler 分桶 |
+| `defaultMaxInflightShadowWrites`(2026.30 新增) | 1024 | shadow 并发上限的兜底值 |
+| `clockSkewTolerance`(2026.30 新增) | 1 分钟 | 时间戳过期判定的时钟偏斜容忍 |
 | `maxUploadLimit` | 256 MiB | Hyperloop request body 上限 |
 | Listen address | `0.0.0.0:<port>` | Host 所有接口 |
 | Guest target port | 80 | iptables 匹配入口 |
 
-`LOGS_COLLECTOR_ADDRESS` 为空或格式非法时,`POST /logs` 会在创建/发送下游请求阶段失败。
+`LOGS_COLLECTOR_ADDRESS` 为空或格式非法时,legacy 路径下 `POST /logs` 会在创建/发送下游请求阶段失败。**2026.30 起如果 `logs-write-config` 配置了合法的 `primary_url`,这个环境变量就不再被使用**(它只作为 `ResolveLogWriteConfig` 的 `fallbackURL`)。
+
+> ⓘ `defaultMaxInflightShadowWrites` 在仓库里**定义了两份**,值都是 1024:`packages/orchestrator/pkg/hyperloopserver/handlers/store.go:22`(handler 侧的兜底)与 `packages/shared/pkg/featureflags/flags.go:926`(resolver 侧的兜底)。
 
 ---
 
@@ -607,7 +799,14 @@ Hyperloop 不信任:
 
 ### Q4:Guest 收到 200,但日志系统没有数据
 
-Hyperloop 不检查 collector HTTP status。检查 collector 自身的 access/error log、返回码和 ingestion 状态;不要只看 guest response。
+> ⛔ **2026.29 版本的本文在这里写的是"Hyperloop 不检查 collector HTTP status"——2026.30 起这句话不成立**。主转发目标返回非 2xx 会让 `POST /logs` 返 500(见 §9.3)。
+
+2026.30 的排查顺序:
+
+1. **先看 guest 到底收到了什么**。200 → 主目标返回了 2xx;**500 → 主目标返回了非 2xx 或 transport 失败**,直接看 `Error when forwarding sandbox logs`。
+2. **确认走的是哪个目标**:查 `log_write_config_resolution_count` 的 `outcome` / `reason` label。如果是 `legacy`,说明 flag 配置不合法,实际写的是 `LOGS_COLLECTOR_ADDRESS`。
+3. **如果主目标正常但某个下游没有**:那多半是 **shadow** 目标。查 `orchestrator.hyperloop.log_forward.write_count` 里 `route=shadow` 的 `result` / `reason`(`saturated` = 并发满被丢弃,`send_error` = 转发失败)。**guest 的 200 完全不能说明 shadow 成功。**
+4. 最后才看 collector 自身的 access/error log 与 ingestion 状态。
 
 ### Q5:`POST /logs` 约 10 秒后返回 500
 
@@ -634,9 +833,11 @@ Hyperloop 不检查 collector HTTP status。检查 collector 自身的 access/er
 | [`spec/openapi-hyperloop.yml`](../spec/openapi-hyperloop.yml) | `/me`、`/logs` 契约 |
 | [`packages/orchestrator/pkg/hyperloopserver/contracts/cfg.yaml`](../packages/orchestrator/pkg/hyperloopserver/contracts/cfg.yaml) | Gin server/model/spec 生成配置 |
 | [`packages/orchestrator/pkg/hyperloopserver/server.go`](../packages/orchestrator/pkg/hyperloopserver/server.go) | HTTP server、中间件、H2C、路由注册 |
-| [`packages/orchestrator/pkg/hyperloopserver/handlers/store.go`](../packages/orchestrator/pkg/hyperloopserver/handlers/store.go) | APIStore、collector client、10 秒 timeout |
+| [`packages/orchestrator/pkg/hyperloopserver/handlers/store.go`](../packages/orchestrator/pkg/hyperloopserver/handlers/store.go) | APIStore、collector client、10 秒 timeout、`logWriteConfig` resolver、`shadowInflight` |
 | [`packages/orchestrator/pkg/hyperloopserver/handlers/me.go`](../packages/orchestrator/pkg/hyperloopserver/handlers/me.go) | 源 IP → sandbox ID |
-| [`packages/orchestrator/pkg/hyperloopserver/handlers/logs.go`](../packages/orchestrator/pkg/hyperloopserver/handlers/logs.go) | JSON 校验、metadata 覆盖、collector 转发 |
+| [`packages/orchestrator/pkg/hyperloopserver/handlers/logs.go`](../packages/orchestrator/pkg/hyperloopserver/handlers/logs.go) | JSON 校验、metadata 覆盖、过期时间戳丢弃、动态路由、shadow 转发、collector 转发 |
+| [`packages/shared/pkg/featureflags/logrouting_resolver.go`](../packages/shared/pkg/featureflags/logrouting_resolver.go)(2026.30 新增) | `LogWriteConfigResolver`、1 秒 TTL 缓存 |
+| [`packages/shared/pkg/featureflags/flags.go`](../packages/shared/pkg/featureflags/flags.go) | `LogsWriteConfigFlag`(`:890`)、`LogWriteConfig`(`:946-957`)、`ResolveLogWriteConfig`(`:962-1070`)、`isSafeLogURL` |
 | [`packages/orchestrator/pkg/sandbox/map.go`](../packages/orchestrator/pkg/sandbox/map.go) | network index 与 `GetByHostPort` |
 | [`packages/orchestrator/pkg/sandbox/network/network.go`](../packages/orchestrator/pkg/sandbox/network/network.go) | port 80 → Hyperloop port REDIRECT |
 | [`packages/orchestrator/pkg/sandbox/network/pool.go`](../packages/orchestrator/pkg/sandbox/network/pool.go) | IP/port 默认配置 |
@@ -653,7 +854,7 @@ Hyperloop 不检查 collector HTTP status。检查 collector 自身的 access/er
 | Method | Path | Body | 成功响应 |
 |---|---|---|---|
 | GET | `/me` | 无 | 200 `{"sandboxID":"..."}` |
-| POST | `/logs` | JSON object,必须含匹配的 string `instanceID` | 200,无 body |
+| POST | `/logs` | JSON object,必须含匹配的 string `instanceID`;可选 string `timestamp`(RFC3339Nano,2026.30 起会被比对 lifecycle 起点) | 200,无 body |
 
 ## 附录 B:关键不变量
 
@@ -661,6 +862,8 @@ Hyperloop 不检查 collector HTTP status。检查 collector 自身的 access/er
 2. Guest 目标始终是 orchestrator-in-sandbox IP 的 port 80,host port 由 REDIRECT 隐藏。
 3. `/logs` 的 `instanceID` 必须匹配来源 sandbox。
 4. `instanceID/envID/teamID` 必须在 host 侧覆盖后才能转发。
-5. Collector transport 成功不等于 collector 业务接收成功。
-6. Network slot 复用前必须清理旧 IP 映射。
+5. **主转发**:collector 返回非 2xx 即失败(2026.30 起;2026.29 时非 2xx 也算成功)。
+6. **Shadow 转发**:永远不影响 guest 响应,并发满即丢弃(2026.30 新增)。
+7. **过期时间戳**:早于 `LifecycleStartedAt - 1min` 的日志在转发前被丢弃并计 400(2026.30 新增)。
+8. Network slot 复用前必须清理旧 IP 映射。
 

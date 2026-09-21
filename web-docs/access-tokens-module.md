@@ -1,23 +1,99 @@
 # E2B Access Tokens(用户级 Access Token)模块详解
 
-> 模块定位:**已 deprecated** 的用户级凭证 CRUD。曾经是 SDK 的主要鉴权方式,现在让位给 team 级 API Key(`X-API-Key`)。本文档解释 deprecated 流程的完整语义、410 返回条件,以及为什么 DELETE 仍然保留。
+> ## ⛔ 模块已于 2026.30 完全退役
 >
-> **核心特征**:
-> - 用户级(`user_id` 绑定),不是 team 级
-> - 前缀 `sk_e2b_`(区别于 API Key 的 `e2b_`)
-> - 只支持 POST(创建)+ DELETE(删除),**没有 GET / PATCH**
-> - POST 在 LaunchDarkly flag 开启时返 `410 Gone`,引导用户迁移到 API Key
+> **本模块当前不存在。** 2026.30 完成了弃用的最后一步:spec 删掉 path、DB `DROP TABLE`、handler 删除、feature flag 删除、认证器删除。本文档从"deprecated 流程说明"转为**历史档案 + 迁移指引**。
 >
-> 适用代码范围:
-> - `packages/api/internal/handlers/accesstoken.go` — 2 个 handler
-> - `packages/api/internal/handlers/accesstoken_test.go` — 410 流程测试
-> - `packages/db/pkg/auth/sql_queries/access_token/` — 3 个 sqlc 查询
-> - `packages/shared/pkg/keys/` — Key 生成、hash、mask 工具(与 api-keys 共用)
-> - `packages/shared/pkg/featureflags/flags.go:226` — `DisableE2BAccessTokenProvisioningFlag`
-> - `spec/openapi.yml` 中 `tags: [access-tokens]` 的端点
+> **今天应该用什么:**
+>
+> | 场景 | 用什么 |
+> | --- | --- |
+> | SDK / CLI 调 E2B API | team 级 API Key,`X-API-Key: e2b_...` |
+> | 浏览器 / 用户交互式登录 | OIDC bearer(`AuthProviderBearerAuth`) |
+> | 内部服务调管理面 | Admin API Key 或 Admin JWT |
+>
+> **还在用 `E2B_ACCESS_TOKEN` 的集成会拿到什么:** `POST /access-tokens` 与 `DELETE /access-tokens/:id` 现在返回 **`410 Gone`**(见 §零.2)。其他任何带 `Authorization: Bearer sk_e2b_...` 的请求会在认证阶段直接失败——spec 里已无 `AccessTokenAuth` scheme。
+>
+> 迁移指引:https://e2b.dev/docs/migration/access-token-deprecation
+>
+> ---
+>
+> **本文档的结构**:
+> - **§零** — 2026.30 退役了什么,怎么迁移(只有这节描述当前状态)
+> - **§一 ~ §十二 + 附录** — **历史档案**,描述 2026.29 及之前的实现。其中的代码路径、行号、flag 名都已不存在,保留是为了理解弃用期为什么这样设计。
+
+---
+
+## 零、2026.30 退役总结
+
+### 零.1 被删除的清单
+
+| 类别 | 2026.29 存在 | 2026.30 状态 |
+| --- | --- | --- |
+| OpenAPI path | `POST /access-tokens`、`DELETE /access-tokens/{accessTokenID}` | **从 spec 删除** |
+| OpenAPI security scheme | `AccessTokenAuth`(12 处 `security:` 引用) | **全部删除** |
+| Handler | `packages/api/internal/handlers/accesstoken.go` | **文件删除**(含 `accesstoken_test.go`) |
+| Handler 方法 | `APIStore.GetUserFromAccessToken` | **删除** |
+| 认证器 | `auth.NewAccessTokenAuthenticator(...)` | **从 `main.go` 的 authenticator 链删除** |
+| 认证器数量 | 6 个 | 6 个(删 1 加 1:新增 `NewAdminJWTAuthenticator`) |
+| Feature flag | `disable-e2b-access-token-provisioning`、`disable-e2b-access-token-auth` | **两个 flag 定义都删除** |
+| sqlc 查询 | `create_access_token.sql.go`、`delete_access_token.sql.go`、`get_user_id_from_access_token.sql.go` | **全部删除** |
+| DB 表 | `public.access_tokens` | **`DROP TABLE`** |
+| DB 函数 | `public.generate_access_token()` | **`DROP FUNCTION`** |
+
+对应迁移:[`packages/db/migrations/20260823120000_drop_access_tokens.sql`](../packages/db/migrations/20260823120000_drop_access_tokens.sql)
+
+```sql
+-- +goose Up
+
+-- E2B user access tokens (sk_e2b_) are removed: nothing issues, validates,
+-- or purges them anymore. The remaining rows are hashes of revoked
+-- credentials.
+DROP TABLE IF EXISTS public.access_tokens;
+DROP FUNCTION IF EXISTS public.generate_access_token();
+```
+
+> ⚠️ **这条迁移是不可逆的数据删除**。`Down` 段虽然重建了表和函数,但**行数据不会回来**——drop 前的 `access_token_hash` 已丢失。注释里说得很直接:留下的只是"已吊销凭证的哈希"。如果某个环境还没跑这条迁移,别指望能回滚出数据。
+>
+> ⚠️ 同一窗口还有一条**无关的**清理:[`20260727041400_drop_duplicate_access_tokens_hash_index.sql`](../packages/db/migrations/20260727041400_drop_duplicate_access_tokens_hash_index.sql) 只是删掉重复的唯一索引(`idx_access_tokens_access_token_hash` 与 UNIQUE 约束自带的索引重复),用 `DROP INDEX CONCURRENTLY` + `statement_timeout` 控制锁等待。这条在 2026.30 之前就已合入,不要和退役迁移混淆。
+
+### 零.2 410 兜底:为什么旧客户端拿到的是 410 而不是 404
+
+handler 删掉后,path 也从 spec 里消失了。但 oapi-codegen 的 validator middleware 对 **spec 中不存在的 path 会返回 404** —— 对还在用旧 SDK 的调用方来说,404 看起来像"路径打错了",而不是"这个功能被移除了"。
+
+所以 [`main.go:166-173`](../packages/api/main.go) 在 validator **之前**手工注册了两个兜底路由:
+
+```go
+// Access tokens are removed. Registered before the OpenAPI validator
+// middleware (which rejects paths missing from the spec) so old clients
+// get a clear 410 instead of a 404.
+accessTokensGone := func(c *gin.Context) {
+    apierrors.SendAPIStoreError(c, http.StatusGone, "E2B_ACCESS_TOKEN is deprecated and no longer supported. Use an API key (E2B_API_KEY) instead. See https://e2b.dev/docs/migration/access-token-deprecation")
+}
+r.POST("/access-tokens", accessTokensGone)
+r.DELETE("/access-tokens/:accessTokenID", accessTokensGone)
+```
+
+> ⚠️ **注册顺序是这段代码的全部要点**。Gin 的 `r.Use(...)` 与路由注册都在 `NewGinServer` 里,但 `OapiRequestValidatorWithOptions` 是作为**全局 middleware** 挂上去的,它在请求进入时会先按 spec 校验 path。这两条 `r.POST` / `r.DELETE` 必须写在 `r.Use(...)` **之前**才能抢到——实际上它们就在 `r.Use(customMiddleware.CORS())` 后面、`AuthenticationFunc` 构造之前(`main.go:164-173`)。
+>
+> ⚠️ 兜底路由**不做任何鉴权**。任何人 POST 到这个 path 都会拿到 410,不需要凭证。这是有意的:410 不泄露任何信息,也没必要为已删除的功能浪费一次 auth 查询。
+
+### 零.3 弃用时间线(完整轨迹)
+
+| 阶段 | 版本 | 动作 |
+| --- | --- | --- |
+| 引入弃用标记 | 2026.16–2026.28 | `POST /access-tokens` 标 `deprecated: true`,新增 410 响应定义;引入 `disable-e2b-access-token-provisioning`(控制签发)与 `disable-e2b-access-token-auth`(控制接收)两个 LD flag;`AccessTokenAuth` scheme 加 deprecated 说明 |
+| 索引清理 | 2026.29 之前 | `20260727041400` 删除重复唯一索引 |
+| **完全退役** | **2026.30** | 见 §零.1 |
+
+> 2026.16→2026.28 的弃用细节见 [`api-changes-2026.16-2026.28.md` §1.2](./api-changes-2026.16-2026.28.md)。当时的设计是"flag 门控的渐进式弃用",现在回头看:两个 flag 最后**没有经历"逐步开启"**——直接在 2026.30 连 flag 带功能一起删了。
 
 ## 目录
 
+- [零、2026.30 退役总结](#零202630-退役总结) ← **只有这节描述当前状态**
+  - [零.1 被删除的清单](#零1-被删除的清单)
+  - [零.2 410 兜底:为什么旧客户端拿到的是 410 而不是 404](#零2-410-兜底为什么旧客户端拿到的是-410-而不是-404)
+  - [零.3 弃用时间线(完整轨迹)](#零3-弃用时间线完整轨迹)
 - [一、概述](#一概述)
   - [1.1 access-tokens 是什么](#11-access-tokens-是什么)
   - [1.2 关键定位:与 api-keys 的对照](#12-关键定位与-api-keys-的对照)
@@ -58,9 +134,21 @@
 
 ---
 
+> # 📜 以下为历史档案(§一 ~ §十二 + 附录)
+>
+> **这些章节描述的是 2026.29 及之前的实现,不是当前代码。** 其中的 handler 路径、sqlc 查询、flag 名、行号、DB 表都已在 2026.30 删除(清单见 [§零.1](#零1-被删除的清单))。
+>
+> 保留它们的理由:理解一个模块**为什么**要这样设计(为什么 410 而不是 404、为什么没有 GET、为什么验证不缓存),比记住它现在不存在更有价值——将来下线别的功能时会遇到同样的问题。
+>
+> **要查当前状态,看 [§零](#零202630-退役总结)。要查排障,看 [§十二](#十二常见问题与排查)(已按当前状态重写)。**
+
+---
+
 ## 一、概述
 
 ### 1.1 access-tokens 是什么
+
+> ⓘ **历史**:本节描述 2026.29 的状态。该模块已于 2026.30 完全退役。
 
 `access-tokens` 是**用户级**鉴权凭证的管理接口,在 OpenAPI 里标记为 `tags: [access-tokens]`,共 **2 个端点**:
 
@@ -612,21 +700,23 @@ DELETE `/access-tokens/{id}` 后:
 
 ## 九、配置与 Feature Flag
 
-### 9.1 核心标志
+> ⛔ **本节描述的两个 flag 已在 2026.30 删除。** 当前代码里 `packages/shared/pkg/featureflags/flags.go` 已无任何匹配 `access.token` 的定义。保留本节是为了说明弃用期是怎么设计的。
 
-| Flag | 默认 | 范围 | 影响 |
-| --- | --- | --- | --- |
-| `disable-e2b-access-token-provisioning` | `false` | LaunchDarkly,bool,支持按 user 灰度 | POST /access-tokens 返 410 Gone |
-| `disable-e2b-access-token-auth` | `false` | LaunchDarkly,bool,支持按 user 灰度 | API 拒绝 access token(401);docker-reverse-proxy 拒绝 V1 build docker login(403) |
+### 9.1 核心标志(历史)
 
-定义在 `packages/shared/pkg/featureflags/flags.go:226`:
+| Flag | 默认 | 范围 | 影响 | 2026.30 |
+| --- | --- | --- | --- | --- |
+| `disable-e2b-access-token-provisioning` | `false` | LaunchDarkly,bool,支持按 user 灰度 | POST /access-tokens 返 410 Gone | **已删除** |
+| `disable-e2b-access-token-auth` | `false` | LaunchDarkly,bool,支持按 user 灰度 | API 拒绝 access token(401);docker-reverse-proxy 拒绝 V1 build docker login(403) | **已删除** |
+
+曾定义在 `packages/shared/pkg/featureflags/flags.go:226`(2026.29 行号):
 
 ```go
 DisableE2BAccessTokenProvisioningFlag = NewBoolFlag("disable-e2b-access-token-provisioning", false)
 DisableE2BAccessTokenAuthFlag = NewBoolFlag("disable-e2b-access-token-auth", false)
 ```
 
-调用方式(`accesstoken.go:25`):
+调用方式曾为(`accesstoken.go:25`):
 
 ```go
 a.featureFlags.BoolFlag(ctx, featureflags.DisableE2BAccessTokenProvisioningFlag, featureflags.UserContext(userID.String()))
@@ -634,7 +724,7 @@ a.featureFlags.BoolFlag(ctx, featureflags.DisableE2BAccessTokenProvisioningFlag,
 
 `UserContext(userID.String())` 让 LaunchDarkly 能按 user 维度做灰度(例如先对内部 dogfood 用户开启,再按比例放量)。
 
-### 9.2 灰度策略推荐
+### 9.2 灰度策略(设计文档,实际未采用)
 
 | 阶段 | 目标 | flag 设置 |
 | --- | --- | --- |
@@ -645,6 +735,8 @@ a.featureFlags.BoolFlag(ctx, featureflags.DisableE2BAccessTokenProvisioningFlag,
 | 5. 代码下线 | 移除端点与验证链路 | 删除 spec POST、handler 和旧 token authenticators |
 
 **注意**:DELETE 端点**不要**在同时下线。要给用户至少一个清理周期(建议 6 个月+)让他们删除旧 token,否则 `access_tokens` 表里会留下永久垃圾。
+
+> ⚠️ **这张表是当初的设计建议,不是实际执行记录。** 2026.30 实际是**一次性全删**——没有灰度放量、没有 DELETE 保留期、表直接 drop。详见 [§零.3](#零3-弃用时间线完整轨迹) 和 [Q9](#q9弃用期建议的分五步下线路径实际是怎么走的)。
 
 ### 9.3 环境变量
 
@@ -787,100 +879,87 @@ accessTokenDB, err := a.authDB.Write.CreateAccessToken(ctx, authqueries.CreateAc
 
 ## 十二、常见问题与排查
 
-### Q1: SDK 报 410 Gone,怎么办?
+> ⚠️ **本章问题按"当前状态"重写。** 原来的 Q1/Q2/Q3/Q4/Q5/Q6/Q8/Q10/Q11 描述的是弃用期的 flag 行为,那些 flag 和路径都已不存在。下面按"现在遇到这个问题该怎么查"来写;历史行为的解释在对应小节的 ⓘ 里保留。
 
-**说明**:`disable-e2b-access-token-provisioning` flag 对当前 user 开启了。
+### Q1:SDK 报 410 Gone,怎么办?
+
+**说明**:**这不是 flag 门控,是硬删除**。`POST /access-tokens` 与 `DELETE /access-tokens/:id` 现在无条件返回 410([§零.2](#零2-410-兜底为什么旧客户端拿到的是-410-而不是-404))。
 
 **处理**:
 1. 升级 SDK 到最新版(新版本默认用 `E2B_API_KEY`)。
 2. 通过 dashboard 创建 team API Key(`e2b_` 前缀)。
 3. 把 API Key 配置到 SDK 的 `E2B_API_KEY` 环境变量。
-4. provisioning flag 只停止创建;旧 token 仅在 `disable-e2b-access-token-auth=false` 时还能用,应尽快清理。
+4. **不要试图删旧 token** —— DELETE 也是 410,而且表已经 drop 了,没有可删的行。
 
 迁移指引见响应里的链接:`https://e2b.dev/docs/migration/access-token-deprecation`。
 
-### Q2: 用户报告"创建 token 时看到明文,刷新后就找不到了"
+> ⓘ 弃用期(2026.16–2026.29)这个 410 由 `disable-e2b-access-token-provisioning` 控制,且 DELETE 不受影响。2026.30 起两个 flag 一起删掉了。
 
-**说明**:同 api-keys,这是设计行为。明文 token 只在 POST 响应里出现一次。**而且 access-tokens 没有 GET 端点**,所以**完全无法找回**。
+### Q2:旧 access token 现在还能用来调 API 吗?
 
-**处理**:
-- 提示用户在创建时立刻保存。
-- 如果丢失,只能删除重建(但在 flag 开启后重建也会 410)。
+**不能**。`AccessTokenAuth` security scheme 已从 spec 删除,`NewAccessTokenAuthenticator` 也已从 authenticator 链删除([§零.1](#零1-被删除的清单))。带 `Authorization: Bearer sk_e2b_...` 的请求在认证阶段就失败。
 
-### Q3: 用户问"我有把 access token,但忘了是哪把,怎么知道?"
+> ⓘ 和弃用期的区别:当时 `disable-e2b-access-token-auth=false` 的旧 token 还能用;现在是**认证器不存在了**,不是"被 flag 拒绝"。
 
-**说明**:由于**没有 GET 列表端点**,无法查询。
+### Q3:用户问"我有把 access token,但忘了是哪把,怎么知道?"
 
-**处理**:
-- 用户只能凭**创建时的 mask**(前 2 + 后 4 字符)手动对比。
-- 实在找不到,可以**全部删除**(需要 dashboard 提供批量删除接口,或直接联系 support)。
-- 但更推荐:**直接迁到 API Key**,access token 会随 deprecated 一起下线。
+**说明**:这个问题现在**没有意义**了——`access_tokens` 表已 drop,行的 hash 也没了([§零.1](#零1-被删除的清单)的 ⚠️)。**无法查、无法恢复、也不需要再清理**。
 
-### Q4: 删除时返 404 "id not found"
+**处理**:直接让用户改用 API Key。如果用户手上有明文 token 需要确认是否还有效,答案是"已全部失效"。
 
-**可能原因**:
-1. accessTokenID 不是合法 UUID → 实际返 400。
-2. accessTokenID 合法,但**不属于当前 user** → SQL `WHERE id AND user_id` 不匹配,返 NotFound。
-3. accessTokenID 已被删除(重复删除)→ 同样 NotFound。
+> ⓘ 历史:该模块从来没有 GET 列表端点,用户只能凭创建时的 mask(前 2 + 后 4 字符)手动对比。
+
+### Q4:查询 access_tokens 表报 `relation "public.access_tokens" does not exist`
+
+**说明**:这是**预期行为**,不是故障。表已在 [`20260823120000_drop_access_tokens.sql`](../packages/db/migrations/20260823120000_drop_access_tokens.sql) 中 drop。
 
 **排查**:
 ```sql
-SELECT user_id FROM access_tokens WHERE id = '<accessTokenID>';
--- 对比当前 userID
+-- 确认迁移已执行
+SELECT version_id, is_applied FROM goose_db_version
+WHERE version_id = 20260823120000;
 ```
 
-### Q5: 用户报告"用 access token 调 API 拿到 401 'Invalid access token format'"
+如果迁移**未**执行(比如某个环境还没部署 2026.30),表还在,但代码已不再读写它。
 
-**说明**:`keys.VerifyKey` 在 prefix 检查或 hex 解码失败时返回此错误。
+> ⚠️ **迁移执行前不要跑 `Down`**。Down 只重建空表结构,数据不会回来。
 
-**常见原因**:
-- Token 没带 `sk_e2b_` 前缀(用户复制时漏了)。
-- Token 中间有非 hex 字符。
-- 用户传的是 API Key(`e2b_` 前缀)但放到了 `Authorization: Bearer` 头里(prefix 不匹配)。
+### Q5:用户报告"用 access token 调 API 拿到 401"
 
-### Q6: 用户报告"用 access token 调 API 拿到 401 'Cannot get the user for the given access token'"
+**说明**:现在是**认证器不存在**,所以报错形态和弃用期不同——不再有 `Invalid access token format` / `Cannot get the user for the given access token` 这两种专属文案。
 
-**说明**:`VerifyKey` 成功(格式 OK)但 DB 里查不到这个 hash。
+**处理**:确认调用方用的是 `X-API-Key: e2b_...`(team 级)或 OIDC bearer。如果请求头还是 `Authorization: Bearer sk_e2b_...`,那就是没迁移。
 
-**常见原因**:
-1. Token 已被删除(access token 删除立即生效,无缓存窗口)。
-2. Token 来自其他环境(staging 的 token 用到 prod)。
-3. user 已被删除(`ON DELETE CASCADE` 会连带删除 access_tokens 行)。
+> ⓘ 历史错误文案:`keys.VerifyKey` 的 prefix/hex 校验失败 → `Invalid access token format`;格式 OK 但 DB 查不到 hash → `Cannot get the user for the given access token`。
 
-**排查**:
-```sql
-SELECT * FROM access_tokens WHERE access_token_hash = '<hashedToken>';
--- 注意:hash 是 $sha256$ + 43 base64 形式
-```
+### Q6:内部服务能否用 admin token 代用户创建 access token?
 
-### Q7: 内部服务能否用 admin token 代用户创建 access token?
+**不能**,而且现在**任何身份都不能** —— 端点已删除([§零.1](#零1-被删除的清单))。
 
-**不能**。POST /access-tokens 不接受任何 admin auth(详见 [11.2](#112-为什么-post-不接受-admin-兜底))。也没有 admin 路径的 `/admin/users/{userID}/access-tokens` 端点。
+如果确实需要服务间凭证,用 team API Key,或走 admin 路径 `/admin/teams/{teamID}/api-keys`。
 
-如果确实需要服务间凭证,应该用 API Key 走 admin 路径创建。
+### Q7:如何审计遗留 access token 的使用情况?
 
-### Q8: flag 开启后,DELETE 是否也会返 410?
+**说明**:2026.30 之后**无法审计** —— 使用侧的埋点(`ValidateAccessToken` 里的 `WithMaskedAccessToken`)随认证器一起删除了。
 
-**不会**。DELETE 完全不受 `disable-e2b-access-token-provisioning` flag 影响。即使用户不能创建,也能正常删除已有的旧 token(详见 [11.3](#113-为什么-delete-不受-deprecated-flag-影响))。
+**处理**:
+- 需要**历史**使用数据的话,只能翻 2026.30 部署前的 Grafana 面板(按 `maskedAccessToken` 聚合)。
+- 需要**当前**使用数据的话,改看 API Key 的埋点。
 
-### Q9: 如何审计 access token 的使用情况?
-
-- **创建/删除**:telemetry 在 error 路径有埋点;happy path 没有(对比 api-keys 也没有)。
-- **使用**(每次鉴权):`ValidateAccessToken` 里 `telemetry.SetAttributes(... WithMaskedAccessToken ...)` 会把 mask 上报。在 Grafana 里按 maskedAccessToken 聚合可以看到使用情况。
-- **DB 查询**:`SELECT user_id, created_at, name FROM access_tokens WHERE user_id = '...'`(注意不能查 hash,不能查明文)。
-
-### Q10:两个 flag 都全量开启后,什么时候真正下线代码?
-
-**建议路径**:
-1. provisioning/auth 两个 flag 全量开启后,观察 1-3 个月,确认旧 SDK 流量降到接近 0。
-2. 删除 spec 里的 POST /access-tokens 端点。
-3. 等 OpenAPI 客户端都更新后(再观察 1-2 个月),删除 handler。
-4. DELETE 端点保留更久(至少 6 个月),给用户清理时间。
-5. 最终通过 migration 把 `access_tokens` 表 DROP(但要保留 user_id 的外键约束,直到确认没有代码引用)。
-
-### Q11:V1 template build 的 docker login 返回 403 和迁移提示
+### Q8:V1 template build 的 docker login 返回 403 和迁移提示
 
 `docker-reverse-proxy` 已成功验证 token 并得到 userID,但该用户命中了 `disable-e2b-access-token-auth`。这不是 registry scope 或密码格式错误;改用 `E2B_API_KEY`,并检查 API 侧同一用户的 access-token 请求是否也已返回 401。
+
+> ⚠️ 这条路径依赖 `disable-e2b-access-token-auth` flag,该 flag 已在 2026.30 删除。**2026.30 之后不会再出现这个 403**——registry 侧已不再接受 `sk_e2b_` 凭证。
+
+### Q9:弃用期建议的"分五步下线"路径,实际是怎么走的?
+
+原文档在 Q10 给了一条渐进路径(全量开 flag → 删 spec → 删 handler → 延后删 DELETE → 最后 drop 表)。**实际执行比这个激进**:2026.30 一次性删掉了 spec path、handler、flag、认证器和 DB 表,DELETE 也没有额外保留期。
+
+**教训**(如果将来再做类似下线):
+- 保留 410 兜底是对的 —— 它让旧客户端拿到可读的错误而不是 404。
+- 但"两个 flag 逐步开启"这套灰度机制最终没有被用上,增加了维护面却没有换来观测窗口。
+- DELETE 延后保留在**这个**案例里没必要,因为表都 drop 了,留着 DELETE 也无行可删。
 
 ---
 
@@ -929,39 +1008,53 @@ SELECT * FROM access_tokens WHERE access_token_hash = '<hashedToken>';
 
 ## 附录 B:错误码与 HTTP 状态映射
 
-| 场景 | HTTP | 说明 |
-| --- | --- | --- |
-| Body 解析失败 | 400 | "Error when parsing request: ..." |
-| accessTokenID 不是 UUID | 400 | "Error when parsing access token ID: ..." |
-| 未鉴权 | 401 | (由中间件返回) |
-| POST 时 flag 开启 | **410** | "Creating new access tokens is disabled. E2B_ACCESS_TOKEN is deprecated; use an API key (E2B_API_KEY) instead. See https://e2b.dev/docs/migration/access-token-deprecation" |
-| API 认证时 auth flag 开启 | **401** | Token 已验证,但不再接受;返回 API key 迁移提示 |
-| docker-reverse-proxy 认证时 auth flag 开启 | **403** | V1 build docker login 被拒绝,返回 API key 迁移提示 |
-| DELETE 找不到 | 404 | "id not found" |
-| DB 错误 | 500 | "Error when ..." |
-| 成功(POST) | 201 | JSON(含明文 token) |
-| 成功(DELETE) | 204 | 无 body |
+> ⛔ **本表是历史映射(2026.29)。** 当前只有一种情况:两条 path 恒返 410,其余场景都不存在。
+
+| 场景 | HTTP | 说明 | 2026.30 |
+| --- | --- | --- | --- |
+| Body 解析失败 | 400 | "Error when parsing request: ..." | 不适用 |
+| accessTokenID 不是 UUID | 400 | "Error when parsing access token ID: ..." | 不适用 |
+| 未鉴权 | 401 | (由中间件返回) | 不适用(410 不鉴权) |
+| POST 时 flag 开启 | **410** | "Creating new access tokens is disabled. E2B_ACCESS_TOKEN is deprecated; use an API key (E2B_API_KEY) instead. See https://e2b.dev/docs/migration/access-token-deprecation" | **恒 410** |
+| DELETE 任意情况 | — | — | **恒 410** |
+| API 认证时 auth flag 开启 | **401** | Token 已验证,但不再接受;返回 API key 迁移提示 | 认证器已删除 |
+| docker-reverse-proxy 认证时 auth flag 开启 | **403** | V1 build docker login 被拒绝,返回 API key 迁移提示 | flag 已删除 |
+| DELETE 找不到 | 404 | "id not found" | 不适用 |
+| DB 错误 | 500 | "Error when ..." | 不适用(无 DB 访问) |
+| 成功(POST) | 201 | JSON(含明文 token) | 不可能发生 |
+| 成功(DELETE) | 204 | 无 body | 不可能发生 |
+
+> ⚠️ 2026.30 的 410 文案**比弃用期短**:去掉了 "Creating new access tokens is disabled." 前缀,直接是 `E2B_ACCESS_TOKEN is deprecated and no longer supported. Use an API key (E2B_API_KEY) instead. See https://e2b.dev/docs/migration/access-token-deprecation`。断言错误信息文本的测试需要同步更新。
 
 ---
 
 ## 附录 C:术语表
 
-| 术语 | 含义 |
-| --- | --- |
-| **Access Token** | 用户级凭证(已废弃),前缀 `sk_e2b_`,47 字符,作 `Authorization: Bearer` 头 |
-| **API Key** | 团队级凭证(active),前缀 `e2b_`,44 字符,作 `X-API-Key` 头 |
-| **明文 / PrefixedRawValue** | token 的完整形式,只在 POST 响应里出现一次 |
-| **Hash** | `$sha256$` + 43 字符 base64(总 51),落 DB + 验证用 |
-| **Mask** | 固定窗口(前 2 + 后 4),用于 UI 展示 |
-| **`access_tokens` 表** | user 级 token 的存储,uuid PK + hash UNIQUE |
-| **`team_api_keys` 表** | team 级 key 的存储(对照) |
-| **provisioning flag** | `disable-e2b-access-token-provisioning`,只停止创建新 token,按 user 灰度 |
-| **auth flag** | `disable-e2b-access-token-auth`,停止 API 与 docker-reverse-proxy 接受已有 token,按 user 灰度 |
-| **410 Gone** | POST 在 flag 开启时返回,引导用户迁移到 API Key |
-| **`DisableE2BAccessTokenProvisioningFlag`** | feature flag 定义,见 `packages/shared/pkg/featureflags/flags.go:226` |
-| **`DisableE2BAccessTokenAuthFlag`** | acceptance cutover flag,API 返回 401,docker-reverse-proxy 返回 403 |
-| **`UserContext`** | LaunchDarkly 的 user 维度上下文,支持按 userID 灰度 |
-| **触发器(已废弃)** | 早期 `generate_access_token_trigger`,新 user 注册自动生成 token,2025-08-25 移除 |
-| **`authDB.Read`** | 读副本(用于 GetUserIDFromAccessToken) |
-| **`authDB.Write`** | 主库(用于 Create/DeleteAccessToken) |
-| **没有缓存** | access token 验证每次直查 DB,删除立即生效(对比 api-keys 5 分钟 TTL) |
+| 术语 | 含义 | 现状(2026.30) |
+| --- | --- | --- |
+| **Access Token** | 用户级凭证,前缀 `sk_e2b_`,47 字符,作 `Authorization: Bearer` 头 | ⛔ **已退役**,所有形态失效 |
+| **API Key** | 团队级凭证(active),前缀 `e2b_`,44 字符,作 `X-API-Key` 头 | ✅ 唯一推荐的机器凭证 |
+| **明文 / PrefixedRawValue** | token 的完整形式,只在 POST 响应里出现一次 | 历史 |
+| **Hash** | `$sha256$` + 43 字符 base64(总 51),落 DB + 验证用 | 表已 drop,hash 已丢失 |
+| **Mask** | 固定窗口(前 2 + 后 4),用于 UI 展示 | 历史 |
+| **`access_tokens` 表** | user 级 token 的存储,uuid PK + hash UNIQUE | ⛔ **已 `DROP TABLE`** |
+| **`generate_access_token()`** | 生成 `sk_e2b_` + 40 hex 的 plpgsql 函数 | ⛔ **已 `DROP FUNCTION`** |
+| **`team_api_keys` 表** | team 级 key 的存储(对照) | ✅ active |
+| **provisioning flag** | `disable-e2b-access-token-provisioning`,只停止创建新 token,按 user 灰度 | ⛔ 已删除 |
+| **auth flag** | `disable-e2b-access-token-auth`,停止 API 与 docker-reverse-proxy 接受已有 token,按 user 灰度 | ⛔ 已删除 |
+| **410 Gone** | POST 在 flag 开启时返回,引导用户迁移到 API Key | ✅ 现在是**无条件**返回 |
+| **`AccessTokenAuth`** | OpenAPI security scheme(12 处引用) | ⛔ 已从 spec 删除 |
+| **`NewAccessTokenAuthenticator`** | shared auth 里的认证器实现 | ⛔ 已从 authenticator 链删除 |
+| **`GetUserFromAccessToken`** | `APIStore` 上的验证方法 | ⛔ 已删除 |
+| **`UserContext`** | LaunchDarkly 的 user 维度上下文,支持按 userID 灰度 | ✅ 通用机制,仍存在 |
+| **触发器(已废弃)** | 早期 `generate_access_token_trigger`,新 user 注册自动生成 token,2025-08-25 移除 | 更早的历史 |
+| **`authDB.Read` / `authDB.Write`** | 读副本 / 主库(曾用于 access token 的读与写) | 不再有 access token 相关用途 |
+| **没有缓存** | access token 验证每次直查 DB,删除立即生效(对比 api-keys 5 分钟 TTL) | 历史 |
+
+---
+
+> 文档版本:已同步至 **2026.30**。模块状态:**已退役**。
+>
+> - 描述当前状态的部分:[§零](#零202630-退役总结)、[§十二](#十二常见问题与排查)
+> - 历史档案部分:[§一](#一概述) ~ [§十一](#十一设计要点与权衡) + 附录(标注 ⓘ / ⛔ 处)
+> - 相关文档:[api-module.md](./api-module.md)(§2.1 鉴权主体、§5.3.5 已删除的 access token 路径、§8.4.1 secrets)、[api-keys-module.md](./api-keys-module.md)(替代方案)、[api-changes-2026.16-2026.28.md](./api-changes-2026.16-2026.28.md)(弃用起点)

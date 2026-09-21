@@ -9,6 +9,32 @@ sandbox 创建请求中 mcp 字段的支持。最后把它们和“自己部署�
 > 当前只记录它的顶层名称用于创建事件分析，不会启动 MCP Server，也不会把配置传给
 > orchestrator。
 
+## 0. 2026.30 变动速览
+
+> **好消息：MCP 这条链路在 2026.30 一行代码都没变。** 下面这些结论在 2026.29 与 2026.30 完全一致，可以放心沿用：
+>
+> - `Mcp` schema 仍是 `additionalProperties: {}` + `nullable: true`（只换了位置：`spec/openapi.yml:277` → `:444`）。
+> - `NewSandbox.mcp` 仍是宽松 map（`:753` → `:943`）。
+> - `sandbox_create.go` 仍是 `mcp := sharedUtils.DerefOrDefault(body.Mcp, nil)`（`:149` → `:156`），不读 value。
+> - `sandbox.go` 的 `buildCreationMetadata` 仍只做 `slices.Collect(maps.Keys(mcp))` → `meta.MCPServerNames`。
+> - `analytics.go` 仍把 `mcp_servers` 写进 PostHog 事件。
+> - resume / connect / fork / auto-resume **四条路径仍然一律传 `nil, // mcp`**。
+
+**真正和 MCP 有关的新增能力是 `iam` 字段** —— 它让 sandbox 里的进程（包括你自部署的 MCP Server）能拿到 workload identity token：
+
+| 变动 | 说明 | 详见 |
+| --- | --- | --- |
+| **`NewSandbox` 新增 `iam` 字段** | `iam.tokens` 是一张按调用方自定义名字索引的表，每项需 `audience` + `tokenType`。`spec/openapi.yml:945` | §2.4 |
+| **只接受 `JWT-SVID` 一种 token 类型** | 常量 `iamTokenTypeJWTSVID = "JWT-SVID"`（`sandbox_create.go:374`）。其它类型一律 400 | §2.4 |
+| **最多 5 个 token** | `maxIamTokens = 5`（`sandbox_create.go:63`），超了报 `iam.tokens: too many tokens: N (max 5)` | §2.4 |
+| **由 feature flag 开关** | `featureflags.SandboxIamTokensFlag`，按 team 评估。未开启时报 400 `"Sandbox IAM workload tokens are not available for your team."` | §2.4 |
+| **新增 `/secrets`、`/secrets/{secretID}` 端点** | project secrets。若你的 MCP Server 需要把凭据注入到出网请求头，这是 2026.30 的新选项 | §5.4 |
+| **网络 transform 支持两种占位符** | `${e2b.secrets.<name>}` 与 `${e2b.identity.tokens.<name>}`——后者引用的正是 `iam.tokens` 里声明的名字。**API 只校验语法，替换在客户端做** | §5.4 |
+
+> ⚠️ **`iam` 和 `mcp` 是两件独立的事，别混。** `mcp` 仍然只是创建事件的观测信息；`iam` 则真的会进 `SandboxConfig`（`sandbox_create.go:336` 的 `Iam: iamCfg`，proto `orchestrator.proto:67`），并作为**占位符命名空间**被网络 transform 引用（§5.4）。**但 `iam` 不会替你启动 MCP Server，也不会签发或落地任何凭据** —— 它只声明名字，不发进程、不发 token 文件。
+
+---
+
 ## 1. 三个角色要分开
 
 MCP 的基本参与者如下：
@@ -83,6 +109,48 @@ mcp 是创建请求的观测信息，不是 sandbox 的持久化配置。暂停�
 resume、connect 或 fork 的路径会以 nil MCP 元数据启动，因此恢复事件不会自动重新
 带上原始 mcp_servers 列表。需要持续关联时，应使用 sandbox metadata、外部数据库或
 MCP Server 自己的会话存储，而不是依赖该字段。
+
+### 2.4 `iam` 字段（2026.30 新增）
+
+和 `mcp` 形成对照：`iam` 是**真的会进 VM 配置**的字段。
+
+```yaml
+# POST /sandboxes 请求体片段
+iam:
+  tokens:
+    my-mcp-server:            # 名字由调用方自取
+      audience: https://mcp.internal.example
+      tokenType: JWT-SVID     # 唯一允许的值
+```
+
+校验逻辑在 `buildSandboxIam`（`packages/api/internal/handlers/sandbox_create.go:380-419`），按顺序拒绝：
+
+| 条件 | 错误 |
+| --- | --- |
+| `iam` 为 nil / `tokens` 为 nil / `tokens` 为空 | **不报错**，返回 `nil, nil`（等价于关闭 workload identity） |
+| `len(tokens) > 5` | `iam.tokens: too many tokens: N (max 5)` |
+| 某个 key 是空串 | `iam.tokens: token name must not be empty` |
+| 某项 `audience` 为空 | `iam.tokens.<name>.audience: audience is required` |
+| 某项 `tokenType != "JWT-SVID"` | `iam.tokens.<name>.tokenType: only "JWT-SVID" is supported` |
+
+全部为 400。
+
+校验通过后 `iamCfg` 会走两步：
+
+1. **feature flag 闸门**（`sandbox_create.go:224-226`）：`featureflags.SandboxIamTokensFlag` 按 team 评估，未开启时 400 `"Sandbox IAM workload tokens are not available for your team."`。注意闸门在**校验之后**——配置写错时先看到的是格式错误，不是"不可用"。
+2. **写入 SandboxConfig**（`sandbox_create.go:336`）：`Iam: iamCfg`，对应 `packages/orchestrator/orchestrator.proto:67` 的 `optional SandboxIam iam = 27`。
+
+> ⚠️ **`audience` 原样保存，不做规范化。** 注释写得很直白："The audience is preserved exactly as received." 所以 `https://X.example` 和 `https://x.example/` 是两个不同的 audience，签发与校验必须字面一致。
+
+> ⚠️ **这里不签发任何凭据。** proto 注释明确写着："**No credential is minted, signed, or delivered here.**" 也正因如此，`SandboxIamToken` 里**故意没有 `file_path`**（注释：`file_path is intentionally omitted: only absent/null is accepted at admission`）——2026.30 不提供"把 token 落到沙箱里某个文件"的语义。
+
+> ⚠️ **orchestrator 侧的 identity 是从已有的可信字段派生的。** proto 注释：orchestrator "derives from the existing trusted `team_id`, `sandbox_id`, `execution_id` and `template_id` fields"。也就是说沙箱**不能自己声明**自己是谁；它只能声明"我想要哪个 audience 的 token"。
+
+> ⚠️ **反序列化兼容性**：`iam` 是 `optional` 字段，注释写明 "Absent on older serialized configs, which decode as no workload identity." —— 老快照/老配置恢复后就是没有 workload identity，**不会报错**。所以 resume 一个 2026.29 之前创建的 sandbox 时，别指望 `iam` 还在。
+
+对自部署 MCP Server 的意义：如果你的 MCP Server 跑在 sandbox 里、需要向自己的后端证明"我来自哪个 team/sandbox"，2026.30 之前只能靠 `envVars` 传共享密钥；现在可以用 `iam` 声明一个 audience，让沙箱侧拿到可验证的身份，而不必把长期密钥写进环境变量。
+
+---
 
 ## 3. 自己部署 e2b-mcp 的推荐拓扑
 
@@ -204,6 +272,34 @@ API 会在请求进入时按 team 鉴权，template 可见性和 sandbox 并发�
 自部署 e2b-mcp 应把 MCP 用户映射到 team/API key，而不是让所有用户共用一个无审计
 的全局 key。工具层还要限制可用 template、允许的 egress 域名和命令参数。
 
+### 5.4 凭据下发：`/secrets` 与 `iam` 的选择（2026.30 新增）
+
+2026.30 给"怎么把凭据交给 sandbox 里的东西"提供了两条新路径。**它们解决的问题不同，不要混用**：
+
+| 需求 | 用 | 理由 |
+| --- | --- | --- |
+| 把**长期密钥/配置值**注入到 sandbox 的**出网请求头**里 | `POST /secrets`（project secrets）+ 网络 transform 占位符 `${e2b.secrets.<name>}` | 密钥存在 E2B 侧，按 team 管理，可轮换；不必写进 `envVars` |
+| 把**身份 token** 注入到出网请求头 | `iam.tokens`（§2.4）+ 占位符 `${e2b.identity.tokens.<name>}` | 名字必须先在 `iam.tokens` 里声明过 |
+| 传**非敏感的运行时配置** | `envVars`（原有） | 仍然是唯一直接进 VM 环境变量的方式 |
+
+两种占位符由 `packages/shared/pkg/networktransform/placeholders.go` 解析：
+
+```go
+const (
+	identityTokenPrefix  = "${e2b.identity.tokens."
+	customerSecretPrefix = "${e2b.secrets."
+	MaxMarkerNames = 32   // 一个 domain 的 transform 最多引用多少个 customer secret
+)
+```
+
+> ⚠️ **这是 2026.30 才有的能力，而且 `iam` 和 `/secrets` 在这里交汇。** `iam.tokens` 不只是"给 sandbox 一个身份"——它声明的名字可以直接被网络 transform 规则用 `${e2b.identity.tokens.<name>}` 引用。也就是说 `iam` 是**占位符的命名空间声明**，出网请求头注入才是它的第一个实际用途。
+
+> ⚠️ **API 只校验语法，不做替换。** `SandboxNetworkTransform.headers` 的 spec 描述写得很清楚："Values are plain strings; **secret resolution happens client-side before sending to the API**." API 侧(`sandbox_create.go:970`)只调 `ParsePlaceholders` 检查占位符是否**格式良好**（空名、嵌套、未闭合 `}` 都返回 400 `"Network transform header contains a malformed E2B placeholder."`），真正把值填进去的是**发送请求的客户端**。
+
+> ⚠️ **32 个名字的上限只数 customer secret，不数 identity token。** `sandbox_create.go:979-989` 的循环里有一个 `if placeholder.Kind == PlaceholderCustomerSecret` 过滤 —— identity token 占位符会被解析出来，但**不进 `markerSeen`**，因此不受 `MaxMarkerNames` 约束，API 也不校验它在 `iam.tokens` 里是否真的声明过。
+
+> ⚠️ **`iam` 仍然不落地文件。** 上面的 header 注入不改变 §2.4 的结论：`SandboxIamToken` 故意没有 `file_path`，orchestrator 也不签发凭据。**别把"能被网络 transform 引用"误读成"被写进了沙箱文件系统"。**
+
 ## 6. 常见误解
 
 ### “传了 mcp，E2B 就会启动 MCP Server”
@@ -226,6 +322,20 @@ MCP Server 应调用 API 或受支持的 SDK，而不是绕过 API 连接节点 
 不等于。sandbox URL 只是 client-proxy 到 sandbox 端口的路由。只有当端口上确实运行
 符合 MCP transport 的服务时，它才是 MCP endpoint。
 
+### “传了 `iam` 就会给 sandbox 发一个 token”
+
+不会。`iam.tokens` 只是**声明**（名字 + audience + `JWT-SVID` 类型），2026.30 的实现
+既不签发也不投递任何凭据——proto 注释原话是 "No credential is minted, signed, or
+delivered here."，而且 `SandboxIamToken` 故意不含 `file_path`。它目前唯一的实际出口
+是被网络 transform 的 `${e2b.identity.tokens.<name>}` 占位符引用（§5.4），而替换是
+**客户端**做的。
+
+### “`${e2b.secrets.x}` 会被 API 替换成真值”
+
+不会。API 只校验占位符**格式**；spec 描述明确写 "secret resolution happens client-side
+before sending to the API"。把这句话反过来读——**真值不会经过 API**，所以它不会出现在
+API 日志、请求体审计或错误信息里。
+
 ## 7. 代码阅读路线
 
 想继续追踪这条关系时，可以按下面顺序阅读：
@@ -239,8 +349,13 @@ MCP Server 应调用 API 或受支持的 SDK，而不是绕过 API 连接节点 
    created_instance analytics event。
 5. packages/api/internal/orchestrator/create_instance.go 和
    packages/orchestrator/orchestrator.proto：确认 MCP 没有进入 SandboxConfig/gRPC。
+   **同文件对照看 `iam`（`orchestrator.proto:67`）——它是唯一一个"创建时声明、真的
+   进 SandboxConfig"的新字段，反例比正例更能说明 MCP 的边界。**
 6. packages/client-proxy 与 packages/envd：理解外部请求如何到达 sandbox 端口，以及
    MCP Server 进程如何被启动和访问。
+7. **（2026.30）** packages/shared/pkg/networktransform/placeholders.go 与
+   packages/shared/pkg/secretsstore/name.go：看两种占位符的解析与名字规范化，
+   以及 packages/api/internal/handlers/sandbox_create.go 里只做语法校验的那一段。
 
 把 MCP 协议实现放在自部署服务，把 sandbox 生命周期交给 E2B API，把数据面访问交给
 client-proxy/envd，是这个仓库当前边界下最清楚、也最容易审计的分层方式。
@@ -575,8 +690,10 @@ MCP Server 不应再实现一套与 client-proxy 相同的端口转发重试；�
 
 | 主题 | 入口 |
 | --- | --- |
-| `mcp` schema、请求模型 | [`spec/openapi.yml`](../spec/openapi.yml) |
-| create handler、secure/network 校验 | [`sandbox_create.go`](../packages/api/internal/handlers/sandbox_create.go) |
+| `mcp` schema、请求模型 | [`spec/openapi.yml`](../spec/openapi.yml)（`Mcp:` :444、`NewSandbox.mcp:` :943） |
+| `iam` schema、请求模型（2026.30 新增） | [`spec/openapi.yml`](../spec/openapi.yml)（`NewSandbox.iam:` :945、`SandboxIam:` :952、`SandboxIamTokens:` :961、`SandboxIamToken:` :968） |
+| create handler、secure/network 校验 | [`sandbox_create.go`](../packages/api/internal/handlers/sandbox_create.go)（`mcp` :156、`maxIamTokens` :63、`buildSandboxIam` :380-419、`Iam:` :336、flag 闸门 :224） |
+| `iam` 的 gRPC 契约 | [`orchestrator.proto`](../packages/orchestrator/orchestrator.proto)（`SandboxIam` :74、`SandboxIamToken` :81、`SandboxConfig.iam` :67） |
 | creation metadata、resume 传 nil | [`sandbox.go`](../packages/api/internal/handlers/sandbox.go)、[`sandbox_resume.go`](../packages/api/internal/handlers/sandbox_resume.go)、[`sandbox_connect.go`](../packages/api/internal/handlers/sandbox_connect.go) |
 | SandboxData → gRPC、traffic token、network 转换 | [`create_instance.go`](../packages/api/internal/orchestrator/create_instance.go) |
 | Redis sandbox 模型和 API 映射 | [`sandboxtypes/sandbox.go`](../packages/api/internal/sandbox/sandboxtypes/sandbox.go)、[`storage/redis/operations.go`](../packages/api/internal/sandbox/storage/redis/operations.go) |
@@ -594,7 +711,8 @@ MCP Server 不应再实现一套与 client-proxy 相同的端口转发重试；�
 
 - **已实现**：能直接在源码、proto 或生成的 API 模型中找到路径。例如 `mcp` 顶层 key
   进入 PostHog、`SandboxConfig` 没有 MCP 字段、catalog miss 可触发 resume、envd
-  `X-Access-Token` 校验和 filesystem-only cold boot。
+  `X-Access-Token` 校验和 filesystem-only cold boot。**（2026.30）`iam` 有独立字段且
+  真的进 `SandboxConfig`（`orchestrator.proto:67`），但只做声明、不签发凭据。**
 - **可从代码推导**：不是一个单独的产品承诺，但由多个实现边界共同决定。例如 MCP value
   不会影响 placement，routing catalog 不是 MCP 注册表，以及 snapshot 恢复不能保证长连接。
 - **建议方案**：部署方可选择的做法，例如用外部 secret store 保存 API key、使用幂等键、
@@ -607,17 +725,28 @@ MCP Server 不应再实现一套与 client-proxy 相同的端口转发重试；�
 3. creation analytics 把 MCP 写入 ClickHouse、日志或新的事件系统；
 4. 新增内建 MCP Server、MCP JSON-RPC endpoint、stdio/SSE/Streamable HTTP listener；
 5. traffic/envd token header、client-proxy auto-resume 错误映射或 pause 类型发生变化；
-6. API response 不再返回 token，或引入专门的 token redaction / secret vault。
+6. API response 不再返回 token，或引入专门的 token redaction / secret vault；
+7. **（2026.30 新增的复核点）** `SandboxIamToken` 增加 `file_path` 或类似字段（当前是
+   有意省略的）、`iamTokenTypeJWTSVID` 之外出现新的 `tokenType`、`maxIamTokens` 上限
+   变化、`SandboxIamTokensFlag` 的默认值或评估维度变化、`/secrets` 端点与 `iam` 的关系
+   被重新定义。
 
 ## 15. 当前能力边界清单
 
 在本仓库当前版本中，可以明确承诺的只有：
 
 - API 接受可选的 `mcp` JSON map，并在创建事件中记录其顶层名称；
+- **（2026.30）API 接受可选的 `iam.tokens`（≤5 个、`tokenType` 只能是 `JWT-SVID`、
+  受 `SandboxIamTokensFlag` 按 team 控制），并把声明写进 `SandboxConfig`；**
 - API、orchestrator、envd 和 proxy 共同提供 sandbox 生命周期与数据面访问；
 - 自部署 MCP Server 可以使用这些 API 和端口把 E2B 包装成工具；
 - MCP 协议实现、tool schema、session 存储和恢复重连逻辑仍由部署方负责。
 
 不能承诺的内容包括：自动启动 MCP Server、自动连接 `mcp.url`、把 mcp 配置注入 VM、
 在 resume 后恢复原始 MCP 名称或 session，以及用 PostHog/ClickHouse 证明一次 tool call
-成功。
+成功。**2026.30 的 `iam` 也不改变这一点**：它声明的是 sandbox 的身份，不是 MCP Server
+的启动方式，更不会替你把 token 写进沙箱文件。
+
+---
+
+> **版本说明**：已同步至 **2026.30**。§0 汇总 2026.30 的变动；MCP 链路本身（`Mcp` schema、`buildCreationMetadata`、`mcp_servers` 事件、四条 resume 路径传 `nil`）在两个 tag 之间**逐项未变**，仅行号位移。2026.30 真正的新增是 `iam` 字段（§2.4）与 `/secrets` 端点。所有行号均以 tag `2026.30` 为准。

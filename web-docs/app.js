@@ -145,9 +145,13 @@
         return;
       }
 
+      // The button carries its own doc id, so trust it rather than
+      // state.currentDoc: if the two ever disagree (or currentDoc is null
+      // because a render was superseded), reading currentDoc makes the click
+      // silently do nothing, which is indistinguishable from a broken button.
       const completeTarget = event.target.closest('[data-toggle-complete]');
-      if (completeTarget && state.currentDoc?.kind === 'core') {
-        toggleComplete(state.currentDoc.id);
+      if (completeTarget?.dataset.toggleComplete) {
+        toggleComplete(completeTarget.dataset.toggleComplete);
         return;
       }
 
@@ -820,24 +824,25 @@
     updateProgress();
     renderNavigation();
 
-    if (state.currentDoc?.id === id) {
-      const oldButton = elements.page.querySelector('[data-toggle-complete]');
-      if (oldButton) {
-        const done = completed.has(id);
-        oldButton.classList.toggle('is-complete', done);
-        oldButton.setAttribute('aria-pressed', String(done));
-        oldButton.innerHTML = `<i data-lucide="${done ? 'circle-check' : 'check'}"></i><span>${done ? '已完成' : '标记为已完成'}</span>`;
-        refreshIcons(oldButton);
-      }
-    }
+    // Repaint every button for this id rather than only the one the state
+    // happens to point at, so the click is always visibly reflected.
+    const done = completed.has(id);
+    elements.page.querySelectorAll('[data-toggle-complete]').forEach(button => {
+      if (button.dataset.toggleComplete !== id) return;
+      button.classList.toggle('is-complete', done);
+      button.setAttribute('aria-pressed', String(done));
+      button.innerHTML = `<i data-lucide="${done ? 'circle-check' : 'check'}"></i><span>${done ? '已完成' : '标记为已完成'}</span>`;
+      refreshIcons(button);
+    });
     showToast(completed.has(id) ? '已记录阅读进度' : '已取消完成标记');
   }
 
   function updateProgress() {
-    const count = catalog.core.filter(doc => completed.has(doc.id)).length;
-    const percent = catalog.core.length ? Math.round((count / catalog.core.length) * 100) : 0;
-    elements.progressLabel.textContent = `${count} / ${catalog.core.length}`;
-    elements.progressBar.style.width = `${percent}%`;
+    const core = Array.isArray(catalog.core) ? catalog.core : [];
+    const count = core.filter(doc => completed.has(doc.id)).length;
+    const percent = core.length ? Math.round((count / core.length) * 100) : 0;
+    if (elements.progressLabel) elements.progressLabel.textContent = `${count} / ${core.length}`;
+    if (elements.progressBar) elements.progressBar.style.width = `${percent}%`;
   }
 
   function renderDocumentError(doc, error) {

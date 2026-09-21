@@ -1,8 +1,16 @@
 # E2B 数据库表字段与关联关系参考
 
-> 数据来源:`packages/db/migrations/` 下 100+ 个 goose 迁移,已同步至 `20260707193000_user_identities_unique_user_issuer.sql`。
+> 数据来源:`packages/db/migrations/` 下 133 个 goose 迁移,已同步至 `20260826075153_add_free_disk_limit_columns.sql`。
 > 本文档聚焦**每个表的字段作用**与**跨表关联关系**,并在迁移轨迹、索引和触发器章节中记录 schema 的演进细节。
-> 已按 2026.29 迁移状态校对。
+> 已按 2026.30 迁移状态校对(2026-09-10)。
+>
+> **2026.30 变动**(2026.29 → 2026.30,迁移 111 → 133 个):
+> - ⛔ `access_tokens` 表与 `generate_access_token()` 函数被 `DROP`(§4);用户级凭证路径只剩 `team_api_keys`。
+> - 新增 `project_limits` 表(§7):外部服务推送的**绝对配额**,`team_limits` 视图逐列 `COALESCE` 覆盖 tier+addons。⚠️ 该表在 2026.30 **已有真实写入方**,不再是空表。
+> - 新增 `projection` schema 下两张 revision 账本(§7、§11.7):拒绝乱序到达的重复投递。
+> - `team_limits` 视图在区间内被重写三次(§7),最终形态是逐列 `COALESCE` 的覆盖链。
+> - `tiers` 新增 `default_free_disk_size_mb` / `max_disk_size_mb` / `max_free_disk_size_mb`,`addons` 新增 `extra_max_disk_size_mb` / `extra_max_free_disk_size_mb`(§3、§7)。
+> - 一批纯性能维护迁移:6 个索引增删、4 张表的 autovacuum scale factor、3 处列级统计目标(§9.2)。
 
 ---
 
@@ -21,7 +29,7 @@
   - [`users_teams`](#users_teams)
 - [4. 凭据与令牌簇](#4-凭据与令牌簇)
   - [`team_api_keys`](#team_api_keys)
-  - [`access_tokens`](#access_tokens)
+  - [`access_tokens`(已于 2026.30 退役)](#access_tokens)
 - [5. 模板与构建簇](#5-模板与构建簇)
   - [`envs`](#envs)
   - [`env_aliases`](#env_aliases)
@@ -35,6 +43,8 @@
   - [`clusters`](#clusters)
   - [`volumes`](#volumes)
   - [`addons`](#addons)
+  - [`project_limits`](#project_limits)
+  - [`projection.project_members` / `projection.project_limits`](#projectionproject_members--projectionproject_limits)
   - [视图 `team_limits`](#视图-team_limits)
   - [视图 `active_envs`](#视图-active_envs)
 - [8. 关联关系矩阵](#8-关联关系矩阵)
@@ -53,10 +63,10 @@
 | --- | --- | --- |
 | 身份认证 | `auth.users`、`public.users`、`user_identities` | Supabase auth 投影 + OIDC 多身份 |
 | 租户与权限 | `tiers`、`teams`、`users_teams` | 多租户与团队成员 |
-| 凭据与令牌 | `team_api_keys`、`access_tokens` | hash 化的 API 凭证 |
+| 凭据与令牌 | `team_api_keys`(用户级 `access_tokens` 已于 2026.30 退役) | hash 化的 API 凭证 |
 | 模板与构建 | `envs`、`env_aliases`、`env_builds`、`env_build_assignments`、`active_template_builds` | 模板生命周期与构建执行 |
 | 沙箱与快照 | `snapshots`、`snapshot_templates` | 沙箱状态持久化 |
-| 容量与基础设施 | `clusters`、`volumes`、`addons` | 编排集群、卷、附加配额 |
+| 容量与基础设施 | `clusters`、`volumes`、`addons`、`project_limits` | 编排集群、卷、附加配额、外部推送的绝对配额 |
 
 **全局约定**:
 - 所有枚举字段用 `text` + 应用层约束,无 `CREATE TYPE ... AS ENUM`
@@ -79,9 +89,9 @@
                                  │
                                  │ user_id
                                  ▼
-   ┌──────────────────┐    ┌──────────────┐    ┌─────────────┐
-   │   access_tokens  │    │ users_teams  │    │ team_api_keys│
-   └──────────────────┘    └──────┬───────┘    └──────┬──────┘
+                              ┌──────────────┐    ┌─────────────┐
+                              │ users_teams  │    │ team_api_keys│
+                              └──────┬───────┘    └──────┬──────┘
                                   │ team_id           │ team_id
                                   ▼                   ▼
                               ┌────────────────────────┐    ┌────────┐
@@ -102,6 +112,10 @@
                               │  envs   │◄──────────────│   addons    │ (有效期内的额外配额)
                               │ (source)│               └──────────────┘
                               └─┬───┬───┘
+                                │   │      ┌──────────────────┐
+                                │   │      │ project_limits   │ (推送的绝对配额,覆盖 tiers+addons)
+                                │   │      │ projection.*     │ (revision 账本)
+                                │   │      └──────────────────┘
                 env_aliases  ───┤   ├── snapshots (env_id, base_env_id)
                 env_build_      │   │
                 assignments  ───┤   ├── snapshot_templates (env_id=PK)
@@ -181,10 +195,11 @@ E2B 不用 PostgreSQL ENUM 类型,但下列"事实枚举"由应用层 + 触发�
 **关联(被引用,均 CASCADE 或 SET NULL)**:
 - `user_identities.user_id` → CASCADE
 - `users_teams.user_id` / `users_teams.added_by` → CASCADE / SET NULL
-- `access_tokens.user_id` → CASCADE
 - `team_api_keys.created_by` → SET NULL
 - `envs.created_by` → SET NULL
 - `addons.added_by` → NO ACTION
+
+> ~~`access_tokens.user_id` → CASCADE~~:该表已于 2026.30 由 `20260823120000_drop_access_tokens.sql` 删除。
 
 ---
 
@@ -231,10 +246,15 @@ Dashboard API 的 identity 解析集中在 `packages/dashboard-api/internal/iden
 | `max_ram_mb` | bigint NOT NULL DEFAULT 8192(同上,曾误设 8096 后修) | 团队级内存总量上限 |
 | `concurrent_template_builds` | bigint NOT NULL DEFAULT 20(`20250901161352` 加) | 团队并发模板构建数 |
 | `events_ttl_days` | bigint NOT NULL DEFAULT 7(`20260702120000` 加) | 事件日志保留天数 |
+| `default_free_disk_size_mb` | bigint NOT NULL(`20260714091414` 加) | 空闲 rootfs 目标(MiB 约定);迁移把既有行填成 `disk_mb` |
+| `max_disk_size_mb` | bigint NOT NULL(`20260714091414` 加) | 逻辑 rootfs 总上限(未计 addons);迁移把既有行填成 `disk_mb + 25000` |
+| `max_free_disk_size_mb` | bigint NULL(`20260826075153` 加) | 空闲磁盘上限的新命名;⚠️ **当前无视图消费者** |
 
 > **已删除字段**:早期 `vcpu`、`ram_mb`(单 sandbox 级别),`20240305221944_remove_tier_resources.sql` 中 DROP,因为单实例规格改由 `env_builds` 自带。
 
-**CHECK 约束**:`concurrent_instances > 0`、`disk_mb > 0`、`concurrent_template_builds > 0`、`events_ttl_days > 0`
+**CHECK 约束**:`concurrent_instances > 0`、`disk_mb > 0`、`concurrent_template_builds > 0`、`events_ttl_days > 0`、`default_free_disk_size_mb >= 0`、`max_disk_size_mb > 0`、`default_free_disk_size_lte_max_check`(`default_free_disk_size_mb <= max_disk_size_mb`)
+
+> `20260723120000_set_tier_max_disk_size.sql` 另行调整了各 tier 的磁盘上限值。
 **被引用**:`teams.tier`
 **聚合于视图**:`team_limits`
 
@@ -243,7 +263,7 @@ Dashboard API 的 identity 解析集中在 `packages/dashboard-api/internal/iden
 - 通过 `team_limits` 视图聚合(addons 加成)后,几乎所有配额检查都走视图而非本表
 
 **代码入口**:
-- 读:`packages/api/internal/auth/...`(tier 解析)、`team_limits` 视图调用点
+- 读:[`packages/db/pkg/auth/sql_queries/teams/get_team.sql`](../packages/db/pkg/auth/sql_queries/teams/get_team.sql#L2)(`team_limits` 视图的唯一读取入口,JOIN 出 tier 与视图行)
 - 写:**无运行时写入**,仅 seed/迁移脚本管理
 
 ---
@@ -396,8 +416,8 @@ FOR UPDATE;
 - `last_used` 更新:每次鉴权成功后 best-effort UPDATE(异步,不阻塞请求)
 
 **代码入口**:
-- 读/鉴权:`packages/api/internal/auth/api_key.go`
-- 写:`POST /teams/{id}/api-keys` / `DELETE /teams/{id}/api-keys/{key_id}`
+- 读/鉴权:[`packages/db/pkg/auth/sql_queries/teams/get_team.sql`](../packages/db/pkg/auth/sql_queries/teams/get_team.sql#L2)(按 `api_key_hash` 查找)+ auth 服务的 hash 缓存
+- 写:[`packages/api/internal/team/apikeys.go`](../packages/api/internal/team/apikeys.go#L22)(`CreateAPIKey` 行 22、`DeleteAPIKey` 行 52),handler 在 [`packages/api/internal/handlers/apikey.go`](../packages/api/internal/handlers/apikey.go#L138)
 
 **安全约束**:
 - `api_key_hash` 不允许 COLLATION(纯 ASCII),避免排序性能问题
@@ -405,7 +425,13 @@ FOR UPDATE;
 
 ---
 
-### `access_tokens`
+### `access_tokens`(已于 2026.30 退役)
+
+> ⚠️ **已于 2026.30 退役**:`20260823120000_drop_access_tokens.sql` 在 Up 段执行 `DROP TABLE IF EXISTS public.access_tokens` 并删除 `public.generate_access_token()` 函数。迁移注释原文:
+>
+> > E2B user access tokens (sk_e2b_) are removed: nothing issues, validates, or purges them anymore. The remaining rows are hashes of revoked credentials.
+>
+> 同批的 `20260727041400_drop_duplicate_access_tokens_hash_index.sql` 在此之前先删掉了重复的 hash 索引。`packages/db/pkg/auth/sql_queries/` 下已无 access_token 相关查询。下文保留以对照 2026.29 及更早版本。
 
 - **Schema**:`public`
 - **角色**:用户级访问令牌
@@ -559,7 +585,7 @@ WHERE alias = @alias
 
 **代码入口**:
 - 读:`templateCache.ResolveAlias()`(API 启动 + 缓存失效后回填)
-- 写:`CreateTemplateAlias`(在 checkpoint 流程内,见 `snapshot_template.go:191`);`ReleaseTemplateAliases`(软删 env 时)
+- 写:`CreateTemplateAlias`(在 checkpoint 流程内,见 [`packages/api/internal/orchestrator/snapshot_template.go:254`](../packages/api/internal/orchestrator/snapshot_template.go#L254));`ReleaseTemplateAliases`(软删 env 时)
 
 **唯一约束细节**:`NULLS NOT DISTINCT` 是 PostgreSQL 15+ 特性,使 `(alias='x', namespace=NULL)` 与另一行 `(alias='x', namespace=NULL)` 视为相同(默认 NULL ≠ NULL 会留漏洞)。
 
@@ -700,6 +726,8 @@ waiting ──资源分配──→ pending ──template-manager 取走──�
 - 写:`packages/api/internal/orchestrator/...`(create build / update status);`packages/orchestrator/pkg/server/...`(build 完成时 FinishTemplateBuild)
 - 读:`GET /builds`(团队列表)、`GET /templates/{id}/builds`(单模板列表)
 
+**2026.30 的运维性调整**(结构未变):该表是本 schema 写最热的表之一,区间内为它做了三件事——按表覆盖 autovacuum scale factor(`20260723030000`)、把 `status_group` 与 `status` 两列的统计目标提到 2000(`20260725100500` / `20260727041000`)、删掉长期零扫描的 `idx_env_builds_status`(`20260727041200`)。详见 §9.2。
+
 ---
 
 ### `env_build_assignments`
@@ -763,7 +791,7 @@ ORDER BY eba.created_at DESC LIMIT 1;
 - **唯一约束仅覆盖历史数据**:`uq_legacy_assignments WHERE source IN ('trigger','migration')` — 新 `app` 数据允许重复(因为 tag 可以重用)
 
 **代码入口**:
-- 写:`snapshot_template.go:155` (`CreateTemplateBuildAssignment` — checkpoint 复用已有 template 时)、`snapshot_template.go:184` (`CreateSnapshotTemplateEnv` 内部也会写)
+- 写:[`packages/api/internal/orchestrator/snapshot_template.go:218`](../packages/api/internal/orchestrator/snapshot_template.go#L218)(`CreateTemplateBuildAssignment` — checkpoint 复用已有 template 时)、[`packages/api/internal/orchestrator/snapshot_template.go:239`](../packages/api/internal/orchestrator/snapshot_template.go#L239)(`CreateSnapshotTemplateEnv` 内部也会写)
 - 读:所有"按 tag 取 build"的路径(sandbox create / resume / pause)
 
 ---
@@ -919,7 +947,7 @@ WHERE s.sandbox_id = @sandbox_id AND s.team_id = @team_id;
 > 用 LEFT JOIN:即使 build 已被清理(NULL build_id),仍要拿到 `template_id` 去做 softDeleteTemplate。
 
 **代码入口**:
-- 写:`pause_instance.go:32` 的 `pauseSandbox` → `throttledUpsertSnapshot` → `UpsertSnapshot`
+- 写:[`packages/api/internal/orchestrator/pause_instance.go:29`](../packages/api/internal/orchestrator/pause_instance.go#L29)(`pauseSandbox`,2026.30;2026.29 为行 32)→ `throttledUpsertSnapshot`(行 177)→ `UpsertSnapshot`
 - 读:`snapshotsCache.Get(sandboxID)`(Redis 缓存,miss 后回 DB 走 `GetLastSnapshot`)
 - 失效:每次 pause/checkpoint/kill 后 `snapshotCache.Invalidate(sandboxID)`
 
@@ -964,7 +992,7 @@ LIMIT @page_limit
 - `snapshot_templates`:每个**提升为模板**的快照 env 一行(描述可被反复 spawn 的快照模板)
 
 **代码入口**:
-- 写:`snapshot_template.go:176` `CreateSnapshotTemplateEnv`(checkpoint 流程中,新建模板时)
+- 写:[`packages/api/internal/orchestrator/snapshot_template.go:239`](../packages/api/internal/orchestrator/snapshot_template.go#L239)(`CreateSnapshotTemplateEnv`,checkpoint 流程中新建模板时)
 - 读:`GET /snapshots` → `ListTeamSnapshotTemplates`(分页 + sandbox_id/name 过滤)
 
 ---
@@ -1005,7 +1033,7 @@ JOIN public.teams t ON t.cluster_id = c.id;
 - 路由 sandbox 时:先看 `envs.cluster_id` → 没有就看 `teams.cluster_id` → 否则默认集群
 
 **代码入口**:
-- 读:`packages/api/internal/orchestrator/nodemanager/cluster_registry.go`
+- 读:[`packages/api/internal/clusters/clusters_sync.go`](../packages/api/internal/clusters/clusters_sync.go#L128)(`GetActiveClusters` 调用点;2026.29 的 `nodemanager/cluster_registry.go` 已不存在)
 - 写:**手工/迁移管理**,运行时不直接写
 
 ---
@@ -1047,7 +1075,7 @@ DELETE FROM volumes WHERE team_id = @team_id AND id = @volume_id;
 - sandbox 挂载:启动时按 `Config.VolumeMounts[].Name` 在本表查 `GetVolumesByName`,缺失则启动失败
 
 **代码入口**:
-- 读写:`packages/api/internal/handlers/volumes.go`(CRUD handler)
+- 读写:`packages/api/internal/handlers/volume_*.go`(单文件 handler 已拆分:[`volume_create.go`](../packages/api/internal/handlers/volume_create.go#L26)、`volume_get.go`、`volumes_list.go`、`volume_delete.go`、`volume_token.go`)
 
 ---
 
@@ -1069,6 +1097,8 @@ DELETE FROM volumes WHERE team_id = @team_id AND id = @volume_id;
 | `extra_max_ram_mb` | bigint NOT NULL DEFAULT 0 | 额外内存配额 |
 | `extra_disk_mb` | bigint NOT NULL DEFAULT 0 | 额外磁盘配额 |
 | `extra_events_ttl_days` | bigint NOT NULL DEFAULT 0(`20260702120000` 加) | 额外事件保留天数 |
+| `extra_max_disk_size_mb` | bigint NULL(`20260714091414` 加) | 总上限增量;迁移把既有行填成 `extra_disk_mb` |
+| `extra_max_free_disk_size_mb` | bigint NULL(`20260826075153` 加) | 空闲磁盘上限增量的新命名;⚠️ **当前无视图消费者** |
 | `valid_from` | timestamptz NOT NULL DEFAULT now() | 生效起始 |
 | `valid_to` | timestamptz NULL | 生效结束(NULL = 永久) |
 | `added_by` | uuid NOT NULL | FK → `public.users(id)`,谁加的 |
@@ -1102,23 +1132,114 @@ VALUES (...) ON CONFLICT (idempotency_key) WHERE idempotency_key IS NOT NULL DO 
 
 ---
 
-### 视图 `team_limits`
+### `project_limits`(2026.30 新增)
 
-- **来源**:`20251011200438_create_addons_table.sql`(经 `20260702120000` 更新)
-- **角色**:聚合 `teams` + `tiers` + 当前有效 `addons`,暴露最终配额
+- **来源**:`20260728163016_add_project_limits.sql`,`20260826075153_add_free_disk_limit_columns.sql` 追加一列
+- **角色**:由"拥有 project 的服务"**推送进来的绝对配额**,取代 `team_limits` 视图当前的算术推导
 
 | 字段 | 类型 | 作用 |
 | --- | --- | --- |
-| `id` | uuid | 团队 ID(视图主键,实际为 `teams.id`) |
-| `max_length_hours` | bigint | 单 sandbox 最长存活 = `tier.max_length_hours` |
-| `concurrent_sandboxes` | bigint | 并发 sandbox = `tier.concurrent_instances + SUM(addons.extra_concurrent_sandboxes)` |
-| `concurrent_template_builds` | bigint | 并发构建 = `tier.concurrent_template_builds + SUM(addons.extra_concurrent_template_builds)` |
-| `max_vcpu` | bigint | CPU 总量 = `tier.max_vcpu + SUM(addons.extra_max_vcpu)` |
-| `max_ram_mb` | bigint | 内存总量 = `tier.max_ram_mb + SUM(addons.extra_max_ram_mb)` |
-| `disk_mb` | bigint | 磁盘 = `tier.disk_mb + SUM(addons.extra_disk_mb)` |
-| `events_ttl_days` | bigint(`20260702120000` 加) | 事件保留天数 = `tier.events_ttl_days + SUM(addons.extra_events_ttl_days)` |
+| `team_id` | uuid PK + FK → `teams(id) CASCADE` | 团队/项目 ID |
+| `max_length_hours` | bigint NOT NULL CHECK `>= 0` | 单 sandbox 最长存活 |
+| `concurrent_sandboxes` | bigint NOT NULL CHECK `>= 0` | 并发 sandbox |
+| `concurrent_template_builds` | bigint NOT NULL CHECK `>= 0` | 并发构建 |
+| `max_vcpu` | bigint NOT NULL CHECK `>= 0` | CPU 总量 |
+| `max_ram_mb` | bigint NOT NULL CHECK `>= 0` | 内存总量 |
+| `disk_mb` | bigint NOT NULL CHECK `>= 0` | 磁盘 |
+| `events_ttl_days` | bigint NOT NULL CHECK `>= 0` | 事件保留天数 |
+| `default_free_disk_size_mb` | bigint NOT NULL CHECK `>= 0` | 默认空闲磁盘 |
+| `max_disk_size_mb` | bigint NOT NULL CHECK `>= 0` | 磁盘上限 |
+| `max_free_disk_size_mb` | bigint NULL(`20260826075153` 加) | 空闲磁盘上限(新命名,**当前无视图消费者**) |
+| `updated_at` | timestamptz NOT NULL DEFAULT now() | 最近推送时间 |
 
-**addon 聚合条件**:`addon.valid_from <= now() AND (addon.valid_to IS NULL OR addon.valid_to > now())`
+**为什么建这张表**(迁移注释原文):
+
+> Effective limits pushed in by the service that owns projects, replacing the arithmetic team_limits does today.
+>
+> The view derives a team's limits by joining tiers to addons. addons is written only by billing and read by nothing in this repo except that view, which makes the sandbox-creation read path depend on a table this side does not own. Pushing absolutes inverts that: the owner computes, this side reads one local table.
+
+**CHECK 的取舍**:`tiers` 对同样的列 CHECK `> 0`,这张表**刻意允许 0**。注释解释:
+
+> this table is a push target, and rejecting a value the caller considers valid turns a product decision into a retry loop that never drains. Negatives are always a bug, so they stay rejected. Every column is NOT NULL, so a row overrides all nine or does not exist -- there is no half-overridden team to reason about.
+
+唯一保留的跨列检查是 `project_limits_default_free_disk_size_lte_max_check`(`default_free_disk_size_mb <= max_disk_size_mb`),理由是"一个不自洽的配对本侧不应顺从,而且这是这两个列的所有读者自 `tiers` 获得它们以来一直能假定的唯一不变量"。
+
+> ⚠️ **迁移注释的时点性说明需要更正**。`20260728163016_add_project_limits.sql` 的注释原文是:
+>
+> > Nothing writes this table yet. While it is empty every COALESCE below falls through to the existing expression, so the view returns exactly what it returned before -- which is the point of landing it separately from anything that populates it.
+>
+> 这段话只在**迁移落地的时点**成立。**在 tag 2026.30,这张表已经有完整的写入路径**,所以"视图恒走回落分支、输出与重写前逐列一致"不再成立:一旦某个 team 被推送过配额,`team_limits` 的对应列就整体取自 `project_limits`。
+
+**代码入口**:
+- 查询定义:[`packages/db/queries/teams/project_limits.sql`](../packages/db/queries/teams/project_limits.sql#L3)(`LockManagedProject` 行 3、`ApplyProjectLimitsProjection` 行 20、`UpsertProjectLimits` 行 48)
+- 写入方:[`packages/dashboard-api/internal/management/limits.go`](../packages/dashboard-api/internal/management/limits.go#L51)(`ApplyProjectLimits` 行 51 → `applyProjectLimits` 行 71;单事务内依次 `LockManagedProject` 行 80 → `ApplyProjectLimitsProjection` 行 88 → `UpsertProjectLimits` 行 106)
+- 管理面入口:[`packages/dashboard-api/internal/handlers/management_project_limits.go`](../packages/dashboard-api/internal/handlers/management_project_limits.go#L24)(`ManagementUpsertProjectLimits`)
+
+> ⓘ 注意 `UpsertProjectLimits` 把 `max_disk_size_mb` 与 `max_free_disk_size_mb` 写成**同一个值**(同一参数传两次),这是兼容期"一个上限两个名字"的桥接。
+
+---
+
+### `projection.project_members` / `projection.project_limits`(2026.30 新增)
+
+- **来源**:`20260807120000_add_project_member_projection_ledger.sql`、`20260812150000_add_project_limits_projection_ledger.sql`(两者都 `CREATE SCHEMA IF NOT EXISTS projection`)
+
+| 表 | 字段 |
+| --- | --- |
+| `projection.project_members` | `project_id` + `user_id` 复合 PK;`project_id → public.teams(id) CASCADE`;`revision bigint NOT NULL CHECK (> 0)`;`present boolean NOT NULL`;`created_at`;`updated_at` |
+| `projection.project_limits` | `project_id` PK + FK → `public.teams(id) CASCADE`;`revision bigint NOT NULL CHECK (> 0)`;`created_at`;`updated_at` |
+
+**为什么与 `project_limits` 分开**(迁移注释原文):
+
+> How far the pushed limits for a project have got, kept apart from the limits themselves: public.project_limits is the answer every reader wants, and this is the bookkeeping that decides which delivery gets to write it.
+>
+> The push is at-least-once over a network, so two deliveries can be in flight at once and arrive in either order. The caller can fence what it sends but not what arrives, so the older one has to be refused where it lands. A delivery is applied only when it carries a revision above the one here, and the row it would have written is left alone.
+>
+> Advanced in the same transaction as the values, which is what keeps the two from disagreeing: a revision recorded without its values would make every retry a duplicate this side drops, leaving the project on the old limits for good.
+
+**代码入口**:
+- 查询定义:`packages/db/pkg/auth/sql_queries/teams/project_member_projections.sql`(auth pool)、`packages/db/queries/teams/project_limits.sql`(core pool)
+- 写入方:[`packages/dashboard-api/internal/management/members.go`](../packages/dashboard-api/internal/management/members.go#L36)(`ApplyProjectMember` 行 36)与 [`packages/dashboard-api/internal/management/limits.go`](../packages/dashboard-api/internal/management/limits.go#L51)(`ApplyProjectLimits` 行 51);两张账本走不同 pool,事务不跨库
+
+---
+
+### 视图 `team_limits`
+
+- **来源**:`20251011200438_create_addons_table.sql`,2026.30 内被重写三次:`20260714091415_extend_team_limits.sql`(加磁盘两列 + 改 LATERAL)、`20260728163016_add_project_limits.sql`(加 `project_limits` 覆盖)、`20260826075153_add_free_disk_limit_columns.sql`(追加 `max_free_disk_size_mb`)
+- **角色**:聚合 `teams` + `tiers` + 当前有效 `addons` + 推送来的 `project_limits`,暴露最终配额
+
+| 字段 | 类型 | 2026.30 的取值口径 |
+| --- | --- | --- |
+| `id` | uuid | 团队 ID(实际为 `teams.id`) |
+| `max_length_hours` | bigint | `COALESCE(pl.max_length_hours, tier.max_length_hours)` |
+| `concurrent_sandboxes` | bigint | `COALESCE(pl.concurrent_sandboxes, tier.concurrent_instances + a.extra_concurrent_sandboxes)` |
+| `concurrent_template_builds` | bigint | `COALESCE(pl.concurrent_template_builds, tier.concurrent_template_builds + a.extra_concurrent_template_builds)` |
+| `max_vcpu` | bigint | `COALESCE(pl.max_vcpu, tier.max_vcpu + a.extra_max_vcpu)` |
+| `max_ram_mb` | bigint | `COALESCE(pl.max_ram_mb, tier.max_ram_mb + a.extra_max_ram_mb)` |
+| `disk_mb` | bigint | `COALESCE(pl.disk_mb, tier.disk_mb + a.extra_disk_mb)` |
+| `events_ttl_days` | bigint | `COALESCE(pl.events_ttl_days, tier.events_ttl_days + a.extra_events_ttl_days)` |
+| `default_free_disk_size_mb` | bigint | `COALESCE(pl.default_free_disk_size_mb, (tier.default_free_disk_size_mb + a.extra_disk_mb))::bigint` |
+| `max_disk_size_mb` | bigint | `COALESCE(pl.max_disk_size_mb, (tier.max_disk_size_mb + a.extra_max_disk_size_mb))::bigint` |
+| `max_free_disk_size_mb` | bigint(`20260826075153` 追加) | `COALESCE(pl.max_disk_size_mb, (tier.max_disk_size_mb + a.extra_max_disk_size_mb))::bigint` |
+
+**聚合结构(2026.30)**:
+
+```sql
+FROM public.teams t
+JOIN public.tiers tier ON t.tier = tier.id
+LEFT JOIN public.project_limits pl ON pl.team_id = t.id
+LEFT JOIN LATERAL (
+    SELECT COALESCE(SUM(extra_concurrent_sandboxes), 0)::bigint AS extra_concurrent_sandboxes,
+           ... ,
+           COALESCE(SUM(COALESCE(extra_max_disk_size_mb, extra_disk_mb)), 0)::bigint AS extra_max_disk_size_mb
+    FROM public.addons addon
+    WHERE addon.team_id = t.id
+      AND addon.valid_from <= now()
+      AND (addon.valid_to IS NULL OR addon.valid_to > now())
+) a ON true
+```
+
+相比 2026.29,`addons` 的求和从直接聚合改为 `LEFT JOIN LATERAL` 子查询;`project_limits` 以 `LEFT JOIN` 挂上,每一列用 `COALESCE` 覆盖。
+
 **特性**:`security_invoker=on` — 视图以调用者权限运行,避免越权查询其他团队配额
 
 **典型查询**:几乎每个 API handler 间接命中——`auth.MustGetTeamInfo(c)` 返回的 `teamInfo.Limits` 就是这张视图的 row。例如:
@@ -1129,7 +1250,9 @@ if teamInfo.Limits.MaxLengthHours < requestedTimeoutHours { ... 拒绝 }
 if currentSandboxes >= teamInfo.Limits.ConcurrentSandboxes { ... 拒绝 }
 ```
 
-**演进**:每加一个 `tiers` 字段都要同步给 `addons.extra_*` 与本视图加同名列。`events_ttl_days` 是 2026-07 最后一次按这套模式加的(`20260702120000`)。
+> ⚠️ **兼容期的一个反直觉细节**:新追加的 `max_free_disk_size_mb` 输出列读的是 `max_disk_size_mb` 的来源,而**不是**同批新增的 `tiers.max_free_disk_size_mb` / `addons.extra_max_free_disk_size_mb` / `project_limits.max_free_disk_size_mb` 三列。迁移注释称 "The legacy columns remain authoritative throughout the compatibility rollout"。因此那三列在 2026.30 是**已声明但没有任何视图消费者**的状态——写进去不会影响任何读路径。
+
+**演进**:每加一个 `tiers` 字段都要同步给 `addons.extra_*` 与本视图加同名列。`events_ttl_days` 是 2026-07 按这套模式加的(`20260702120000`);2026.30 新增 `default_free_disk_size_mb` / `max_disk_size_mb` 两列(来自 `20260714091414_add_template_disk_entitlements.sql` / `20260714091415_extend_team_limits.sql`),并追加 `max_free_disk_size_mb`。
 
 ---
 
@@ -1157,7 +1280,8 @@ if currentSandboxes >= teamInfo.Limits.ConcurrentSandboxes { ... 拒绝 }
 
 ```
 public.users
-  └─(被引用)─→ user_identities, users_teams, access_tokens, team_api_keys, envs, addons
+  └─(被引用)─→ user_identities, users_teams, team_api_keys, envs, addons
+       (⛔ access_tokens 已于 2026.30 由 20260823120000 删除)
 
 teams
   ├─→ tiers (tier)
@@ -1171,9 +1295,6 @@ users_teams
 team_api_keys
   ├─→ teams (team_id CASCADE)
   └─→ public.users (created_by SET NULL)
-
-access_tokens
-  └─→ public.users (user_id CASCADE)
 
 envs
   ├─→ teams (team_id NO ACTION)
@@ -1207,6 +1328,18 @@ volumes
 addons
   ├─→ teams (team_id CASCADE)
   └─→ public.users (added_by NO ACTION)
+
+project_limits
+  └─→ teams (team_id CASCADE, 同时是 PK)
+
+projection.project_members
+  └─→ teams (project_id CASCADE);user_id 无 FK
+
+projection.project_limits
+  └─→ teams (project_id CASCADE, 同时是 PK)
+
+-- 已退役(2026.30 删除):
+-- access_tokens → public.users (user_id CASCADE)
 ```
 
 ### 8.2 反向引用(envs.id 的多重身份)
@@ -1246,13 +1379,24 @@ envs (source='template')
        └─ snapshot_templates (env_id) ─→ envs (source='snapshot')
 ```
 
-**团队配额双层叠加**:
+**团队配额三层(2026.30 起)**:
 ```
 teams
+  ├─→ project_limits (整行覆盖层,2026.30 新增;有行时整行盖掉 tier+addons,写入方是 dashboard-api management service)
   ├─→ tiers (基础配额)
   └─→ addons (有效期内额外配额)
         │
-        └→ 视图 team_limits (security_invoker) ─→ 应用层查询
+        └→ 视图 team_limits (security_invoker,逐列 COALESCE)
+             └→ 应用层查询(读法不变,仍只查视图)
+```
+
+**外部推送 → 投影 fence → 读侧**:
+```
+外部服务(至少一次投递,可能乱序)
+  └─→ projection.project_members  (project_id, user_id) ── revision 单调递增
+  └─→ projection.project_limits   (project_id)          ── revision 单调递增
+        │
+        └→ 只有 revision 严格更高时才写入读侧(public.project_limits)
 ```
 
 ### 8.4 env ↔ build 多对多(去 FK 的反范式)
@@ -1292,7 +1436,57 @@ WHERE id=$build_id AND team_id IS NULL
 | **partial(按来源)** | `idx_envs_team_updated_at_templates (team_id, updated_at DESC, id DESC) WHERE source = 'template'` | 仅模板来源的团队列表 |
 | **GIN(仅一处)** | `idx_snapshots_team_metadata_gin (team_id, metadata) USING GIN` | 按 metadata KV 过滤(依赖 `btree_gin` 扩展) |
 
-### 9.2 触发器(最终状态)
+### 9.2 2026.30 索引与统计信息变更
+
+2026.30 区间新增 22 个迁移,其中 6 个专门做索引增删、4 个调 autovacuum、3 个调列级统计目标。这一批的共同特征:**全部是性能维护,不改语义**——没有一个迁移动过唯一性约束或外键。
+
+#### 9.2.1 索引新增(2 个)
+
+| 迁移 | 索引 | 定义 | 服务的查询 |
+| --- | --- | --- | --- |
+| `20260727032500` | `idx_env_build_assignments_env_tag_created_build` | `env_build_assignments (env_id, tag, created_at DESC, build_id DESC)` | 当前 tip 查找(`(env_id, tag)` 等值 + 完整排序键);补齐排序键后可走 descend-and-stop 有序索引扫描,`LIMIT 1` 无需排序 |
+| `20260814120000` | `idx_snapshots_team_base_env_time_id` | `snapshots (team_id, base_env_id, sandbox_started_at DESC, sandbox_id ASC)` | 模板过滤的 sandbox 列表;降序查询正向扫,升序查询反向扫同一个索引 |
+
+`20260727032500` 刻意**只做加法**:它同时删掉一个同名旧索引(见下)以保证可重试,被取代的 3 列索引留到 soak 之后由 `20260727060500` 单独删除。该迁移还把 `env_build_assignments.env_id` / `tag` 的统计目标提到 2000 并立刻 `ANALYZE`——理由是"查找的代价取决于每列估计值,而每次 autoanalyze 都会重新采样"。
+
+`20260814120000` 的体积值得注意:注释里写明该索引"预计约 19 GB",因此 Up 段把 `statement_timeout` 设为 `0`(无上限),而非常见的 `1h`/`3h`。
+
+#### 9.2.2 索引删除(5 个)
+
+| 迁移 | 删除的索引 | 删除理由(迁移注释口径) |
+| --- | --- | --- |
+| `20260727041100` | `idx_snapshots_sandbox_id` | 与约束支撑的 `snapshots_sandbox_id_unique` 键列完全相同;多个月使用窗口内该副本零扫描,而每次快照写入都要维护两份。唯一性由 unique 那份继续保证 |
+| `20260727041200` | `idx_env_builds_status` | 多个月窗口内仅个位数扫描;status 过滤走 per-entity join 或 status_group 系列索引,而 `env_builds` 是写最热的表之一。`status_group` 的索引**不受影响** |
+| `20260727041300` | `idx_team_api_keys_api_key_hash` | 与 UNIQUE 约束自带的 `team_api_keys_api_key_hash_key` 重复;两者对 planner 等价。删的是独立副本——约束支撑的索引本来就不能被 `DROP INDEX` 删掉,这让该迁移"失败即响" |
+| `20260727041400` | `idx_access_tokens_access_token_hash` | 同上,与 UNIQUE 约束自带的索引重复 |
+| `20260727060500` | `idx_env_build_assignments_env_tag_created` | `20260727032500` 加法那一半的后续:4 列索引共享同一排序前缀,3 列副本服务的扫描全部可原样落在新索引上 |
+
+> ⚠️ **注意**:`20260727041400` 删掉的 `idx_access_tokens_access_token_hash` 所在表本身已在 `20260823120000` 整体 `DROP TABLE`(见 §4)。该索引删除在 2026.30 的最终状态里已无对象可言——列在这里是为了让迁移序列完整可回溯。
+
+#### 9.2.3 autovacuum 参数(4 个迁移 / 4 张表)
+
+默认 scale factor 下,这些表要累积到相当大的死元组比例才会触发一次 autovacuum,而它们的写入量远早于此。四个迁移做同一件事:按表覆盖 scale factor,不改任何数据。
+
+| 迁移 | 表 | `vacuum_scale_factor` | `analyze_scale_factor` | `vacuum_insert_scale_factor` |
+| --- | --- | --- | --- | --- |
+| `20260723030000` | `env_builds` | 0.02 | 0.01 | — |
+| `20260724051151` | `snapshots` | 0.02 | 0.01 | 0.02 |
+| `20260724051152` | `envs` | 0.02 | 0.01 | — |
+| `20260724213257` | `env_build_assignments` | 0.02 | 0.01 | 0.02 |
+
+`env_build_assignments` 与 `snapshots` 额外设了 `autovacuum_vacuum_insert_scale_factor = 0.02`——这两张表以 INSERT 为主,只靠 update/delete 计数永远触发不了清理。`snapshots` 的迁移注释直接写明是"和 `env_builds` 一样的处理"。四个迁移的 Down 段均为 `RESET` 回默认值。
+
+#### 9.2.4 列级统计目标(3 个迁移)
+
+| 迁移 | 列 | `SET STATISTICS` |
+| --- | --- | --- |
+| `20260725100500` | `env_builds.status_group` | 2000 |
+| `20260727041000` | `env_builds.status` | 2000 |
+| `20260727032500` | `env_build_assignments.env_id` / `tag` | 2000 |
+
+动机一致:这些列的 n_distinct / MCV 估计直接决定热点查询的 plan 选择,默认采样量下估计值在 autoanalyze 之间抖动会导致 plan 抖动。每个迁移都在改完统计目标后立刻 `ANALYZE` 一次,不等下一次 autoanalyze。
+
+### 9.3 触发器(最终状态)
 
 | 触发器 | 表 | 时机 | 作用 |
 | --- | --- | --- | --- |
@@ -1357,6 +1551,11 @@ JOIN LATERAL (
 SELECT count(*) FROM active_template_builds WHERE team_id = $1;
 -- 与 team_limits.concurrent_template_builds 比较
 ```
+
+**2026.30 起比较对象的来源变了**:`team_limits` 是视图,它的每个限额列现在都是 `COALESCE(project_limits.<列>, tiers.<列> + addons 增量)`(见 §7 的视图重写说明)。所以调用方读法不变——仍然只查 `team_limits`——但同一行的取值可能来自 `project_limits` 而非 `tiers`。区别在于**覆盖是整行级**的:`project_limits` 的九项配额列全部 `NOT NULL`,所以只要有一行,该行的每一项配额都整体覆盖 tier+addons 的合计,而不是叠加,也不存在"半覆盖"的团队。这带来两个后果:
+
+- 给某团队写入 `project_limits` 后,原先靠 `addons` 抬高的限额**会被盖掉**,除非同时把对应列也写进 `project_limits`。`addons` 的 LATERAL 聚合仍在视图里,但只在 `project_limits` 侧为 NULL 时才生效。
+- ⚠️ **更正**:`project_limits` 在 2026.30 **有真实写入方**——`packages/dashboard-api/internal/management/limits.go`(见 §7)。迁移注释里"先单独落地、不与任何填充逻辑同时上线"只描述了迁移落地的时点;一旦管理面推送过配额,该行的九项配额就整体覆盖 tier+addons,视图输出不再等于重写前。
 
 **为何不直接 `count(*) FROM env_builds WHERE status_group IN (...)`**:
 - 后者要扫整张表(即使有 partial 索引)
@@ -1455,9 +1654,36 @@ WHERE team_id = $1
 
 ### 11.6 sqlc 与原始 SQL 的边界
 
-- 所有查询走 `packages/db/queries/*.sql` 经 sqlc 生成 Go 类型化代码(`internal/db/`)
+- 所有查询走 `packages/db/queries/**/*.sql` 经 sqlc 生成 Go 类型化代码,**生成物与查询源共置**(core 为 `packages/db/queries/*.sql.go`,Dashboard 为 `packages/db/pkg/dashboard/queries/`,Auth 为 `packages/db/pkg/auth/queries/`)
 - 极少数动态 SQL(如根据 filter 拼 WHERE):用 `sqlc.narg()` + `COALESCE` 模式
 - DDL 不在查询文件,只走迁移(`packages/db/migrations/`)
+
+### 11.7 单调 revision fence(2026.30 新增)
+
+`projection` schema 下的两张表解决的是**同一个问题**:数据由外部服务经网络**至少一次**地推送过来,两次投递可能同时在途、并可能乱序到达。调用方能约束自己发什么,但约束不了到达顺序,所以**旧的那次必须在落库处被拒**。
+
+```sql
+-- 两张表结构同形,区别只在 project_members 多一个 user_id
+projection.project_members (project_id, user_id)  PRIMARY KEY (project_id, user_id)
+projection.project_limits  (project_id)           PRIMARY KEY (project_id)
+    revision    bigint NOT NULL CHECK (revision > 0)   -- 单调递增
+    present     boolean NOT NULL                        -- 仅 project_members 有
+    created_at / updated_at  timestamptz DEFAULT now()
+```
+
+**规则**:投递携带的 `revision` 严格高于表中现值时才被应用;否则整次投递丢弃,目标行保持原样。
+
+**为什么 revision 必须与值在同一个事务里推进**——这是这套设计的关键不变量,迁移注释把它写得很直白:如果 revision 被单独记录而值没落地,那么之后**每一次重试都会变成这一侧判定为重复而丢弃的投递**,该项目就永久停在旧限额上,再也回不去。原子性在这里不是性能取舍,而是正确性前提。
+
+**`present` 列的含义**:`projection.project_members` 记录的是"某成员在该 project 中是否存在"这个**投影结果**,不是成员关系本身。删除成员是一次 `present = false` 的投递,而不是 `DELETE`——否则删掉行就同时删掉了 revision,迟到的旧投递会重新把成员加回来。
+
+**两张表的分工**:
+- `projection.project_members` → 决定哪些成员投影要落到读侧
+- `projection.project_limits` → 决定哪次限额投递有资格写 `public.project_limits`
+
+后者与 `public.project_limits` **刻意分表**。迁移注释解释了原因:`public.project_limits` 是"每个读者想要的答案",而 `projection.project_limits` 是"决定哪次投递有权写它"的记账。把两件事塞进一张表,要么读侧看到 revision 这种内部字段,要么 fence 状态随业务数据一起被覆盖。
+
+两张表都是 `ON DELETE CASCADE` 到 `public.teams(id)`,且 `project_id` 即主键(`project_members` 为复合主键),因此不存在同一 project 的重复 fence 行。`CHECK (revision > 0)` 让"未初始化"无法用 0 表示——行不存在才是未初始化。
 
 ---
 
@@ -1469,9 +1695,18 @@ WHERE team_id = $1
 - "向前兼容"原则:先发新代码(读老+新字段)→ 再发迁移改字段 → 再发新代码(只用新字段)
 - 大改动通常拆 2-3 个迁移:加新列 → 回填数据 → 删旧列(中间版本可回滚)
 
-参考:`packages/db/migrations/` 下 100+ 文件,主要里程碑:
+参考:`packages/db/migrations/` 下 133 个文件(2026.30 时点),主要里程碑:
 - `20240315165236`:env_builds 拆出来(去除 envs 上的构建字段)
 - `20250211160814`:凭据 hash 化(安全升级)
 - `20251218160000`:env_builds 多对多 + tag
 - `20260211120000`:snapshot_templates 表
 - `20260628120000`:envs 软删除
+- `20260714091415`:team_limits view 扩容(default/max disk size)
+- `20260728163016`:project_limits 表 + team_limits view 改为逐列 COALESCE(2026.30)
+- `20260807120000` / `20260812150000`:projection schema 与两张 revision fence 表(2026.30)
+- `20260823120000`:drop access_tokens(2026.30 唯一破坏性 Up 段)
+- `20260826075153`:free disk 限额列 + team_limits view 再次重写(2026.30 最后一个迁移)
+
+---
+
+> **已同步至 2026.30**。迁移基线:`packages/db/migrations/` 下 133 个文件,最后一个为 `20260826075153_add_free_disk_limit_columns.sql`;文中所有行号均对照 tag `2026.30` 校验。

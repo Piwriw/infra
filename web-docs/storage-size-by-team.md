@@ -6,6 +6,51 @@
 
 ---
 
+## 0. 2026.30 变动速览
+
+> 本文是"用 SQL 做存储报表"的操作手册。**2026.30 没有改动本文所有查询依赖的字段**（`env_builds.total_disk_size_mb` / `free_disk_size_mb`、`active_envs`、`env_build_assignments` 全部保持原样），所以 §5 ~ §9 的 SQL **可以直接沿用**。变动都发生在**容量配额**一侧。
+
+| 变动 | 说明 | 详见 |
+| --- | --- | --- |
+| **`tiers` 拆出三个 disk 上限字段** | `disk_mb` 之外新增 `default_free_disk_size_mb`(free-rootfs 目标)、`max_disk_size_mb`(总 ceiling)。migration `20260714091414_add_template_disk_entitlements.sql` | §0.1 |
+| **`addons` 新增 `extra_max_disk_size_mb`** | 总 ceiling 的加购增量,与原有的 `extra_disk_mb` 并列 | §0.1 |
+| **`team_limits` 视图加两列** | 现在会输出 `default_free_disk_size_mb` 与 `max_disk_size_mb`。migration `20260714091415_extend_team_limits.sql` | §0.1 |
+| **`max_disk_size_mb` 被按 tier 重设** | `base_v1` → 25600,其余 → 51200。migration `20260723120000_set_tier_max_disk_size.sql` | §0.1 |
+| **新增 `project_limits` 表,并接管 `team_limits`** | 视图改为 `COALESCE(pl.<col>, tier.<col> + addon.<col>)` —— **`project_limits` 有值时优先于 tier+addon** | §0.2 |
+| **再新增 `*_max_free_disk_size_mb` 一组列** | `tiers.max_free_disk_size_mb`、`addons.extra_max_free_disk_size_mb`、`project_limits.max_free_disk_size_mb`,并作为新列追加到视图。migration `20260826075153_add_free_disk_limit_columns.sql` | §0.2 |
+| **本文 §4.1 的一句旧结论被证伪** | "cursor 查询把 template 与其 snapshot build 容量相加" —— **两个 tag 下都不成立**,该查询只有一个 lateral | §4.1 |
+
+> ⚠️ **别把 `free_disk_size_mb` 和 2026.30 的 `max_free_disk_size_mb` 当成同一个东西。**
+> - `env_builds.free_disk_size_mb` 是**单个 build 行**上"请求/保留了多少可用空间",是历史值,不随 tier 改配额而变。
+> - `team_limits.max_free_disk_size_mb` 是**当前生效的 team 级上限**(派生列),按 tier / addon / `project_limits` 实时算出。
+>
+> 做"使用了多少"的报表用前者;做"还能用多少"的报表用后者。**本文 §5 的所有 SQL 都属于前者。**
+
+> ⚠️ **`team_limits` 视图的取值优先级在 2026.30 变了两次。** `20260714091415` 时还是 `tier + addon`;`20260826075153` 之后变成 `COALESCE(project_limits.<col>, tier.<col> + addon.<col>)`。**只要 `project_limits` 有该 team 的行,addon 就被整体忽略** —— 这一点在看"为什么这个 team 的 disk_mb 和 tier+addon 对不上"时是关键。
+
+### 0.1 三个 disk 字段的语义
+
+| 字段 | 单位 | 含义 |
+| --- | --- | --- |
+| `default_free_disk_size_mb` | MiB | **Free-rootfs 目标**。默认给用户多少可用空间(对应 `env_builds.free_disk_size_mb` 的期望值) |
+| `max_disk_size_mb` | MiB | **总逻辑 rootfs 上限**(不含 add-on) |
+| `max_free_disk_size_mb` | MiB | 上一条的更清晰命名。migration 里视图暂时把两列赋成同一个表达式,属兼容期行为 |
+
+> ⚠️ **`max_free_disk_size_mb` 目前是 `max_disk_size_mb` 的别名,不是独立配额。** `20260826075153` 的视图定义里两列都是 `COALESCE(pl.max_disk_size_mb, (tier.max_disk_size_mb + a.extra_max_disk_size_mb))::bigint`;它自己的源列(`tiers.max_free_disk_size_mb` 等)在 2026.30 **仍是 nullable 且无人写入**,migration 注释写明"These columns stay nullable until application-level dual writes are deployed"。**别拿它做容量告警的判据。**
+
+### 0.2 迁移基线
+
+2026.29 → 2026.30 共新增 **22 个 migration 文件**;与本文相关的 4 个是:
+
+| migration | 作用 |
+| --- | --- |
+| `20260714091414_add_template_disk_entitlements.sql` | `tiers` +2 列、`addons` +1 列 |
+| `20260714091415_extend_team_limits.sql` | `team_limits` 视图 +2 列 |
+| `20260723120000_set_tier_max_disk_size.sql` | 重设 `tiers.max_disk_size_mb` |
+| `20260826075153_add_free_disk_limit_columns.sql` | 三张表各 +1 列、视图 +1 列、接入 `project_limits` |
+
+---
+
 ## 1. 统计目标与结论
 
 ### 1.1 当前可以从 PostgreSQL 统计什么
@@ -64,7 +109,9 @@ public.env_builds.free_disk_size_mb
 两者语义不同：
 
 - `total_disk_size_mb`：build 完成后写入的 rootfs/VM 逻辑总磁盘容量，单位 MiB。
-- `free_disk_size_mb`：创建 build 时请求或保留的可用磁盘空间，通常来自 team tier 限制，不能当作已占用空间。
+- `free_disk_size_mb`：创建 build 时请求或保留的可用磁盘空间，不能当作已占用空间。
+
+> ⚠️ **2026.30 起 `free_disk_size_mb` 的"来源"要说得更准确。** 它仍由请求决定,但请求的上限现在来自三个并列字段(`tiers.default_free_disk_size_mb` + `addons.extra_disk_mb`,或被 `project_limits` 覆盖),不再只是 tier 的 `disk_mb`。见 §0。**这个字段本身是历史值**——tier 改配额不会回溯改写已有 build 行。
 
 模板 build 完成后，Template Manager 从 rootfs header 获得最终 rootfs size，并通过 `FinishTemplateBuild` 更新 `total_disk_size_mb`。相关代码：
 
@@ -176,7 +223,20 @@ Snapshot Template 的逻辑磁盘大小仍然来自其最新 ready build 的 `to
 
 因此，Template API 的 `DiskSizeMB` 是最新 ready build 的逻辑磁盘容量，而不是 GCS/S3 object size。
 
-当前分支的 cursor 查询还将模板 build 与其关联 snapshot build 的逻辑容量相加，结果字段仍叫 `build_total_disk_size_mb`。这个值适合展示“Template 加其 snapshot 逻辑容量”的场景，但不应直接解释成物理磁盘占用。若做独立 team 报表，建议将 Template 和 Snapshot 分列，避免语义混淆。
+> ⚠️ **本节此前写错了一句。** 原文称"当前分支的 cursor 查询还将模板 build 与其关联 snapshot build 的逻辑容量相加"。**这在 2026.30 和 2026.29 都不成立**——`get_team_templates_with_cursor.sql` 里只有一个 `LEFT JOIN LATERAL`，条件为 `ba.tag = 'default' AND b.status_group = 'ready'`，取最新一条，**没有任何 `SUM`，也没有 join snapshot**：
+
+```sql
+LEFT JOIN LATERAL (
+    SELECT b.id, b.vcpu, b.ram_mb, b.total_disk_size_mb, b.envd_version
+    FROM public.env_build_assignments AS ba
+    JOIN public.env_builds AS b ON b.id = ba.build_id
+    WHERE ba.env_id = e.id AND ba.tag = 'default' AND b.status_group = 'ready'
+    ORDER BY ba.created_at DESC
+    LIMIT 1
+) eb ON TRUE
+```
+
+字段名仍叫 `build_total_disk_size_mb`，但它就是**这一个 build 的 `total_disk_size_mb`**，不含 snapshot 叠加。做独立 team 报表时，Template 与 Snapshot 仍应分列（见 §5.1），但理由只是"语义不同"，不是"查询已经合并了它们"。
 
 ### 4.2 Pause Snapshot 列表
 
@@ -841,3 +901,7 @@ snapshot template 逻辑磁盘 MiB
 - **看指定 team 的资源明细**：使用 [5.5](#55查询指定-team_id-的资源明细)。
 - **看数据库 build 历史**：使用 [6](#6不推荐但可用于审计的-build-行统计)，但在报表中标注为历史逻辑容量。
 - **看 GCS/S3 真实计费或物理占用**：建立对象 Inventory，使用 [7.2](#72假设-inventory-已导入-postgresql-的查询)，不要用 `total_disk_size_mb` 代替。
+
+---
+
+> **版本说明**：已同步至 **2026.30**。本文 §5 ~ §9 的 SQL 所依赖的字段(`env_builds.total_disk_size_mb` / `free_disk_size_mb`、`active_envs`、`env_build_assignments`)在 2026.30 未变，可直接沿用；§0 汇总了 2026.30 在容量配额一侧的变动(`tiers`/`addons` 新增 disk 字段、`team_limits` 视图两次重定义、`project_limits` 接管)。§4.1 此前的一句错误结论已更正。

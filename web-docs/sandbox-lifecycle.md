@@ -6,6 +6,7 @@
 
 ## 目录
 
+- [零、2026.30 变动](#零202630-变动)
 - [一、概述](#一概述)
 - [二、状态机:运行态在 Redis、终态在 Postgres](#二状态机运行态在-redis终态在-postgres)
 - [三、API 端点全景](#三api-端点全景)
@@ -27,6 +28,54 @@
 - [附录 A:状态机详图](#附录-a状态机详图)
 - [附录 B:gRPC `SandboxService` 协议](#附录-bgrpc-sandboxservice-协议)
 - [附录 C:术语表](#附录-c术语表)
+
+---
+
+## 零、2026.30 变动
+
+本节汇总 `2026.29` → `2026.30` 之间影响沙箱生命周期的变化。所有行号以 tag `2026.30` 为准。
+
+### 0.1 gRPC 契约变更
+
+| 消息 / 字段 | 变化 | 位置（2026.30） |
+|---|---|---|
+| `SandboxService` | ⛔ `ListCachedBuilds` RPC 被删除（连同 `CachedBuildInfo`、`SandboxListCachedBuildsResponse`）；service 现在只有 6 个 RPC | `packages/orchestrator/orchestrator.proto:258-264` |
+| `SandboxConfig.iam = 27` | 新增 `optional SandboxIam iam = 27;`（沙箱工作负载身份） | `orchestrator.proto:67` |
+| `SandboxIam` / `SandboxIamToken` | 新增消息；`tokens` 是 caller 命名的 map，**不铸造／签名／投递任何凭据**，orchestrator 只从既有的 `team_id`/`sandbox_id`/`execution_id`/`template_id` 推导身份 | `orchestrator.proto:74,81` |
+| `SandboxNetworkIngressConfig.https_ports = 3` | 新增 `repeated uint32 https_ports = 3;` | `orchestrator.proto:132` |
+| `SandboxCreateRequest.filesystem_boot = 4` | 新增 `optional bool filesystem_boot = 4;`。注释明确：请求**只能往「无内存」方向放宽**，永远不能让一个没有内存快照的模板去做内存恢复；缺省时仍只由快照 metadata 决定启动路径 | `orchestrator.proto:141-146` |
+| `SandboxCreateResponse.filesystem_boot_applied = 3` | 新增。用于让「显式要求 filesystem boot」的调用方**检测到需求未被满足**（老 orchestrator 不会带这个字段），而不是盲信部署顺序 | `orchestrator.proto:157` |
+| `SandboxCreateResponse.resolved_firecracker_version = 4` | 新增。是沙箱**实际运行**的 FC 版本（在启动时经 firecracker-versions flag 解析并冻结）。注释要求：需要按 FC 版本做功能门禁的调用方必须读这个字段，**不要自己重新解析**——重新解析可能与冻结值不一致 | `orchestrator.proto:166` |
+| `RunningSandbox.config` | 标记 `[deprecated = true]` | `orchestrator.proto:237` |
+| `RunningSandbox` 新字段 | 新增 `sandbox_id=5`、`team_id=6`、`execution_id=7`、`vcpu=8`、`ram_mb=9` | `orchestrator.proto:247-251` |
+
+⚠️ `RunningSandbox` 的语义发生了实质变化，不只是加了字段。注释写明：**API 不再从这个列表重建沙箱状态**，Redis 才是真相源；`List` 现在只用于发现「节点上在跑但 store 不知道」的沙箱以便杀掉。新增的扁平字段（`sandbox_id`+`team_id` 组成 store key，`execution_id` 用于把 edge catalog 的删除事件一起清掉，`vcpu`/`ram_mb` 供节点做乐观资源记账）正是这个判定所需的最小集合。旧的 `config` 字段仍然填充，只是为了让尚未升级的 API 实例在滚动发布期间继续工作。
+
+### 0.2 节点侧能力新增
+
+| 能力 | 2026.30 变化 | 位置（2026.30） |
+|---|---|---|
+| 冷启动前置修复 | `RebootSandbox` 在 guest 起来前串接 `chainPreBoot`：ext4 journal 回放（`fsRecoverPreBoot`）+ 离线 envd 换装（`envdOfflineUpgradePreBoot`） | `packages/orchestrator/pkg/sandbox/reboot.go:207-209,326,364` |
+| journal 回放 | 新增 `pkg/sandbox/rootfs/fs_recover_linux.go`：jailed `e2fsck`；`e2fsckPath = "/usr/sbin/e2fsck"`、`FsRecoverTimeout = 15s`、`ErrRecoveryFailed`、`errDeviceRefused`，`RecoverOutcome` 取值 `replayed`/`failed_operational`/`failed_open`/`skipped_quiesced`/`none` | `packages/orchestrator/pkg/sandbox/rootfs/fs_recover_linux.go:21,28,40,45` |
+| 离线 envd 换装 | 新增 `pkg/sandbox/rootfs/envd_swap_linux.go`（836 行）：jailed `debugfs` 替换 guest 内 envd 二进制 | `packages/orchestrator/pkg/sandbox/rootfs/envd_swap_linux.go` |
+| 原地 checkpoint | `Server.Checkpoint` 拆成 `checkpointInPlace` / `checkpointResumeFresh`；新增 `BeginInPlaceCheckpoint` / `EndInPlaceCheckpoint` / `UseSyncWP` | `packages/orchestrator/pkg/server/sandboxes.go:1188,1271`、`packages/orchestrator/pkg/sandbox/sandbox.go:494,499,513` |
+| 快照准入 | 新增 `EnsurePausable`、`SnapshotAdmissionOutcome`、`ErrSnapshotAdmissionPending`、`AwaitSnapshotAdmission`、`awaitSnapshotAdmission`；Server 侧 `recordPauseAdmission` | `packages/orchestrator/pkg/sandbox/sandbox.go:3596,3630-3644,3648,3669,3682`、`packages/orchestrator/pkg/server/sandboxes.go:804` |
+| 快照抽象 | 新增 `pkg/sandbox/snapshot.go`：`Snapshot`、`WaitMemorySealed`、`NewFilesystemOnlySnapshot` | `packages/orchestrator/pkg/sandbox/snapshot.go` |
+| rootfs Provider | 接口新增 `PrepareExportDiff`、`ExportDiffInPlace`、`SwapForBackgroundSeal`、`FoldSealed`，新增 `ErrDeferredExportNotSupported` | `packages/orchestrator/pkg/sandbox/rootfs/rootfs.go` |
+| 网络数据面 v2 | 新增 `NETWORK_VERSION`（默认 `1`）与 `pkg/sandbox/network/v2/`（nftables + host sets + eBPF） | `packages/orchestrator/pkg/sandbox/network/pool.go:92` |
+| 槽位存储 | ⛔ `storage_kv.go`（Consul KV）与 `storage_memory.go` 被删除 | `packages/orchestrator/pkg/sandbox/network/` |
+| 节点状态 | 新增 `ShuttingDown = 4`；关停写它而非 `Draining`，并 sleep 15s | `packages/orchestrator/info.proto:17`、`packages/orchestrator/pkg/factories/run.go:1085-1091` |
+| 在途工作 | 新增 `outstanding_work` 上报字段与 `TrackWork()` | `packages/orchestrator/info.proto:55-56`、`packages/orchestrator/pkg/service/info.go:53-60` |
+| 路由发布 | 新增 `pkg/routing/publisher.go`：orchestrator 自写 `sandbox:routing:{id}`；API 自有的 `sandbox:catalog:{id}` 并存 | `packages/orchestrator/pkg/routing/publisher.go` |
+| 入口代理 | 按 `https_ports` 选 scheme；拒绝 envd 内部路径（`/collapse`、`/freeze`、`/fsfreeze`、`/fsthaw`、`/init`、`/unfreeze`） | `packages/orchestrator/pkg/proxy/proxy.go:43-55,86-88`、`packages/orchestrator/pkg/sandbox/envd/internal_routes.gen.go` |
+| 卷错误映射 | `syscall.ENOTDIR` → `codes.InvalidArgument` + HTTP 400；`PATH_NOT_FOUND` 的 HTTP 状态由 400 改为 404 | `packages/orchestrator/pkg/volumes/` |
+| 版本门禁 | 新增 `packages/shared/pkg/fcversion/sandbox_features.go`：`inPlaceCheckpointMinE2B = 0.2.0`、`filesystemSnapshotsMinE2B = 0.1.0` | `packages/shared/pkg/fcversion/sandbox_features.go` |
+
+⚠️ 上述新能力**全部由 feature flag 控制且默认关闭**（`in-place-checkpoint`、`use-sync-wp`、`defer-rootfs-export`、`defer-memory-export`、`preboot-fs-recovery`、`pause-refusal-restore`、`orchestrator-routing-publish` 等，见 `packages/shared/pkg/featureflags/flags.go`），网络 v2 也只允许 canary。因此 2026.30 的**默认**生命周期行为与 2026.29 基本一致；差异主要是新增的可选路径与可观测字段。
+
+### 0.3 基础设施失效
+
+⛔ `iac/` 目录在 2026.30 被整体删除（172 个文件 → 0，commit `8a1c4888`「chore(deploy): retire Nomad-based deployment ahead of a new deploy path」），根目录 `self-host.md` 随之删除。⚠️ `packages/docker-reverse-proxy/`（19 个文件 → 0）是**另一个更早的提交** `d153bbe9d`（2026-08-06）删的，不在 `8a1c4888` 这批里。本文正文中若出现 `../iac/**` 引用，一律视为历史档案。`packages/nomad-nodepool-apm/` 仍然存在。
 
 ---
 
@@ -638,13 +687,28 @@ CreateNetwork
 
 ### 7.4 Slot 复用
 
-`pool.go:130-300` 的 `Pool` 维护一组预热的 slot,避免每次沙箱启动都创建新 namespace:
+`pool.go` 的 `Pool` 维护一组预热的 slot,避免每次沙箱启动都创建新 namespace:
 
 - `Populate` 启动时预创建一批 slot
-- `Get` 优先复用空闲 slot,否则 `createNetworkSlot` 新建
-- `ReturnAsync` 沙箱关闭后异步回收 slot(网络配置保留,下次复用)
+- `Get` 优先复用空闲 slot,否则 `createNetworkSlot` 新建。2026.30 起签名是 `Get(ctx, network, class EgressClass)`（`packages/orchestrator/pkg/sandbox/network/pool.go:275`），多了一个出口类别参数
+- `ReturnAsync` 沙箱关闭后异步回收 slot（`pool.go:373`，网络配置保留，下次复用）
 
-slot 持久化后端(`storage_*.go`)支持 Redis / memory / kv,用于 orchestrator 重启后恢复 slot 状态。
+⛔ slot 持久化后端在 2026.30 只剩 `storage.go` 与 `storage_local.go`：`storage_kv.go`（Consul KV，156 行）与 `storage_memory.go`（59 行）**已被删除**（commit `8e3fdf31b`「refactor: remove Consul KV network slot storage」）。因此「支持 Redis / memory / kv」的说法在 2026.30 不再成立。
+
+### 7.5 网络数据面 v2（2026.30 新增）
+
+`NETWORK_VERSION` 选择数据面实现（`packages/orchestrator/pkg/sandbox/network/pool.go:92`，`Validate()` 只接受 `1` 或 `2`，见 `pool.go:161-163`）：
+
+| 版本 | 命名空间内 NAT | host 侧防火墙 | 额外能力 |
+|---|---|---|---|
+| `1`（默认） | iptables 规则 | host iptables 规则 | — |
+| `2` | nftables `SetupNamespaceNAT()` 取代 2 条 iptables 规则 | `hf.AddSlot()` 用 2 个 set 取代 host iptables 规则 | eBPF `observer.Attach()` 提供可选 per-veth 计数（best-effort） |
+
+实现位于 `packages/orchestrator/pkg/sandbox/network/v2/`，建网／拆网入口是 `CreateNetworkV2` / `createNetworkV2` / `RemoveNetworkV2`（`v2/network.go:39,55,297`）。出口分类经 DSCP：`SetupEgressDSCP`（`v2/dscp.go`）在 namespace 的 `postroute_mangle` 链上打标，范围 0..63（`maxDSCP = 63`）；配置项是 `SANDBOX_EGRESS_DSCP`（默认 `0` 关闭，CS1=8 为 RFC 3662 Scavenger）与 `BUILD_SANDBOX_EGRESS_DSCP`（指针类型，nil 继承前者），见 `pool.go:84,89`。
+
+⚠️ v2 是 opt-in canary 能力，合并与部署默认值保持 `NETWORK_VERSION=1`。启用清单、指标命名与回滚步骤见 `packages/orchestrator/pkg/sandbox/network/v2/OPERATIONS.md`。其中最关键的一条：**回滚必须先 drain + cordon**，且 v1 启动路径的 `PurgeHostFirewallTable` 清理失败是**致命错误**——残留的 v2 表会劫持 v1 sandbox 的出口流量。若 `DISABLE_STARTUP_RECLAIM=true`，回滚清理同样被跳过，此时不能假设回滚安全。
+
+⚠️ §7.3 的 `Firewall` 与 §7.2 的 `iptables` 描述对应的是 **v1 数据面**；在 v2 下，namespace 内 NAT 与 host 防火墙分别由 nftables 与 host sets 接管（`v2/network.go:32-39` 的注释逐条列出了替换关系）。
 
 ---
 
@@ -752,7 +816,15 @@ Factory.ResumeSandbox
 
 ### 9.3 filesystem-only resume(走 reboot 路径)
 
-`reboot.go:39` 处理「只有 rootfs diff,没有 memfile」的快照:不走 uffd,而是 cold boot + 重新跑 init。比 uffd 慢但兼容更多场景。
+`RebootSandbox`（`packages/orchestrator/pkg/sandbox/reboot.go:76`）处理「只有 rootfs diff,没有 memfile」的快照:不走 uffd,而是 cold boot + 重新跑 init。比 uffd 慢但兼容更多场景。
+
+2026.30 起这条路径有三处变化:
+
+1. **安全门改为 `rebootAllowed(meta, requestFilesystemBoot)`**（`reboot.go:63`）：除「快照本身是 fs-only」之外，**请求显式置位 `filesystem_boot` 时也放行**。注释解释了代价：memory 快照的 rootfs 可能缺少只存在于 guest page cache 中的写入，冷启动它最多只能得到 crash-consistent 的磁盘。请求字段只能往「无内存」方向放宽，不能反向强制内存恢复（`orchestrator.proto:141-146`）。
+2. **冷启动前置链 `chainPreBoot`**（`reboot.go:207-209,326`）：先 `fsRecoverPreBoot`（jailed `e2fsck` 回放 ext4 journal，`pkg/sandbox/rootfs/fs_recover_linux.go`，受 `preboot-fs-recovery` flag 控制），再 `envdOfflineUpgradePreBoot`（jailed `debugfs` 离线换装 envd 二进制，`pkg/sandbox/rootfs/envd_swap_linux.go`）。决策函数是 `offlineSwapDecision` / `decideOfflineSwap`（`reboot.go:257,289`）。
+3. **判定式上移到 Server**：`filesystemBoot(meta, req) = meta.IsFilesystemOnly() || req.GetFilesystemBoot()`（`packages/orchestrator/pkg/server/sandboxes.go:97`），实际结果由 `filesystem_boot_applied` 回报（`sandboxes.go:421`）。
+
+⚠️ 第 2 条的两个前置步骤都直接操作 rootfs 设备，失败分类被拆得很细：`RecoverOutcome` 取 `replayed` / `failed_operational`（可重试）/ `failed_open` / `skipped_quiesced`（guest 已 fsfreeze，无需回放）/ `none`（`fs_recover_linux.go:40-45`）。**它们不改变「冷启动会丢 RAM、进程与 socket」这一事实**，只是让 rootfs 在启动前更接近一致状态。
 
 ---
 
@@ -878,6 +950,31 @@ uploadSnapshotAsync
 harvestResumePrefetchAsync
   └─ 分析快照访问模式,优化 prefetch 策略
 ```
+
+### 10.6 2026.30 新增：快照准入与原地 checkpoint
+
+`Server.Pause` 与 `Server.Checkpoint` 在 2026.30 都先经过一层**快照准入闸门**：
+
+| 组件 | 作用 | 位置（2026.30） |
+|---|---|---|
+| `EnsurePausable` | 判定当前 sandbox 是否允许进入快照流程 | `packages/orchestrator/pkg/sandbox/sandbox.go:3596` |
+| `SnapshotAdmissionOutcome` 常量 | 准入结果的分类枚举 | `packages/orchestrator/pkg/sandbox/sandbox.go:3630-3644` |
+| `ErrSnapshotAdmissionPending` | 上一次准入尚未落地时的哨兵错误 | `packages/orchestrator/pkg/sandbox/sandbox.go:3648` |
+| `AwaitSnapshotAdmission` / `awaitSnapshotAdmission` | 等待准入结果 | `packages/orchestrator/pkg/sandbox/sandbox.go:3669,3682` |
+| `recordPauseAdmission` | Server 侧记录结果与等待时长 | `packages/orchestrator/pkg/server/sandboxes.go:804` |
+
+`Server.Checkpoint` 同时被拆成两条路径（`packages/orchestrator/pkg/server/sandboxes.go:1188,1271`）：
+
+| 路径 | 入口函数 | 语义 |
+|---|---|---|
+| 原地 | `checkpointInPlace` | 在同一个 Firecracker 进程上完成快照，由 `BeginInPlaceCheckpoint` / `EndInPlaceCheckpoint` / `UseSyncWP` 控制写保护窗口（`pkg/sandbox/sandbox.go:494,499,513`） |
+| resume-fresh | `checkpointResumeFresh` | 保持旧行为：快照后在本节点 resume 成新 lifecycle |
+
+配套新增 `pkg/sandbox/snapshot.go`（`Snapshot`、`WaitMemorySealed`、`NewFilesystemOnlySnapshot`），以及 rootfs `Provider` 接口的 `PrepareExportDiff`、`ExportDiffInPlace`、`SwapForBackgroundSeal`、`FoldSealed` 与新错误 `ErrDeferredExportNotSupported`（`pkg/sandbox/rootfs/rootfs.go`）。`Sandbox` 侧新增 `WithMaintainSandbox`、`WithFilesystemSnapshot`、`WithDeferredRootfsExport` 选项（`pkg/sandbox/sandbox.go:1897,1905,1914`）。
+
+⚠️ 版本门禁：`packages/shared/pkg/fcversion/sandbox_features.go` 定义 `inPlaceCheckpointMinE2B = 0.2.0`（原地 checkpoint）与 `filesystemSnapshotsMinE2B = 0.1.0`（filesystem-only 快照），由 `HasInPlaceCheckpoint()` / `HasFilesystemSnapshots()` 判定；节点侧查询入口是 `Server.firecrackerSupports`（`packages/orchestrator/pkg/server/sandboxes.go:106`）。
+
+⚠️ 这些能力全部由 feature flag 控制且默认关闭（`in-place-checkpoint`、`use-sync-wp`、`defer-rootfs-export`、`defer-memory-export`、`pause-refusal-restore`）。**不能推断 2026.30 的 checkpoint 默认走原地路径**——默认仍是 resume-fresh。
 
 ---
 
@@ -1343,18 +1440,21 @@ GET /v1/sandbox ─►  reverseproxy
 | `packages/orchestrator/pkg/sandbox/reclaim.go` | `bestEffortReclaim`(pause 前释放空闲页)| — |
 | `packages/orchestrator/pkg/sandbox/envd.go` | envd HTTP 客户端:`/init`、`callEnvdFreeze`、`callEnvdUnfreeze`、`callEnvdFsfreeze`、`callEnvdFsthaw`、`envdOp*` 常量 | `:283`, `:132`, `:139`, `:146`, `:153`, `:64-68` |
 | `packages/orchestrator/pkg/sandbox/envd_process.go` | `StartEnvdShell`, `StartEnvdSystemShell` | — |
-| `packages/orchestrator/pkg/sandbox/reboot.go` | `Factory.RebootSandbox`(filesystem-only resume)| `:39` |
+| `packages/orchestrator/pkg/sandbox/reboot.go` | `Factory.RebootSandbox`（filesystem-only resume）、`rebootAllowed`、`chainPreBoot`、`fsRecoverPreBoot`、`offlineSwapDecision`、`decideOfflineSwap` | `:76`（2026.29 为 39）、`:63`、`:326`、`:364`、`:257`、`:289` |
 | `packages/orchestrator/pkg/sandbox/uffd/` | uffd 处理器(resume 时按需 page-in)| — |
 | `packages/orchestrator/pkg/sandbox/rootfs/` | `NewNBDProvider`, `NewDirectProvider` | — |
 | `packages/orchestrator/pkg/sandbox/fc/process.go` | `ProcessOptions`, `Process`, `NewProcess`, `configure`, `Create`, `Resume`, `Pause`, `Stop`, `CreateSnapshot`, `DrainBalloon` | `:88`, `:135`, `:159`, `:227`, `:319`, `:513`, `:749`, `:677`, `:823`, `:762` |
 | `packages/orchestrator/pkg/sandbox/fc/client.go` | `apiClient`, `loadSnapshot`, `resumeVM`, `pauseVM`, `createSnapshot`, `setMmds`, `flushMetrics`, `setMetrics`, `setBootSource`, `setRootfsDrive`, `setNetworkInterface`, `setMachineConfig`, `setEntropyDevice`, `startVM`, `installBalloon`, `memoryMapping`, `memoryInfo`, `dirtyMemory` | `:27`, `:42`, `:94`, `:114`, `:131`, `:151`, `:168`, `:185`, `:201`, `:215`, `:327`, `:361`, `:398`, `:420`, `:440`, `:499`, `:512`, `:529` |
 | `packages/orchestrator/pkg/sandbox/fc/config.go` | `Config`, `HostKernelPath`, `FirecrackerPath`, `RootfsPaths`, `envsDisk`, `rootfsDriveID` | `:26`, `:35`, `:50`, `:66`, `:16`, `:19` |
-| `packages/orchestrator/pkg/sandbox/fc/kernel_args.go` | `KernelArgs` | `:11` |
+| `packages/orchestrator/pkg/sandbox/fc/kernel_args.go` | `reservedCmdlineParams`（24 项）、`ParseCmdlineArgs`、`ValidateCmdlineArgs`、`buildKernelArgs`、`String`（2026.30 重写；2026.29 只有 `KernelArgs` `:11`） | `:24`, `:46`, `:71`, `:84`, `:137` |
 | `packages/orchestrator/pkg/sandbox/fc/script_builder.go` | `StartScriptBuilder` | — |
 | `packages/orchestrator/pkg/sandbox/fc/mmds.go` | `MmdsMetadata` struct | — |
 | `packages/orchestrator/pkg/sandbox/network/network.go` | `Slot.CreateNetwork`, `RemoveNetwork` | `:78`, `:352` |
 | `packages/orchestrator/pkg/sandbox/network/slot.go` | `Slot`, `NewSlot`, `ConfigureInternet`, `UpdateInternet`, `DenyEgress`, `ResetInternet`, `GetVrtSlotsSize` | `:60`, `:88`, `:251`, `:287`, `:320`, `:351`, `:406` |
-| `packages/orchestrator/pkg/sandbox/network/pool.go` | `Pool`, `NewPool`, `Get`, `returnSlot`, `ReturnAsync`, `Populate` | `:109`, `:130`, `:195`, `:239`, `:281`, `:160` |
+| `packages/orchestrator/pkg/sandbox/network/pool.go` | `Pool`, `NewPool`, `Get(ctx, network, class)`, `returnSlot`, `ReturnAsync`, `Populate`；配置含 `NetworkVersion`(`:92`)、`SandboxEgressDSCP`(`:84`)、`BuildSandboxEgressDSCP`(`:89`)、三个 TCP firewall 端口(`:79-81`) | `Get` 在 `:275`（2026.29 为 195）、`ReturnAsync` 在 `:373`、`Validate` 在 `:161-163` |
+| `packages/orchestrator/pkg/sandbox/network/pool_iface.go`（2026.30 新增） | `PoolInterface{Get, ReturnAsync, Close}` | — |
+| `packages/orchestrator/pkg/sandbox/network/v2/`（2026.30 新增） | `CreateNetworkV2`、`createNetworkV2`、`RemoveNetworkV2`、`SetupEgressDSCP`、`HostFirewall`、`VethObserver`、`SlotV2`、`OPERATIONS.md` | `network.go:39,55,297`、`dscp.go` |
+| ⛔ `packages/orchestrator/pkg/sandbox/network/storage_kv.go` / `storage_memory.go` | Consul KV 与内存槽位存储 | 2026.30 已删除，见 §7.4 |
 | `packages/orchestrator/pkg/sandbox/network/firewall.go` | `Firewall`(nftables), `ApplyRules`, `DenyEgress` | `:27`, `:368`, `:408` |
 | `packages/orchestrator/pkg/sandbox/network/host.go` | `getDefaultGateway` | `:35` |
 | `packages/orchestrator/pkg/sandbox/nbd/dispatch.go` | NBD 服务端协议:`Provider`, `Request`, `Response`, `Dispatch`, `NewDispatch`, `Handle`, `cmdRead`, `cmdWrite`, `cmdWriteZeroes` | `:46`, `:85`, `:95`, `:101`, `:121`, `:174`, `:287`, `:374`, `:450` |
@@ -1363,7 +1463,16 @@ GET /v1/sandbox ─►  reverseproxy
 | `packages/orchestrator/pkg/sandbox/template/cache.go` | `Cache`, `NewCache`, `GetTemplate`, `AddSnapshot`, `UpdateMetadata`, `GetCachedTemplate`, `Invalidate` | `:51`, `:66`, `:159`, `:219`, `:274`, `:261`, `:143` |
 | `packages/orchestrator/pkg/sandbox/template/template.go` | `Template` interface, `File` interface | `:16` |
 | `packages/orchestrator/pkg/sandbox/template/storage.go` | `Storage` struct(包装 `block.Device`)| `:25` |
-| `packages/orchestrator/orchestrator.proto` | gRPC `SandboxService`:Create/Update/List/Delete/Pause/Checkpoint/ListCachedBuilds | service `:209-218` |
+| `packages/orchestrator/orchestrator.proto` | gRPC `SandboxService`:Create/Update/List/Delete/Pause/Checkpoint（⛔ `ListCachedBuilds` 已删除） | service `:258-264`（2026.29 为 209-218） |
+| `packages/orchestrator/pkg/sandbox/snapshot.go`（2026.30 新增） | `Snapshot`、`WaitMemorySealed`、`NewFilesystemOnlySnapshot` | — |
+| `packages/orchestrator/pkg/sandbox/rootfs/fs_recover_linux.go`（2026.30 新增） | jailed `e2fsck` journal 回放；`FsRecoverTimeout`、`RecoverOutcome` | `:21`, `:28`, `:40`, `:45` |
+| `packages/orchestrator/pkg/sandbox/rootfs/envd_swap_linux.go`（2026.30 新增） | jailed `debugfs` 离线 envd 换装 | — |
+| `packages/orchestrator/pkg/sandbox/envd_memory.go`（2026.30 新增） | `envdMemoryHeader`、`EnvdMemoryProtection` | — |
+| `packages/orchestrator/pkg/sandbox/envd/internal_routes.gen.go`（生成） | `specInternalPaths`：`/collapse`、`/freeze`、`/fsfreeze`、`/fsthaw`、`/init`、`/unfreeze` | — |
+| `packages/orchestrator/pkg/routing/publisher.go`（2026.30 新增） | `Publisher`、`OnInsert`、`OnStopping`、`lifecycleKey` | `:106`, `:168`, `:233` |
+| `packages/orchestrator/pkg/service/info.go` | `TrackWork`、`OutstandingWork`、`SetStatus`、`OverrideStatus` | `:53-60`, `:69`, `:76`, `:83` |
+| `packages/shared/pkg/fcversion/sandbox_features.go`（2026.30 新增） | `HasInPlaceCheckpoint`、`HasFilesystemSnapshots`、`HasHugePages`、`HasMemfd` | — |
+| `packages/orchestrator/pkg/proxy/proxy.go` | `schemeForPort`、`newDestinationResolver`、`ConnectionKey: LifecycleID`、`InsecureSkipTLSVerify` | `:43-55`, `:64`, `:141`, `:147` |
 
 ### 16.3 Client-Proxy / DB
 
@@ -1521,6 +1630,8 @@ resume 是最复杂的路径。常见失败点:
 
 host 上的 iptables MASQUERADE + nftables Firewall 控制出入站。`DenyEgress`(resume throwaway)可以临时禁出站,确认沙箱正常后再放行。
 
+⚠️ 2026.30 起这段描述对应的是 **v1 数据面**。`NETWORK_VERSION=2` 时，namespace 内 NAT 由 nftables `SetupNamespaceNAT()` 接管，host 侧防火墙由 `hf.AddSlot()` 的两个 set 接管，并可选启用 eBPF per-veth 计数（`packages/orchestrator/pkg/sandbox/network/v2/`）。v2 是 canary 能力，默认仍是 `1`。细节见 §7.5 与同目录 `OPERATIONS.md`。
+
 ### Q9:为什么 Evictor 间隔 50ms 而不是 1s?
 
 50ms 让 timeout 控制更精确(沙箱到期后最多 50ms 内被驱逐)。但扫描成本高,所以用 `MaxConcurrentEvictions`(LD flag)限并发。规模大时可能改成更聪明的事件驱动(EndTime 到期触发)。
@@ -1529,7 +1640,9 @@ host 上的 iptables MASQUERADE + nftables Firewall 控制出入站。`DenyEgres
 
 `Sandbox` struct(`packages/api/internal/sandbox/sandboxtypes/sandbox.go:79`)是 API 层内部的完整对象,包含所有字段(State、NodeID、模板版本、网络配置等)。
 
-`RunningSandbox`(`orchestrator.proto:188`)是 gRPC `List` 响应里的简化版,只有 `config + client_id + start_time + end_time`。
+`RunningSandbox`(`orchestrator.proto:231`)是 gRPC `List` 响应里的简化版。
+
+⚠️ 2026.30 起它的字段集合与用途都变了：`config` 被标记 `[deprecated = true]`（`orchestrator.proto:237`），并新增 `sandbox_id=5`、`team_id=6`、`execution_id=7`、`vcpu=8`、`ram_mb=9`（`orchestrator.proto:247-251`）。源码注释明确：**API 不再从这个列表重建沙箱状态**（Redis 才是真相源），`List` 只用于发现「节点上在跑但 store 不知道」的沙箱以便杀掉；新增的扁平字段就是该判定所需的最小集合。旧的 `config` 仍被填充，只是为了让尚未升级的 API 实例在滚动发布期间继续工作。
 
 `Sandbox.ToAPISandbox`(`sandbox.go:117`)负责把内部 struct 转成 OpenAPI 暴露给用户的 `api.Sandbox`。
 
@@ -1601,19 +1714,20 @@ host 上的 iptables MASQUERADE + nftables Firewall 控制出入站。`DenyEgres
 
 ## 附录 B:gRPC `SandboxService` 协议
 
-`packages/orchestrator/orchestrator.proto:209-218`:
+`packages/orchestrator/orchestrator.proto:258-264`（2026.29 为 209-218）：
 
 ```protobuf
 service SandboxService {
-  rpc Create(SandboxCreateRequest)     returns (SandboxCreateResponse);
-  rpc Update(SandboxUpdateRequest)     returns (google.protobuf.Empty);
-  rpc List(google.protobuf.Empty)      returns (SandboxListResponse);
-  rpc Delete(SandboxDeleteRequest)     returns (google.protobuf.Empty);
-  rpc Pause(SandboxPauseRequest)       returns (SandboxPauseResponse);
+  rpc Create(SandboxCreateRequest) returns (SandboxCreateResponse);
+  rpc Update(SandboxUpdateRequest) returns (google.protobuf.Empty);
+  rpc List(google.protobuf.Empty) returns (SandboxListResponse);
+  rpc Delete(SandboxDeleteRequest) returns (google.protobuf.Empty);
+  rpc Pause(SandboxPauseRequest) returns (SandboxPauseResponse);
   rpc Checkpoint(SandboxCheckpointRequest) returns (SandboxCheckpointResponse);
-  rpc ListCachedBuilds(google.protobuf.Empty) returns (SandboxListCachedBuildsResponse);
 }
 ```
+
+⛔ `ListCachedBuilds` RPC 及其 `SandboxListCachedBuildsResponse`、`CachedBuildInfo` 消息在 2026.30 已被整体删除，节点 build cache 不再通过 gRPC 暴露（`packages/orchestrator/pkg/server/template_cache.go` 也已删除）。
 
 ### B.1 关键 message
 
@@ -1645,6 +1759,19 @@ message SandboxConfig {
   optional SandboxAutoResumeConfig auto_resume = 24;  // 嵌套 message,不是 bool
   bool   auto_pause_filesystem_only = 25;
   int64  events_ttl_days       = 26;
+  optional SandboxIam iam      = 27;  // 2026.30 新增
+}
+
+// 2026.30 新增。tokens 非空即定义沙箱工作负载身份；orchestrator 从既有的
+// team_id/sandbox_id/execution_id/template_id 推导，不铸造、签名或投递任何凭据。
+message SandboxIam {
+  map<string, SandboxIamToken> tokens = 1;
+}
+
+// 2026.30 新增。file_path 被有意省略：admission 只接受 absent/null。
+message SandboxIamToken {
+  string audience   = 1;
+  string token_type = 2;
 }
 
 message SandboxAutoResumeConfig {
@@ -1652,15 +1779,35 @@ message SandboxAutoResumeConfig {
   uint64 timeout_seconds = 2;
 }
 
+message SandboxNetworkIngressConfig {
+  optional string traffic_access_token = 1;
+  optional string mask_request_host    = 2;
+  repeated uint32 https_ports          = 3;  // 2026.30 新增
+}
+
 message SandboxCreateRequest {
   SandboxConfig sandbox = 1;
   google.protobuf.Timestamp start_time = 2;
   google.protobuf.Timestamp end_time = 3;
+
+  // 2026.30 新增。为真时即使快照含内存也从 rootfs 冷启动。
+  // 请求只能往「无内存」方向放宽，永远不能反向强制内存恢复。
+  // 缺省 = 只由快照自身 metadata 选择启动路径，旧调用方不受影响。
+  optional bool filesystem_boot = 4;
 }
 
 message SandboxCreateResponse {
   string client_id                = 1;
   SchedulingMetadata scheduling_metadata = 2;
+
+  // 2026.30 新增。回报是否真的走了冷启动；旧 orchestrator 不带此字段，
+  // 因此调用方可以据此检测「要求未被满足」，而不是盲信部署顺序。
+  bool filesystem_boot_applied = 3;
+
+  // 2026.30 新增。沙箱实际运行的 FC 版本（启动时经 firecracker-versions
+  // flag 解析并冻结）。需要按 FC 版本做门禁的调用方必须读这个字段，
+  // 不要自己重新解析。
+  string resolved_firecracker_version = 4;
 }
 
 message SchedulingMetadata {
@@ -1751,3 +1898,11 @@ message SandboxPauseResponse {
 | **`orchestratorProxyPort`** | `5007`,client-proxy → orchestrator 的固定端口 |
 | **NBD** | Network Block Device,把远程 rootfs 暴露为 `/dev/nbdX` |
 | **Throwaway Resume** | resume 时先 `DenyEgress`,确认正常后再放行 |
+| **`filesystem_boot`** | 2026.30 新增的 `SandboxCreateRequest` 字段，可把含内存的快照强制走冷启动，接受 crash-consistent rootfs |
+| **`ShuttingDown`** | 2026.30 新增的节点状态，只在进程关停路径写入，不可逆 |
+| **`outstanding_work`** | 2026.30 新增的节点上报字段，缺失表示 unknown 而非 idle |
+| **`sandbox:routing:{id}`** | 2026.30 新增的 orchestrator 自有路由记录，与 API 自有的 `sandbox:catalog:{id}` 并存 |
+
+---
+
+已同步至 **2026.30**

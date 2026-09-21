@@ -1,8 +1,77 @@
 # 12. Nomad NodePool APM
 
-`nomad-nodepool-apm` 是 Nomad Autoscaler 的外部 APM 插件：它把某个 node pool 中 ready 且 eligible 的节点数转换为一个指标，供 template-manager 的 pass-through scaling policy 使用。
+> ## ⛔ 部署路径已随 `iac/` 于 2026.30 删除，包本身仍在
+>
+> **`packages/nomad-nodepool-apm/` 在 2026.30 依然存在，代码没被删除。** 被删除的是它的**部署方式**：提交 `8a1c48884406b909f64c1239c808d0bc1cbf05bf`（Tomas Virgl，2026-09-09，subject：`chore(deploy): retire Nomad-based deployment ahead of a new deploy path`）删掉了整个 `iac/` 目录（172 文件 → 0），其中包括本插件的全部部署描述：
+>
+> - `iac/modules/job-template-manager-autoscaler/`（`main.tf`、`variables.tf`、`jobs/nomad-autoscaler.hcl`）—— 下载插件二进制、设置 `-plugin-dir`、声明 `apm "nomad-nodepool-apm"` block 的地方
+> - `iac/modules/job-template-manager/jobs/template-manager.hcl` —— 定义 `check "match_node_count"` 与 `strategy "pass-through"` 的地方
+> - `iac/provider-gcp/nomad/main.tf` 与 `iac/provider-aws/nomad/main.tf` —— 把 artifact 与 ETag 注入部署参数的地方
+>
+> 也就是说，本文 §2「启动/装配」描述的 1~4 步（构建二进制 → 上传 GCS/S3 → job 下载到 `local/plugins/` → agent 配置声明 APM block）**在 2026.30 的仓库里已无对应的可执行产物**。正文中所有 `iac/**` 路径**链接已失效**。
+>
+> ⚠️ 2026.30 的 `docs/ARCHITECTURE.md` 仍把该包列在仓库布局里（`nomad-nodepool-apm/   Nomad autoscaler metric and deployment-aware target plugins`），并且仍提到节点发现可以走 "the legacy Nomad backend the code still carries" —— 代码路径保留了，部署描述没有。
+>
+> ---
+>
+> **本文档的结构：**
+> - **§零** — 2026.30 的包状态、行为变更与 Makefile 变更（只有这节描述当前状态）
+> - **§1 ~ §8** — **历史档案**，描述 2026.29 及以前的实现与部署方式
+
+---
+
+## 零、2026.30 状态：包仍在，且有一个行为变更
+
+### 零.1 2026.30 的文件清单（10 → 12 个）
+
+`packages/nomad-nodepool-apm/` 在 2026.30 的文件：
+
+| 文件 | 2026.29 | 2026.30 | 说明 |
+| --- | --- | --- | --- |
+| `main.go` | ✅ | ✅ | 插件进程入口 |
+| `plugin/plugin.go` | ✅ | ✅ | APM 实现（**2026.30 有行为变更，见 §零.2**） |
+| `plugin/plugin_test.go` | ❌ | ✅ **新增** | 为 `countReadyNodes` 补的单元测试 |
+| `target/plugin.go` | ✅ | ✅ | deployment-aware target 实现 |
+| `target/plugin_test.go` | ✅ | ✅ | |
+| `cmd/nomad-deployment-aware-target/main.go` | ✅ | ✅ | 第二插件的入口（2026.29 就已在，非新增） |
+| `CHANGELOG.md` | ❌ | ✅ **新增** | release-please 生成的版本记录 |
+| `Dockerfile` | ✅ | ✅ | |
+| `Makefile` | ✅ | ✅ | **2026.30 新增 `pull-released` 目标，见 §零.3** |
+| `README.md` | ✅ | ✅ | **2026.30 改写了计数语义描述** |
+| `go.mod`、`go.sum` | ✅ | ✅ | |
+
+### 零.2 行为变更：计数不再要求 `eligible`
+
+2026.30 把「ready **且** eligible」放宽为「只要求 ready」。`plugin/plugin.go` 里新增了 `countReadyNodes`：
+
+```go
+// countReadyNodes keeps nodes that are temporarily ineligible in the desired
+// allocation count until they have actually left the pool.
+func countReadyNodes(nodes []*api.NodeListStub) int {
+	count := 0
+	for _, node := range nodes {
+		if node.Status == api.NodeStatusReady {
+			count++
+		}
+	}
+
+	return count
+}
+```
+
+> ⚠️ **这直接推翻了本文 §3「Query 语义」与 §5 的两条结论**：正文写的是「插件只计数同时满足 `node.Status == ready` 与 `node.SchedulingEligibility == eligible`」，以及「drain 后变为 scheduling-ineligible 的节点不会计入 desired count」。**在 2026.30 这两句都不成立** —— 临时 ineligible（例如正在 drain）的节点仍会被计入，直到它真正离开 node pool。日志字段也从 `ready_eligible_nodes` 改名为 `ready_nodes`。
+>
+> `README.md` 同步把 "ready, eligible nodes" 改成 "ready nodes"；`target` 侧同时把 deployment-aware target 的使用者从仅 `orchestrator-ee` 扩展为 `template-manager` 与 `orchestrator-ee`。
+
+### 零.3 Makefile 新增「拉取已发布二进制」路径
+
+2026.30 的 `Makefile` 新增 `pull-released` 目标与 `NOMAD_NODEPOOL_APM_VERSION` 开关：未设置时（默认）从源码构建并上传到客户端的 `fc-env-pipeline` bucket；设置为例如 `NOMAD_NODEPOOL_APM_VERSION=v0.1.0` 时跳过构建，改为从公开的 `https://storage.googleapis.com/e2b-artifact-binaries/nomad-nodepool-apm/<version>/` 下载已发布的 `nomad-nodepool-apm` 与 `nomad-deployment-aware-target`。两个插件同版本一起发布。根 `Makefile` 的 `build-and-upload` 聚合目标在 2026.30 新增了 `build-and-upload/nomad-nodepool-apm`。
+
+---
 
 ## 1. 系统位置
+
+> ⓘ **以下（§1 ~ §8）为历史档案**，描述 2026.29 及以前的实现与部署方式。其中 `iac/**` 路径在 2026.30 已不存在，链接已失效；§3 与 §5 的计数语义已被 2026.30 推翻（见 §零.2）。
 
 ```text
 template-manager Nomad job
@@ -128,6 +197,8 @@ pass-through 把指标值直接当作 desired count；job 的 `min`、`max`、co
 
 ## 7. 源码阅读顺序
 
+> ⛔ **表中第 4、5、7、8 条指向 `iac/**`，这些文件在 2026.30 已随整个 `iac/` 目录删除，链接失效。** 第 1、2、3、6 条（`packages/nomad-nodepool-apm/**`）在 2026.30 仍然有效；阅读第 2 条时请以 §零.2 的 2026.30 语义为准。
+
 | 顺序 | 文件 | 阅读目标 |
 | --- | --- | --- |
 | 1 | `packages/nomad-nodepool-apm/main.go` | 看外部插件进程入口和 factory |
@@ -139,7 +210,7 @@ pass-through 把指标值直接当作 desired count；job 的 `min`、`max`、co
 | 7 | `iac/provider-gcp/nomad/main.tf` | 看 GCP artifact generation 进入部署参数 |
 | 8 | `iac/provider-aws/nomad/main.tf` | 看 AWS artifact ETag 进入部署参数 |
 
-注意：package README 的配置示例仍使用旧名字 `nomad-nodepool`；当前源码和 IaC 的权威标识是 `nomad-nodepool-apm`。
+注意：package README 的配置示例仍使用旧名字 `nomad-nodepool`；当前源码和 IaC 的权威标识是 `nomad-nodepool-apm`。（原文的「和 IaC」在 2026.30 已无对应物 —— IaC 侧全部删除，标识的权威来源只剩源码与 README。）
 
 ## 8. 相关深挖
 
@@ -147,3 +218,7 @@ pass-through 把指标值直接当作 desired count；job 的 `min`、`max`、co
 - [Template 模块详解](../template-module.md)
 - [Orchestrator 模块详解](../orchestrator-module.md)
 - [Template Build 流程](../template-build-flow.md)
+
+---
+
+> **文档版本**：已同步至 **2026.30**。§零 描述 2026.30 的包状态与行为变更；§1 ~ §8 为 2026.29 及以前的历史档案，其中 `iac/**` 路径均已失效，§3/§5 的计数语义已被 §零.2 取代。

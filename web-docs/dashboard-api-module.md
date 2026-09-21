@@ -3,6 +3,151 @@
 > 范围: `packages/dashboard-api/` 与 `spec/openapi-dashboard.yml`。本文解释 Dashboard API 为什么独立于主 API、请求怎样完成 OIDC/team 鉴权、用户与团队怎样 provision，以及 build/template/sandbox 历史数据从哪里读取。
 >
 > 先记住一句话: **Dashboard API 是面向登录用户的控制台聚合层，不负责调度 sandbox，也不直接管理 Firecracker。**
+>
+> **本文已同步至 tag `2026.30`**（提交 `f32ee8a2a50052f32e3632ceb451111a98dd5104`）。所有行号均按 `2026.30` 核对；与 2026.29 不同处写作「行 N（2026.30；2026.29 为 M）」。2026.30 的变动清单见 §零。
+
+## 零、2026.30 变动速览
+
+### 零.1 版本号: 0.0.1 → 0.7.0
+
+⚠️ **反直觉: 起点 0.0.1 不是 2026.29 的状态。** `packages/dashboard-api/` 在 tag `2026.29` 上**没有任何已发布版本** —— `git show 2026.29:packages/dashboard-api/CHANGELOG.md` 直接报 `fatal: path ... does not exist`，release-please 当时尚未接管该目录。该目录在 2026.29 已有 75 个文件，只是还没有版本号。
+
+证据在 release-please 自己的配置里。2026.29 的 `release-please-config.json` 的 `packages` 只列了 **3 个**包 —— `packages/docker-reverse-proxy`、`packages/client-proxy`、`packages/clickhouse`（后者 `component` 名为 `clickhouse-migrator`）——**没有 `packages/dashboard-api`**；`.release-please-manifest.json` 同样只有这 3 项，都是 `0.0.1`。而配置里 `"initial-version": "0.0.1"` 正好解释了为什么 dashboard-api 的第一次发版是 **0.0.1** 而不是 1.0.0。
+
+ⓘ 到 2026.30，`.release-please-config.json`、`.release-please-manifest.json`、`.github/workflows/release-please.yml` **三个文件都已不在本仓库**（`git ls-tree 2026.30 | grep release-please` 为空）—— 发布流程已移出本仓库，见 [`RELEASING.md`](./RELEASING.md)。所以 dashboard-api 的 0.7.0 是从外部 monorepo 侧发出来的，本仓库只留下 `CHANGELOG.md` 作为产物。
+
+因此「0.0.1 → 0.7.0」这个跨度虽然真实，**整个区间都落在 2026.29→2026.30 之间**。窗口内共 **8 次 release-please 发版**：
+
+| 版本 | 日期 | 该版主要内容 |
+| --- | --- | --- |
+| 0.0.1 | 2026-07-30 | release-please 首次接管（`chore(main): release dashboard-api 0.0.1` #3471） |
+| 0.1.0 | 2026-07-31 | 集群注册 API（#3475）、workspace admin API foundations（#3314） |
+| 0.2.0 | 2026-08-17 | versioned project member projection、`project_limits` 表、`upsertProjectLimits`、project limits revision 栅栏、batch member sync |
+| 0.3.0 | 2026-09-01 | 大版本: 认证化 cluster 管理、team access status、legacy team mutation 门控、E2B access token 退役 + `access_tokens` 表删除、TypeID 编码、PostgreSQL session primitives、Redis 密码/TLS、`RejectRoutes` 移入 shared |
+| 0.3.1 | 2026-09-01 | 仅澄清版本对齐，无功能变更 |
+| 0.4.0 | 2026-09-01 | `GET /teams/{teamID}/limits` |
+| 0.5.0 | 2026-09-02 | service JWT 认证（`AdminJWTAuth`）、maximum free disk limits 桥接 |
+| 0.6.0 | 2026-09-04 | admin team ban / block |
+| 0.7.0 | 2026-09-06 | cluster teardown readiness 检查 + 保留环境与 build 历史 |
+
+ⓘ 2026.30 的 `CHANGELOG.md` 顶部即 `## 0.7.0 (2026-09-06)`，底部为 `## 0.0.1 (2026-07-30)`。注意 **0.0.1 与 0.1.0 两节的 feature 列表完全相同** —— 这是 release-please 首次接管时的回填，不是「0.1.0 没做任何事」。版本号序列里也没有 0.0.2/0.0.3 之类，0.0.1 之后直接跳 0.1.0。
+
+### 零.2 契约规模
+
+| 项目 | 2026.29 | 2026.30 |
+| --- | --- | --- |
+| path | 23 | **37** |
+| operation | 25 | **45** |
+| securityScheme | 3 | **5** |
+| `components.schemas` | — | 新增 13 个，删除 0 个 |
+| `components.parameters` | — | 新增 `clusterID`、`projectID`、`userID` |
+| `components.responses` | — | 新增 `412`、`501` |
+| tag | builds / sandboxes / teams / templates | 新增 `control-plane-management` |
+
+`git diff --stat 2026.29 2026.30 -- spec/openapi-dashboard.yml` = **+935 / −51**。⚠️ **没有任何 path 被删除或改名** —— 全部是新增 path 与既有 path 的 security 扩展。所以本文 §四、§十三的旧矩阵不是「错了」，而是「不完整」。
+
+### 零.3 新增 path 全表（14 个 path / 20 个 operation）
+
+行号为 tag `2026.30` 的 `spec/openapi-dashboard.yml` 中 **path 行 / method 行**。
+
+| method | path | 行（2026.30） | 鉴权 | 说明 |
+| --- | --- | --- | --- | --- |
+| `POST` | `/admin/clusters` | 1731 / 1732 | AdminKey **或** AdminJWT | 创建 cluster；配置不可变。可选 `cluster_id` 做幂等创建，复用时要求不可变配置完全一致 → `201` / `409` |
+| `DELETE` | `/admin/clusters/{clusterID}` | 1761 / 1762 | AdminKey **或** AdminJWT | 删除无引用 cluster；同事务释放软删除的环境引用、保留环境与 build 历史；重复删除成功 → `204` |
+| `GET` | `/v1/management/clusters/{clusterID}/destroy-readiness` | 1783 / 1784 | AdminJWT | 该 cluster 是否仍有 active template / snapshot。软删除历史与 team 分配**不**阻塞。cluster 不存在也算成功 → `204`；有引用则 `409` |
+| `GET` | `/admin/teams/{teamID}/cluster` | 1809 / 1810 | AdminKey **或** AdminJWT | 读 team 的 cluster 分配，**不暴露 cluster 凭证** → `200` |
+| `PUT` | `/admin/teams/{teamID}/cluster` | 1809 / 1834 | AdminKey **或** AdminJWT | 把 team 指向已存在 cluster；`preserve_existing=true`（默认 false）时仅在未分配或已指向同一 cluster 时生效 → `204` / `412` |
+| `DELETE` | `/admin/teams/{teamID}/cluster/{clusterID}` | 1865 / 1866 | AdminKey **或** AdminJWT | 仅在未分配或正指向该 cluster 时清空 → `204` / `412` |
+| `PUT` | `/admin/teams/{teamID}/ban` | 1892 / 1893 | AdminKey **或** AdminJWT | 封禁 team，使其 API Key 停止通过鉴权；幂等，**不打断运行中的负载** → `204` |
+| `DELETE` | `/admin/teams/{teamID}/ban` | 1892 / 1911 | AdminKey **或** AdminJWT | 解封；幂等 → `204` |
+| `PUT` | `/admin/teams/{teamID}/block` | 1930 / 1931 | AdminKey **或** AdminJWT | 带 `reason`（`AdminTeamBlockRequest`，1~1000 字符）封堵，使其无法再启动 sandbox / build；幂等，重复调用**替换** reason → `204` |
+| `DELETE` | `/admin/teams/{teamID}/block` | 1930 / 1957 | AdminKey **或** AdminJWT | 解除封堵并清空 reason；幂等 → `204` |
+| `GET` | `/teams/{teamID}/status` | 2137 / 2138 | Bearer + Team **或** AdminKey **或** AdminJWT | 返回 `isBlocked` / `isBanned` / `blockedReason`；team 凭证只能读自己所属 team → `200` |
+| `GET` | `/teams/{teamID}/limits` | 2163 / 2164 | Bearer + Team **或** AdminKey **或** AdminJWT | 返回原始 `tier`（不做 catalog plan 归一化）与已解析的生效 limits → `200` |
+| `PUT` | `/v1/management/projects/{projectID}` | 2466 / 2469 | AdminJWT | 创建或对账 project（**全量语句，不是 patch**）→ `200`（对账）/ `201`（新建）/ `501` |
+| `DELETE` | `/v1/management/projects/{projectID}` | 2466 / 2504 | AdminJWT | ⚠️ 契约声明 `204`，**实际每个 control plane 都回 `501`**，见 §零.6 |
+| `PUT` | `/v1/management/projects/{projectID}/members/{userID}` | 2528 / 2532 | AdminJWT | 应用「一个带 revision 的成员投影」；旧 revision 或重复请求**被接受但不改状态** → `204` |
+| `PUT` | `/v1/management/projects/{projectID}/limits` | 2561 / 2564 | AdminJWT | 对账生效 limits；每个字段都是绝对值，本侧**不做算术** → `204` / `501` |
+| `PUT` | `/v1/management/clusters/{clusterID}` | 2590 / 2593 | AdminJWT | 注册 cluster → `204` / `409` |
+| `DELETE` | `/v1/management/clusters/{clusterID}` | 2590 / 2616 | AdminJWT | 删除无引用 cluster → `204` / `409` |
+| `PUT` | `/v1/management/projects/{projectID}/cluster/{clusterID}` | 2633 / 2637 | AdminJWT | 把 cluster 分配给 project → `204` |
+| `DELETE` | `/v1/management/projects/{projectID}/cluster/{clusterID}` | 2633 / 2656 | AdminJWT | 解除该分配 → `204` |
+
+### 零.4 既有 operation 的 security 扩展（16 个，**全部是放宽**）
+
+⚠️ 这 16 处**没有一处收窄**权限，都是「增加一种可选凭证」。读法上最大的坑是 **OR 与 AND 的区别**：
+
+| 既有 operation | 2026.29 | 2026.30 |
+| --- | --- | --- |
+| `GET /builds`、`/builds/statuses`、`/builds/{build_id}` | `AuthProviderBearerAuth` + `AuthProviderTeamAuth`（同一 object，AND） | `ApiKeyAuth` **或** Bearer + Team |
+| `GET /templates`、`/templates/{templateID}`、`/templates/{templateID}/tags/{groups,count,exists}`、`/templates/{templateID}/tags/{tag}/assignments` | Bearer + Team | `ApiKeyAuth` **或** Bearer + Team |
+| `GET /templates/defaults` | `AuthProviderBearerAuth` | `ApiKeyAuth` **或** Bearer |
+| `POST /admin/users/bootstrap`、`POST /admin/teams/bootstrap`、`POST /admin/user-profiles/resolve`、`POST /admin/user-profiles/by-email`、`GET /admin/user-profiles/{userId}`、`DELETE /admin/users/{userId}` | `AdminApiKeyAuth` | `AdminApiKeyAuth` **或** `AdminJWTAuth` |
+
+注意 `GET /sandboxes/{sandboxID}/record` **不在**这张表里：它在 2026.30 仍然只接受 Bearer + Team。
+
+### 零.5 术语迁移: team → project（进行中）
+
+2026.30 的迁移是**两套命名并行**，不是重命名：
+
+- 管理面（新）: `/v1/management/**` 用 `projectID`，`operationId` 前缀 `management*`（`managementUpsertProject`、`managementApplyProjectMember`、`managementUpsertProjectLimits`、`managementRegisterCluster`、`managementDeleteCluster`、`managementAssignProjectCluster`、`managementDetachProjectCluster`、`managementClusterDestroyReadiness`、`managementDeleteProject`）。
+- 数据面（旧）: `/teams/**` 与 `teamID` **原样保留**；2026.30 新增的 `GET /teams/{teamID}/status` 与 `/limits` 也仍然用 team 命名。
+- ⚠️ 同时新增 `internal/middleware/legacy_team_mutations.go`：LaunchDarkly flag `disable-legacy-team-mutations` 打开时，`RejectRoutes` 把 9 条**旧 team 变更路由**拦成 **`412`**（`StatusPreconditionFailed`），message 为 `Legacy team mutations are no longer available. Use the workspace API.`，rejection reason 为 `legacy_team_mutations_disabled`。被拦的 9 条（`legacy_team_mutations.go:16-24`）:
+
+```text
+POST   /teams
+PATCH  /teams/:teamID
+POST   /teams/:teamID/members
+DELETE /teams/:teamID/members/:userId
+POST   /admin/users/bootstrap
+DELETE /admin/users/:userId
+POST   /admin/teams/bootstrap
+PUT    /admin/teams/:teamID/cluster
+DELETE /admin/teams/:teamID/cluster/:clusterID
+```
+
+这就是新 `components.responses.412` 的来源。注意它**只拦变更**：`GET /teams/{teamID}/members` 不在列表里，所以 412 不代表整个 `/teams/**` 被关停。
+
+### 零.6 ⚠️ 声明但不实现的 operation
+
+`DELETE /v1/management/projects/{projectID}` 在 spec 里声明 `204`，但 `internal/handlers/management_project_delete.go` 直接调 `sendNotImplemented`，返回 **`501`**。这不是漏实现，而是刻意决定：`envs` / `snapshots` / `volumes` 以 `ON DELETE NO ACTION` 引用 team，而 template 删除只写 `deleted_at`，所以任何建过 template 的 project 都会钉住它的 team 行。释放它需要杀掉 sandbox、取消 build、回收已存储 artifact —— 这些都要用本进程不具备的 orchestrator 连接。代码注释明确把选择留给后续（网关转发 / 移到 api 服务 / 异步对账）。
+
+因此 `PUT .../limits` 也保留了 `501` 作为可能响应。**调用方在 2026.30 不应依赖 project 删除。**
+
+### 零.7 目录与包结构变化
+
+| 项目 | 2026.29 | 2026.30 |
+| --- | --- | --- |
+| 文件数 | 75 | 112 |
+| 顶层新增 | — | `CHANGELOG.md`、`main_test.go`、`management_readiness_test.go` |
+| 新 package | — | `internal/management/`（`project.go`、`members.go`、`limits.go`、`service.go`） |
+| 新 handler | — | `management_project_upsert.go`、`management_project_delete.go`、`management_project_members.go`、`management_project_limits.go`、`management_project_cluster.go`、`management_cluster_destroy_readiness.go`、`team_status.go`、`team_limits.go`、`admin_team_cluster.go`、`admin_team_access.go` |
+| 新 middleware | — | `legacy_team_mutations.go` |
+| 新 utils | — | `utils_management.go`（含 `sendNotImplemented`） |
+
+⚠️ `internal/management/` 的注释说明了它为什么独立成包：这些状态变更要**脱离 gin 也能被调用**（「what these operations get wrong is never the HTTP」），并且各自负责失效自己写入所影响的缓存，以 sentinel error 而非数据库错误上报失败。`Service` 刻意持有**两个** DB client（`internal/management/service.go`）: membership 与投影走 auth 池，limits 走主池（`project_limits` 与读它的 `team_limits` 视图在那里）。**两者不共享事务** —— 两条连接串分别配置，不要求指向同一数据库。
+
+### 零.8 ⛔ 部署链路已失效（`iac/` 整体删除）
+
+`iac/` 在 2026.30 被**整体删除**（2026.29 的 **172 个文件 → 2026.30 的 0 个文件**），提交 `8a1c48884406b909f64c1239c808d0bc1cbf05bf`（2026-09-09，subject `chore(deploy): retire Nomad-based deployment ahead of a new deploy path`），根目录 `self-host.md` 同时删除。
+
+**该包在 2026.30 已不再由本仓库的 IaC 部署。** 本文 §16.2「Nomad 与 GCP wiring」与 §十八索引里的 `iac/**` 条目全部失效，**保留为历史档案，不逐条删除**。同时失效的还有 §16.1 表格中「Nomad 会覆盖为 `$NOMAD_PORT_api`」的注解。
+
+ⓘ 仍然存在、**不要误删**的相邻包: `packages/nomad-nodepool-apm/`（2026.29 的 10 文件 → 2026.30 的 **12** 文件，是新增而非删除）。同样在 2026.30 整体删除的还有 `packages/docker-reverse-proxy/`（19 文件 → 0），但那是另一个服务，与本文无关。
+
+### 零.9 其他影响本文的改动
+
+| 改动 | 影响本文哪里 |
+| --- | --- |
+| ⛔ `AUTH_DB_READ_REPLICA_CONNECTION_STRING` 删除（`internal/cfg/model.go` 行 21 → 2026.30 无此字段） | §2.1 依赖表、§16.1 配置表 |
+| 新增 `ADMIN_AUTH_PROVIDER_CONFIG`（`model.go:19`） | §16.1 配置表；`AdminJWTAuth` 的 JWKS 来源 |
+| 新增 `REDIS_TLS_ENABLED` / `REDIS_PASSWORD`（`model.go:26-27`） | §16.1 配置表 |
+| `AdminJWTAuth`（service JWT）与 `ApiKeyAuth`（`X-API-Key`）两个新 scheme | §3.1 认证器表、§13.1 operation 分类 |
+| ⛔ `access_tokens` 表删除 + E2B access token 认证移除 | §3.1 「不接受 access token」的措辞仍然成立，但原因从「不装配」变成「表已不存在」 |
+| blocked-team allowlist 新增 `/teams/:teamID/limits` 与 `/teams/:teamID/status`（`internal/middleware/blocked_team.go:20,22`） | §13.3 |
+| 新增 `packages/auth/pkg/auth/internal/`（ⓘ 见下） | §十八索引里 `packages/auth/pkg/auth` 的链接**仍然有效** |
+
+⚠️ **不要按「`packages/auth/` 整体 internal 化」理解**：该包的公开路径 `packages/auth/pkg/auth` 在 2026.30 **依然存在**，dashboard-api 的 import 也没变。2026.30 的真实变化是把它**自己的**内部包收进 `packages/auth/pkg/auth/internal/`（2026.29 时 `pkg/auth` 下是 `oidc/`，2026.30 变成 `internal/`），并把 `packages/auth/pkg/tests` 移走。`packages/auth/` 顶层在 2026.29 与 2026.30 都只有 `go.mod`、`go.sum`、`pkg/`，**从来没有 `internal/` 目录**。
 
 ## 一、模块定位
 
@@ -13,7 +158,7 @@
 | `packages/api` | SDK、CLI、内部服务 | API key、access token、OIDC、admin token | sandbox/template/volume 的运行时控制面 |
 | `packages/dashboard-api` | Web dashboard、内部管理流程 | OIDC bearer + team header，或 admin token | 用户、团队、成员、控制台列表和历史详情 |
 
-Dashboard API 默认监听 `3010`，OpenAPI 当前包含 23 个 path、25 个 operation。它的当前 handler 主要读取 PostgreSQL/Auth DB，并访问 Ory 与 billing 服务；ClickHouse client 已完成装配但尚未被这 25 个 operation 直接调用。它也不会绕过主 API 去直接调用 orchestrator。
+Dashboard API 默认监听 `3010`（`internal/cfg/model.go:13`），OpenAPI 当前包含 **37 个 path、45 个 operation**（2026.29 为 23 个 path、25 个 operation；见 §零.2）。它的当前 handler 主要读取 PostgreSQL/Auth DB，并访问 Ory 与 billing 服务；ClickHouse client 已完成装配但尚未被这 45 个 operation 直接调用。它也不会绕过主 API 去直接调用 orchestrator。
 
 ```text
 Browser / Dashboard
@@ -34,7 +179,7 @@ Browser / Dashboard
       |      `-----------------> Ory identity directory
       |
       +----> PostgreSQL business DB
-      +----> Auth DB primary / optional read replica
+      +----> Auth DB (⛔ 2026.29 时另有 optional read replica)
       +----> Redis auth cache
       `----> ClickHouse switching client (已装配，当前 handler 未查询)
 ```
@@ -66,8 +211,8 @@ Browser / Dashboard
 | 依赖 | Dashboard API 用途 | 关键行为 |
 | --- | --- | --- |
 | 业务 PostgreSQL | builds、templates、sandbox records、部分 team 查询 | 启动前检查 migration version |
-| Auth DB | public user、OIDC linkage、team membership、tier/limit | 未配置专用 DSN 时回退到业务 PostgreSQL |
-| Auth DB read replica | 可承受延迟的 auth 读取 | identity linkage 的关键写后读路径仍使用 primary |
+| Auth DB | public user、OIDC linkage、team membership、tier/limit | 未配置专用 DSN 时回退到业务 PostgreSQL（`model.go:85-86`） |
+| ⛔ Auth DB read replica | — | **2026.30 已删除**：`AUTH_DB_READ_REPLICA_CONNECTION_STRING` 不再是配置项（`internal/cfg/model.go` 行 21 在 2026.29，2026.30 无此字段），`authdb.Client` 不再有 read replica 概念 |
 | Redis | JWT/team 鉴权缓存 | 至少配置 `REDIS_URL` 或 `REDIS_CLUSTER_URL` |
 | Ory | identity profile、email 搜索、organization、external ID | admin SDK token 必需 |
 | ClickHouse | 已注入 `APIStore` 的预留分析读取边界 | 当前 handler 未调用；默认 DSN 可为空并退化为 noop client |
@@ -109,19 +254,33 @@ request
 
 OpenAPI validator 不只做 schema 校验，还根据 operation 的 `security` 声明调用对应 Authenticator。因此某个 handler 能否执行，首先由 spec 决定，而不是由 handler 内部临时判断。
 
-### 3.1 三种认证器
+### 3.1 五种认证器
 
-Dashboard API 只装配:
+⚠️ 2026.29 时这里是「三种认证器」，2026.30 增至 **5 个**。装配点在 `main.go:262-269`：
 
-| scheme | 输入 | 注入结果 |
-| --- | --- | --- |
-| `AdminApiKeyAuth` | `X-Admin-Token` | admin 身份 |
-| `AuthProviderBearerAuth` | `Authorization: Bearer ...` | internal user ID |
-| `AuthProviderTeamAuth` | `X-Team-ID` | team info 与 limits |
+| scheme | 输入 | 注入结果 | 2026.30 |
+| --- | --- | --- | --- |
+| `ApiKeyAuth` | `X-API-Key` | team（由 key 直接解析） | 新增，仅用于 build / template 只读列表 |
+| `AdminApiKeyAuth` | `X-Admin-Token` | admin 身份 | 既有 |
+| `AdminJWTAuth` | `Authorization: Bearer`（service JWT，JWKS 来自 `ADMIN_AUTH_PROVIDER_CONFIG`） | admin 身份 | 新增，与 `AdminApiKeyAuth` 并列 |
+| `AuthProviderBearerAuth` | `Authorization: Bearer ...` | internal user ID | 既有 |
+| `AuthProviderTeamAuth` | `X-Team-ID` | team info 与 limits | 既有 |
 
-它不接受普通 API key 或 access token。原因是 Dashboard API 面向已经通过浏览器身份提供方登录的用户，不是 SDK 数据面入口。
+对应的 authenticator 构造顺序（`main.go:264-268`）:
 
-同一个 security object 内的两个 scheme 是 AND 关系。例如:
+```text
+main.go:264  NewApiKeyAuthenticator(apiStore.GetTeamFromAPIKey)
+main.go:265  NewAdminApiKeyAuthenticator(config.AdminToken)
+main.go:266  NewAdminJWTAuthenticator(adminVerifier)
+main.go:267  NewAuthProviderBearerAuthenticator(apiStore.GetUserIDFromAuthProviderToken)
+main.go:268  NewAuthProviderTeamAuthenticator(apiStore.GetTeamFromAuthProviderToken)
+```
+
+admin JWT verifier 在 `main.go:251` 用 `sharedauth.NewJWKSVerifier(ctx, config.AdminAuthProvider, authClient)` 构造。
+
+ⓘ 它仍然不接受旧 Access Token，但 2026.30 的原因变了：`access_tokens` 表本身已被删除（0.3.0），不再是「装配了但不给用」。`ApiKeyAuth` 的加入也不代表 API Key 能登录 Dashboard —— 它只对 **10 个只读 operation** 开放（3 个 build 读接口 + 7 个 template 读接口，含 `/templates/defaults`，见 §零.4），**不覆盖任何变更接口**，也不覆盖 `GET /sandboxes/{sandboxID}/record`。
+
+**AND 与 OR 的区别是本节最容易读错的地方。** 同一个 security object 内的多个 scheme 是 AND；数组里的多个 object 之间是 OR。
 
 ```yaml
 security:
@@ -129,7 +288,16 @@ security:
     AuthProviderTeamAuth: []
 ```
 
-表示 bearer 与 team header 都必须成功，不是二选一。
+表示 bearer 与 team header 都必须成功，不是二选一。而 2026.30 新增的读接口是:
+
+```yaml
+security:
+  - ApiKeyAuth: []                 # 单独一条路：只带 X-API-Key 即可
+  - AuthProviderBearerAuth: []     # 另一条路：Bearer + X-Team-ID 一起
+    AuthProviderTeamAuth: []
+```
+
+两条路**任选其一**。因此走 API Key 时**不需要** `X-Team-ID`，team 身份由 key 直接解析；只有走 JWT 那条路才两者都必需。把它误读成「多了一种必填凭证」会得出完全相反的排障结论。
 
 ## 四、端点分组与数据源
 
@@ -141,8 +309,13 @@ security:
 | current user/team | `GET/POST /teams`、`GET /teams/resolve` | Auth DB + identity directory |
 | team mutation | `PATCH /teams/{teamID}` | PostgreSQL/Auth DB |
 | members | `GET/POST /teams/{teamID}/members`、`DELETE .../{userId}` | PostgreSQL/Auth DB + Ory |
+| team access status（2026.30） | `GET /teams/{teamID}/status` | Auth DB |
+| team limits（2026.30） | `GET /teams/{teamID}/limits` | 业务 PostgreSQL（`team_limits` 视图 + `project_limits`） |
 | admin identity | `/admin/users/*`、`/admin/user-profiles/*` | Auth DB + Ory |
 | admin team bootstrap | `POST /admin/teams/bootstrap` | Auth DB + billing |
+| admin team 状态（2026.30） | `PUT/DELETE /admin/teams/{teamID}/ban`、`PUT/DELETE /admin/teams/{teamID}/block` | Auth DB |
+| admin cluster（2026.30） | `POST /admin/clusters`、`DELETE /admin/clusters/{clusterID}`、`GET/PUT /admin/teams/{teamID}/cluster`、`DELETE .../cluster/{clusterID}` | 业务 PostgreSQL + Auth DB |
+| management 面（2026.30） | `/v1/management/projects/*`、`/v1/management/clusters/*` | 业务 PostgreSQL + Auth DB（见 §零.7） |
 | templates | `GET /templates*` | 业务 PostgreSQL |
 | template tags | `GET /templates/{templateID}/tags/*` | 业务 PostgreSQL |
 
@@ -316,6 +489,9 @@ Dashboard 页面需要稳定翻页，因此多处使用 keyset cursor，而不�
 | 创建 team 后返回 billing 错误 | 检查 billing `/internal/teams/provision`，再确认补偿删除是否成功 |
 | 成员添加后仍无权限 | `InvalidateTeamMemberCache` 是否执行，Redis 是否可用 |
 | sandbox record 404 | 同时检查 team ownership、record migration 和 `42P01` 日志 |
+| ⚠️ 旧 team 变更路由返回 **412**（2026.30 新增） | **不是鉴权失败**：`disable-legacy-team-mutations` flag 已打开，`RejectRoutes` 在 handler 之前就拦下了。查 rejection reason `legacy_team_mutations_disabled`，并改走 `/v1/management/**`。见 §零.5 |
+| ⚠️ project 删除返回 **501**（2026.30 新增） | **不是 bug**：`DELETE /v1/management/projects/{projectID}` 是刻意不实现的，见 §零.6。不要重试 |
+| ⚠️ 只带 `X-API-Key` 访问 `GET /sandboxes/{id}/record` 返回 401（2026.30） | 该接口**未**加入 `ApiKeyAuth`，仍只接受 Bearer + `X-Team-ID`。见 §零.4 |
 | ClickHouse 未配置 | 允许使用 noop default；当前 Dashboard operation 不直接查询 ClickHouse |
 
 日志和 trace 中优先按 `team.id`、`user.id`、`sandbox.id`、`build.id` 关联。OpenAPI 校验错误发生在 handler 之前，因此 handler 自己的业务日志可能完全不存在。
@@ -362,16 +538,25 @@ Dashboard 页面需要稳定翻页，因此多处使用 keyset cursor，而不�
 
 OpenAPI 文件是 Dashboard API 的第一道授权边界。认证函数只会为 operation 声明的 scheme 提供凭证；因此新增 handler 时，必须同时修改 spec、生成代码和测试，不能只在 handler 内部“顺手”检查 header。
 
-### 13.1 三类 operation
+### 13.1 operation 分类
+
+⚠️ 2026.29 时这里是「三类 operation」，2026.30 变为 **5 类**（新增「API Key 可读级」与「management 级」）。
 
 | operation 类别 | 路径 | security | 是否需要 `X-Team-ID` | blocked team 行为 |
 | --- | --- | --- | --- | --- |
 | 健康检查 | `GET /health` | 无 | 否 | 不经过 team middleware |
-| 用户级 | `GET/POST /teams`、`GET /teams/resolve`、`GET /templates/defaults` | Bearer | 否 | 不受 team 状态影响 |
-| 团队级 | builds、sandbox record、`PATCH /teams/{teamID}`、members、templates 与 tags | Bearer + Team | 是 | 只有 allowlist 中的 GET 可读 |
-| 管理级 | `/admin/users/*`、`/admin/teams/bootstrap`、`/admin/user-profiles/*` | Admin token | 否 | 不受 team 状态影响 |
+| 用户级 | `GET/POST /teams`、`GET /teams/resolve` | Bearer | 否 | 不受 team 状态影响 |
+| 用户级 + API Key（2026.30） | `GET /templates/defaults` | `ApiKeyAuth` **或** Bearer | 否 | 不受 team 状态影响 |
+| 团队级 | sandbox record、`PATCH /teams/{teamID}`、members | Bearer + Team | 是 | 只有 allowlist 中的 GET 可读 |
+| 团队级 + API Key（2026.30） | builds、templates 与 tags、`GET /teams/{teamID}/status`、`/limits` | `ApiKeyAuth` **或** Bearer + Team（`/status`、`/limits` 另加 Admin 两条） | 走 JWT 时是；走 API Key 时否 | 只有 allowlist 中的 GET 可读 |
+| 管理级 | `/admin/users/*`、`/admin/teams/bootstrap`、`/admin/user-profiles/*`、`/admin/clusters`、`/admin/teams/{teamID}/{cluster,ban,block}` | `AdminApiKeyAuth` **或** `AdminJWTAuth` | 否 | 不受 team 状态影响 |
+| management 级（2026.30） | `/v1/management/projects/*`、`/v1/management/clusters/*` | `AdminJWTAuth`（**仅此一种**） | 否 | 不受 team 状态影响 |
+
+⚠️ 注意最后一行的差异：`/v1/management/**` **只接受 service JWT**，不接受 `X-Admin-Token`。而 `/admin/**` 两者皆可。这一不对称容易被忽略，排查 401 时值得先确认用的是哪一种 admin 凭证。
 
 这里的“Bearer + Team”是同一个 security object 中的两个 scheme，必须同时通过。Bearer 认证把 token 映射成 internal user ID，Team 认证再用该 user ID 验证 `X-Team-ID` 成员关系。仅携带一个 header 时，OpenAPI 层会在 handler 之前返回 `401` 或 `403`。
+
+ⓘ 走 `ApiKeyAuth` 那条路时不需要 `X-Team-ID` —— 见 §3.1 的 AND/OR 说明。
 
 ### 13.2 团队级请求的两次授权
 
@@ -398,23 +583,31 @@ handler 使用 auth.MustGetTeamID / auth.MustGetTeamInfo
 
 ### 13.3 blocked team 的读写分界
 
-`EnforceBlockedTeam` 位于 OpenAPI validator 之后，所以它只会看到已经通过认证、且 context 中有 team 的请求。当前 GET allowlist 为:
+`EnforceBlockedTeam` 位于 OpenAPI validator 之后，所以它只会看到已经通过认证、且 context 中有 team 的请求。⚠️ 2026.30 起它前面还多了 `DisableLegacyTeamMutations`（`main.go:385-386`），后者只拦变更路由，不影响 allowlist 判定。
+
+当前 GET allowlist 为（`internal/middleware/blocked_team.go:14-31`，共 **15** 条；2026.29 为 13 条）:
 
 ```text
-/builds
-/builds/statuses
-/builds/:build_id
-/sandboxes/:sandboxID/record
-/teams/:teamID/members
-/teams/resolve
-/templates
-/templates/defaults
-/templates/:templateID
-/templates/:templateID/tags/count
-/templates/:templateID/tags/exists
-/templates/:templateID/tags/groups
-/templates/:templateID/tags/:tag/assignments
+/builds                                        blocked_team.go:16
+/builds/statuses                               blocked_team.go:17
+/builds/:build_id                              blocked_team.go:18
+/sandboxes/:sandboxID/record                   blocked_team.go:19
+/teams/:teamID/limits                           blocked_team.go:20   <- 2026.30 新增
+/teams/:teamID/members                         blocked_team.go:21
+/teams/:teamID/status                           blocked_team.go:22   <- 2026.30 新增
+/teams/resolve                                 blocked_team.go:23
+/templates                                     blocked_team.go:24
+/templates/defaults                            blocked_team.go:25
+/templates/:templateID                         blocked_team.go:26
+/templates/:templateID/tags/count              blocked_team.go:27
+/templates/:templateID/tags/exists             blocked_team.go:28
+/templates/:templateID/tags/groups             blocked_team.go:29
+/templates/:templateID/tags/:tag/assignments   blocked_team.go:30
 ```
+
+ⓘ allowlist 的定义已移到共享包：`blockedTeamAllowlist` 现在是 `auth.BlockedTeamAllowlist` 类型（`blocked_team.go:14`），`EnforceBlockedTeam` 由 `auth.EnforceBlockedTeam(blockedTeamAllowlist)` 提供（`blocked_team.go:37`）。2026.30 的 `feat(shared): move RejectRoutes middleware to the shared package` 把这两个 middleware 的实现挪到了 shared，dashboard-api 侧只剩 allowlist 常量。
+
+⚠️ 值得注意的不对称：`/teams/{teamID}/limits` 与 `/status` 被加进 allowlist，意味着 **blocked team 可以读到自己的封堵状态和 limits** —— 这是刻意的，否则 dashboard 无法向被封用户解释原因。但同组的 `GET /teams/{teamID}` 并不存在，`/teams/{teamID}/members` 是既有条目。
 
 因此 blocked team 仍可加载 dashboard 所需的历史数据和成员列表，但不能 `PATCH /teams/{teamID}`、添加或删除成员，也不能通过用户级 `POST /teams` 绕过限制。allowlist 是按 HTTP method 和 Gin 路由模板匹配的；添加新读接口时要明确决定是否加入，而不是把所有 GET 自动放行。
 
@@ -437,7 +630,9 @@ handler 使用 auth.MustGetTeamID / auth.MustGetTeamInfo
 | `401` | authentication function | token 缺失、过期、issuer 不匹配 |
 | `403` | team auth、blocked middleware、SSO policy | 非成员、blocked team 写操作、SSO 用户创建 team |
 | `404` | DB 查询或 identity service | 资源不存在、无 team ownership、未知用户 |
-| `409` | identity/admin workflow | email 映射到多个 profile、删除用户仍有 FK 引用 |
+| `409` | identity/admin workflow、cluster/project 冲突 | email 映射到多个 profile、删除用户仍有 FK 引用、slug 已被占用、cluster 仍有 active template / snapshot |
+| `412`（2026.30） | `DisableLegacyTeamMutations` 或 `preserve_existing` | legacy team 变更路由被 flag 拦下；或 team 已指向别的 cluster 而请求要求保留既有分配。⚠️ 两者共用同一个 `components.responses.412`，但该组件的 description 只写了 `Legacy team mutations are disabled` —— cluster 分配那条路的 412 语义要读 endpoint 自己的 description |
+| `501`（2026.30） | `sendNotImplemented` | 只有 `DELETE /v1/management/projects/{projectID}`（以及 `PUT .../limits` 的可能返回）；**刻意的**，见 §零.6 |
 | `502/503/504` | billing sink 或上游 | billing 返回不可读响应、服务不可用、超时 |
 | `500` | handler 或依赖 | SQL、Ory、Redis、迁移等未分类错误 |
 
@@ -591,7 +786,8 @@ Dashboard API 使用两个 `*Client`:
 | client | 数据 | 事务/读写规则 |
 | --- | --- | --- |
 | `db.Client` | build、active env、template assignment、sandbox record、dashboard template/tag projection | 启动时按 expected migration timestamp 检查；列表和详情按 team 过滤 |
-| `authdb.Client` | public user、identity linkage、team、membership、tier、blocked 状态 | 写操作走 primary；可选 read replica 仅用于可承受延迟的读取；未配置时回退到业务连接串 |
+| `authdb.Client` | public user、identity linkage、team、membership、tier、blocked / banned 状态 | 单一 primary 连接；⛔ 2026.29 的「可选 read replica 仅用于可承受延迟的读取」已在 2026.30 随 `AUTH_DB_READ_REPLICA_CONNECTION_STRING` 一起删除。未配置 `AUTH_DB_CONNECTION_STRING` 时回退到业务连接串（`model.go:85-86`） |
+| `management.Service`（2026.30） | project 对账、成员投影、limits、cluster 分配 | 持有 `authdb.Client` + `db.Client` **两个** client；**不跨库事务**，见 §零.7 |
 
 两套 DB 不共享一个跨库事务。创建 team 的 Auth DB commit 与 billing HTTP 请求之间、bootstrap 的 Auth DB commit 与 Ory patch 之间都存在短暂不一致窗口。文档、重试和排障必须把它们当作 saga 步骤，而不是宣称“原子完成”。
 
@@ -615,7 +811,7 @@ build/template/tag 查询把数据库内部状态映射为 dashboard 稳定模�
 
 ### 15.4 ClickHouse 与 feature flag
 
-`main.go` 仍然创建 `clickhouse.NewSwitchingClient` 并放进 `APIStore`，切换策略由 LaunchDarkly feature flag 控制，且 `WithAllowNoopDefault(true)` 允许连接串为空。当前 25 个 operation 没有直接调用该字段；因此:
+`main.go` 仍然创建 `clickhouse.NewSwitchingClient` 并放进 `APIStore`，切换策略由 LaunchDarkly feature flag 控制，且 `WithAllowNoopDefault(true)` 允许连接串为空。当前 **45** 个 operation（2026.29 为 25 个）没有直接调用该字段；因此:
 
 1. ClickHouse DSN 缺失不会阻止当前 dashboard build/template/team 读操作启动。
 2. ClickHouse client 初始化失败仍会让进程退出，因为依赖装配失败会被视为启动错误。
@@ -635,26 +831,33 @@ team auth 的 Redis key 以 user + team 组合定位。membership 变更成功�
 
 | 环境变量 | 必填/默认 | 运行时用途 |
 | --- | --- | --- |
-| `PORT` | 默认 `3010` | HTTP listen address；Nomad 会覆盖为 `$NOMAD_PORT_api` |
+| `PORT` | 默认 `3010`（`model.go:13`） | HTTP listen address；⛔ 2026.29 时 Nomad 会覆盖为 `$NOMAD_PORT_api`，但 Nomad 部署路径已在 2026.30 退役（见 §零.8） |
 | `POSTGRES_CONNECTION_STRING` | 必填且非空 | 业务 DB 和默认 Auth DB DSN |
-| `AUTH_DB_CONNECTION_STRING` | 可选，默认业务 DSN | Auth DB primary |
-| `AUTH_DB_READ_REPLICA_CONNECTION_STRING` | 可选 | Auth DB read replica |
+| `AUTH_DB_CONNECTION_STRING` | 可选，默认业务 DSN（`model.go:85-86`） | Auth DB |
+| ⛔ `AUTH_DB_READ_REPLICA_CONNECTION_STRING` | — | **2026.30 已删除**（`model.go` 行 21 在 2026.29） |
 | `ADMIN_TOKEN` | 必填且非空 | admin routes，比较时使用 constant-time compare |
-| `AUTH_PROVIDER_CONFIG` | 可选格式配置 | JWT issuer、JWKS 和 provider metadata |
+| `AUTH_PROVIDER_CONFIG` | 可选格式配置 | 用户侧 JWT issuer、JWKS 和 provider metadata |
+| `ADMIN_AUTH_PROVIDER_CONFIG`（2026.30） | 可选格式配置（`model.go:19`） | **admin 侧** service JWT 的 JWKS 来源，喂给 `AdminJWTAuth` |
 | `ORY_SDK_URL` | 必填 | Ory admin SDK endpoint |
 | `ORY_PROJECT_API_TOKEN` | 必填 | Ory admin API token；不会放在 client 全局 header |
 | `REDIS_URL` / `REDIS_CLUSTER_URL` | 至少一项 | auth token 与 team cache |
 | `REDIS_TLS_CA_BASE64` | 可选 | Redis TLS CA |
+| `REDIS_TLS_ENABLED`（2026.30） | 可选（`model.go:26`） | 显式开启 TLS，不再靠 CA 是否存在推断 |
+| `REDIS_PASSWORD`（2026.30） | 可选（`model.go:27`） | Redis 密码认证 |
 | `CLICKHOUSE_CONNECTION_STRING` | 可选 | switching client 默认 endpoint |
 | `CLICKHOUSE_CONNECTION_STRINGS` | 可选，`;` 分隔 | switching client 候选 endpoints |
 | `BILLING_SERVER_URL` / `BILLING_SERVER_API_TOKEN` | 要么都空，要么都非空 | team provision HTTP sink；都空时 noop |
 | `DOMAIN_NAME` | 默认空 | LaunchDarkly deployment name |
 
-Redis 两个连接变量都空时，解析错误会带 `config_failure_condition=missing_redis_connection`；Ory URL 或 token 缺失分别是 `missing_ory_sdk_url`、`missing_ory_project_api_token`。billing 只配置一项时不是 noop，而是 sink 初始化失败；这能避免“看似成功但未计费”的 silent misconfiguration。
+Redis 两个连接变量都空时，解析错误会带 `config_failure_condition=missing_redis_connection`；Ory URL 或 token 缺失分别是 `missing_ory_sdk_url`、`missing_ory_project_api_token`（三个 failure condition 常量定义在 `model.go:40-43`，Ory URL 的必填检查在 `model.go:101-102`）。billing 只配置一项时不是 noop，而是 sink 初始化失败；这能避免“看似成功但未计费”的 silent misconfiguration。
 
-### 16.2 Nomad 与 GCP wiring
+⚠️ `ADMIN_AUTH_PROVIDER_CONFIG` 与 `AUTH_PROVIDER_CONFIG` 是**两个独立**的 provider 配置：前者给 `AdminJWTAuth`（`main.go:251` 的 `NewJWKSVerifier`），后者给用户侧 `AuthProviderBearerAuth`。把 service JWT 配进 `AUTH_PROVIDER_CONFIG` 不会让 `/v1/management/**` 通过鉴权。
 
-部署链路为:
+### 16.2 ⛔ Nomad 与 GCP wiring（历史档案，2026.30 起失效）
+
+> **⛔ 本节描述的部署链路在 2026.30 已全部失效。** `iac/` 目录被整体删除（172 文件 → 0，提交 `8a1c48884406b909f64c1239c808d0bc1cbf05bf`），下列 `iac/**` 路径与相对链接均已不存在。**该包在 2026.30 已不再由本仓库的 IaC 部署。** 保留本节是为了说明 2026.29 及以前它是怎么被部署的，不逐条删除链接。详见 §零.8。
+
+2026.29 及以前的部署链路为:
 
 ```text
 iac/provider-gcp/dashboard-api.tf
@@ -666,9 +869,9 @@ iac/provider-gcp/dashboard-api.tf
 
 `provider-gcp/dashboard-api.tf` 把 admin token、Postgres DSN、Redis、Ory、billing 和 telemetry 地址写入 job env；jobspec 只渲染非空值。`AUTH_PROVIDER_CONFIG` 的 JSON 会在 Terraform 层预转义双引号，因为 jobspec 模板把每个值放在 HCL 字符串中。
 
-Nomad job 的关键运行参数:
+⛔ 2026.29 及以前的 Nomad job 关键运行参数（**以下全部随 `iac/` 失效**）:
 
-| 项目 | 当前值/规则 |
+| 项目 | 2026.29 值/规则 |
 | --- | --- |
 | service | `dashboard-api`，Traefik rule 为 `HostRegexp( dashboard-api.{domain} )` |
 | port | dynamic `api`，容器 env `PORT=$NOMAD_PORT_api` |
@@ -679,11 +882,11 @@ Nomad job 的关键运行参数:
 | shutdown | SIGTERM，kill timeout 30s |
 | rolling update | 可选 canary=1，healthy deadline 900s，progress deadline 901s |
 
-镜像由 `iac/modules/job-dashboard-api/Dockerfile` 从仓库根目录多阶段构建。Makefile 的 `build` 会嵌入 commit SHA 和 expected migration timestamp；服务启动时用后者检查业务 DB 版本。发布失败但 health endpoint 仍返回 200 的情况，通常是进程未加载到新镜像或 migration timestamp 未更新，应同时比对启动日志的 `commit_sha` 和 jobspec image。
+⛔ 镜像当时由 `iac/modules/job-dashboard-api/Dockerfile` 从仓库根目录多阶段构建。2026.30 起该文件已不存在，构建定义回到包内 [`packages/dashboard-api/Dockerfile`](../packages/dashboard-api/Dockerfile)。Makefile 的 `build` 仍会嵌入 commit SHA 和 expected migration timestamp；服务启动时用后者检查业务 DB 版本。ⓘ 这段排障经验在 2026.30 之后仍成立，只是「jobspec image」这个对照项换成了新部署路径的镜像标签。
 
 ### 16.3 health、trace、metrics、log
 
-`GET /health` 只返回 `Health check successful`，不探测 PostgreSQL、Redis、Ory、billing 或 ClickHouse。它适合进程存活和 Nomad service registration，不代表所有依赖可用。
+`GET /health` 只返回 `Health check successful`，不探测 PostgreSQL、Redis、Ory、billing 或 ClickHouse。它适合进程存活和服务注册探活（⛔ 2026.29 时是 Nomad service registration），不代表所有依赖可用。
 
 可观测性装配顺序为:
 
@@ -717,6 +920,12 @@ middleware request timeout 为 70s，HTTP server write timeout 为 75s。billing
 | invite 组织约束、重复成员、删最后成员、cache invalidation | `packages/dashboard-api/internal/handlers/team_handlers_test.go` |
 | admin bootstrap/delete/profile 的 404/409/IdP cleanup 语义 | `packages/dashboard-api/internal/handlers/admin_*_test.go` |
 | build/template/sandbox/tag keyset 边界和 ready 过滤 | `packages/dashboard-api/internal/handlers/*_test.go`、`packages/db/pkg/dashboard/*_test.go` |
+| **2026.30** `/v1/management/**` 契约、members、limits、cluster 分配、upsert | `packages/dashboard-api/internal/handlers/management_contract_test.go`、`management_members_test.go`、`management_project_limits_test.go`、`management_project_upsert_test.go`、`management_project_cluster_test.go`、`management_cluster_destroy_readiness_test.go` |
+| **2026.30** project 状态变更的 sentinel error 与缓存失效 | `packages/dashboard-api/internal/management/*_test.go` |
+| **2026.30** team ban / block / cluster 分配的 admin 语义 | `packages/dashboard-api/internal/handlers/admin_team_ban_test.go`、`admin_team_block_test.go`、`admin_team_cluster_test.go` |
+| **2026.30** team status / limits 响应 | `packages/dashboard-api/internal/handlers/team_status_test.go`、`team_limits_test.go` |
+| **2026.30** legacy mutation 门控与 blocked allowlist | `packages/dashboard-api/internal/middleware/legacy_team_mutations_test.go`、`blocked_team_test.go` |
+| **2026.30** 端到端就绪（含 migration / 依赖装配） | `packages/dashboard-api/main_test.go`、`management_readiness_test.go` |
 
 仓库 Makefile 的默认 `test` 运行 `go test -race -v ./...`。涉及 team lock、Redis cache 或外部 provisioning 的改动应保留 race test；只改 Markdown 时无需运行全量 Go 测试，但可用 `git diff --check` 检查格式。
 
@@ -724,34 +933,37 @@ middleware request timeout 为 70s，HTTP server write timeout 为 75s。billing
 
 新增 Dashboard operation 时按以下顺序检查:
 
-1. 在 [`spec/openapi-dashboard.yml`](../spec/openapi-dashboard.yml) 声明 path、request/response schema 和准确的 security object。
+1. 在 [`spec/openapi-dashboard.yml`](../spec/openapi-dashboard.yml) 声明 path、request/response schema 和准确的 security object。⚠️ 先想清楚是**加一个 OR 分支**（如 2026.30 的 `ApiKeyAuth`）还是在**同一 object 里加一个 AND scheme**——两者语义相反。
 2. 重新生成 [`packages/dashboard-api/internal/api`](../packages/dashboard-api/internal/api) 代码，并运行 route conflict test。
 3. 在对应 handler 中使用 `c.Request.Context()`、`auth.MustGetTeamID` 或 `auth.GetTeamInfo`，不要从 header 重新解析身份。
-4. 若是 team path，调用 `requireAuthedTeamMatchesPath`；若是 blocked team 可读操作，显式更新 `blockedTeamAllowlist`。
+4. 若是 team path，调用 `requireAuthedTeamMatchesPath`；若是 blocked team 可读操作，显式更新 `blockedTeamAllowlist`（`internal/middleware/blocked_team.go:14`）。
 5. 选择正确 DB client；不要把 Auth DB membership 与业务 DB template 查询放进一个假设存在的跨库事务。
 6. 需要 Ory 或 billing 时，定义超时、重试和失败后的补偿语义，并把状态映射到 `sendProvisioningError` 或统一 API error shape。
-7. 为 team、user、resource ID 添加 telemetry attributes，并更新本页的端点矩阵、数据源和 architecture 说明。
+7. ⚠️ 如果这个 operation 属于管理面，判断它应进 `/admin/**`（`AdminApiKeyAuth` 或 `AdminJWTAuth` 皆可）还是 `/v1/management/**`（**只有 `AdminJWTAuth`**），并确认它不会被 `DisableLegacyTeamMutations` 的 9 条模板误伤。
+8. 为 team、user、resource ID 添加 telemetry attributes，并更新本页的端点矩阵、数据源和 architecture 说明。
 
 ### 17.3 修改现有 endpoint 的回归问题
 
 重点回归以下行为:
 
-- 调整 OpenAPI security 时，确认 user-only endpoint 不会意外要求 `X-Team-ID`，team endpoint 不会变成 Bearer-only。
+- 调整 OpenAPI security 时，确认 user-only endpoint 不会意外要求 `X-Team-ID`，team endpoint 不会变成 Bearer-only，且新增的 OR 分支没有把某个变更接口意外放开给 `ApiKeyAuth`。
 - 修改 SQL projection 时，继续保留 `team_id` 条件、active assignment 条件和 ready build 条件；它们是访问控制的一部分，不只是展示过滤。
 - 修改 cursor 时，保持 sort 字段和 tie-breaker ID 同时编码，并拒绝与当前 sort 不匹配的 cursor。
 - 修改 team/member mutation 时，验证事务锁覆盖范围和 Redis invalidation 顺序；只改 SQL 不足以保证授权实时性。
 - 修改 bootstrap 顺序时，重新评估 DB、billing、Ory 三个外部副作用的补偿策略，特别是 default team 与 additional team 的不同语义。
-- 修改部署 env 时，确认 Secret Manager 中 URL/token 成对存在，并检查 `PORT`、migration timestamp、health check 与 Traefik service port 一致。
+- ⚠️ 修改 `legacyTeamMutationRoutes`（`internal/middleware/legacy_team_mutations.go:15-25`）时，注意它按 Gin 路由模板匹配，**只拦变更**；把某个 GET 误加进去会让 dashboard 在 flag 打开后直接 412。
+- ⚠️ 修改 `/v1/management/**` 的 revision 语义时，保持「旧 revision 被接受但不改状态」这一幂等约定，不要改成报错。
+- 修改部署 env 时，确认 Secret Manager 中 URL/token 成对存在，并检查 `PORT`、migration timestamp、health check 与 service port 一致。⛔ 2026.30 起 Nomad/Traefik 已不再是本仓库的部署路径，见 §零.8。
 
 ### 17.4 端到端排障顺序
 
 当 dashboard 页面出现连续失败时，按边界由外到内排查:
 
 ```text
-1. Traefik/Nomad service 是否指向正确 dashboard-api instance
+1. 入口/服务发现是否指向正确 dashboard-api instance（2026.30 起不再是 Traefik/Nomad）
 2. /health 是否正常，启动日志 commit_sha / migration 是否匹配
-3. OpenAPI 请求是否带正确 method、path、body、Authorization、X-Team-ID
-4. authentication / blocked middleware 是否在 handler 前拒绝
+3. OpenAPI 请求是否带正确 method、path、body、Authorization、X-Team-ID 或 X-API-Key
+4. 是否被 legacy-mutation 门控（412）或 authentication / blocked middleware 在 handler 前拒绝
 5. Redis team cache 与 Auth DB membership 是否一致
 6. business DB migration、team-scoped SQL、ready/active 条件是否满足
 7. Ory issuer/subject/profile 或 billing retry 是否失败
@@ -766,12 +978,17 @@ middleware request timeout 为 70s，HTTP server write timeout 为 75s。billing
 
 | 主题 | 源码/配置 |
 | --- | --- |
-| HTTP 入口、timeout、middleware、依赖装配 | [`packages/dashboard-api/main.go`](../packages/dashboard-api/main.go) |
+| HTTP 入口、timeout、middleware、依赖装配 | [`packages/dashboard-api/main.go`](../packages/dashboard-api/main.go)（authenticator 装配在 `main.go:262-269`） |
 | env 解析和 failure condition | [`packages/dashboard-api/internal/cfg/model.go`](../packages/dashboard-api/internal/cfg/model.go) |
 | APIStore 依赖容器与 health | [`packages/dashboard-api/internal/handlers/store.go`](../packages/dashboard-api/internal/handlers/store.go) |
-| OpenAPI operation/security/response | [`spec/openapi-dashboard.yml`](../spec/openapi-dashboard.yml) |
-| blocked team allowlist | [`packages/dashboard-api/internal/middleware/blocked_team.go`](../packages/dashboard-api/internal/middleware/blocked_team.go) |
-| Bearer/team/admin authenticator | [`packages/auth/pkg/auth`](../packages/auth/pkg/auth) |
+| OpenAPI operation/security/response | [`spec/openapi-dashboard.yml`](../spec/openapi-dashboard.yml)（37 path / 45 operation） |
+| blocked team allowlist | [`packages/dashboard-api/internal/middleware/blocked_team.go:14`](../packages/dashboard-api/internal/middleware/blocked_team.go) |
+| ⭐ legacy team mutation 门控（412） | [`packages/dashboard-api/internal/middleware/legacy_team_mutations.go:15`](../packages/dashboard-api/internal/middleware/legacy_team_mutations.go) |
+| ⭐ `/v1/management/**` 状态变更与 sentinel error | [`packages/dashboard-api/internal/management/service.go`](../packages/dashboard-api/internal/management/service.go) |
+| ⭐ management handler（含 501 的刻意实现） | [`packages/dashboard-api/internal/handlers/utils_management.go`](../packages/dashboard-api/internal/handlers/utils_management.go)、[`management_project_delete.go`](../packages/dashboard-api/internal/handlers/management_project_delete.go) |
+| ⭐ team status / limits handler | [`packages/dashboard-api/internal/handlers/team_status.go`](../packages/dashboard-api/internal/handlers/team_status.go)、[`team_limits.go`](../packages/dashboard-api/internal/handlers/team_limits.go) |
+| ⭐ admin cluster 与 team 分配 | [`packages/dashboard-api/internal/handlers/admin_team_cluster.go`](../packages/dashboard-api/internal/handlers/admin_team_cluster.go) |
+| Bearer/team/API key/admin authenticator | [`packages/auth/pkg/auth`](../packages/auth/pkg/auth)（ⓘ 2026.30 该公开路径**仍然存在**；其内部包被收进 `pkg/auth/internal/`，见 §零.9） |
 | Identity issuer、linkage、Ory directory | [`packages/dashboard-api/internal/identity`](../packages/dashboard-api/internal/identity) |
 | OIDC/default/SSO/additional team workflow | [`packages/dashboard-api/internal/provisioning`](../packages/dashboard-api/internal/provisioning) |
 | Billing HTTP sink、retry、status mapping | [`packages/dashboard-api/internal/teamprovision/http_sink.go`](../packages/dashboard-api/internal/teamprovision/http_sink.go) |
@@ -780,7 +997,11 @@ middleware request timeout 为 70s，HTTP server write timeout 为 75s。billing
 | Template/tag dashboard queries | [`packages/db/pkg/dashboard/queries`](../packages/db/pkg/dashboard/queries) |
 | Sandbox record query | [`packages/db/queries/sandboxes/get_sandbox_record.sql`](../packages/db/queries/sandboxes/get_sandbox_record.sql) |
 | Dashboard migration (`env_defaults`, profile picture) | [`packages/db/pkg/dashboard/migrations/20260316130000_dashboard_add_env_defaults_and_team_profile_picture.sql`](../packages/db/pkg/dashboard/migrations/20260316130000_dashboard_add_env_defaults_and_team_profile_picture.sql) |
-| Nomad job and health check | [`iac/modules/job-dashboard-api/jobs/dashboard-api.hcl`](../iac/modules/job-dashboard-api/jobs/dashboard-api.hcl) |
-| GCP Secret Manager/env wiring | [`iac/provider-gcp/dashboard-api.tf`](../iac/provider-gcp/dashboard-api.tf) |
+| ⛔ Nomad job and health check | [`iac/modules/job-dashboard-api/jobs/dashboard-api.hcl`](../iac/modules/job-dashboard-api/jobs/dashboard-api.hcl) —— **链接已失效**，`iac/` 在 2026.30 整体删除 |
+| ⛔ GCP Secret Manager/env wiring | [`iac/provider-gcp/dashboard-api.tf`](../iac/provider-gcp/dashboard-api.tf) —— **链接已失效**，同上 |
 
-这些链接使用 `web-docs` 目录的相对路径；文档页面若被静态站点复制到其他根目录，应保留相同的 `../packages`、`../spec`、`../iac` 层级，避免源码索引在发布后失效。
+这些链接使用 `web-docs` 目录的相对路径；文档页面若被静态站点复制到其他根目录，应保留相同的 `../packages`、`../spec` 层级，避免源码索引在发布后失效。⛔ 最后两行的 `../iac` 层级在 2026.30 已不存在，保留为历史档案（见 §零.8）。
+
+---
+
+> **文档版本**: 已同步至 **2026.30**（tag `2026.30`，提交 `f32ee8a2a50052f32e3632ceb451111a98dd5104`）。本文所有 `file:line` 均以 tag `2026.30` 为准；与 2026.29 有差异处已并列标注。2026.30 的变动清单见 [§零](#零202630-变动速览)。§16.2 的 `iac/**` 部署链路在 2026.30 已整体失效。

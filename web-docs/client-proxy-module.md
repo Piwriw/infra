@@ -9,6 +9,17 @@
 > - [`sandbox-management.md`](sandbox-management.md) — Sandbox 管理面
 > - [`node-module.md`](node-module.md) — 节点 / 集群 / 服务发现
 > - [`template-module.md`](template-module.md) — Template 模版系统
+>
+> 行号均按 tag `2026.30` 核对。已同步至 2026.30(2026-09-10)。
+
+> ⛔ **2026.30 部署侧退役提示**:提交 `8a1c48884`（`chore(deploy): retire Nomad-based deployment ahead of a new deploy path`）把 **`iac/` 整棵树（172 个文件,含 `iac/provider-gcp/`、`iac/provider-aws/`、`iac/modules/job-*/`）** 全部删除,根目录 `self-host.md` 也已删除（⚠️ `packages/docker-reverse-proxy/` 的 19 个文件是更早的 `d153bbe9d`,2026-08-06,不是这批）;根 `Makefile` 移除了所有 Terraform/Nomad 目标,`.github/workflows/` 移除了 `publish.yml` / `release-please.yml` / `validate-iac.yml`。
+>
+> 因此**本文中所有 `iac/**` 路径在 2026.30 都已不存在,链接不可点**,保留为历史档案(主要出现在 §1.2、§7.1、§7.2、§10.3、§11.4、§11.5、§13.6)。**`packages/client-proxy/` 服务本身仍然存在**——只是它的 Nomad job spec(`iac/modules/job-client-proxy/...`)没了。`packages/nomad-nodepool-apm/` **仍然存在**,不受影响。
+
+> ⚠️ **2026.30 本模块的三处实质变更**:
+> 1. **双 Redis catalog**:新增 orchestrator-owned `sandbox:routing:{id}` 数据源,按 flag `orchestrator-routing-prioritized` 逐请求选择(见 §6.5)。
+> 2. **5007 从常量变配置**:`orchestratorProxyPort` 常量删除,改为 `ORCHESTRATOR_PROXY_PORT`(默认仍是 5007),`NewClientProxy` 签名相应增加两个参数(见 §2.3、§3.3、§11.1)。
+> 3. **Redis 配置新增两项**:`REDIS_TLS_ENABLED`、`REDIS_PASSWORD`(见 §6.4、§11.1)。
 
 ---
 
@@ -20,6 +31,7 @@
 - [四、HTTP 请求转发生命周期](#四http-请求转发生命周期)
 - [五、关键流程时序图](#五关键流程时序图)
 - [六、Redis Catalog 与存储](#六redis-catalog-与存储)
+  - [6.5 双 catalog:`sandbox:catalog:` vs `sandbox:routing:`(2026.30 新增)](#65-2026.30-新增-双-catalogsandboxcatalog-vs-sandboxrouting)
 - [七、HTTP 路由与错误页](#七http-路由与错误页)
 - [八、gRPC 接口(到 API)](#八grpc-接口到-api)
 - [九、连接池与连接追踪](#九连接池与连接追踪)
@@ -156,9 +168,13 @@ E2b-Sandbox-Port: 3000
 | **Paused** 或 never-seen | catalog miss | 调 API edge gRPC `ResumeSandbox` → 拿到 IP → 转发 |
 | **Deleted** | API 端的 `ResumeSandbox` 返 NotFound | 返 HTML 错误页 `SandboxNotFound` |
 
+> ⚠️ **2026.30 变动**:上表描述的是**默认**路径(API-owned catalog)。2026.30 新增了 orchestrator-owned 的第二份记录 `sandbox:routing:<id>`,当 LD flag `orchestrator-routing-prioritized` 为 true 且 `orchestratorCatalog != nil` 时,client-proxy 改读它。**两份记录的语义完全相同**(都是 `SandboxInfo`),区别只在写入方和 key 前缀。详见 §6.5。
+
 ### 2.3 Orchestrator Proxy(端口 5007)
 
-Client Proxy 不直接和 Firecracker microVM 通信,而是转发到 orchestrator node 的 **orchestrator proxy** 端口 5007(`orchestratorProxyPort` 常量, [`proxy.go:29`](../packages/client-proxy/internal/proxy/proxy.go))。orchestrator 内部再把流量路由到 sandbox 的 envd。
+Client Proxy 不直接和 Firecracker microVM 通信,而是转发到 orchestrator node 的 **orchestrator proxy** 端口 5007。orchestrator 内部再把流量路由到 sandbox 的 envd。
+
+> ⚠️ **2026.30 变动**:2026.29 它是 `proxy.go:29` 上的常量 `orchestratorProxyPort = 5007`。2026.30 该常量**已删除**,改为 `cfg.Config.OrchestratorProxyPort`([`internal/cfg/model.go:12`](../packages/client-proxy/internal/cfg/model.go),`env:"ORCHESTRATOR_PROXY_PORT"`,`envDefault:"5007"`),由 [`main.go:168`](../packages/client-proxy/main.go) 传给 `NewClientProxy`。默认值不变,但现在部署期可覆盖;`cfg.Parse()`(`model.go:34-36`)会拒绝 `0` 并返回 `"ORCHESTRATOR_PROXY_PORT must be greater than zero"`。
 
 ### 2.4 三种连接计数
 
@@ -239,14 +255,16 @@ Client Proxy 暴露三个 OTel UpDownCounter,用于观察连接池健康度:
 
 ### 3.3 反向代理构造(`NewClientProxy`)
 
-文件:[`packages/client-proxy/internal/proxy/proxy.go:138-252`](../packages/client-proxy/internal/proxy/proxy.go)
+文件:[`packages/client-proxy/internal/proxy/proxy.go:146-…`](../packages/client-proxy/internal/proxy/proxy.go)(2026.29 为 `:138-252`)
 
 ```go
+// 2026.30 签名：port 与 orchestratorProxyPort 合并成一行，新增 orchestratorCatalog
 func NewClientProxy(
     meterProvider metric.MeterProvider,
     serviceName string,
-    port uint16,
+    port, orchestratorProxyPort uint16,          // ← 2026.30 新增 orchestratorProxyPort
     catalog catalog.SandboxesCatalog,
+    orchestratorCatalog catalog.SandboxesCatalog, // ← 2026.30 新增
     pausedSandboxResumer PausedSandboxResumer,
     featureFlagsClient *featureflags.Client,
 ) (*reverseproxy.Proxy, error) {
@@ -262,12 +280,13 @@ func NewClientProxy(
             // 2. 查 Redis catalog(或 miss 时调 API)
             trafficAccessToken := r.Header.Get(proxygrpc.MetadataTrafficAccessToken)
             envdAccessToken := r.Header.Get(proxygrpc.MetadataEnvdHTTPAccessToken)
-            nodeIP, err := catalogResolution(ctx, sandboxId, port, trafficAccessToken, envdAccessToken, catalog, pausedSandboxResumer)
+            routingSource := selectCatalog(ctx, featureFlagsClient, catalog, orchestratorCatalog) // ← 2026.30 新增
+            nodeIP, err := catalogResolution(ctx, sandboxId, port, trafficAccessToken, envdAccessToken, routingSource, pausedSandboxResumer)
             ...
             // 3. 构造 Destination
             url := &url.URL{
                 Scheme: "http",
-                Host:   net.JoinHostPort(nodeIP, strconv.Itoa(orchestratorProxyPort)),  // :5007
+                Host:   net.JoinHostPort(nodeIP, strconv.Itoa(int(orchestratorProxyPort))),  // 配置值，默认 :5007
             }
             return &pool.Destination{
                 SandboxId:     sandboxId,
@@ -290,7 +309,7 @@ func NewClientProxy(
 
 ### 3.4 Host masking(combined host vs separate host)
 
-文件:[`packages/client-proxy/internal/proxy/proxy.go:65-74`](../packages/client-proxy/internal/proxy/proxy.go)
+文件:[`packages/client-proxy/internal/proxy/proxy.go:63-72`](../packages/client-proxy/internal/proxy/proxy.go)(2026.29 为 `:65-74`)
 
 ```go
 func clientProxyMaskRequestHost(ctx context.Context, featureFlags *featureflags.Client, host string, sandboxID string, port uint64) *string {
@@ -547,15 +566,23 @@ client-proxy 只调 `GetSandbox`(以及 `Close`)。`StoreSandbox` / `DeleteSandb
 ```go
 const catalogRedisTimeout = 1 * time.Second
 
+// 2026.30:两个 key 前缀
+const (
+    catalogKeyPrefix = "sandbox:catalog:"  // API-owned
+    routingKeyPrefix = "sandbox:routing:"  // orchestrator-owned（2026.30 新增）
+)
+
 func (c *RedisSandboxCatalog) getCatalogKey(sandboxID string) string {
-    return fmt.Sprintf("sandbox:catalog:%s", sandboxID)
+    return c.keyPrefix + sandboxID   // 2026.29 是硬编码 "sandbox:catalog:%s"
 }
 ```
 
 - **GetSandbox**:1s 超时;`redis.Nil` → `ErrSandboxNotFound`;JSON unmarshal 失败 → wrapped error。
 - **StoreSandbox**:JSON marshal 后 `SET key value EX <expiration>`。
-- **DeleteSandbox**:先 `GET` 检查 `ExecutionID` 是否匹配(防止"同 ID 不同执行"被误删),再 `DEL`。
+- **DeleteSandbox**:走 `DeleteSandboxStrict`,用一段 **Redis 服务端 Lua 脚本** `deleteIfSameExecution`(`catalog_redis.go:31-45`)原子地 `GET` + 比对 `execution_id` + `DEL`,防止"同 ID 不同执行"被误删。脚本返回 4 种 outcome(`catalogDeleteAbsent/Deleted/Mismatch/Unreadable`,`:21-24`),其中 **mismatch 与 unreadable 都不删**,留给 TTL 过期。`DeleteSandbox` 是 best-effort(错误只 warn),`DeleteSandboxStrict` 会把 Redis 错误抛出去。
 - **Close**:no-op(共享连接由 main.go 的 `factories.CloseCleanly(redisClient)` 关)。
+
+> ⓘ **2026.30 变动**:2026.29 的 `DeleteSandbox` 确实是两轮往返——先 `Get`(`catalog_redis.go:88`)读回 JSON 比对 `execution_id`,再 `Del`(`:106`),中间存在竞态窗口。2026.30 把它合并成一段服务端 Lua 脚本 `deleteIfSameExecution`,比对与删除在 Redis 内部原子完成;同时拆出 `DeleteSandbox`(best-effort)与 `DeleteSandboxStrict`(错误上抛)两个入口。因此 2026.29 的旧描述在当时是准确的,只是已经过时。
 
 ### 6.3 数据生命周期
 
@@ -564,6 +591,8 @@ func (c *RedisSandboxCatalog) getCatalogKey(sandboxID string) string {
 | Sandbox 启动(catalog.StoreSandbox) | API(orchestrator client) | sandbox 配置的最大生命周期(小时级) |
 | Sandbox pause / kill | API(orchestrator client) | 立即 `DeleteSandbox`(若 ExecutionID 匹配) |
 | Auto-resume 完成 | API(orchestrator client) | 重新 `StoreSandbox` |
+| Sandbox 变成 running(`sandbox:routing:` 记录,2026.30 新增) | **orchestrator**(`pkg/routing/publisher.go`,`MarkRunning` 写) | 与 API 相同的 TTL |
+| Sandbox 停止(`sandbox:routing:` 记录,2026.30 新增) | **orchestrator**(`MarkStopping` 删) | 立即删 |
 
 client-proxy **永远只读**。
 
@@ -576,9 +605,54 @@ redisClient, err := factories.NewRedisClient(ctx, factories.RedisConfig{
     RedisURL:         config.RedisURL,
     RedisClusterURL:  config.RedisClusterURL,
     RedisTLSCABase64: config.RedisTLSCABase64,
-    PoolSize:         config.RedisPoolSize,  // 默认 40(本服务比 API 的 160 小)
+    RedisTLSEnabled:  config.RedisTLSEnabled,  // 2026.30 新增
+    RedisPassword:    config.RedisPassword,    // 2026.30 新增
+    PoolSize:         config.RedisPoolSize,    // 默认 40(本服务比 API 的 160 小)
 })
 ```
+
+> ⚠️ **2026.30 新增两个 Redis 配置项**(`main.go:110-117`):
+> - `REDIS_TLS_ENABLED`:**开启 TLS 但不用自定义 CA**,面向 Azure Managed Redis 这类公网签名端点。
+> - `REDIS_PASSWORD`:面向需要 access key 的托管 Redis(Azure),aws/gcp 留空。
+>
+> `factories/redis.go` 里有一条容易踩的约束:**`RedisTLSCABase64` 非空但 `RedisTLSEnabled` 为 false 会直接报错**(`:71`)——CA 只是定制校验方式,**必须**配合 TLS 开关使用。
+
+### 6.5 (2026.30 新增) 双 catalog:`sandbox:catalog:` vs `sandbox:routing:`
+
+2026.30 起 client-proxy 在 `main.go:130-131` 构造**两个** catalog 实例:
+
+```go
+catalog             := e2bcatalog.NewRedisSandboxCatalog(redisClient)        // sandbox:catalog:
+orchestratorCatalog := e2bcatalog.NewRedisSandboxRoutingCatalog(redisClient) // sandbox:routing:
+```
+
+两者是**同一个结构体** `RedisSandboxCatalog`,只有 `keyPrefix` 字段不同(`catalog_redis.go:54-75`)。
+
+逐请求二选一由 `selectCatalog` 完成([`proxy.go:136-144`](../packages/client-proxy/internal/proxy/proxy.go)):
+
+```go
+// selectCatalog picks the routing source per request: the orchestrator-owned
+// record when OrchestratorRoutingPrioritizedFlag is on, else the API-owned one.
+func selectCatalog(ctx context.Context, featureFlags *featureflags.Client,
+    apiCatalog, orchestratorCatalog catalog.SandboxesCatalog) catalog.SandboxesCatalog {
+    if orchestratorCatalog != nil && featureFlags.BoolFlag(ctx, featureflags.OrchestratorRoutingPrioritizedFlag) {
+        return orchestratorCatalog
+    }
+    return apiCatalog
+}
+```
+
+| 变量 | Redis key 前缀 | 写入方 | 写入时机 |
+| --- | --- | --- | --- |
+| `catalog` | `sandbox:catalog:{id}` | API | sandbox 启动 / auto-resume 后 |
+| `orchestratorCatalog` | `sandbox:routing:{id}` | orchestrator(`pkg/routing/publisher.go`) | `MarkRunning` 写,`MarkStopping` 删 |
+
+> ⚠️ **三个反直觉点**:
+> 1. **逐请求判断,不是启动时定死**。同一个进程可以在 flag 翻转后立即切换数据源,无需重启。
+> 2. **`orchestratorCatalog == nil` 时永远回退到 API-owned**,哪怕 flag 是开的。flag 只是"允许",不是"强制"。
+> 3. **两个 flag 有先后依赖**。`featureflags/flags.go:463-471` 注释明确要求:`orchestrator-routing-publish`(让 orchestrator 开始写)必须**先开满一个 max sandbox lifetime**,才能开 `orchestrator-routing-prioritized`(让 client-proxy 改读)。**顺序颠倒会让 client-proxy 读到一个还没被写入的 key**,表现为全量 catalog miss → 404。
+>
+> 两个 flag 默认都是 `false`(`flags.go:466` / `:471`),所以 **2026.30 的默认路由行为与 2026.29 完全一致**(走 API-owned `sandbox:catalog:`)。
 
 详见 §11。
 
@@ -993,16 +1067,19 @@ API 的 shutdown 是"请求级"(70s requestTimeout + 5s slack),Client Proxy 是"
 
 ### 11.1 配置文件
 
-文件:[`packages/client-proxy/internal/cfg/model.go`](../packages/client-proxy/internal/cfg/model.go) (24 行)
+文件:[`packages/client-proxy/internal/cfg/model.go`](../packages/client-proxy/internal/cfg/model.go) (39 行；2026.29 为 24 行)
 
 ```go
 type Config struct {
-    HealthPort uint16 `env:"HEALTH_PORT" envDefault:"3003"`
-    ProxyPort  uint16 `env:"PROXY_PORT"  envDefault:"3002"`
+    HealthPort            uint16 `env:"HEALTH_PORT"             envDefault:"3003"`
+    ProxyPort             uint16 `env:"PROXY_PORT"              envDefault:"3002"`
+    OrchestratorProxyPort uint16 `env:"ORCHESTRATOR_PROXY_PORT" envDefault:"5007"`  // ← 2026.30 新增
 
     RedisURL         string `env:"REDIS_URL"`
     RedisClusterURL  string `env:"REDIS_CLUSTER_URL"`
     RedisTLSCABase64 string `env:"REDIS_TLS_CA_BASE64"`
+    RedisTLSEnabled  bool   `env:"REDIS_TLS_ENABLED"`   // ← 2026.30 新增
+    RedisPassword    string `env:"REDIS_PASSWORD"`      // ← 2026.30 新增
     RedisPoolSize    int    `env:"REDIS_POOL_SIZE"     envDefault:"40"`
 
     APIInternalGRPCAddress string `env:"API_INTERNAL_GRPC_ADDRESS"`
@@ -1012,9 +1089,20 @@ type Config struct {
     APIEdgeGRPCOAuthClientSecret string `env:"API_EDGE_GRPC_OAUTH_CLIENT_SECRET"`
     APIEdgeGRPCOAuthTokenURL     string `env:"API_EDGE_GRPC_OAUTH_TOKEN_URL"`
 }
+
+func Parse() (Config, error) {
+    config, err := env.ParseAsWithOptions[Config](env.Options{})
+    if err != nil {
+        return Config{}, err
+    }
+    if config.OrchestratorProxyPort == 0 {                       // ← 2026.30 新增校验
+        return Config{}, errors.New("ORCHESTRATOR_PROXY_PORT must be greater than zero")
+    }
+    return config, nil
+}
 ```
 
-用 `caarlos0/env/v11`,无自定义 parser。
+用 `caarlos0/env/v11`。**2026.30 起 `Parse()` 不再是透传**——它多了一条 `OrchestratorProxyPort != 0` 的校验(2026.29 的 `Parse()` 只有一行 `return env.ParseAsWithOptions[Config](env.Options{})`)。
 
 ### 11.2 环境变量完整清单
 
@@ -1024,8 +1112,9 @@ type Config struct {
 | --- | --- | --- |
 | `HEALTH_PORT` | 3003 | 健康检查端口 |
 | `PROXY_PORT` | 3002 | HTTP proxy 端口(sandbox 数据面) |
+| `ORCHESTRATOR_PROXY_PORT`(2026.30 新增) | 5007 | client-proxy → orchestrator proxy 的目标端口。**为 0 时启动失败** |
 
-> 注:生产部署中,这两个端口实际由 Nomad 的 `NOMAD_PORT_proxy` / `NOMAD_PORT_health` 决定,在 [`client-proxy.hcl:104-105`](../iac/modules/job-client-proxy/jobs/client-proxy.hcl) 由 `env` stanza 注入到 `PROXY_PORT` / `HEALTH_PORT`。
+> ⛔ 2026.29 版本的本文注写着"这两个端口实际由 Nomad 的 `NOMAD_PORT_proxy` / `NOMAD_PORT_health` 决定,在 `client-proxy.hcl:104-105` 注入"——该 Nomad job spec 随 `iac/` 在 2026.30 一并删除(见文首退役提示),链接不可点。
 
 #### Redis
 
@@ -1033,7 +1122,9 @@ type Config struct {
 | --- | --- | --- |
 | `REDIS_URL` | — | 单实例 |
 | `REDIS_CLUSTER_URL` | — | 集群(优先) |
-| `REDIS_TLS_CA_BASE64` | — | base64 CA cert |
+| `REDIS_TLS_CA_BASE64` | — | base64 CA cert。**必须配合 `REDIS_TLS_ENABLED=true`**,否则报错 |
+| `REDIS_TLS_ENABLED`(2026.30 新增) | false | 开启 TLS,不带自定义 CA(面向 Azure Managed Redis 这类公网签名端点) |
+| `REDIS_PASSWORD`(2026.30 新增) | — | 托管 Redis access key(Azure);aws/gcp 留空 |
 | `REDIS_POOL_SIZE` | 40 | 连接池大小(API 服务是 160) |
 
 #### API gRPC 连接
@@ -1046,7 +1137,7 @@ type Config struct {
 | `API_EDGE_GRPC_OAUTH_CLIENT_SECRET` | — | OAuth client credentials |
 | `API_EDGE_GRPC_OAUTH_TOKEN_URL` | — | OAuth token endpoint |
 
-**关键选择逻辑**([`main.go:133-145`](../packages/client-proxy/main.go)):
+**关键选择逻辑**([`main.go:136-148`](../packages/client-proxy/main.go)；2026.29 为 `:133-145`):
 
 ```go
 var pausedSandboxResumer e2bproxy.PausedSandboxResumer
@@ -1094,6 +1185,8 @@ go build -o bin/client-proxy -ldflags "-X=main.commitSHA=$(COMMIT_SHA)" .
 只注入 `commitSHA`,不像 API 那样还有 `expectedMigrationTimestamp`(client-proxy 不访问 DB,不需要 schema 版本校验)。
 
 ### 11.4 Nomad job 关键 stanza
+
+> ⛔ **2026.30 起本节描述的 Nomad job 已不存在**:`iac/modules/job-client-proxy/` 随 `iac/` 整体删除。下面保留 2026.29 的 stanza 内容作为历史档案(它解释了 §11.2 里 `PROXY_PORT` / `HEALTH_PORT` 的历史来源),**链接不可点**。
 
 文件:[`iac/modules/job-client-proxy/jobs/client-proxy.hcl`](../iac/modules/job-client-proxy/jobs/client-proxy.hcl)
 
@@ -1164,6 +1257,8 @@ job "client-proxy" {
 ```
 
 ### 11.5 Terraform 调用
+
+> ⛔ **2026.30 起本节的 Terraform 全部不存在**:`iac/modules/job-client-proxy/`、`iac/provider-gcp/nomad/main.tf`、`iac/provider-gcp/variables.tf`、`iac/provider-aws/nomad/main.tf` 均随 `iac/` 整体删除。保留为历史档案,**链接不可点**。
 
 模块入口:[`iac/modules/job-client-proxy/main.tf`](../iac/modules/job-client-proxy/main.tf)
 
@@ -1259,6 +1354,7 @@ Client Proxy 用 LaunchDarkly,但只关心 **少量** flag(大部分 flag 是 or
 | Flag | 用途 | 文档 |
 | --- | --- | --- |
 | `orch-accepts-combined-host` | orchestrator 接受 `<port>-<sandboxID>.<domain>` 这种"合并 host"。为 true 时 client-proxy 不做 host masking | §3.4 |
+| `orchestrator-routing-prioritized`(2026.30 新增) | 让 client-proxy 改从 orchestrator-owned `sandbox:routing:{id}` 记录解析节点,而不是 API-owned `sandbox:catalog:{id}`。**默认 false** | §6.5 |
 
 ```go
 // proxy.go:65-74
@@ -1273,6 +1369,8 @@ func clientProxyMaskRequestHost(ctx, featureFlags, host, sandboxID, port) *strin
 ```
 
 **演进**:旧版 orchestrator 只接受 host-based 路由(`<port>-<sandboxID>.<domain>`),所以 client-proxy 必须把"共享域名 + header"形式的请求 mask 成"host 编码"形式再转发。新 orchestrator 加了 `orch-accepts-combined-host` 后能直接接受任意 host + header,client-proxy 就可以透传。flag 完全 rollout 后这段 mask 逻辑应该可以删掉。
+
+> ⚠️ **2026.30 新增的 `orchestrator-routing-prioritized` 有 rollout 顺序约束**:`featureflags/flags.go:467-471` 的注释要求**先**把 `orchestrator-routing-publish`(orchestrator 侧)开满一个 max sandbox lifetime,**再**开这个 flag。原因:后者只改变**读**哪份记录,而前者才负责**写**。颠倒顺序会让 client-proxy 去读一个空 key,表现为全量 404。两个 flag 都定义在 `packages/shared/pkg/featureflags/flags.go`,client-proxy 通过 `BoolFlag(ctx, …)` 逐请求求值。
 
 ### 12.2 context 注入
 
@@ -1292,18 +1390,18 @@ Client Proxy **没有专门的 LD context middleware**(不像 API 那样在 gin 
 
 | 文件 | 行数 | 主节 |
 | --- | --- | --- |
-| [`packages/client-proxy/main.go`](../packages/client-proxy/main.go) | 312 | §3.2, §10 |
+| [`packages/client-proxy/main.go`](../packages/client-proxy/main.go) | 317(2026.29 为 312) | §3.2, §10, §6.5 |
 | [`packages/client-proxy/Makefile`](../packages/client-proxy/Makefile) | — | §11.3, §11.6 |
 | [`packages/client-proxy/Dockerfile`](../packages/client-proxy/Dockerfile) | — | §11.6 |
 | [`packages/client-proxy/CHANGELOG.md`](../packages/client-proxy/CHANGELOG.md) | — | §14.2 |
-| [`packages/client-proxy/internal/cfg/model.go`](../packages/client-proxy/internal/cfg/model.go) | 24 | §11.1 |
+| [`packages/client-proxy/internal/cfg/model.go`](../packages/client-proxy/internal/cfg/model.go) | 39(2026.29 为 24) | §11.1 |
 | [`packages/client-proxy/internal/info.go`](../packages/client-proxy/internal/info.go) | 40 | §3.2, §10.1 |
 
 ### 13.2 代理核心
 
 | 文件 | 行数 | 主节 |
 | --- | --- | --- |
-| [`packages/client-proxy/internal/proxy/proxy.go`](../packages/client-proxy/internal/proxy/proxy.go) | 252 | §3.3, §3.4, §5, §9.5 |
+| [`packages/client-proxy/internal/proxy/proxy.go`](../packages/client-proxy/internal/proxy/proxy.go) | — | §3.3, §3.4, §5, §6.5, §9.5 |
 | [`packages/client-proxy/internal/proxy/grpc_resume_auth.go`](../packages/client-proxy/internal/proxy/grpc_resume_auth.go) | 66 | §8.4 |
 | [`packages/client-proxy/internal/proxy/paused_resumer.go`](../packages/client-proxy/internal/proxy/paused_resumer.go) | 10 | §8 |
 | [`packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go`](../packages/client-proxy/internal/proxy/paused_sandbox_resumer_grpc.go) | 97 | §8 |
@@ -1328,7 +1426,8 @@ Client Proxy **没有专门的 LD context middleware**(不像 API 那样在 gin 
 | 文件 | 主节 |
 | --- | --- |
 | [`packages/shared/pkg/sandbox-catalog/catalog.go`](../packages/shared/pkg/sandbox-catalog/catalog.go) | §6.1 |
-| [`packages/shared/pkg/sandbox-catalog/catalog_redis.go`](../packages/shared/pkg/sandbox-catalog/catalog_redis.go) | §6.2 |
+| [`packages/shared/pkg/sandbox-catalog/catalog_redis.go`](../packages/shared/pkg/sandbox-catalog/catalog_redis.go) | §6.2, §6.5 |
+| [`packages/orchestrator/pkg/routing/publisher.go`](../packages/orchestrator/pkg/routing/publisher.go)(2026.30 新增) | §6.5(写 `sandbox:routing:` 记录) |
 | [`packages/shared/pkg/factories/redis.go`](../packages/shared/pkg/factories/redis.go) | §6.4 |
 
 ### 13.5 gRPC / Proto
@@ -1344,14 +1443,16 @@ Client Proxy **没有专门的 LD context middleware**(不像 API 那样在 gin 
 
 ### 13.6 部署
 
+> ⛔ **本小节全部 6 个路径在 2026.30 已随 `iac/` 整体删除**,链接不可点,保留为历史档案。`packages/client-proxy/` 服务本身仍在。
+
 | 文件 | 主节 |
 | --- | --- |
-| [`iac/modules/job-client-proxy/main.tf`](../iac/modules/job-client-proxy/main.tf) | §11.5 |
-| [`iac/modules/job-client-proxy/variables.tf`](../iac/modules/job-client-proxy/variables.tf) | §11.5 |
-| [`iac/modules/job-client-proxy/jobs/client-proxy.hcl`](../iac/modules/job-client-proxy/jobs/client-proxy.hcl) | §7.1, §11.4 |
-| [`iac/provider-gcp/nomad/main.tf`](../iac/provider-gcp/nomad/main.tf) | §11.5 |
-| [`iac/provider-gcp/variables.tf`](../iac/provider-gcp/variables.tf) | §11.5 |
-| [`iac/provider-aws/nomad/main.tf`](../iac/provider-aws/nomad/main.tf) | §11.5 |
+| [`iac/modules/job-client-proxy/main.tf`](../iac/modules/job-client-proxy/main.tf) ⛔ | §11.5 |
+| [`iac/modules/job-client-proxy/variables.tf`](../iac/modules/job-client-proxy/variables.tf) ⛔ | §11.5 |
+| [`iac/modules/job-client-proxy/jobs/client-proxy.hcl`](../iac/modules/job-client-proxy/jobs/client-proxy.hcl) ⛔ | §7.1, §11.4 |
+| [`iac/provider-gcp/nomad/main.tf`](../iac/provider-gcp/nomad/main.tf) ⛔ | §11.5 |
+| [`iac/provider-gcp/variables.tf`](../iac/provider-gcp/variables.tf) ⛔ | §11.5 |
+| [`iac/provider-aws/nomad/main.tf`](../iac/provider-aws/nomad/main.tf) ⛔ | §11.5 |
 
 ### 13.7 测试
 
@@ -1518,9 +1619,14 @@ go test -race -v ./...
 ```go
 // packages/client-proxy/internal/proxy/proxy.go
 const (
-    orchestratorProxyPort = 5007
-    idleTimeout           = 610 * time.Second
+    // orchestratorProxyPort = 5007   ← 2026.30 已删除，改为 ORCHESTRATOR_PROXY_PORT 配置项
+    idleTimeout = 610 * time.Second
 )
+
+// packages/client-proxy/internal/cfg/model.go（2026.30 新增字段）
+//   OrchestratorProxyPort uint16 `env:"ORCHESTRATOR_PROXY_PORT" envDefault:"5007"`
+//   RedisTLSEnabled       bool   `env:"REDIS_TLS_ENABLED"`
+//   RedisPassword         string `env:"REDIS_PASSWORD"`
 
 // packages/client-proxy/main.go
 const (
@@ -1574,4 +1680,6 @@ const (
 
 ---
 
-> 文档版本:2026-07-11。基于 `learn/brain` 分支代码,涵盖 `packages/client-proxy/` 全部子系统 + 关键共享包(`packages/shared/pkg/proxy/`、`sandbox-catalog/`、`grpc/proxy/`)。后续演进(auto-resume 协议变化、Traefik 路由调整、released-image 流程更新)请同步更新本文档。
+> 文档版本:2026-09-10。已同步至 **2026.30**(2026.29 为上一版)。基于 tag `2026.30` 核对全部行号,涵盖 `packages/client-proxy/` 全部子系统 + 关键共享包(`packages/shared/pkg/proxy/`、`sandbox-catalog/`、`grpc/proxy/`)。后续演进(auto-resume 协议变化、双 catalog rollout、released-image 流程更新)请同步更新本文档。
+>
+> ⛔ 注意:本文所有 `iac/**` 路径在 2026.30 已随 `iac/` 目录整体删除(见文首退役提示)。

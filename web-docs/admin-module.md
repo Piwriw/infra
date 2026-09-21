@@ -6,8 +6,19 @@
 > - `packages/api/internal/handlers/admin*.go`
 > - `packages/api/internal/orchestrator/admin.go`
 > - `packages/api/internal/team/apikeys.go`
-> - `packages/auth/pkg/auth/middleware.go` 中的 `NewAdminApiKeyAuthenticator` / `NewAdminTeamAuthenticator`
+> - `packages/auth/pkg/auth/internal/middleware/middleware.go` 中的 `NewAdminApiKeyAuthenticator` / `NewAdminJWTAuthenticator` / `NewAdminTeamAuthenticator`(2026.30 起;2026.29 为 `packages/auth/pkg/auth/middleware.go`)
 > - `spec/openapi.yml` 中所有 `tags: [admin]` 的端点
+>
+> 本文行号均按 tag `2026.30` 核对;凡与 2026.29 不同处,写作「行 N(2026.30;2026.29 为 M)」。
+
+> ⚠️ **2026.30 的 admin 面有四处结构性变动,先读这段再往下看**:
+>
+> 1. **新增服务 JWT(`AdminJWTAuth`)**。所有 13 个 `tags: [admin]` 端点的 `security:` 都从「只有 `AdminApiKeyAuth`」变成 **`AdminApiKeyAuth` 或 `AdminJWTAuth`(两个 OR 组)**。也就是说 admin 端点现在既认 `X-Admin-Token`,也认 `Authorization: Bearer <service-jwt>`。见 [4.5](#45-服务-jwtadminjwtauth202630-新增)。
+> 2. **admin 端点从 7 个涨到 13 个**。新增 `GET /admin/sandboxes/running-counts`(1 个)与 `/clusters/{clusterID}/rigs*`(5 个,全部 `tags: [admin]`)。见 [1.5](#15-202630-变动总览) 与 [5.8](#58-get-adminsandboxesrunning-counts--按-team-统计运行中沙箱数202630-新增)/[5.9](#59-clusters-rigs-系列端点202630-新增)。
+> 3. **`packages/auth/pkg/auth/*.go` 拆成公开重导出层 + `internal/**` 实现**。所有 `middleware.go` / `service.go` / `consts.go` 的行号都变了,路径也变了。
+> 4. **`authDB.Read` / `authDB.Write` 读写分离取消**,统一写成 `authDB.X`。
+>
+> ⛔ **`AccessTokenAuth` 已于 2026.30 整体删除**,不再是第 3 种用户凭证;security scheme 总数仍是 6 个,但构成从「含 `AccessTokenAuth`」变成「含 `AdminJWTAuth`」。
 
 ## 目录
 
@@ -16,6 +27,7 @@
   - [1.2 关键定位:两件不同的事](#12-关键定位两件不同的事)
   - [1.3 关键心智模型](#13-关键心智模型)
   - [1.4 整体架构](#14-整体架构)
+  - [1.5 2026.30 变动总览](#15-202630-变动总览)
 - [二、核心概念](#二核心概念)
   - [2.1 Admin Token](#21-admin-token)
   - [2.2 AdminTeamAuth:配对的 Team 上下文(用于非 admin 端点的内部服务通道)](#22-adminteamauth配对的-team-上下文用于非-admin-端点的内部服务通道)
@@ -30,7 +42,8 @@
   - [4.2 AdminTeamAuth 验证流程(用于非 admin 端点的代调通道)](#42-adminteamauth-验证流程用于非-admin-端点的代调通道)
   - [4.3 字母序命名的奥秘](#43-字母序命名的奥秘)
   - [4.4 跨端点复用:为什么几乎所有端点都接受 admin auth](#44-跨端点复用为什么几乎所有端点都接受-admin-auth)
-- [五、7 个端点逐一解析](#五7-个端点逐一解析)
+  - [4.5 服务 JWT:AdminJWTAuth(2026.30 新增)](#45-服务-jwtadminjwtauth202630-新增)
+- [五、13 个端点逐一解析](#五13-个端点逐一解析202630202629-为-7-个)
   - [5.1 GET /nodes — 列出所有节点](#51-get-nodes--列出所有节点)
   - [5.2 GET /nodes/{nodeID} — 节点详情](#52-get-nodesnodeid--节点详情)
   - [5.3 POST /nodes/{nodeID} — 节点状态覆盖](#53-post-nodesnodeid--节点状态覆盖)
@@ -38,6 +51,8 @@
   - [5.5 POST /admin/teams/{teamID}/builds/cancel — 批量取消团队构建](#55-post-adminteamsbyteamidbuildscancel--批量取消团队构建)
   - [5.6 POST /admin/teams/{teamID}/api-keys — 创建团队 API Key](#56-post-adminteamsteamidapi-keys--创建团队-api-key)
   - [5.7 DELETE /admin/teams/{teamID}/api-keys/{apiKeyID} — 删除团队 API Key](#57-delete-adminteamsbyteamidapi-keysapikeyid--删除团队-api-key)
+  - [5.8 GET /admin/sandboxes/running-counts — 按 team 统计运行中沙箱数(2026.30 新增)](#58-get-adminsandboxesrunning-counts--按-team-统计运行中沙箱数202630-新增)
+  - [5.9 /clusters/{clusterID}/rigs* 系列端点(2026.30 新增)](#59-clustersclusteridrigs-系列端点202630-新增)
 - [六、关键流程时序图](#六关键流程时序图)
   - [6.1 批量杀团队沙箱](#61-批量杀团队沙箱)
   - [6.2 批量取消团队构建](#62-批量取消团队构建)
@@ -74,17 +89,31 @@
 1. **以服务身份代替用户身份调 API**。例如 dashboard-api 想列出某个 team 的所有沙箱,但它本身没有 user 身份,只有"我是 E2B 后台"这一信息。
 2. **执行用户路径无法触达的运维操作**。例如批量杀掉某个 team 的所有沙箱、强制取消所有正在跑的构建、把某个节点标记为 draining。
 
-OpenAPI 里 `tags: [admin]` 的端点共 **7 个**,全部要求 `AdminApiKeyAuth`(`X-Admin-Token` 头):
+OpenAPI 里 `tags: [admin]` 的端点 **2026.30 共 13 个**(2026.29 为 7 个)。**2026.30 起它们全部接受 `AdminApiKeyAuth`(`X-Admin-Token`)**或**`AdminJWTAuth`(`Authorization: Bearer <service-jwt>`)**——是两个 OR 组,不是 AND:
 
-| 路径 | 方法 | 功能 |
-| --- | --- | --- |
-| `/nodes` | GET | 列出集群内所有 orchestrator 节点 |
-| `/nodes/{nodeID}` | GET | 节点详情 |
-| `/nodes/{nodeID}` | POST | 覆盖节点状态(ready/draining/...) |
-| `/admin/teams/{teamID}/sandboxes/kill` | POST | 批量杀团队沙箱 |
-| `/admin/teams/{teamID}/builds/cancel` | POST | 批量取消团队构建 |
-| `/admin/teams/{teamID}/api-keys` | POST | 为团队创建 API Key |
-| `/admin/teams/{teamID}/api-keys/{apiKeyID}` | DELETE | 删除团队的某把 API Key |
+| 路径 | 方法 | 功能 | 2026.30 |
+| --- | --- | --- | --- |
+| `/nodes` | GET | 列出集群内所有 orchestrator 节点 | |
+| `/nodes/{nodeID}` | GET | 节点详情 | |
+| `/nodes/{nodeID}` | POST | 覆盖节点状态(ready/draining/...) | |
+| `/admin/teams/{teamID}/sandboxes/kill` | POST | 批量杀团队沙箱 | |
+| `/admin/teams/{teamID}/builds/cancel` | POST | 批量取消团队构建 | |
+| `/admin/teams/{teamID}/api-keys` | POST | 为团队创建 API Key | |
+| `/admin/teams/{teamID}/api-keys/{apiKeyID}` | DELETE | 删除团队的某把 API Key | |
+| `/admin/sandboxes/running-counts` | GET | 按 team 统计运行中沙箱数 | **新增** |
+| `/clusters/{clusterID}/rigs` | GET | 列出集群的 rig(节点池) | **新增** |
+| `/clusters/{clusterID}/rigs/{rigID}/capacity` | PUT | 改 rig 的容量 | **新增** |
+| `/clusters/{clusterID}/rigs/instances/{instanceID}` | DELETE | 从 rig 摘掉一个实例 | **新增** |
+| `/clusters/{clusterID}/rigs/{rigID}/instances` | GET | 列出 rig 上的实例 | **新增** |
+| `/clusters/{clusterID}/rigs/{rigID}/errors` | GET | 列出 rig 最近的扩缩容错误 | **新增** |
+
+> ⚠️ **「只认 admin token」这个说法在 2026.30 已经不成立**。每个端点的 `security:` 现在是:
+> ```yaml
+> security:
+>   - AdminApiKeyAuth: []
+>   - AdminJWTAuth: []          # ← 2026.30 新增的第二个 OR 组
+> ```
+> 以 `/admin/teams/{teamID}/builds/cancel` 为例,见 [`spec/openapi.yml:4016-4018`](../spec/openapi.yml)(2026.29 只有 `- AdminApiKeyAuth: []`,见 `:3560-3561`)。
 
 ### 1.2 关键定位:两件不同的事
 
@@ -92,20 +121,21 @@ OpenAPI 里 `tags: [admin]` 的端点共 **7 个**,全部要求 `AdminApiKeyAuth
 
 | 语义 | 体现位置 | 说明 |
 | --- | --- | --- |
-| **特权端点** | `/nodes/**`, `/admin/teams/**` | 只能由 admin token 调用,普通用户凭证(包括 OIDC、API Key、Access Token)一概拒绝 |
-| **特权鉴权方案** | `AdminApiKeyAuth` / `AdminTeamAuth` | 作为 OpenAPI security scheme,被广泛复用在**几乎所有其他端点**作为"内部服务调用"通道 |
+| **特权端点** | `/nodes/**`, `/admin/teams/**`, `/admin/sandboxes/**`, `/clusters/{id}/rigs*` | 只能由 admin 凭证调用,普通用户凭证(包括 OIDC、API Key)一概拒绝。2026.30 起 admin 凭证有**两种**:`X-Admin-Token` 或服务 JWT |
+| **特权鉴权方案** | `AdminApiKeyAuth` / `AdminJWTAuth` / `AdminTeamAuth` | 作为 OpenAPI security scheme,被广泛复用在**几乎所有其他端点**作为"内部服务调用"通道 |
 
 也就是说,"用 admin 凭证调用 `/sandboxes`" 这种事是合法且常见的——例如 dashboard-api 用 admin token 代用户查沙箱。**这不是漏洞,是设计**。
 
 ### 1.3 关键心智模型
 
-理解 admin 模块只需记住五句话:
+理解 admin 模块只需记住六句话:
 
 1. **Token 是全局静态的**。一个集群一个 `ADMIN_TOKEN`,所有 admin 请求共享。
-2. **特权端点用 path param 拿 teamID**。`/admin/teams/{teamID}/...` 不读 `X-Team-ID`,teamID 在 URL 里,handler 自己调 `GetTeamByID`。
-3. **非 admin 端点用 `X-Team-ID` 兜底**。`/sandboxes` 等用户端点接受 `{AdminApiKeyAuth, AdminTeamAuth}` AND 组合,作为内部服务代调通道。
-4. **字母序决定执行顺序**。`AdminApiKeyAuth` 在 `AdminTeamAuth` 之前,所以 token 先验证、team 上下文后填——避免无 token 的请求打 DB。
-5. **运维操作走 errgroup 并发,失败不回滚**。批量杀沙箱 100 个里失败 3 个,API 会返回 `failedCount: 3`,剩下的照样杀完。
+2. **2026.30 起 admin 凭证有两种,是「或」关系**。`X-Admin-Token`(静态共享密钥)或 `Authorization: Bearer <service-jwt>`(服务 JWT,见 [4.5](#45-服务-jwtadminjwtauth202630-新增))。同一个端点两个 OR 组,任一组通过即可。
+3. **特权端点用 path param 拿 teamID**。`/admin/teams/{teamID}/...` 不读 `X-Team-ID`,teamID 在 URL 里,handler 自己调 `GetTeamByID`。
+4. **非 admin 端点用 `X-Team-ID` 兜底**。`/sandboxes` 等用户端点接受 `{AdminApiKeyAuth, AdminTeamAuth}` AND 组合,作为内部服务代调通道。
+5. **字母序决定同组内的执行顺序**。`AdminApiKeyAuth` 在 `AdminTeamAuth` 之前,所以 token 先验证、team 上下文后填——避免无 token 的请求打 DB。(注意:这是**同一 AND 组内**的排序规则;`security:` 顶层数组里各个 OR 组之间按书写顺序试,不排序。详见 [4.3](#43-字母序命名的奥秘)。)
+6. **运维操作走 errgroup 并发,失败不回滚**。批量杀沙箱 100 个里失败 3 个,API 会返回 `failedCount: 3`,剩下的照样杀完。
 
 ### 1.4 整体架构
 
@@ -116,7 +146,8 @@ OpenAPI 里 `tags: [admin]` 的端点共 **7 个**,全部要求 `AdminApiKeyAuth
                   └──────────────┬───────────────────┘
                                  │
                                  │  调 /admin/teams/{id}/...:
-                                 │    X-Admin-Token: <ADMIN_TOKEN>
+                                 │    X-Admin-Token: <ADMIN_TOKEN>   ← 方式 A
+                                 │    或 Authorization: Bearer <jwt> ← 方式 B (2026.30+)
                                  │    teamID 在 path 里
                                  │
                                  │  调 /sandboxes 等用户端点(代调):
@@ -130,6 +161,11 @@ OpenAPI 里 `tags: [admin]` 的端点共 **7 个**,全部要求 `AdminApiKeyAuth
         │  │  subtle.ConstantTimeCompare(token, ADMIN)  │    │
         │  └────────────────────────────────────────────┘    │
         │  ┌────────────────────────────────────────────┐    │
+        │  │ AdminJWTAuthenticator  (2026.30 新增)      │    │
+        │  │  JWKSVerifier 验签 + 校验 iss/aud/exp      │    │
+        │  │  → 不查库、不映射身份,只判「是不是可信服务」│    │
+        │  └────────────────────────────────────────────┘    │
+        │  ┌────────────────────────────────────────────┐    │
         │  │ AdminTeamAuthenticator                    │    │
         │  │  GetTeamFromAdminToken(teamID)            │    │
         │  │  → authService.GetTeamByID → Team         │    │
@@ -141,6 +177,8 @@ OpenAPI 里 `tags: [admin]` 的端点共 **7 个**,全部要求 `AdminApiKeyAuth
         │   - PostAdminTeamsTeamIDBuildsCancel              │
         │   - PostAdminTeamsTeamIDApiKeys                   │
         │   - DeleteAdminTeamsTeamIDApiKeysApiKeyID         │
+        │   - GetAdminSandboxesRunningCounts   (2026.30 新增)│
+        │   - GetClustersClusterIDRigs 等 5 个  (2026.30 新增)│
         └────────────┬──────────────┬─────────────┬─────────┘
                      │              │             │
                      ▼              ▼             ▼
@@ -150,6 +188,24 @@ OpenAPI 里 `tags: [admin]` 的端点共 **7 个**,全部要求 `AdminApiKeyAuth
               │          │  │  (gRPC)    │  │            │
               └──────────┘  └────────────┘  └────────────┘
 ```
+
+### 1.5 2026.30 变动总览
+
+| # | 变动 | 2026.29 | 2026.30 | 详见 |
+| --- | --- | --- | --- | --- |
+| 1 | admin 端点的 security | 只有 `- AdminApiKeyAuth: []` | `- AdminApiKeyAuth: []` **+ `- AdminJWTAuth: []`**(两个 OR 组) | [4.5](#45-服务-jwtadminjwtauth202630-新增) |
+| 2 | 服务 JWT 凭证 | 不存在 | 新增 `AdminJWTAuth`(`http`/`bearer`/`bearerFormat: JWT`),由 `NewAdminJWTAuthenticator` 实现 | [4.5](#45-服务-jwtadminjwtauth202630-新增) |
+| 3 | `tags: [admin]` 端点数 | 7 | **13** | [5.8](#58-get-adminsandboxesrunning-counts--按-team-统计运行中沙箱数202630-新增) / [5.9](#59-clustersclusteridrigs-系列端点202630-新增) |
+| 4 | 新增 `GET /admin/sandboxes/running-counts` | 无 | 有,返回按 team 聚合的运行中沙箱数 | [5.8](#58-get-adminsandboxesrunning-counts--按-team-统计运行中沙箱数202630-新增) |
+| 5 | 新增 5 个 `/clusters/{clusterID}/rigs*` 端点 | 无 | 有(`tags: [admin]`,不是 `clusters`) | [5.9](#59-clustersclusteridrigs-系列端点202630-新增) |
+| 6 | `AccessTokenAuth` scheme | 存在(第 3 种用户凭证) | ⛔ **已删除**,`/access-tokens*` 路由返回 **410 Gone** | [4.5](#45-服务-jwtadminjwtauth202630-新增) |
+| 7 | `packages/auth` 包结构 | 实现在 `packages/auth/pkg/auth/*.go` | 实现下沉到 `packages/auth/pkg/auth/internal/**`,公开层只做重导出 | [12.4](#124-authpackagesauthpkg) |
+| 8 | `authDB.Read` / `authDB.Write` | 读写分离两套句柄 | 取消,统一 `authDB.X` | [3.2](#32-依赖图) |
+| 9 | 新增配置项 `ADMIN_AUTH_PROVIDER_CONFIG` | 无 | 有(`packages/api/internal/cfg/model.go:136`),用于装配 admin 的 JWKS 校验器 | [十](#十配置与环境变量) |
+
+> ⚠️ 第 1 条最容易踩:很多地方(包括本文旧版本)写「admin 端点只认 `X-Admin-Token`」。**2026.30 起这句话是错的**——服务 JWT 同样能调通全部 13 个 admin 端点。判断一个 admin 端点接受什么凭证,只看 `spec/openapi.yml` 里该 path 的 `security:` 数组,别照抄旧结论。
+
+---
 
 ---
 
@@ -458,7 +514,7 @@ security:
 
 ---
 
-## 五、7 个端点逐一解析
+## 五、13 个端点逐一解析（2026.30；2026.29 为 7 个）
 
 ### 5.1 GET /nodes — 列出所有节点
 
@@ -1023,65 +1079,72 @@ admin 模块**当前不挂任何 LaunchDarkly feature flag**。原因:
 
 ## 十二、关键代码文件索引
 
+> 行号均按 tag `2026.30`;与 2026.29 不同处写作「行 N(2026.30;2026.29 为 M)」。
+
 ### 12.1 handlers(`packages/api/internal/handlers/`)
 
 | 文件 | 主要函数 |
 | --- | --- |
-| `admin.go` | `GetNodes`, `GetNodesNodeID`, `PostNodesNodeID` |
+| `admin.go` | `GetNodes`(:19), `GetNodesNodeID`(:32), `PostNodesNodeID`(:51) |
 | `admin_api_keys.go` | `PostAdminTeamsTeamIDApiKeys`, `DeleteAdminTeamsTeamIDApiKeysApiKeyID` |
 | `admin_cancel_team_builds.go` | `PostAdminTeamsTeamIDBuildsCancel` |
-| `admin_kill_team_sandboxes.go` | `PostAdminTeamsTeamIDSandboxesKill` |
-| `admin_api_keys_test.go` | 7 个测试覆盖创建/删除的 happy path 与各种拒绝场景 |
-| `store.go:417` | `GetTeamFromAdminToken` |
+| `admin_kill_team_sandboxes.go` | `PostAdminTeamsTeamIDSandboxesKill`;两处 `authService.InvalidateTeamCache`(:22 与 :84) |
+| `admin_rigs.go` | **2026.30 新增**:`GetClustersClusterIDRigs`(:14)、`PutClustersClusterIDRigsRigIDCapacity`(:35)、`GetClustersClusterIDRigsRigIDInstances`(:63)、`GetClustersClusterIDRigsRigIDErrors`(:84)、`DeleteClustersClusterIDRigsInstancesInstanceID`(:105)、`clusterResources`(:126) |
+| `admin_running_sandbox_counts.go` | **2026.30 新增**:`GetAdminSandboxesRunningCounts`(:11) |
+| `admin_api_keys_test.go` | 创建/删除的 happy path 与各种拒绝场景 |
+| `admin_cancel_team_builds_test.go`、`admin_running_sandbox_counts_test.go` | **2026.30 新增的测试文件** |
+| `store.go:552` | `GetTeamFromAdminToken`(2026.29 为 `:417`) |
 
 ### 12.2 orchestrator(`packages/api/internal/orchestrator/`)
 
 | 文件 | 主要函数 |
 | --- | --- |
-| `admin.go` | `AdminNodes`, `AdminNodeDetail` |
+| `admin.go` | `TeamRunningSandboxCounts`(:13,**2026.30 新增**)、`AdminNodes`(:17)、`AdminNodeDetail`(:60) |
 | `delete_instance.go` | `RemoveSandbox`, `removeSandboxFromNode`, `killSandboxOnNode` |
-| `client.go:121` | `GetNode` |
+| `client.go:145` | `GetNode`(2026.29 为 `:121`);同文件另有 `GetNodeByWorkloadID`(:277) |
 | `list_instances.go:12` | `GetSandboxes` |
-| `orchestrator.go:38` | `ErrNodeNotFound` |
-| `nodemanager/status.go:75` | `Node.SendStatusChange` |
+| `orchestrator.go:37` | `ErrNodeNotFound`(2026.29 为 `:38`) |
+| `nodemanager/status.go:140` | `Node.SendStatusChange`(2026.29 为 `:75`) |
 
 ### 12.3 team(`packages/api/internal/team/`)
 
 | 文件 | 主要函数 |
 | --- | --- |
-| `apikeys.go` | `CreateAPIKey`, `DeleteAPIKey` |
+| `apikeys.go` | `CreateAPIKey`(:22), `DeleteAPIKey`(:52) |
 
 ### 12.4 auth(`packages/auth/pkg/auth/`)
 
-| 文件 | 主要函数 |
-| --- | --- |
-| `middleware.go:118` | `adminValidationFunction` |
-| `middleware.go:189` | `NewAdminApiKeyAuthenticator` |
-| `middleware.go:205` | `NewAdminTeamAuthenticator` |
-| `consts.go:8` | `HeaderAdminToken = "X-Admin-Token"` |
-| `service.go:261` | `authService.InvalidateTeamCache` |
+> ⚠️ **2026.30 起实现整体移入 `internal/`**,顶层同名文件变成再导出层。下面两列都要看。
+
+| 公开层(再导出) | 实现(`internal/**`) | 符号 |
+| --- | --- | --- |
+| `middleware.go:48` | `internal/middleware/middleware.go:288` | `NewAdminApiKeyAuthenticator` |
+| `middleware.go:52` | `internal/middleware/middleware.go:304` | `NewAdminTeamAuthenticator` |
+| — | `internal/middleware/middleware.go:263` | `NewAdminJWTAuthenticator`(**2026.30 新增**) |
+| — | `internal/middleware/middleware.go:153` | `adminValidationFunction`(2026.29 为 `middleware.go:118`) |
+| `consts.go:8` | `internal/middleware/middleware.go:30` | `HeaderAdminToken = "X-Admin-Token"` |
+| — | `internal/service/service.go:258` | `AuthService.InvalidateTeamCache`(接口声明在 `:44`;2026.29 为 `service.go:261`) |
 
 ### 12.5 db(`packages/db/`)
 
 | 文件 | 内容 |
 | --- | --- |
 | `queries/builds/get_inprogress_builds.sql:22` | `GetCancellableTemplateBuildsByTeam` SQL |
-| `queries/get_inprogress_builds.sql.go:14` | sqlc 生成的 Go 代码 |
+| `queries/get_inprogress_builds.sql.go:14` | sqlc 生成的 Go 代码(`:32` 是 Go 方法本体) |
 | `pkg/auth/queries/`(自动生成) | `CreateTeamAPIKey`, `DeleteTeamAPIKey` |
+| `pkg/auth/client.go:16-22` | ⛔ 2026.30 单连接;2026.29 的 `Read`/`Write` 双连接(`:21-28`)已删除 |
 
 ### 12.6 OpenAPI spec
 
 | 位置 | 内容 |
 | --- | --- |
-| `spec/openapi.yml:33-42` | `AdminApiKeyAuth`, `AdminTeamAuth` 定义 |
-| `spec/openapi.yml:2006-2026` | `/teams`(非 admin,但接受 admin auth) |
-| `spec/openapi.yml:2028+` | `/teams/{teamID}/metrics`(同上) |
-| `spec/openapi.yml:3366-3568` | 7 个 admin tag 端点 |
-| `spec/openapi.yml:1486-1503` | `NodeStatus` enum |
-| `spec/openapi.yml:1505-1514` | `NodeStatusChange` schema |
-| `spec/openapi.yml:1622+` | `Node` schema |
-| `spec/openapi.yml:1680+` | `NodeDetail` schema |
-| `spec/openapi.yml:871-893` | `AdminSandboxKillResult`, `AdminBuildCancelResult` schema |
+| `spec/openapi.yml:27-38` | `AdminApiKeyAuth`(:27)、`AdminJWTAuth`(:31,**2026.30 新增**)、`AdminTeamAuth`(:35) |
+| `spec/openapi.yml` `/teams`、`/teams/{teamID}/metrics` | 非 admin tag,但接受 admin auth |
+| `spec/openapi.yml:3873-4110` | 8 个传统 admin 端点(`/nodes*` 3 个、`/admin/**` 5 个) |
+| `spec/openapi.yml:4538-4700` | **2026.30 新增**:`/clusters/{clusterID}/rigs*` 5 个端点 |
+| `spec/openapi.yml:1771-1800` | `NodeStatus` enum(:1771)、`NodeStatusChange`(:1791) |
+| `spec/openapi.yml:1908`、`:1971` | `Node`(:1908)、`NodeDetail`(:1971) |
+| `spec/openapi.yml:1143`、`:1155`、`:1166` | `AdminSandboxKillResult`(:1143)、`AdminTeamRunningSandboxCounts`(:1155,**2026.30 新增**)、`AdminBuildCancelResult`(:1166) |
 
 ---
 
@@ -1287,17 +1350,27 @@ admin 操作没有专门的审计表,但所有 handler 都调 `telemetry.ReportC
 
 ## 附录 A:端点速查表
 
-### A.1 7 个 admin 端点
+### A.1 13 个 admin 端点(2026.30;2026.29 为 7 个)
+
+> ⚠️ **鉴权列已按 2026.30 重写。** 全部 13 个端点的 `security:` 都是两个 **OR** 组:`AdminApiKeyAuth`(`X-Admin-Token`)**或** `AdminJWTAuth`(`Authorization: Bearer <service-jwt>`)。**这些端点上都没有 `AdminTeamAuth`** —— team/cluster 身份一律来自 path 参数。
 
 | 端点 | 方法 | 鉴权 | 功能 | Handler |
 | --- | --- | --- | --- | --- |
-| `/nodes` | GET | AdminApiKeyAuth | 列出集群节点 | `GetNodes` |
-| `/nodes/{nodeID}` | GET | AdminApiKeyAuth | 节点详情 | `GetNodesNodeID` |
-| `/nodes/{nodeID}` | POST | AdminApiKeyAuth | 覆盖节点状态 | `PostNodesNodeID` |
-| `/admin/teams/{teamID}/sandboxes/kill` | POST | AdminApiKeyAuth(+ path param teamID) | 批量杀沙箱 | `PostAdminTeamsTeamIDSandboxesKill` |
-| `/admin/teams/{teamID}/builds/cancel` | POST | AdminApiKeyAuth(+ path param teamID) | 批量取消构建 | `PostAdminTeamsTeamIDBuildsCancel` |
-| `/admin/teams/{teamID}/api-keys` | POST | AdminApiKeyAuth(+ path param teamID) | 创建团队 API Key | `PostAdminTeamsTeamIDApiKeys` |
-| `/admin/teams/{teamID}/api-keys/{apiKeyID}` | DELETE | AdminApiKeyAuth(+ path param teamID) | 删除团队 API Key | `DeleteAdminTeamsTeamIDApiKeysApiKeyID` |
+| `/nodes` | GET | AdminApiKeyAuth **或** AdminJWTAuth | 列出集群节点 | `GetNodes` |
+| `/nodes/{nodeID}` | GET | 同上 | 节点详情 | `GetNodesNodeID` |
+| `/nodes/{nodeID}` | POST | 同上 | 覆盖节点状态 | `PostNodesNodeID` |
+| `/admin/teams/{teamID}/sandboxes/kill` | POST | 同上(+ path param teamID) | 批量杀沙箱 | `PostAdminTeamsTeamIDSandboxesKill` |
+| `/admin/sandboxes/running-counts` | GET | 同上 | **2026.30 新增**:按 team 统计运行中沙箱数 | `GetAdminSandboxesRunningCounts` |
+| `/admin/teams/{teamID}/builds/cancel` | POST | 同上(+ path param teamID) | 批量取消构建 | `PostAdminTeamsTeamIDBuildsCancel` |
+| `/admin/teams/{teamID}/api-keys` | POST | 同上(+ path param teamID) | 创建团队 API Key | `PostAdminTeamsTeamIDApiKeys` |
+| `/admin/teams/{teamID}/api-keys/{apiKeyID}` | DELETE | 同上(+ path param teamID) | 删除团队 API Key | `DeleteAdminTeamsTeamIDApiKeysApiKeyID` |
+| `/clusters/{clusterID}/rigs` | GET | 同上(+ path param clusterID) | **2026.30 新增**:列 cluster 的 rig(node pool) | `GetClustersClusterIDRigs` |
+| `/clusters/{clusterID}/rigs/{rigID}/capacity` | **PUT** | 同上 | **2026.30 新增**:改 rig 容量 | `PutClustersClusterIDRigsRigIDCapacity` |
+| `/clusters/{clusterID}/rigs/{rigID}/instances` | GET | 同上 | **2026.30 新增**:列 rig 实例 | `GetClustersClusterIDRigsRigIDInstances` |
+| `/clusters/{clusterID}/rigs/instances/{instanceID}` | DELETE | 同上 | **2026.30 新增**:删 rig 实例 | `DeleteClustersClusterIDRigsInstancesInstanceID` |
+| `/clusters/{clusterID}/rigs/{rigID}/errors` | GET | 同上 | **2026.30 新增**:rig 错误列表 | `GetClustersClusterIDRigsRigIDErrors` |
+
+> ⚠️ **rigs 系列是唯一把 `PUT` 用进 admin 面的地方**(容量调整)。其余 admin 写操作都是 `POST`。此外 rigs 端点是**转发给 cluster 的 edge service** 的:集群没配 rig 管理时返回空列表,**本地集群直接返回 501**(`spec/openapi.yml` 中该 path 的 `501` 响应即为此)。
 
 ### A.2 NodeStatus 枚举
 
@@ -1363,3 +1436,7 @@ admin 操作没有专门的审计表,但所有 handler 都调 `telemetry.ReportC
 | **GetTeamFromAdminToken** | `AdminTeamAuth` 的验证函数,位于 `handlers/store.go:417` |
 | **ServiceStatusOverride** | gRPC 接口,API 用它通知 orchestrator 覆盖节点状态 |
 | **createdBy=nil** | admin 创建的 API Key 无具体用户,体现在 DB `team_api_keys.created_by` 为 NULL |
+
+---
+
+> **版本说明**:已同步至 **2026.30**(tag `2026.30`,提交 `f32ee8a2a50052f32e3632ceb451111a98dd5104`)。本文所有 `file:line` 均以 tag `2026.30` 为准;与 2026.29 有差异处已并列标注。2026.30 的四处结构性变动见文首 ⚠️ 与 [1.5](#15-202630-变动总览);13 个 admin 端点的完整鉴权矩阵见 [附录 A.1](#a1-13-个-admin-端点202630202629-为-7-个)。

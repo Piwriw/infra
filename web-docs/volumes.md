@@ -9,6 +9,28 @@
 > - 安全隔离:`packages/orchestrator/pkg/chrooted/`
 > - NFS 网关:`packages/orchestrator/pkg/nfsproxy/chroot/`
 > - OpenAPI:`spec/openapi.yml` `/volumes` 路径
+>
+> 数据来源:代码与 OpenAPI 规范,**已同步至 2026.30**。行号均按 tag `2026.30` 核对;与 2026.29 有差异处标注为「行 N(2026.30;2026.29 为 M)」。
+
+## 0. 2026.30 变动速览
+
+| 变动 | 说明 | 详见 |
+| --- | --- | --- |
+| **创建流程重排,不再用 DB 事务** | 先生成 volume UUID → 调 orchestrator 创建目录 → **由 orchestrator 回传权威 `volume_type`** → 再写 DB 行。DB 唯一约束冲突时后台清理已建的 orchestrator volume | §3.1 |
+| **`getVolumeType` 支持按 region 解析** | 签名改为 `getVolumeType(ctx, team)`,优先级:LD flag → 有 `ClusterID` 时的 placeholder → region map → 全局默认 | §3.1 |
+| **健康判定换成 `CanAcceptNewRequests()`** | region 解析在挑节点时不再看 `Status() != Ready` | §3.1 |
+| **token 的 `aud` 从 cluster UUID 改成 `https://api.<domain>`** | 与 SDK 实际请求的 host 对齐 | §4 |
+| **`CreateVolumeResponse` 新增 `volume_type`** | proto 加 `optional string volume_type = 1`,SQL 的 `CreateVolume` 改为显式传入 `id` | §3.1 |
+| **路径穿过普通文件时报 400** | `syscall.ENOTDIR`(`file.txt/sub` 这类)以前落到通用 500,现在映射为 `INVALID_REQUEST` | §6 |
+| **响应新增 `Domain` 字段** | 两个端点都回传 SDK 应使用的目标域名(BYOC 集群的 `SandboxDomain`,默认集群为 nil) | §3.1、§4 |
+
+> ⚠️ **DB 不再是 volume 的"第一事实源",orchestrator 才是。** 2026.30 的创建顺序是「先建目录、再落库」,`volume_type` 也由 orchestrator 回传决定(旧版 orchestrator 留空时才回落到请求里的值)。所以**落库的 `volume_type` 可能与客户端请求的不一致**——这是设计,不是 bug。
+>
+> ⚠️ **`getVolumeType` 的 region 解析是 opt-in。** 没有配 `DEFAULT_PERSISTENT_VOLUME_TYPE_BY_REGION` 时**不会去遍历集群节点**。而且只有当节点标签恰好命中**唯一一个** region 时才生效:零个(标签还没打到任何节点)或多个(标签没钉死 region)都会回落到全局默认。
+>
+> ⚠️ **region 只来自节点标签,不来自 team。** 代码里写得很直白:"Regions live on nodes, never on teams"。节点标签里 region 的前缀是 `region=`;没有自己的 scheduling label 的 team 走 `default` pool。
+>
+> ⚠️ **`volume_type` 里的 `PlaceholderPersistentVolumeType`(`__DEFAULT_VOLUME_TYPE__`)是有意为之的占位符。** team 有 `ClusterID` 时会先返回它,等 orchestrator 把它解析成真实类型再回传——这就是 `CreateVolumeResponse.volume_type` 存在的理由。
 
 ---
 
@@ -27,7 +49,8 @@ E2B 的 sandbox 是**临时的、无状态**的 Firecracker microVM — 一旦�
 | **访问协议** | Sandbox 内通过 NFSv3 经 `nfsproxy` 访问;外部通过 REST/gRPC 管理 |
 | **安全隔离** | 每次 FS 操作在专用 mount namespace + chroot 中执行,防止逃逸 |
 | **认证** | API 签发短期 JWT(volume content token),客户端凭 token 直接读写 |
-| **总开关** | LD flag `PersistentVolumesFlag` 关闭时所有 volume API 返回 403 |
+| **总开关** | LD flag `PersistentVolumesFlag`(`flags.go:277`,`can-use-persistent-volumes`)关闭时所有 volume API 返回 403 |
+| **BYOC 域** | 团队挂在自定义集群上时,响应携带 `domain`,客户端须改打 `https://api.<domain>`(见 §3.5) |
 
 ### 1.2 系统分层
 
@@ -146,11 +169,25 @@ DELETE FROM volumes WHERE team_id = @team_id AND id = @volume_id;
 
 Schema(`spec/openapi.yml`):
 ```yaml
-Volume:        { volumeID, name }
-NewVolume:     { name }
-VolumeAndToken: { volumeID, name, token }   # token 是短时 JWT
-SandboxVolumeMount: { name, path }           # sandbox 创建时声明挂载
+Volume:        { volumeID, name }                          # :2209
+NewVolume:     { name }                                    # :2246
+VolumeAndToken: { volumeID, name, token, domain }           # :2222;token 是短时 JWT
+SandboxVolumeMount: { name, path }                          # :727;sandbox 创建时声明挂载
 ```
+
+`VolumeAndToken.domain`(openapi.yml:2234-2243,**必填列表里没有它**):
+
+```yaml
+domain:
+  type: string
+  description: |
+    Domain to use as the destination for volume content requests,
+    replacing the default `api.<E2B_DOMAIN>`. Only returned when the
+    team is connected to a custom (BYOC) cluster; absent otherwise, in
+    which case the default domain is used.
+```
+
+> ⚠️ `domain` 是 **optional** 的(不在 `required` 中,`required` 块为 `:2241-2244`,只有 `volumeID`/`name`/`token`),只有团队挂在 BYOC 集群上时才出现。客户端必须把"缺省"当作"用默认 `api.<E2B_DOMAIN>`",不能当作错误。同一字段也出现在 sandbox 相关 schema 里(`:769`、`:817`)。
 
 ### 3.2 创建卷 — `PostVolumes`
 
@@ -158,30 +195,77 @@ SandboxVolumeMount: { name, path }           # sandbox 创建时声明挂载
 
 ```
 1. GetTeam (从 API key / cluster auth)
-2. 检查 LD flag PersistentVolumesFlag,关闭 → 403
-3. 检查 VolumesToken 是否配置完整,未配置 → 501 (ErrVolumesTokenNotConfigured)
-4. 解析 + 校验 body:
-     - 名称正则:^[a-zA-Z0-9_-]+$
-     - 不合法 → 400
-5. 解析 volume_type:
-     - LD flag DefaultPersistentVolumeType 优先
-     - 否则 config.DefaultPersistentVolumeType
-     - 都没有 → 500
-6. 开启 DB 事务
-7. sqlcDB.CreateVolume(team_id, name, volume_type)
-     - 唯一约束冲突 → 400 "Volume with name '%s' already exists"
-8. createVolume(clusterID, volume) → 路由到 orchestrator:
-     - gRPC VolumeService.CreateVolume
-     - orchestrator 实际 MkdirAll 卷目录
-     - 失败:ClusterNotFound → 503;UnknownVolumeType → 500;其他 → 500
-9. tx.Commit()
-     - 提交失败:异步 deleteVolume 回滚(防止 ghost 卷目录)
-10. Posthog 事件 "created_volume"
-11. generateVolumeContentToken (签 JWT)
-12. 返回 201 + VolumeAndToken
+2. 检查 LD flag PersistentVolumesFlag,关闭 → 403 "use of volumes is not enabled"   (:42-46)
+3. 检查 VolumesToken 是否配置完整,未配置 → 501 (ErrVolumesTokenNotConfigured)      (:50-55)
+4. 解析 + 校验 body:名称正则 ^[a-zA-Z0-9_-]+$,不合法 → 400                       (:58-75)
+5. 解析 volume_type = getVolumeType(ctx, team)                                     (:82)
+     - 空字符串 → 500 "No persistent volume type is configured"
+6. 解析 clusterID;再解析 BYOC domain = volumeContentDomain(team)                   (:90-100)
+     - 集群找不到 → 503 "Cluster not found"(在分配任何资源之前失败)
+7. 先构造"打算创建的"卷身份(客户端侧生成 UUID)                                    (:106-111)
+8. createVolume(clusterID, volume) → 路由到 orchestrator                            (:113)
+     - gRPC VolumeService.CreateVolume,orchestrator 实际 MkdirAll 卷目录
+     - ErrClusterNotFound → 503;ErrUnknownVolumeType → 500;其他 → 500
+9. **用 orchestrator 返回的 volume_type 覆盖**(若非空)                              (:135-140)
+10. sqlcDB.CreateVolume(...)                                                        (:142)
+     - 唯一约束冲突 → cleanupOrchestratorVolume + 400 "Volume with name '%s' already exists"
+     - 其他错误   → cleanupOrchestratorVolume + 500
+11. Posthog 事件 "created_volume"                                                    (:169-175)
+12. generateVolumeContentToken(..., a.volumeTokenAudience(domain)) (签 JWT)          (:177)
+13. 返回 201 + VolumeAndToken{VolumeID, Name, Token, Domain}                         (:185-192)
 ```
 
-**关键防御**:`VolumesToken.IsConfigured()` 在第 3 步预检,避免"卷已创建但无法签 token"的窘境。
+**关键防御**:
+- `VolumesToken.IsConfigured()` 在第 3 步预检(注释 `:48-49`),避免"卷已创建但无法签 token"的窘境
+- `volumeContentDomain` 在第 6 步预检(注释 `:92-93`),避免"资源已分配但团队集群找不到"
+
+#### 2026.30 变动:创建流程重排(不再用 DB 事务)
+
+> ⚠️ **本文档此前写错了。** 旧版本描述的是「先开 DB 事务 → 先写 DB 行 → 再调 orchestrator → 提交事务,提交失败则异步回滚」的流程。**2026.30 已经没有 DB 事务了**,而且顺序整个反了过来。
+
+**新顺序是"先 orchestrator,后 DB"**,原因写在 `:102-105` 的注释里:卷的 ID 现在**提前生成**,好把它交给 orchestrator;orchestrator 有机会**调整这些值**(比如解析一个 placeholder volume type),然后返回**权威值**由 API 持久化。
+
+具体差异:
+
+| 维度 | 2026.29(旧文档描述) | 2026.30 |
+|---|---|---|
+| DB 事务 | 有(`tx.Commit()`) | **无** |
+| 调用顺序 | DB 写入 → orchestrator | **orchestrator → DB 写入** |
+| volume_type | API 决定后写库 | API 决定 → 交给 orchestrator → **以 orchestrator 返回值覆盖**(`response.GetVolumeType()`,`:138-140`);老版本 orchestrator 返回空则回退到 API 发送的值 |
+| ID 生成 | 由 DB `DEFAULT gen_random_uuid()` | **API 侧 `uuid.New()` 提前生成**(`:107`),随请求发给 orchestrator |
+| 失败回滚 | `tx.Rollback()` | `cleanupOrchestratorVolume`(`:290-296`)——**best-effort 后台删除**已经建出来的 orchestrator 目录 |
+
+`cleanupOrchestratorVolume` 的实现:
+
+```go
+func (a *APIStore) cleanupOrchestratorVolume(ctx context.Context, clusterID uuid.UUID, volume queries.Volume) {
+    go func(ctx context.Context) {
+        if err := a.deleteVolume(ctx, clusterID, volume); err != nil {
+            telemetry.ReportCriticalError(ctx, "failed to clean up volume after failing to persist it", err)
+        }
+    }(context.WithoutCancel(ctx))
+}
+```
+
+注意 `context.WithoutCancel(ctx)`——API 请求的 context 可能已经取消,但清理必须跑完。注释(`:287-289`)说明意图:在 DB 行落库之前就建出来的 orchestrator 卷,如果不管就会**泄漏底层目录**,所以做后台 best-effort 删除,失败只记日志。
+
+#### 2026.30 变动:`getVolumeType` 支持按 region 解析
+
+签名变为 `getVolumeType(ctx context.Context, team *types.Team) string`(`volume_create.go:214`),**优先级从两级变成三级**(注释 `:206-213`):
+
+1. **LD flag `DefaultPersistentVolumeType`**(`flags.go:847`,`default-persistent-volume-type`)非空 → 直接用
+2. **团队有 `ClusterID`** → 返回 `config.PlaceholderPersistentVolumeType`(`:219-221`)。这是一个**占位值**,真正的类型由 orchestrator 解析并通过 `response.GetVolumeType()` 回传
+3. **按 region 的默认值**(`:223-268`):
+   - 若 `config.DefaultPersistentVolumeTypeByRegion` 为空或 `a.orchestrator == nil` → 直接返回 `config.DefaultPersistentVolumeType`(注释 `:223-224`:区域默认是 opt-in 的,没有 map 就不该去走集群)
+   - 否则在团队会被调度到的那批节点上收集 `region=<name>` 标签(`regionNodeLabelPrefix = "region="`,`:199`)
+   - **只有恰好解析出 1 个 region** 且该 region 在 map 里 → 返回映射值;0 个(标签还没匹配上)或 ≥2 个(标签没能钉住 region)→ 落回全局默认(`:257-266`)
+4. 兜底:`config.DefaultPersistentVolumeType`
+
+关键设计点(注释 `:210-213`):**节点标签只回答"团队跑在哪",而"那里新卷应该是什么类型"是策略问题,只来自 region map。** 所以一个挂载了多种 volume type 的 region 永远不需要运行期猜测。
+
+节点筛选用的是 `node.CanAcceptNewRequests()`(`:241`)而非旧版的 `node.Status() != Ready`;标签子集判定用 `hasAllLabels`(`:271-279`)。`requiredLabels` 来自 `team.SandboxSchedulingLabels`,为空时回退到 `defaultSchedulingLabel = "default"`(`:203`),**与 `generateRequiredNodeLabels` 的语义对齐**(注释 `:229-231`)。
+
+`config` 侧新增两个字段:`PlaceholderPersistentVolumeType` 与 `DefaultPersistentVolumeTypeByRegion`(见 §8.1)。
 
 ### 3.3 删除卷 — `DeleteVolumesVolumeID`
 
@@ -200,37 +284,33 @@ SandboxVolumeMount: { name, path }           # sandbox 创建时声明挂载
 
 ### 3.4 节点亲和性调度 — `executeOnOrchestratorByClusterID`
 
-`volume_util.go` 是卷操作的节点选择核心:
+`volume_util.go:118` 是卷操作的节点选择核心:
 
 ```go
 volumeLabel := internal.MakeVolumeTypeLabel(volume.VolumeType)
-// → "persistent-volume-type=<type>"
+// → "persistent-volume-type=<type>"                                       (:133)
 
-labeledNodes, otherNodes := findNodesByVolumeLabel(nodes, volumeLabel)
-rand.Shuffle(labeledNodes)  // 同优先级节点随机
-rand.Shuffle(otherNodes)
+labeledNodes, otherNodes := findNodesByVolumeLabel(nodes, volumeLabel)     (:134)
+rand.Shuffle(len(labeledNodes), ...)  // 同优先级节点随机                    (:135)
+rand.Shuffle(len(otherNodes), ...)                                         (:136)
 
-// LD flag 控制是否回退到未标记节点
-if fallbackToUnmatched {
-    nodes = append(labeledNodes, otherNodes...)
-} else {
-    nodes = labeledNodes
-}
+// LD flag 控制是否回退到未标记节点                                          (:141-146)
+if fallbackToUnmatched { nodes = append(labeledNodes, otherNodes...) }      (:148-151)
 
 for _, node := range nodes {
-    if node.Status() != Ready { notReadyNodeCount++; continue }
-    err := fn(clientCtx, client)
+    if !node.CanAcceptNewRequests() { skippedNodeCount++; continue }        (:174-178)
+    c, clientCtx := node.GetClient(ctx)                                     (:180)
+    err := fn(clientCtx, c)
     if err == nil { return nil }  // 成功
-    if isUnknownVolumeTypeError(err) { /* 记录,试下一节点 */ continue }
-    if isRetryableError(err) { continue }  // net.ErrClosed / DeadlineExceeded
-    return err  // 不可重试错误,直接返回
+    if isUnknownVolumeTypeError(err) { /* 记录,试下一节点 */ continue }      (:198-203)
+    if isRetryableError(err) { continue }  // net.ErrClosed / DeadlineExceeded (:205-209)
+    return err  // 不可重试错误,直接返回                                      (:211)
 }
 
 // 所有可达节点都返回 UnknownVolumeType
-if receivedUnknownVolumeTypeErrors > 0 {
-    return ErrUnknownVolumeType: <type>
+if receivedUnknownVolumeTypeErrors == len(nodes)-skippedNodeCount && receivedUnknownVolumeTypeErrors > 0 {
+    return ErrUnknownVolumeType: <type>                                     (:214-215)
 }
-return ErrNoHealthyOrchestratorFound
 ```
 
 **两类错误处理**:
@@ -238,27 +318,80 @@ return ErrNoHealthyOrchestratorFound
 - 网络错误(`net.ErrClosed`、`DeadlineExceeded`):**重试**
 - 其他错误(权限、参数等):**不重试**,直接失败
 
-**LD flag `VolumeFallbackToUnmatchedNodesFlag`**:迁移期用。当集群逐步上 volume-type label 时,允许未标记节点作为兜底,避免新卷类型上线时所有节点都失败。
+**LD flag `VolumeFallbackToUnmatchedNodesFlag`**:迁移期用。当集群逐步上 volume-type label 时,允许未标记节点作为兜底,避免新卷类型上线时所有节点都失败。注释(`:138-140`)说明了最终目标:等每个节点都打上 label 后,未标记节点是 100% 失败的,所以这个 flag 就是用来关掉(并最终删除)兜底路径的。
+
+#### 2026.30 变动:健康判定从 `Status() != Ready` 改为 `CanAcceptNewRequests()`
+
+```go
+// 2026.29
+if node.Status() != api.NodeStatusReady {
+    notReadyNodeCount++
+    continue
+}
+
+// 2026.30
+// Only nodes that can take new requests serve volume content
+if !node.CanAcceptNewRequests() {
+    skippedNodeCount++
+    continue
+}
+```
+
+`CanAcceptNewRequests()` 比"状态等于 Ready"更严格——它同时排除了**正在 draining / 达到容量上限**的节点,这类节点状态仍是 Ready 但不应再接新的卷操作。配套把计数器从 `notReadyNodeCount` 改名为 `skippedNodeCount`(`:156`),因为它现在计的不只是"未就绪"。
+
+> ⚠️ `skippedNodeCount` 参与最终判定 `receivedUnknownVolumeTypeErrors == len(nodes)-skippedNodeCount`(`:214`)——即"**所有被尝试过的节点**都返回了 UnknownVolumeType"才算 `ErrUnknownVolumeType`。如果跳过的节点变多,这个等式的右边就变小,更容易判定为"全部未知类型"。这是有意的:被跳过的节点本来也没被问过。
 
 ### 3.5 Volume Content Token (JWT)
 
-`volume_token.go` + `cfg.VolumesTokenConfig`:
+`volume_token.go:23` + `cfg.VolumesTokenConfig`:
 
 ```go
 claims := jwt.MapClaims{
     // 标准 claims
-    "aud": clusterID, "exp": expiration, "iat": now,
-    "iss": config.Issuer, "jti": uuid, "nbf": now, "sub": teamID,
+    "aud": audience, "exp": expiration, "iat": now,                 // (:37-39)
+    "iss": config.Issuer, "jti": uuid, "nbf": now, "sub": teamID,   // (:40-43)
     // 自定义 claims
-    "teamid":  teamID,
-    "volid":   volumeID,
-    "voltype": volumeType,
+    "teamid":  teamID,                                              // (:46)
+    "volid":   volumeID,                                            // (:47)
+    "voltype": volumeType,                                          // (:48)
 }
-token.Header["kid"] = config.SigningKeyName    // 标准 JOSE/JWKS key selection
-token.Header["tokid"] = config.SigningKeyName  // 旧 verifier 向后兼容
+token.Header["kid"] = config.SigningKeyName    // 标准 JOSE/JWKS key selection   (:54)
+token.Header["tokid"] = config.SigningKeyName  // 旧 verifier 向后兼容            (:55)
 ```
 
 `kid` 是标准 JWT header,用于 verifier 从 JWKS 或 key set 中选择签名密钥。`tokid` 暂时保留给旧客户端/验证器;两者当前写入相同的 `SigningKeyName`,新集成应读取 `kid`。
+
+#### 2026.30 变动:`aud` 从 cluster UUID 改为 `https://api.<domain>`
+
+> ⚠️ **本文档此前写错了。** 旧版本写的是 `"aud": clusterID`。2026.30 起 `aud` 是一个**完整的 origin 字符串**。
+
+```go
+// 2026.29
+clusterID := clusters.WithClusterFallback(team.ClusterID)
+"aud": clusterID.String(),
+
+// 2026.30
+"aud": audience,   // = "https://api.<domain>"
+```
+
+`generateVolumeContentToken` 新增第 4 个参数 `audience string`(`volume_token.go:23`),由 `volumeTokenAudience`(`volume_util.go:105-112`)构造:
+
+```go
+func (a *APIStore) volumeTokenAudience(domain *string) string {
+	host := a.config.DomainName
+	if domain != nil && *domain != "" {
+		host = *domain
+	}
+
+	return fmt.Sprintf("https://api.%s", host)
+}
+```
+
+即:**BYOC 团队**用其集群 domain,其余用部署默认 `a.config.DomainName`;两者都前缀 `https://api.`。注释(`:100-104`)说明这是为了"与 token 实际被出示的 host 保持一致"。
+
+配套新增 `volumeContentDomain(team)`(`volume_util.go:87-98`),负责把 `team.ClusterID` 解析成集群的 `SandboxDomain`;团队不在 BYOC 集群上时返回 `nil, nil`。调用链见 §3.2 第 6 步与第 12 步。
+
+> ⚠️ **迁移含义**:2026.29 签出的 token 其 `aud` 是 cluster UUID,2026.30 是 origin URL。**验证端若按 `aud == clusterID` 校验,升级后会全部失败。** 验证端应以 `https://api.<期望域名>` 作为期望 audience。
 
 | 配置项 | 环境变量 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -771,6 +904,21 @@ func (h *NFSHandler) FSStat(...) error { return nil }
 
 volume 向 sandbox 报告"无限大小"(`1 << 62` 字节)— 实际配额由后端存储管理,不在 NFS 协议层强制。
 
+### 6.7 2026.30 变动:`ENOTDIR` 从 500 改判为 400
+
+`packages/orchestrator/pkg/volumes/dir_create.go` 的 `processError` 新增了一条映射:路径中间某一段是**普通文件**时(例如 `file.txt/sub`),内核返回 `syscall.ENOTDIR`。
+
+```go
+// 2026.30 新增(示意)
+if errors.Is(err, syscall.ENOTDIR) {
+    return status.Error(codes.InvalidArgument, ...) // → 400 INVALID_REQUEST
+}
+```
+
+> ⚠️ **这是客户端错误,不是服务端故障。** 2026.29 时 `ENOTDIR` 落进通用错误分支被当成 500,客户端会误以为"orchestrator 出问题了"并重试,而重试永远不会成功。2026.30 起它和其它路径类错误(`ENOENT`、`EACCES`)一样返回 400 `INVALID_REQUEST`。
+
+`dir_create.go` 因此从 100 行涨到 109 行(2026.29 为 100)。
+
 ---
 
 ## 7. Sandbox 调度与 Volume 亲和性
@@ -955,15 +1103,17 @@ API:
 
 ## 12. 文件索引
 
+行数均按 tag `2026.30` 实测；与 2026.29 不同处标注为「行数(2026.30;2026.29 为 M)」。
+
 | 路径 | 行数 | 职责 |
 | --- | --- | --- |
-| `packages/orchestrator/volume.proto` | 192 | VolumeService gRPC 定义 |
+| `packages/orchestrator/volume.proto` | 193(2026.29 为 192) | VolumeService gRPC 定义;**2026.30 新增 `CreateVolumeResponse.volume_type`** |
 | `packages/orchestrator/pkg/volumes/service.go` | 237 | Service 结构 + 路径解析 + ensureDirs |
-| `packages/orchestrator/pkg/volumes/volume_create.go` | 37 | CreateVolume (MkdirAll) |
+| `packages/orchestrator/pkg/volumes/volume_create.go` | 46(2026.29 为 37) | CreateVolume (MkdirAll);**2026.30 回传 `volume_type`** |
 | `packages/orchestrator/pkg/volumes/volume_delete.go` | 40 | DeleteVolume (RemoveAll) |
 | `packages/orchestrator/pkg/volumes/file_create.go` | 125 | 客户端流式创建文件 |
 | `packages/orchestrator/pkg/volumes/file_get.go` | 101 | 服务端流式读取文件 |
-| `packages/orchestrator/pkg/volumes/dir_create.go` | 100 | CreateDir + ensureDirs 接入 |
+| `packages/orchestrator/pkg/volumes/dir_create.go` | 109(2026.29 为 100) | CreateDir + ensureDirs 接入;**2026.30 `processError` 把 `ENOTDIR` 映射为 400** |
 | `packages/orchestrator/pkg/volumes/dir_list.go` | 119 | ListDir,depth ∈ [1, 10] |
 | `packages/orchestrator/pkg/volumes/path_delete.go` | 63 | DeletePath,拒绝删根 |
 | `packages/orchestrator/pkg/volumes/path_stat.go` | 52 | StatPath |
@@ -974,16 +1124,20 @@ API:
 | `packages/orchestrator/pkg/chrooted/mountns.go` | 286 | mount namespace + 单线程串行 |
 | `packages/orchestrator/pkg/chrooted/fs.go` | 192 | FS 操作的 chroot 包装(Stat/Mkdir/...) |
 | `packages/orchestrator/pkg/chrooted/change.go` | 32 | Chmod/Chown/Lchown/Chtimes |
-| `packages/orchestrator/pkg/nfsproxy/chroot/nfs.go` | 227 | NFS Handler + VolumeMount 匹配 |
-| `packages/api/internal/handlers/volume_create.go` | 200 | POST /volumes handler |
+| `packages/orchestrator/pkg/nfsproxy/chroot/nfs.go` | 230(2026.29 为 227) | NFS Handler + VolumeMount 匹配 |
+| `packages/api/internal/handlers/volume_create.go` | 308(2026.29 为 200) | POST /volumes handler;**2026.30 改为 orchestrator-first + `getVolumeType`** |
 | `packages/api/internal/handlers/volume_delete.go` | 63 | DELETE /volumes/{id} handler |
-| `packages/api/internal/handlers/volume_get.go` | 33 | GET /volumes/{id} handler |
+| `packages/api/internal/handlers/volume_get.go` | 42(2026.29 为 33) | GET /volumes/{id} handler;**2026.30 响应加 `Domain`** |
 | `packages/api/internal/handlers/volumes_list.go` | 44 | GET /volumes handler |
-| `packages/api/internal/handlers/volume_util.go` | 226 | 节点选择 + 错误分类 |
-| `packages/api/internal/handlers/volume_token.go` | 63 | JWT 签发 |
-| `packages/api/internal/cfg/model.go` | 149-194 | VolumesTokenConfig |
-| `packages/api/internal/labels.go` | 5 | MakeVolumeTypeLabel |
-| `packages/api/internal/orchestrator/create_instance.go` | 477-506 | sandbox 调度按 volume label |
+| `packages/api/internal/handlers/volume_util.go` | 258(2026.29 为 226) | 节点选择 + 错误分类;**2026.30 加 `volumeContentDomain`/`volumeTokenAudience`** |
+| `packages/api/internal/handlers/volume_token.go` | 66(2026.29 为 63) | JWT 签发;**2026.30 `aud` 改为 `https://api.<domain>`** |
+| `packages/api/internal/cfg/model.go` | 133, 139, 146, 188-215 | `VolumesToken`(:133)、`PlaceholderPersistentVolumeType`(:139)、`DefaultPersistentVolumeTypeByRegion`(:146)、`VolumesTokenConfig`(:188)(2026.29 记为 149-194,已失效) |
+| `packages/api/internal/labels.go` | 3 | `MakeVolumeTypeLabel`(:3;2026.29 记为 5) |
+| `packages/api/internal/orchestrator/create_instance.go` | 627-640 | sandbox 调度按 volume label(:636;2026.29 记为 477-506) |
 | `packages/db/migrations/20260304120000_volumes.sql` | 25 | volumes 表 schema |
-| `packages/db/queries/volumes/volumes.sql` | 18 | sqlc 查询 |
-| `spec/openapi.yml` | 1946-1994, 3715-3790 | Volume schema + 路由 |
+| `packages/db/queries/volumes/volumes.sql` | 18 | sqlc 查询;**2026.30 `CreateVolume` 改为显式传 `id`** |
+| `spec/openapi.yml` | 2209-2246, 4212-4271 | Volume schema(`Volume:` :2209、`VolumeAndToken:` :2222、`NewVolume:` :2246)+ 路由(`/volumes:` :4212、`/volumes/{volumeID}:` :4271)(2026.29 记为 1946-1994, 3715-3790,已失效) |
+
+---
+
+*已同步至 **2026.30**。行号与文件行数均按 tag `2026.30` 实测核对;§0 汇总本版全部变动,正文各节的 `#### 2026.30 变动:` 小节给出实现细节。*

@@ -1,8 +1,55 @@
 # `packages/docker-reverse-proxy/` 原理详解
 
-> 本文梳理 E2B 自托管 Docker registry 反向代理的完整工作原理。所有结论基于仓库源码、`.understand-anything/knowledge-graph.json` 与 IaC 配置文件。
+> ## ⛔ 本包已于 2026.30 整体删除
+>
+> **`packages/docker-reverse-proxy/` 当前不存在。** 2026.29 的 **19 个文件 → 2026.30 的 0 个文件**，删除发生在提交 `d153bbe9d1e2ccd5e087d7c1dece5b8974175b54`（Jakub Rojko，2026-08-06，subject：`chore(docker-reverse-proxy): remove deprecated service`）。
+>
+> ⚠️ **不要把它和 `iac/` 的退役混成一次删除。** `iac/` 整棵树（172 文件 → 0）是**一个月后**的另一个提交 `8a1c48884406b909f64c1239c808d0bc1cbf05bf`（Tomas Virgl，2026-09-09）删的；那个提交顺带带走了本包仅剩的两个部署文件 `iac/provider-gcp/docker-reverse-proxy.tf` 与 `iac/provider-gcp/nomad/jobs/docker-reverse-proxy.hcl`（它们在被删之前已因 `d153bbe9d` 而失去服务本体）。
+>
+> 本文档因此转为**历史档案**，描述的是 2026.29 及以前的实现。其中的源码路径、行号、配置项都已不存在，保留是为了理解「为什么不能让用户直连 Artifact Registry」这个设计问题的完整解法。
+>
+> **同时消失的：**
+> - 它的部署描述 `iac/provider-gcp/docker-reverse-proxy.tf` 与 `iac/provider-gcp/nomad/jobs/docker-reverse-proxy.hcl` 随整个 `iac/` 目录一起删除（见 [components/10-iac.md](./components/10-iac.md)）。本文 §11「部署（IaC）」与 §15 速查表里的 `iac/**` 条目**链接已失效**。
+> - 根 `Makefile` 的 `build-and-upload` 聚合目标不再包含 `build-and-upload/docker-reverse-proxy`。
+> - `docs/ARCHITECTURE.md` 在 2026.30 已把该服务从架构图和服务表中移除 —— LB 只列 `api.* | *.domain wildcard`，控制面服务表里只剩 api / dashboard-api / client-proxy。2026.30 的架构文档里已**完全没有** `docker.<domain>`、registry 网关或镜像 push 的描述。
+>
+> ⚠️ 不要把它和 2026.30 新增的 `volume-content API (belt)` 混为一谈：belt 是**持久卷文件内容的读写服务**，与 Registry v2 协议无关。
+>
+> ---
+>
+> **本文档的结构：**
+> - **§零** — 2026.30 删除清单（只有这节描述当前状态）
+> - **§1 ~ §15** — **历史档案**，描述 2026.29 及之前的实现
+
+---
+
+## 零、2026.30 删除清单
+
+`packages/docker-reverse-proxy/` 在 2026.29 的完整文件清单（19 个，全部在 2026.30 删除）：
+
+| 类别 | 2026.29 路径 | 职责 |
+| --- | --- | --- |
+| 入口 | `main.go` | catch-all 路由、h2c server、`AuthCache` 清理 goroutine |
+| 构建 | `Dockerfile`、`Makefile`、`go.mod`、`go.sum` | 独立 Go module，单独镜像（多阶段构建） |
+| 版本 | `CHANGELOG.md` | release-please 生成的版本记录 |
+| 配置 | `internal/constants/main.go` | `CheckRequired()` 与 `GCPArtifactUploadPrefix` 等路径常量 |
+| 授权 | `internal/auth/validate.go`、`internal/auth/validate_test.go` | access token 哈希校验与 template build 授权查询 |
+| 缓存 | `internal/cache/auth.go` | `AuthCache`：session token → GCP token + template ID，固定 2 小时 TTL |
+| handler | `internal/handlers/store.go` | `APIStore`：业务 DB、auth DB、cache、上游 reverse proxy 的装配 |
+| handler | `internal/handlers/token.go`、`internal/handlers/token_test.go` | Registry v2 challenge 与 GCP token 交换 |
+| handler | `internal/handlers/proxy.go` | 路径白名单、template 绑定校验与 prefix 改写 |
+| handler | `internal/handlers/login.go` | login 端点 |
+| handler | `internal/handlers/health.go` | `/health`（只返回 200，不检查依赖） |
+| 工具 | `internal/utils/authorization.go` | `WWW-Authenticate` challenge header |
+| 工具 | `internal/utils/random.go`、`internal/utils/string.go` | session token 生成与日志截断 |
+
+2026.30 里既没有替代包，也没有 `docker-reverse-proxy` 的遗留引用 —— 在 tag `2026.30` 上 `git grep -l "iac/" 2026.30 -- '*.md' '*.yml' '*.yaml' 'Makefile'` 返回空，说明连部署侧的引用也一并清干净了。
+
+---
 
 ## 1. 背景与定位
+
+> ⓘ **以下（§1 ~ §15）为历史档案**，描述 2026.29 及以前的实现。`packages/docker-reverse-proxy/**` 与 `iac/**` 路径在 2026.30 已不存在，链接已失效。
 
 ### 1.1 为什么需要它
 
@@ -398,6 +445,8 @@ var GCPArtifactUploadPrefix = fmt.Sprintf(
 
 ## 11. 部署（IaC）
 
+> ⛔ **本节整体失效（2026.30）。** `iac/` 目录已在 2026.30 整体删除，本节引用的 `iac/provider-gcp/docker-reverse-proxy.tf` 与 `iac/provider-gcp/nomad/jobs/docker-reverse-proxy.hcl` 都不存在了。下面的 HCL 代码块保留为历史档案，用于说明该服务当初需要哪些云资源与 job 参数。参见 [components/10-iac.md](./components/10-iac.md) §零。
+
 ### 11.1 GCP 资源（`iac/provider-gcp/docker-reverse-proxy.tf`）
 
 ```hcl
@@ -546,6 +595,8 @@ docker CLI            docker-reverse-proxy              PostgreSQL             G
 
 ## 15. 关键文件速查表
 
+> ⛔ **本表为 2026.29 的历史索引。** 表中所有 `packages/docker-reverse-proxy/**` 路径在 2026.30 已不存在；末尾两条 `iac/provider-gcp/**` 部署条目随 `iac/` 目录一起删除，链接已失效。
+
 | 主题 | 文件 | 作用 |
 | --- | --- | --- |
 | 入口 / 路由 | `packages/docker-reverse-proxy/main.go` | 启动校验 + 单一 catch-all 路由 |
@@ -563,3 +614,7 @@ docker CLI            docker-reverse-proxy              PostgreSQL             G
 | 部署 | `iac/provider-gcp/docker-reverse-proxy.tf` | SA + IAM + Key 3 资源 |
 | 部署 | `iac/provider-gcp/nomad/jobs/docker-reverse-proxy.hcl` | Nomad service job |
 | 镜像 | `packages/docker-reverse-proxy/Dockerfile` | 多阶段构建（golang:1.26 → alpine） |
+
+---
+
+> **文档版本**：已同步至 **2026.30**。§零 描述 2026.30 的删除状态；§1 ~ §15 为 2026.29 及以前的历史档案，其中 `packages/docker-reverse-proxy/**` 与 `iac/**` 路径均已失效。
