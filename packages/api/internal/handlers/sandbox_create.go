@@ -22,19 +22,23 @@ import (
 
 	"github.com/e2b-dev/infra/packages/api/internal/api"
 	templatecache "github.com/e2b-dev/infra/packages/api/internal/cache/templates"
+	"github.com/e2b-dev/infra/packages/api/internal/fcgate"
 	apiorch "github.com/e2b-dev/infra/packages/api/internal/orchestrator"
 	"github.com/e2b-dev/infra/packages/api/internal/sandbox"
 	"github.com/e2b-dev/infra/packages/auth/pkg/auth"
 	sqlcdb "github.com/e2b-dev/infra/packages/db/client"
 	"github.com/e2b-dev/infra/packages/db/pkg/types"
 	"github.com/e2b-dev/infra/packages/db/queries"
+	"github.com/e2b-dev/infra/packages/shared/pkg/apierrors"
 	"github.com/e2b-dev/infra/packages/shared/pkg/clusters"
+	"github.com/e2b-dev/infra/packages/shared/pkg/consts"
 	"github.com/e2b-dev/infra/packages/shared/pkg/featureflags"
 	"github.com/e2b-dev/infra/packages/shared/pkg/ginutils"
 	"github.com/e2b-dev/infra/packages/shared/pkg/grpc/orchestrator"
 	"github.com/e2b-dev/infra/packages/shared/pkg/id"
 	sbxlogger "github.com/e2b-dev/infra/packages/shared/pkg/logger/sandbox"
 	"github.com/e2b-dev/infra/packages/shared/pkg/middleware/otel/metrics"
+	"github.com/e2b-dev/infra/packages/shared/pkg/networktransform"
 	sandbox_network "github.com/e2b-dev/infra/packages/shared/pkg/sandbox-network"
 	"github.com/e2b-dev/infra/packages/shared/pkg/telemetry"
 	sharedUtils "github.com/e2b-dev/infra/packages/shared/pkg/utils"
@@ -43,17 +47,20 @@ import (
 const (
 	InstanceIDPrefix            = "i"
 	metricTemplateAlias         = metrics.MetricPrefix + "template.alias"
+	metricMemoryOverride        = metrics.MetricPrefix + "memory_override"
 	minEnvdVersionForSecureFlag = "0.2.0" // Minimum version of envd that supports secure flag
 
 	// Network validation error messages
 	ErrMsgDomainsRequireBlockAll = "When specifying allowed domains in allow out, you must include 'ALL_TRAFFIC' in deny out to block all other traffic."
 
-	maxNetworkRuleDomains             = 10
+	maxHTTPSPorts                     = 128
 	maxNetworkRuleTransformsPerDomain = 1
 	maxNetworkRuleDomainLen           = 128
 	maxNetworkRuleHeaderNameLen       = 64
 	maxNetworkRuleHeaderValueLen      = 2048
 	maxNetworkRuleHeadersPerRule      = 20
+
+	maxIamTokens = 5
 )
 
 func (a *APIStore) PostSandboxes(c *gin.Context) {
@@ -150,15 +157,11 @@ func (a *APIStore) PostSandboxes(c *gin.Context) {
 	metadata := sharedUtils.DerefOrDefault(body.Metadata, nil)
 	apiVolumeMounts := sharedUtils.DerefOrDefault(body.VolumeMounts, nil)
 
-	timeout := sandbox.SandboxTimeoutDefault
-	if body.Timeout != nil {
-		timeout = time.Duration(*body.Timeout) * time.Second
+	timeout, apiErr := validateAndParseTimeout(body.Timeout, teamInfo.Limits.MaxLengthHours)
+	if apiErr != nil {
+		a.sendAPIStoreError(c, apiErr.Code, apiErr.ClientMsg)
 
-		if timeout > time.Duration(teamInfo.Limits.MaxLengthHours)*time.Hour {
-			a.sendAPIStoreError(c, http.StatusBadRequest, fmt.Sprintf("Timeout cannot be greater than %d hours", teamInfo.Limits.MaxLengthHours))
-
-			return
-		}
+		return
 	}
 
 	autoResume := buildAutoResumeConfig(body.AutoResume)
@@ -184,6 +187,19 @@ func (a *APIStore) PostSandboxes(c *gin.Context) {
 		return
 	}
 
+	// A filesystem-only auto-pause also needs the sandbox's Firecracker
+	// release to carry the feature. No record exists yet, so fcgate checks
+	// the declared build version and falls back to the same flag resolution
+	// the orchestrator will apply at start — refusing up front instead of
+	// storing a policy the timeout eviction would have to degrade later.
+	// (The evictor still degrades gracefully if resolution shifts between
+	// create and timeout.)
+	if autoPauseFilesystemOnly && !fcgate.SupportsFilesystemSnapshotsDeclared(ctx, a.featureFlags, build.FirecrackerVersion) {
+		a.sendAPIStoreError(c, http.StatusBadRequest, fmt.Sprintf("autoPauseMemory=false requires a Firecracker release with filesystem-only snapshot support; this template's version is %q. Rebuild the template on a current release or omit autoPauseMemory.", build.FirecrackerVersion))
+
+		return
+	}
+
 	var envdAccessToken *string = nil
 	if body.Secure != nil && *body.Secure == true {
 		accessToken, tokenErr := a.getEnvdAccessToken(build.EnvdVersion, sandboxID)
@@ -197,11 +213,26 @@ func (a *APIStore) PostSandboxes(c *gin.Context) {
 		envdAccessToken = &accessToken
 	}
 
+	iamCfg, iamErr := buildSandboxIam(body.Iam)
+	if iamErr != nil {
+		telemetry.ReportError(ctx, "invalid iam config", iamErr.Err, telemetry.WithSandboxID(sandboxID))
+		a.sendAPIStoreError(c, iamErr.Code, iamErr.ClientMsg)
+
+		return
+	}
+
+	if iamCfg != nil && !a.featureFlags.BoolFlag(ctx, featureflags.SandboxIamTokensFlag, featureflags.TeamContext(teamInfo.Team.ID.String())) {
+		a.sendAPIStoreError(c, http.StatusBadRequest, "Sandbox IAM workload tokens are not available for your team.")
+
+		return
+	}
+
 	allowInternetAccess := body.AllowInternetAccess
 
 	var network *types.SandboxNetworkConfig
 	if n := body.Network; n != nil {
-		if err := validateNetworkConfig(ctx, a.featureFlags, teamInfo.Team.ID, sharedUtils.DerefOrDefault(build.EnvdVersion, ""), n); err != nil {
+		maxDomains := a.featureFlags.IntFlag(ctx, featureflags.MaxNetworkRuleDomains, featureflags.TeamContext(teamInfo.Team.ID.String()))
+		if err := validateNetworkConfig(ctx, a.featureFlags, teamInfo.Team.ID, sharedUtils.DerefOrDefault(build.EnvdVersion, ""), maxDomains, n); err != nil {
 			telemetry.ReportError(ctx, "invalid network config", err.Err, telemetry.WithSandboxID(sandboxID))
 			a.sendAPIStoreError(c, err.Code, err.ClientMsg)
 
@@ -212,6 +243,7 @@ func (a *APIStore) PostSandboxes(c *gin.Context) {
 			Ingress: &types.SandboxNetworkIngressConfig{
 				AllowPublicAccess: n.AllowPublicTraffic,
 				MaskRequestHost:   n.MaskRequestHost,
+				HTTPSPorts:        sharedUtils.DerefOrDefault(n.HttpsPorts, nil),
 			},
 			Egress: &types.SandboxNetworkEgressConfig{
 				AllowedAddresses: sharedUtils.DerefOrDefault(n.AllowOut, nil),
@@ -301,6 +333,7 @@ func (a *APIStore) PostSandboxes(c *gin.Context) {
 			AutoResume:              autoResume,
 			VolumeMounts:            sbxVolumeMounts,
 			EnvdAccessToken:         envdAccessToken,
+			Iam:                     iamCfg,
 		}, nil
 	}
 
@@ -312,10 +345,11 @@ func (a *APIStore) PostSandboxes(c *gin.Context) {
 		getSandboxData,
 		&c.Request.Header,
 		false,
+		false,
 		mcp,
 	)
 	if createErr != nil {
-		a.sendAPIStoreError(c, createErr.Code, createErr.ClientMsg)
+		apierrors.SendAPIError(c, createErr)
 
 		return
 	}
@@ -334,6 +368,50 @@ func (a *APIStore) PostSandboxes(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, &sbx)
+}
+
+// iamTokenTypeJWTSVID is the only workload token type accepted in this version.
+const iamTokenTypeJWTSVID = "JWT-SVID"
+
+// buildSandboxIam validates the optional iam.tokens map and returns the sandbox
+// workload identity configuration to persist. An absent or empty map means
+// workload identity is disabled and returns nil. The audience is preserved
+// exactly as received.
+func buildSandboxIam(iam *api.SandboxIam) (*types.SandboxIam, *api.APIError) {
+	if iam == nil || iam.Tokens == nil || len(*iam.Tokens) == 0 {
+		return nil, nil
+	}
+
+	reject := func(field, msg string) *api.APIError {
+		return &api.APIError{
+			Code:      http.StatusBadRequest,
+			Err:       fmt.Errorf("%s: %s", field, msg),
+			ClientMsg: fmt.Sprintf("%s: %s", field, msg),
+		}
+	}
+
+	if len(*iam.Tokens) > maxIamTokens {
+		return nil, reject("iam.tokens", fmt.Sprintf("too many tokens: %d (max %d)", len(*iam.Tokens), maxIamTokens))
+	}
+
+	tokens := make(map[string]types.SandboxIamToken, len(*iam.Tokens))
+	for name, def := range *iam.Tokens {
+		if name == "" {
+			return nil, reject("iam.tokens", "token name must not be empty")
+		}
+
+		if def.Audience == "" {
+			return nil, reject(fmt.Sprintf("iam.tokens.%s.audience", name), "audience is required")
+		}
+
+		if def.TokenType != iamTokenTypeJWTSVID {
+			return nil, reject(fmt.Sprintf("iam.tokens.%s.tokenType", name), fmt.Sprintf("only %q is supported", iamTokenTypeJWTSVID))
+		}
+
+		tokens[name] = types.SandboxIamToken{Audience: def.Audience, TokenType: def.TokenType}
+	}
+
+	return &types.SandboxIam{Tokens: tokens}, nil
 }
 
 func buildAutoResumeConfig(autoResume *api.SandboxAutoResumeConfig) *types.SandboxAutoResumeConfig {
@@ -620,15 +698,52 @@ func apiRulesToDBRules(apiRules *map[string][]api.SandboxNetworkRule) map[string
 			dbDomainRules = append(dbDomainRules, dbRule)
 		}
 
-		dbRules[domain] = dbDomainRules
+		dbRules[strings.ToLower(domain)] = dbDomainRules
 	}
 
 	return dbRules
 }
 
-func validateNetworkConfig(ctx context.Context, featureFlags featureFlagsClient, teamID uuid.UUID, envdVersion string, network *api.SandboxNetworkConfig) *api.APIError {
+func validateNetworkConfig(ctx context.Context, featureFlags featureFlagsClient, teamID uuid.UUID, envdVersion string, maxDomains int, network *api.SandboxNetworkConfig) *api.APIError {
 	if network == nil {
 		return nil
+	}
+
+	if httpsPorts := network.HttpsPorts; httpsPorts != nil {
+		if len(*httpsPorts) > maxHTTPSPorts {
+			return &api.APIError{
+				Code:      http.StatusBadRequest,
+				Err:       fmt.Errorf("too many HTTPS ports: %d (max %d)", len(*httpsPorts), maxHTTPSPorts),
+				ClientMsg: fmt.Sprintf("HTTPS ports can have at most %d entries.", maxHTTPSPorts),
+			}
+		}
+
+		seen := make(map[uint32]struct{}, len(*httpsPorts))
+		for _, port := range *httpsPorts {
+			if port == 0 || port > 65535 {
+				return &api.APIError{
+					Code:      http.StatusBadRequest,
+					Err:       fmt.Errorf("invalid HTTPS port %d", port),
+					ClientMsg: fmt.Sprintf("HTTPS port must be between 1 and 65535: %d", port),
+				}
+			}
+			if port == uint32(consts.DefaultEnvdServerPort) {
+				return &api.APIError{
+					Code:      http.StatusBadRequest,
+					Err:       errors.New("envd port cannot use HTTPS backend routing"),
+					ClientMsg: fmt.Sprintf("HTTPS backend routing is not supported for reserved port %d", port),
+				}
+			}
+			if _, ok := seen[port]; ok {
+				return &api.APIError{
+					Code:      http.StatusBadRequest,
+					Err:       fmt.Errorf("duplicate HTTPS port %d", port),
+					ClientMsg: fmt.Sprintf("HTTPS port %d is specified more than once.", port),
+				}
+			}
+
+			seen[port] = struct{}{}
+		}
 	}
 
 	if maskRequestHost := network.MaskRequestHost; maskRequestHost != nil {
@@ -666,7 +781,7 @@ func validateNetworkConfig(ctx context.Context, featureFlags featureFlagsClient,
 		return err
 	}
 
-	return validateNetworkRules(ctx, featureFlags, teamID, envdVersion, network.Rules)
+	return validateNetworkRules(ctx, featureFlags, teamID, envdVersion, maxDomains, network.Rules)
 }
 
 // validateEgressRules validates egress allow/deny rules:
@@ -710,7 +825,7 @@ func validateEgressRules(allowOut, denyOut []string) *api.APIError {
 	return nil
 }
 
-func validateNetworkRules(ctx context.Context, featureFlags featureFlagsClient, teamID uuid.UUID, envdVersion string, rules *map[string][]api.SandboxNetworkRule) *api.APIError {
+func validateNetworkRules(ctx context.Context, featureFlags featureFlagsClient, teamID uuid.UUID, envdVersion string, maxDomains int, rules *map[string][]api.SandboxNetworkRule) *api.APIError {
 	if rules == nil {
 		return nil
 	}
@@ -739,14 +854,15 @@ func validateNetworkRules(ctx context.Context, featureFlags featureFlagsClient, 
 		}
 	}
 
-	if len(*rules) > maxNetworkRuleDomains {
+	if len(*rules) > maxDomains {
 		return &api.APIError{
 			Code:      http.StatusBadRequest,
-			Err:       fmt.Errorf("too many rule domains: %d (max %d)", len(*rules), maxNetworkRuleDomains),
-			ClientMsg: fmt.Sprintf("Network rules can have at most %d domains.", maxNetworkRuleDomains),
+			Err:       fmt.Errorf("too many rule domains: %d (max %d)", len(*rules), maxDomains),
+			ClientMsg: fmt.Sprintf("Network rules can have at most %d domains.", maxDomains),
 		}
 	}
 
+	seenDomains := make(map[string]struct{}, len(*rules))
 	for domain, domainRules := range *rules {
 		if len(domain) == 0 {
 			return &api.APIError{
@@ -764,13 +880,28 @@ func validateNetworkRules(ctx context.Context, featureFlags featureFlagsClient, 
 			}
 		}
 
-		if !govalidator.IsDNSName(domain) {
+		validDomain := govalidator.IsDNSName(domain)
+		if strings.HasPrefix(domain, "*.") {
+			validDomain = sandbox_network.IsValidWildcardDomainPattern(domain)
+		}
+
+		if !validDomain {
 			return &api.APIError{
 				Code:      http.StatusBadRequest,
 				Err:       fmt.Errorf("rule domain %q is not a valid domain", domain),
 				ClientMsg: fmt.Sprintf("Rule domain %q is not a valid domain name.", domain),
 			}
 		}
+
+		normalizedDomain := strings.ToLower(domain)
+		if _, ok := seenDomains[normalizedDomain]; ok {
+			return &api.APIError{
+				Code:      http.StatusBadRequest,
+				Err:       errors.New("network rule domain keys must be unique ignoring case"),
+				ClientMsg: "Network rule domain keys must be unique ignoring case.",
+			}
+		}
+		seenDomains[normalizedDomain] = struct{}{}
 
 		if len(domainRules) > maxNetworkRuleTransformsPerDomain {
 			return &api.APIError{
@@ -780,6 +911,7 @@ func validateNetworkRules(ctx context.Context, featureFlags featureFlagsClient, 
 			}
 		}
 
+		markerSeen := make(map[string]struct{})
 		for _, rule := range domainRules {
 			if rule.Transform == nil {
 				continue
@@ -832,6 +964,28 @@ func validateNetworkRules(ctx context.Context, featureFlags featureFlagsClient, 
 						Code:      http.StatusBadRequest,
 						Err:       fmt.Errorf("value for header %q in rule for domain %q exceeds max length %d", name, domain, maxNetworkRuleHeaderValueLen),
 						ClientMsg: fmt.Sprintf("Value for header %q in rule for domain %q exceeds maximum length of %d characters.", name, domain, maxNetworkRuleHeaderValueLen),
+					}
+				}
+
+				placeholders, err := networktransform.ParsePlaceholders(value)
+				if err != nil {
+					return &api.APIError{
+						Code:      http.StatusBadRequest,
+						Err:       fmt.Errorf("malformed E2B placeholder in network transform header: %w", err),
+						ClientMsg: "Network transform header contains a malformed E2B placeholder.",
+					}
+				}
+
+				for _, placeholder := range placeholders {
+					if placeholder.Kind == networktransform.PlaceholderCustomerSecret {
+						markerSeen[placeholder.Name] = struct{}{}
+					}
+				}
+				if len(markerSeen) > networktransform.MaxMarkerNames {
+					return &api.APIError{
+						Code:      http.StatusBadRequest,
+						Err:       fmt.Errorf("domain %q references %d secrets (max %d)", domain, len(markerSeen), networktransform.MaxMarkerNames),
+						ClientMsg: fmt.Sprintf("Rule domain %q references more than %d secrets.", domain, networktransform.MaxMarkerNames),
 					}
 				}
 			}

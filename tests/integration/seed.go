@@ -21,12 +21,11 @@ import (
 )
 
 type SeedData struct {
-	AccessToken string
-	APIKey      string
-	EnvID       string
-	BuildID     uuid.UUID
-	TeamID      uuid.UUID
-	UserID      uuid.UUID
+	APIKey  string
+	EnvID   string
+	BuildID uuid.UUID
+	TeamID  uuid.UUID
+	UserID  uuid.UUID
 }
 
 func main() {
@@ -56,7 +55,7 @@ func run(ctx context.Context) int {
 		return 1
 	}
 	defer db.Close()
-	authDb, err := authdb.NewClient(ctx, connectionString, connectionString)
+	authDb, err := authdb.NewClient(ctx, connectionString)
 	if err != nil {
 		log.Printf("Failed to connect to database: %v", err)
 
@@ -65,12 +64,11 @@ func run(ctx context.Context) int {
 	defer authDb.Close()
 
 	data := SeedData{
-		AccessToken: os.Getenv("TESTS_E2B_ACCESS_TOKEN"),
-		APIKey:      os.Getenv("TESTS_E2B_API_KEY"),
-		EnvID:       os.Getenv("TESTS_SANDBOX_TEMPLATE_ID"),
-		BuildID:     uuid.MustParse(os.Getenv("TESTS_SANDBOX_BUILD_ID")),
-		TeamID:      uuid.MustParse(os.Getenv("TESTS_SANDBOX_TEAM_ID")),
-		UserID:      uuid.MustParse(os.Getenv("TESTS_SANDBOX_USER_ID")),
+		APIKey:  os.Getenv("TESTS_E2B_API_KEY"),
+		EnvID:   os.Getenv("TESTS_SANDBOX_TEMPLATE_ID"),
+		BuildID: uuid.MustParse(os.Getenv("TESTS_SANDBOX_BUILD_ID")),
+		TeamID:  uuid.MustParse(os.Getenv("TESTS_SANDBOX_TEAM_ID")),
+		UserID:  uuid.MustParse(os.Getenv("TESTS_SANDBOX_USER_ID")),
 	}
 
 	err = seed(ctx, db, authDb, data)
@@ -97,37 +95,9 @@ VALUES ($1, $2)
 		return fmt.Errorf("failed to create user: %w", err)
 	}
 
-	err = authdb.Write.UpsertPublicUser(ctx, data.UserID)
+	err = authdb.UpsertPublicUser(ctx, data.UserID)
 	if err != nil {
 		return fmt.Errorf("failed to create public user: %w", err)
-	}
-
-	// Access token for legacy template build endpoints that do not support API key auth.
-	tokenWithoutPrefix := strings.TrimPrefix(data.AccessToken, keys.AccessTokenPrefix)
-	accessTokenBytes, err := hex.DecodeString(tokenWithoutPrefix)
-	if err != nil {
-		return fmt.Errorf("failed to decode access token: %w", err)
-	}
-
-	accessTokenHash := hasher.Hash(accessTokenBytes)
-
-	accessTokenMask, err := keys.MaskKey(keys.AccessTokenPrefix, tokenWithoutPrefix)
-	if err != nil {
-		return fmt.Errorf("failed to mask access token: %w", err)
-	}
-
-	_, err = authdb.Write.CreateAccessToken(ctx, authqueries.CreateAccessTokenParams{
-		ID:                    uuid.New(),
-		UserID:                data.UserID,
-		AccessTokenHash:       accessTokenHash,
-		AccessTokenPrefix:     accessTokenMask.Prefix,
-		AccessTokenLength:     int32(accessTokenMask.ValueLength),
-		AccessTokenMaskPrefix: accessTokenMask.MaskedValuePrefix,
-		AccessTokenMaskSuffix: accessTokenMask.MaskedValueSuffix,
-		Name:                  "Integration Tests Access Token",
-	})
-	if err != nil {
-		return fmt.Errorf("failed to create access token: %w", err)
 	}
 
 	// Team
@@ -169,7 +139,7 @@ VALUES ($1, $2, $3)
 	if err != nil {
 		return fmt.Errorf("failed to mask api key: %w", err)
 	}
-	_, err = authdb.Write.CreateTeamAPIKey(ctx, authqueries.CreateTeamAPIKeyParams{
+	_, err = authdb.CreateTeamAPIKey(ctx, authqueries.CreateTeamAPIKeyParams{
 		TeamID:           data.TeamID,
 		CreatedBy:        &data.UserID,
 		ApiKeyHash:       apiKeyHash,
@@ -223,7 +193,7 @@ INSERT INTO env_builds (
 	cluster_node_id, version, created_at, updated_at
 ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, CURRENT_TIMESTAMP)
 `, build.id, "FROM e2bdev/base:latest", dbtypes.BuildStatusUploaded,
-				2, 512, 512, 1982, "vmlinux-6.1.158-c1a568c", "v1.14.1_431f1fc", pkg.Version,
+				2, 512, 512, 1982, "vmlinux-6.1.158-c1a568c", "v1.14-0.2.0", pkg.Version,
 				"integration-test-node", templates.TemplateV1Version, build.createdAt)
 		} else {
 			err = db.TestsRawSQL(ctx, `
@@ -233,7 +203,7 @@ INSERT INTO env_builds (
 	cluster_node_id, version, updated_at
 ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, CURRENT_TIMESTAMP)
 `, build.id, "FROM e2bdev/base:latest", dbtypes.BuildStatusUploaded,
-				2, 512, 512, 1982, "vmlinux-6.1.158-c1a568c", "v1.14.1_431f1fc", pkg.Version,
+				2, 512, 512, 1982, "vmlinux-6.1.158-c1a568c", "v1.14-0.2.0", pkg.Version,
 				"integration-test-node", templates.TemplateV1Version)
 		}
 		if err != nil {

@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 	"time"
 
 	"go.opentelemetry.io/otel"
@@ -25,6 +26,7 @@ import (
 	"github.com/e2b-dev/infra/packages/orchestrator/pkg/template/build/sandboxtools"
 	"github.com/e2b-dev/infra/packages/orchestrator/pkg/template/build/storage/cache"
 	"github.com/e2b-dev/infra/packages/orchestrator/pkg/template/metadata"
+	"github.com/e2b-dev/infra/packages/shared/pkg/consts"
 	"github.com/e2b-dev/infra/packages/shared/pkg/featureflags"
 	"github.com/e2b-dev/infra/packages/shared/pkg/logger"
 	"github.com/e2b-dev/infra/packages/shared/pkg/storage"
@@ -118,6 +120,19 @@ func (ppb *PostProcessingBuilder) Layer(
 		FirecrackerVersion: ppb.Config.FirecrackerVersion,
 	}
 
+	// Stamped from the same config as the kernel version above, because it describes
+	// the same thing: how this template's kernel was booted. From here the
+	// copy-constructors carry it, so every later pause of this lineage keeps it and a
+	// filesystem-only cold boot can re-apply it.
+	//
+	// Assigned unconditionally, including the empty case. result starts as the source
+	// layer's metadata, so leaving the field alone would let a value from elsewhere
+	// stand as this build's — recording arguments its kernel never booted with.
+	result.CmdlineArgs = nil
+	if len(ppb.Config.CmdlineArgs) > 0 {
+		result.CmdlineArgs = maps.Clone(ppb.Config.CmdlineArgs)
+	}
+
 	return phases.LayerResult{
 		Metadata: result,
 		Cached:   false,
@@ -146,9 +161,9 @@ func (ppb *PostProcessingBuilder) Build(
 		return phases.LayerResult{}, fmt.Errorf("error checking build version: %w", err)
 	}
 	if !ok {
-		// For older builds, always use "user" as the default user
+		// For older builds, always use the template default user
 		// and do not set a default workdir (defaults to the user homedir).
-		defaultUser = new("user")
+		defaultUser = new(consts.TemplateDefaultUser)
 		defaultWorkdir = nil
 	}
 
@@ -240,7 +255,9 @@ func (ppb *PostProcessingBuilder) postProcessingFn(userLogger logger.Logger) lay
 			// tar that envd.service seeds the boot-time cert tmpfs from reflects the
 			// final trust store. Runs before the sync below so it is flushed to disk.
 			if err := packCertBundle(ctx, userLogger, ppb.proxy, sbx.Runtime.SandboxID); err != nil {
-				e = err
+				// The gate inside packCertBundleCmd fails on user-image state;
+				// unwrapped errors surface as internal and page ops.
+				e = phases.NewPhaseBuildError(ppb.Metadata(), err)
 
 				return
 			}

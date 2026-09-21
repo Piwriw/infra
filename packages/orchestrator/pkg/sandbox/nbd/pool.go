@@ -26,6 +26,9 @@ const (
 	waitOnNBDError                = 50 * time.Millisecond
 	devicePoolCloseReleaseTimeout = 10 * time.Minute
 	sysBlockDir                   = "/sys/block"
+	// releaseRetryDelay is how long ReleaseDevice waits before retrying a device
+	// that is still in use.
+	releaseRetryDelay = 500 * time.Millisecond
 )
 
 var (
@@ -145,10 +148,6 @@ func ConnectedDevices() ([]DeviceSlot, error) {
 	}
 
 	return devices, nil
-}
-
-func IsDeviceConnected(slot DeviceSlot) (bool, error) {
-	return isDeviceConnectedIn(sysBlockDir, slot)
 }
 
 func isDeviceConnectedIn(blockDir string, slot DeviceSlot) (bool, error) {
@@ -366,7 +365,14 @@ func (d *DevicePool) ReleaseDevice(ctx context.Context, idx DeviceSlot, opts ...
 			logger.L().Error(ctx, "error releasing device", zap.Int("attempt", attempt), zap.Error(err))
 		}
 
-		time.Sleep(500 * time.Millisecond)
+		// Wait on the context too: Close bounds a stuck device with WithTimeout,
+		// and shutdown cancels the context outright. An uninterruptible sleep
+		// here would make every remaining attempt outlive both.
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(releaseRetryDelay):
+		}
 	}
 }
 

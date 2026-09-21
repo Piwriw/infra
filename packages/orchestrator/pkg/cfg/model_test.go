@@ -27,22 +27,6 @@ func TestParse(t *testing.T) {
 		assert.Equal(t, "/fc-vm2", config.SandboxDir)
 	})
 
-	t.Run("network config local flag defaults to false", func(t *testing.T) {
-		config, err := Parse()
-		require.NoError(t, err)
-
-		assert.False(t, config.NetworkConfig.UseLocalNamespaceStorage)
-	})
-
-	t.Run("network config is parsed correctly", func(t *testing.T) {
-		t.Setenv("USE_LOCAL_NAMESPACE_STORAGE", "true")
-
-		config, err := Parse()
-		require.NoError(t, err)
-
-		assert.True(t, config.NetworkConfig.UseLocalNamespaceStorage)
-	})
-
 	t.Run("multiple services parses correctly", func(t *testing.T) {
 		t.Setenv("ORCHESTRATOR_SERVICES", "service1,service2")
 
@@ -196,109 +180,23 @@ func TestAdditionalClickhouseEndpoints(t *testing.T) {
 	})
 }
 
-func TestAdditionalClickhouseEndpoints(t *testing.T) {
-	t.Run("returns nil when neither var is set", func(t *testing.T) {
-		c := Config{}
-		endpoints, dropped := c.AdditionalClickhouseEndpoints()
-		assert.Nil(t, endpoints)
-		assert.Nil(t, dropped)
-	})
-
-	t.Run("singular only — returns nil", func(t *testing.T) {
-		c := Config{ClickhouseConnectionString: "A"}
-		endpoints, dropped := c.AdditionalClickhouseEndpoints()
-		assert.Nil(t, endpoints)
-		assert.Nil(t, dropped)
-	})
-
-	t.Run("plural only", func(t *testing.T) {
-		c := Config{ClickhouseConnectionStrings: []string{"B", "C"}}
-		endpoints, dropped := c.AdditionalClickhouseEndpoints()
-		assert.Equal(t, []string{"B", "C"}, endpoints)
-		assert.Nil(t, dropped)
-	})
-
-	t.Run("singular filters matching plural entry, reported as dropped", func(t *testing.T) {
-		c := Config{
-			ClickhouseConnectionString:  "A",
-			ClickhouseConnectionStrings: []string{"A", "B"},
-		}
-		endpoints, dropped := c.AdditionalClickhouseEndpoints()
-		assert.Equal(t, []string{"B"}, endpoints)
-		assert.Equal(t, []string{"A"}, dropped)
-	})
-
-	t.Run("plural internal duplicates deduped, reported as dropped", func(t *testing.T) {
-		c := Config{ClickhouseConnectionStrings: []string{"A", "B", "A"}}
-		endpoints, dropped := c.AdditionalClickhouseEndpoints()
-		assert.Equal(t, []string{"A", "B"}, endpoints)
-		assert.Equal(t, []string{"A"}, dropped)
-	})
-
-	t.Run("blank/whitespace entries dropped silently (not reported)", func(t *testing.T) {
-		c := Config{ClickhouseConnectionStrings: []string{"A", "", "  ", "B"}}
-		endpoints, dropped := c.AdditionalClickhouseEndpoints()
-		assert.Equal(t, []string{"A", "B"}, endpoints)
-		assert.Nil(t, dropped)
-	})
-
-	t.Run("whitespace-trimmed duplicate of singular dropped, reported", func(t *testing.T) {
-		c := Config{
-			ClickhouseConnectionString:  "A",
-			ClickhouseConnectionStrings: []string{"  A  ", "B"},
-		}
-		endpoints, dropped := c.AdditionalClickhouseEndpoints()
-		assert.Equal(t, []string{"B"}, endpoints)
-		assert.Equal(t, []string{"A"}, dropped)
-	})
-
-	t.Run("env-var parse: basic split", func(t *testing.T) {
-		t.Setenv("CLICKHOUSE_CONNECTION_STRING", "")
-		t.Setenv("CLICKHOUSE_CONNECTION_STRINGS", "dsn1;dsn2;dsn3")
+// TestParseInstanceGroupName pins the variable name rather than the field: it
+// is the contract with the deployment that supplies it, and an unset value
+// disables the instance group flag context silently.
+func TestParseInstanceGroupName(t *testing.T) {
+	t.Run("unset", func(t *testing.T) {
 		config, err := Parse()
 		require.NoError(t, err)
-		endpoints, dropped := config.AdditionalClickhouseEndpoints()
-		assert.Equal(t, []string{"dsn1", "dsn2", "dsn3"}, endpoints)
-		assert.Nil(t, dropped)
+
+		assert.Empty(t, config.InstanceGroupName)
 	})
 
-	t.Run("env-var parse: empty tokens and trailing/leading separators", func(t *testing.T) {
-		t.Setenv("CLICKHOUSE_CONNECTION_STRING", "")
-		t.Setenv("CLICKHOUSE_CONNECTION_STRINGS", ";dsn1;;dsn2;")
-		config, err := Parse()
-		require.NoError(t, err)
-		endpoints, dropped := config.AdditionalClickhouseEndpoints()
-		assert.Equal(t, []string{"dsn1", "dsn2"}, endpoints)
-		assert.Nil(t, dropped)
-	})
+	t.Run("set", func(t *testing.T) {
+		t.Setenv("INSTANCE_GROUP_NAME", "orch-client-pool-region-rig")
 
-	t.Run("env-var parse: whitespace around entries trimmed", func(t *testing.T) {
-		t.Setenv("CLICKHOUSE_CONNECTION_STRING", "")
-		t.Setenv("CLICKHOUSE_CONNECTION_STRINGS", " dsn1 ; dsn2 ")
 		config, err := Parse()
 		require.NoError(t, err)
-		endpoints, dropped := config.AdditionalClickhouseEndpoints()
-		assert.Equal(t, []string{"dsn1", "dsn2"}, endpoints)
-		assert.Nil(t, dropped)
-	})
 
-	t.Run("env-var parse: all-blank yields nil", func(t *testing.T) {
-		t.Setenv("CLICKHOUSE_CONNECTION_STRING", "")
-		t.Setenv("CLICKHOUSE_CONNECTION_STRINGS", ";;  ;;")
-		config, err := Parse()
-		require.NoError(t, err)
-		endpoints, dropped := config.AdditionalClickhouseEndpoints()
-		assert.Nil(t, endpoints)
-		assert.Nil(t, dropped)
-	})
-
-	t.Run("env-var parse: dup of singular reported, dup of earlier plural reported", func(t *testing.T) {
-		t.Setenv("CLICKHOUSE_CONNECTION_STRING", "dsn1")
-		t.Setenv("CLICKHOUSE_CONNECTION_STRINGS", "dsn1;dsn2;dsn2")
-		config, err := Parse()
-		require.NoError(t, err)
-		endpoints, dropped := config.AdditionalClickhouseEndpoints()
-		assert.Equal(t, []string{"dsn2"}, endpoints)
-		assert.Equal(t, []string{"dsn1", "dsn2"}, dropped)
+		assert.Equal(t, "orch-client-pool-region-rig", config.InstanceGroupName)
 	})
 }

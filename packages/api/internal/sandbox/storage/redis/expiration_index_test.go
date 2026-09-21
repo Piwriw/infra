@@ -254,6 +254,27 @@ func TestExpiredItems_ReturnsExpiredRunningSandbox(t *testing.T) {
 	require.Equal(t, sbx.ExecutionID, items[0].ExecutionID)
 }
 
+func TestExpiredItems_ResidualKillingAfterStaleCutoff(t *testing.T) {
+	t.Parallel()
+
+	storage, _ := setupTestStorage(t)
+
+	teamID := uuid.New()
+	stale := makeIndexedSandbox(teamID, "sbx-stale-killing", uuid.NewString(), time.Now().Add(-time.Hour), time.Now().Add(-sandboxtypes.StaleCutoff-time.Minute))
+	stale.State = sandboxtypes.StateKilling
+	require.NoError(t, storage.Add(t.Context(), stale))
+
+	young := makeIndexedSandbox(teamID, "sbx-young-killing", uuid.NewString(), time.Now().Add(-time.Hour), time.Now().Add(-time.Minute))
+	young.State = sandboxtypes.StateKilling
+	require.NoError(t, storage.Add(t.Context(), young))
+
+	items, err := storage.ExpiredItems(t.Context())
+	require.NoError(t, err)
+	require.Len(t, items, 1)
+	require.Equal(t, stale.SandboxID, items[0].SandboxID)
+	require.Equal(t, sandboxtypes.StateKilling, items[0].State)
+}
+
 // TestHeal_RestoresMissingMember reproduces the production incident: a
 // sandbox present in team storage but missing from the global expiration
 // index is invisible to the evictor and would live forever.
@@ -303,8 +324,8 @@ func TestHeal_SkipsYoungSandbox(t *testing.T) {
 	requireMemberAbsent(t, client, member)
 }
 
-// TestHeal_ManySandboxesMultipleBatches exercises the SSCAN pagination in
-// healTeamExpirationIndex: more sandboxes than healScanBatchSize, with holes
+// TestHeal_ManySandboxesMultipleBatches exercises the SSCAN pagination in the
+// shared sandbox scanner: more sandboxes than sandboxScanBatchSize, with holes
 // spread across the whole ID range.
 func TestHeal_ManySandboxesMultipleBatches(t *testing.T) {
 	t.Parallel()
@@ -312,7 +333,7 @@ func TestHeal_ManySandboxesMultipleBatches(t *testing.T) {
 	storage, client := setupTestStorage(t)
 
 	teamID := uuid.New()
-	total := healScanBatchSize*2 + 37 // force >2 batches with a partial tail
+	total := sandboxScanBatchSize*2 + 37 // force >2 batches with a partial tail
 
 	pipe := client.Pipeline()
 	var missingMembers []string
@@ -334,10 +355,13 @@ func TestHeal_ManySandboxesMultipleBatches(t *testing.T) {
 			missingMembers = append(missingMembers, member)
 		}
 	}
+	// The shared scanner walks teams via the global teams index, so the team
+	// has to be registered there.
+	pipe.ZAdd(t.Context(), globalTeamsSet, redis.Z{Score: float64(time.Now().Unix()), Member: teamID.String()})
 	_, err := pipe.Exec(t.Context())
 	require.NoError(t, err)
 
-	healed, err := storage.healTeamExpirationIndex(t.Context(), teamID.String())
+	healed, err := storage.healExpirationIndex(t.Context())
 	require.NoError(t, err)
 	require.Equal(t, len(missingMembers), healed)
 
@@ -348,7 +372,7 @@ func TestHeal_ManySandboxesMultipleBatches(t *testing.T) {
 	}
 
 	// Idempotent: a second pass heals nothing.
-	healed, err = storage.healTeamExpirationIndex(t.Context(), teamID.String())
+	healed, err = storage.healExpirationIndex(t.Context())
 	require.NoError(t, err)
 	require.Zero(t, healed)
 }

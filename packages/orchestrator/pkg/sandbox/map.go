@@ -21,6 +21,8 @@ import (
 type MapSubscriber interface {
 	// OnInsert is triggered when a sandbox transitions to the running state.
 	OnInsert(ctx context.Context, sandbox *Sandbox)
+	// OnStopping is triggered when a sandbox leaves the live registry (MarkStopping).
+	OnStopping(ctx context.Context, sandbox *Sandbox)
 	// OnNetworkRelease is triggered when a sandbox's network slot is released.
 	OnNetworkRelease(ctx context.Context, sbx *Sandbox)
 }
@@ -148,8 +150,7 @@ func (m *Map) AssignNetwork(ctx context.Context, sbx *Sandbox) {
 	ip := sbx.Slot.HostIPString()
 	m.network.Insert(ip, sbx)
 
-	logger.L().Info(ctx, "sandbox network map entry added",
-		logger.WithSandboxID(sbx.Runtime.SandboxID),
+	sbx.log().Info(ctx, "sandbox network map entry added",
 		logger.WithLifecycleID(sbx.LifecycleID),
 		logger.WithSandboxIP(ip),
 	)
@@ -161,8 +162,7 @@ func (m *Map) trackLifecycle(ctx context.Context, sbx *Sandbox) {
 	m.notifyLifecycleChangeLocked()
 	m.lifecycleMu.Unlock()
 
-	logger.L().Info(ctx, "sandbox lifecycle tracked",
-		logger.WithSandboxID(sbx.Runtime.SandboxID),
+	sbx.log().Info(ctx, "sandbox lifecycle tracked",
 		logger.WithLifecycleID(sbx.LifecycleID),
 		logger.WithSandboxIP(sbx.Slot.HostIPString()),
 	)
@@ -180,11 +180,8 @@ func (m *Map) MarkRunning(ctx context.Context, sbx *Sandbox) {
 		s.OnInsert(ctx, sbx)
 	})
 
-	logger.L().Info(ctx, "adding sandbox to map",
-		logger.WithSandboxID(sbx.Runtime.SandboxID),
+	sbx.log().Info(ctx, "adding sandbox to map",
 		logger.WithLifecycleID(sbx.LifecycleID),
-		logger.WithTemplateID(sbx.Runtime.TemplateID),
-		logger.WithBuildID(sbx.Runtime.BuildID),
 		logger.WithSandboxIP(sbx.Slot.HostIPString()),
 		logger.WithEnvdVersion(sbx.Config.Envd.Version),
 		logger.WithKernelVersion(sbx.Config.FirecrackerConfig.KernelVersion),
@@ -192,10 +189,10 @@ func (m *Map) MarkRunning(ctx context.Context, sbx *Sandbox) {
 	)
 }
 
-// MarkStopping removes the sandbox from live queries (Get, Items, Count).
+// MarkStopping removes the sandbox from live queries (Get, Items, Count) and notifies OnStopping subscribers.
 // Returns true if the sandbox was successfully removed.
 func (m *Map) MarkStopping(ctx context.Context, sandboxID, lifecycleID string) bool {
-	stopped := false
+	var stopped *Sandbox
 
 	m.live.RemoveCb(sandboxID, func(_ string, sbx *Sandbox, exists bool) bool {
 		if !exists {
@@ -206,18 +203,25 @@ func (m *Map) MarkStopping(ctx context.Context, sandboxID, lifecycleID string) b
 			return false
 		}
 
-		logger.L().Info(ctx, "marking sandbox as stopping",
-			logger.WithSandboxID(sandboxID),
+		sbx.log().Info(ctx, "marking sandbox as stopping",
 			logger.WithLifecycleID(lifecycleID),
 			logger.WithSandboxIP(sbx.Slot.HostIPString()),
 		)
 
-		stopped = true
+		stopped = sbx
 
 		return true
 	})
 
-	return stopped
+	if stopped == nil {
+		return false
+	}
+
+	m.trigger(ctx, func(ctx context.Context, s MapSubscriber) {
+		s.OnStopping(ctx, stopped)
+	})
+
+	return true
 }
 
 func (m *Map) MarkStopped(ctx context.Context, sbx *Sandbox) {
@@ -226,8 +230,7 @@ func (m *Map) MarkStopped(ctx context.Context, sbx *Sandbox) {
 	m.notifyLifecycleChangeLocked()
 	m.lifecycleMu.Unlock()
 
-	logger.L().Info(ctx, "sandbox lifecycle stopped",
-		logger.WithSandboxID(sbx.Runtime.SandboxID),
+	sbx.log().Info(ctx, "sandbox lifecycle stopped",
 		logger.WithLifecycleID(sbx.LifecycleID),
 		logger.WithSandboxIP(sbx.Slot.HostIPString()),
 	)
@@ -256,8 +259,7 @@ func (m *Map) NetworkReleased(ctx context.Context, ip string) {
 		return
 	}
 
-	logger.L().Info(ctx, "sandbox network map entry removed",
-		logger.WithSandboxID(sbx.Runtime.SandboxID),
+	sbx.log().Info(ctx, "sandbox network map entry removed",
 		logger.WithLifecycleID(sbx.LifecycleID),
 		logger.WithSandboxIP(ip),
 	)

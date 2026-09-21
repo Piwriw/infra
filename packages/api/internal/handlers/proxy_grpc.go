@@ -117,7 +117,7 @@ func (s *SandboxService) getAutoResumeSnapshot(ctx context.Context, sandboxID st
 	// A filesystem-only snapshot can only be resumed by cold-booting (reboot),
 	// which loses in-memory state. Refuse to do that implicitly on an incoming
 	// request — the caller must resume it explicitly.
-	if snap.Snapshot.Config != nil && snap.Snapshot.Config.FilesystemOnly {
+	if snapshotIsFilesystemOnly(snap.Snapshot) {
 		return nil, nil, status.Error(codes.FailedPrecondition, "filesystem-only snapshot must be resumed explicitly")
 	}
 
@@ -261,9 +261,11 @@ func (s *SandboxService) ResumeSandbox(ctx context.Context, req *proxygrpc.Sandb
 		sandboxID,
 		timeout,
 		team,
-		s.api.buildResumeSandboxData(sandboxID, nil),
+		// Auto-resume never demands a cold boot: no memory override exists here.
+		s.api.buildResumeSandboxData(sandboxID, nil, nil),
 		&headers,
 		true,
+		false,
 		nil, // mcp
 	)
 	if apiErr != nil {

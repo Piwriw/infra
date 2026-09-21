@@ -486,6 +486,239 @@ func TestStorageDiff_BackfillMarkerLatchesUncompressedAtConstruction(t *testing.
 	require.Equal(t, payload[:readLen], buf)
 }
 
+// A V4+ header whose mapping references a zstd ancestor its Builds section does not
+// cover. Loaded through LoadHeader so the backfill runs: it used to fabricate a zero
+// BuildData here, which resolved to "<build>/memfile" and 404'd against the real
+// "<build>/memfile.zstd" on every fault, permanently.
+func TestStorageDiff_AbsentEntryOnV4ResolvesFromOwnHeader(t *testing.T) {
+	t.Parallel()
+
+	const (
+		frameSizeKB = 256
+		payloadSize = 256 * 1024
+	)
+	readLen := testBlockSize
+
+	ctx := t.Context()
+	aID := uuid.New()
+	payload := bytes.Repeat([]byte("absent-entry-"), payloadSize/len("absent-entry-")+1)[:payloadSize]
+
+	aFrameTable, compressed, _, err := storage.CompressBytes(ctx, payload, storage.CompressConfig{
+		Enabled:            true,
+		Type:               storage.CompressionZstd.String(),
+		Level:              2,
+		EncoderConcurrency: 1,
+		FrameEncodeWorkers: 1,
+		FrameSizeKB:        frameSizeKB,
+		MinPartSizeMB:      50,
+	})
+	require.NoError(t, err)
+
+	aHeader := buildHeader(t, aID, payloadSize, aID)
+	aHeader.SetBuild(aID, header.BuildData{Size: int64(payloadSize), FrameData: aFrameTable.Table()})
+	aHeaderBytes, err := header.SerializeHeader(aHeader)
+	require.NoError(t, err)
+
+	bHeader := loadHeaderThroughStorage(t, buildHeader(t, uuid.New(), payloadSize, aID))
+	require.False(t, bHeader.IncompletePendingUpload)
+	require.NotContains(t, bHeader.Builds, aID)
+
+	aPaths := storage.Paths{BuildID: aID.String()}
+	provider := storage.NewMockStorageProvider(t)
+
+	probeSeekable := storage.NewMockSeekable(t)
+	provider.EXPECT().
+		OpenSeekable(mock.Anything, aPaths.DataFile(storage.MemfileName, storage.CompressionNone)).
+		Return(probeSeekable, nil).Once()
+
+	headerBlob := storage.NewMockBlob(t)
+	headerBlob.EXPECT().
+		WriteTo(mock.Anything, mock.Anything).
+		RunAndReturn(func(_ context.Context, w io.Writer) (int64, error) {
+			return io.Copy(w, bytes.NewReader(aHeaderBytes))
+		}).Once()
+	provider.EXPECT().
+		OpenBlob(mock.Anything, aPaths.HeaderFile(storage.MemfileName)).
+		Return(headerBlob, nil).Once()
+
+	compressedSeekable := storage.NewMockSeekable(t)
+	compressedSeekable.EXPECT().
+		OpenRangeReader(mock.Anything, mock.Anything, mock.Anything, mock.Anything).
+		RunAndReturn(decompressingRangeReader(compressed))
+	provider.EXPECT().
+		OpenSeekable(mock.Anything, aPaths.DataFile(storage.MemfileName, storage.CompressionZstd)).
+		Return(compressedSeekable, nil).Once()
+
+	require.Equal(t, payload[:readLen], runRead(t, bHeader, provider))
+}
+
+// A zero Builds entry for a zstd ancestor: older releases fabricated zero
+// entries for gaps at load time, and a pause serialized them into descendant
+// headers as real entries — on the wire indistinguishable from the legit V3
+// uncompressed sentinel. The claimed suffix-less object does not exist, so
+// instead of failing the size lookup permanently, createDiff must fall back
+// to the build's own header and read the compressed object.
+func TestStorageDiff_StaleZeroEntryRecoversFromOwnHeader(t *testing.T) {
+	t.Parallel()
+
+	const (
+		frameSizeKB = 256
+		payloadSize = 256 * 1024
+	)
+	readLen := testBlockSize
+
+	ctx := t.Context()
+	aID := uuid.New()
+	payload := bytes.Repeat([]byte("stale-zero-"), payloadSize/len("stale-zero-")+1)[:payloadSize]
+
+	aFrameTable, compressed, _, err := storage.CompressBytes(ctx, payload, storage.CompressConfig{
+		Enabled:            true,
+		Type:               storage.CompressionZstd.String(),
+		Level:              2,
+		EncoderConcurrency: 1,
+		FrameEncodeWorkers: 1,
+		FrameSizeKB:        frameSizeKB,
+		MinPartSizeMB:      50,
+	})
+	require.NoError(t, err)
+
+	aHeader := buildHeader(t, aID, payloadSize, aID)
+	aHeader.SetBuild(aID, header.BuildData{Size: int64(payloadSize), FrameData: aFrameTable.Table()})
+	aHeaderBytes, err := header.SerializeHeader(aHeader)
+	require.NoError(t, err)
+
+	// Current header carries the stale zero entry for A.
+	bHeader := buildHeader(t, uuid.New(), payloadSize, aID)
+	bHeader.SetBuild(aID, header.BuildData{})
+
+	aPaths := storage.Paths{BuildID: aID.String()}
+	provider := storage.NewMockStorageProvider(t)
+
+	// The zero entry resolves to the suffix-less name, whose size lookup 404s.
+	rawSeekable := storage.NewMockSeekable(t)
+	rawSeekable.EXPECT().
+		Size(mock.Anything).
+		Return(int64(0), storage.ErrObjectNotExist).Once()
+	provider.EXPECT().
+		OpenSeekable(mock.Anything, aPaths.DataFile(storage.MemfileName, storage.CompressionNone)).
+		Return(rawSeekable, nil).Once()
+
+	headerBlob := storage.NewMockBlob(t)
+	headerBlob.EXPECT().
+		WriteTo(mock.Anything, mock.Anything).
+		RunAndReturn(func(_ context.Context, w io.Writer) (int64, error) {
+			return io.Copy(w, bytes.NewReader(aHeaderBytes))
+		}).Once()
+	provider.EXPECT().
+		OpenBlob(mock.Anything, aPaths.HeaderFile(storage.MemfileName)).
+		Return(headerBlob, nil).Once()
+
+	compressedSeekable := storage.NewMockSeekable(t)
+	compressedSeekable.EXPECT().
+		OpenRangeReader(mock.Anything, mock.Anything, mock.Anything, mock.Anything).
+		RunAndReturn(decompressingRangeReader(compressed))
+	provider.EXPECT().
+		OpenSeekable(mock.Anything, aPaths.DataFile(storage.MemfileName, storage.CompressionZstd)).
+		Return(compressedSeekable, nil).Once()
+
+	require.Equal(t, payload[:readLen], runRead(t, bHeader, provider))
+}
+
+// Same stale zero entry, but the ancestor is still peer-routed: a peer miss
+// reports PeerTransitionedError, never ErrObjectNotExist, so the recovery has
+// to treat it as the no-entry branch does — refresh the build's own header —
+// instead of failing the read for the length of the transition window.
+func TestStorageDiff_StaleZeroEntryRecoversAfterPeerTransition(t *testing.T) {
+	t.Parallel()
+
+	const (
+		frameSizeKB = 256
+		payloadSize = 256 * 1024
+	)
+	readLen := testBlockSize
+
+	ctx := t.Context()
+	aID := uuid.New()
+	payload := bytes.Repeat([]byte("peer-zero-"), payloadSize/len("peer-zero-")+1)[:payloadSize]
+
+	aFrameTable, compressed, _, err := storage.CompressBytes(ctx, payload, storage.CompressConfig{
+		Enabled:            true,
+		Type:               storage.CompressionZstd.String(),
+		Level:              2,
+		EncoderConcurrency: 1,
+		FrameEncodeWorkers: 1,
+		FrameSizeKB:        frameSizeKB,
+		MinPartSizeMB:      50,
+	})
+	require.NoError(t, err)
+
+	aHeader := buildHeader(t, aID, payloadSize, aID)
+	aHeader.SetBuild(aID, header.BuildData{Size: int64(payloadSize), FrameData: aFrameTable.Table()})
+	aHeaderBytes, err := header.SerializeHeader(aHeader)
+	require.NoError(t, err)
+
+	bHeader := buildHeader(t, uuid.New(), payloadSize, aID)
+	bHeader.SetBuild(aID, header.BuildData{})
+
+	aPaths := storage.Paths{BuildID: aID.String()}
+	provider := storage.NewMockStorageProvider(t)
+
+	// The zero entry opens the suffix-less name through the peer-routing
+	// provider; the peer is already gone, so Size signals the transition.
+	peerSeekable := storage.NewMockSeekable(t)
+	peerSeekable.EXPECT().
+		Size(mock.Anything).
+		Return(int64(0), &storage.PeerTransitionedError{}).Once()
+	provider.EXPECT().
+		OpenSeekable(mock.Anything, aPaths.DataFile(storage.MemfileName, storage.CompressionNone)).
+		Return(peerRoutedSeekable{Seekable: peerSeekable}, nil).Once()
+
+	headerBlob := storage.NewMockBlob(t)
+	headerBlob.EXPECT().
+		WriteTo(mock.Anything, mock.Anything).
+		RunAndReturn(func(_ context.Context, w io.Writer) (int64, error) {
+			return io.Copy(w, bytes.NewReader(aHeaderBytes))
+		}).Once()
+	provider.EXPECT().
+		OpenBlob(mock.Anything, aPaths.HeaderFile(storage.MemfileName)).
+		Return(headerBlob, nil).Once()
+
+	compressedSeekable := storage.NewMockSeekable(t)
+	compressedSeekable.EXPECT().
+		OpenRangeReader(mock.Anything, mock.Anything, mock.Anything, mock.Anything).
+		RunAndReturn(decompressingRangeReader(compressed))
+	provider.EXPECT().
+		OpenSeekable(mock.Anything, aPaths.DataFile(storage.MemfileName, storage.CompressionZstd)).
+		Return(compressedSeekable, nil).Once()
+
+	require.Equal(t, payload[:readLen], runRead(t, bHeader, provider))
+}
+
+// loadHeaderThroughStorage round-trips h via LoadHeader so the deserialize plus
+// backfill path runs as it does on a resume. Hand-built headers skip the backfill,
+// which is why the rest of this file's coverage passed while production was broken.
+func loadHeaderThroughStorage(t *testing.T, h *header.Header) *header.Header {
+	t.Helper()
+
+	raw, err := header.SerializeHeader(h)
+	require.NoError(t, err)
+
+	blob := storage.NewMockBlob(t)
+	blob.EXPECT().
+		WriteTo(mock.Anything, mock.Anything).
+		RunAndReturn(func(_ context.Context, w io.Writer) (int64, error) {
+			return io.Copy(w, bytes.NewReader(raw))
+		}).Once()
+
+	provider := storage.NewMockStorageProvider(t)
+	provider.EXPECT().OpenBlob(mock.Anything, "h").Return(blob, nil).Once()
+
+	loaded, _, err := header.LoadHeader(t.Context(), provider, "h")
+	require.NoError(t, err)
+
+	return loaded
+}
+
 // runRead wires up a File over a fresh DiffStore + noop metrics and returns
 // the first testBlockSize bytes read from offset 0.
 func runRead(t *testing.T, h *header.Header, provider storage.StorageProvider) []byte {

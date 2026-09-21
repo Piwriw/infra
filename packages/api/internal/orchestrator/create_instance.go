@@ -33,6 +33,14 @@ import (
 	ut "github.com/e2b-dev/infra/packages/shared/pkg/utils"
 )
 
+// Semantic error codes for the explicit filesystem-boot (memory:false) path,
+// emitted in APIError.ErrorCode so callers and metrics can distinguish these
+// from ambient 4xx/5xx on the same routes.
+const (
+	ErrCodeStartInFlight             = "sandbox_start_in_flight"
+	ErrCodeFilesystemBootUnconfirmed = "sandbox_filesystem_boot_unconfirmed"
+)
+
 // SandboxDataFetcher is a callback that fetches sandbox metadata.
 // It is called after the concurrency lock is acquired to ensure fresh data.
 type SandboxDataFetcher func(ctx context.Context) (SandboxMetadata, *api.APIError)
@@ -53,10 +61,40 @@ type SandboxMetadata struct {
 	AutoResume              *types.SandboxAutoResumeConfig
 	VolumeMounts            []*orchestrator.SandboxVolumeMount
 	EnvdAccessToken         *string
-	NodeID                  *string
+	// Iam records the sandbox workload identity configuration requested at create
+	// time. Nil means workload identity is disabled.
+	Iam    *types.SandboxIam
+	NodeID *string
 	// SnapshotSandboxID is the sandbox ID the resume snapshot is stored under.
 	// It differs from the ID of the sandbox being started when forking.
 	SnapshotSandboxID string
+	// FilesystemBoot demands a cold boot of a memory-inclusive snapshot
+	// (explicit memory:false resume). Set only by the resume data fetchers;
+	// template creates and auto-resume never set it.
+	FilesystemBoot bool
+	// FilesystemOnlySnapshot marks a resume whose snapshot persists only the
+	// rootfs. Unlike FilesystemBoot it describes the stored artifact rather than
+	// the request, so every path that resumes such a snapshot sets it.
+	FilesystemOnlySnapshot bool
+}
+
+// iamToProto maps the sandbox workload identity configuration into the
+// orchestrator config. It returns nil when nothing is configured so older nodes
+// and stored configs stay unchanged.
+func iamToProto(iam *types.SandboxIam) *orchestrator.SandboxIam {
+	if iam == nil || len(iam.Tokens) == 0 {
+		return nil
+	}
+
+	protoTokens := make(map[string]*orchestrator.SandboxIamToken, len(iam.Tokens))
+	for name, def := range iam.Tokens {
+		protoTokens[name] = &orchestrator.SandboxIamToken{
+			Audience:  def.Audience,
+			TokenType: def.TokenType,
+		}
+	}
+
+	return &orchestrator.SandboxIam{Tokens: protoTokens}
 }
 
 // buildEgressConfig constructs the orchestrator egress configuration from
@@ -123,6 +161,7 @@ func buildNetworkConfig(network *types.SandboxNetworkConfig, allowInternetAccess
 
 	if network != nil && network.Ingress != nil {
 		orchNetwork.Ingress.MaskRequestHost = network.Ingress.MaskRequestHost
+		orchNetwork.Ingress.HttpsPorts = network.Ingress.HTTPSPorts
 	}
 
 	// Handle the case where internet access is explicitly disabled
@@ -145,6 +184,7 @@ func (o *Orchestrator) CreateSandbox(
 	endTime time.Time,
 	timeout time.Duration,
 	isResume bool,
+	demandFilesystemBoot bool,
 	creationMeta sandbox.CreationMetadata,
 ) (sbx sandbox.Sandbox, apiErr *api.APIError) {
 	ctx, childSpan := tracer.Start(ctx, "create-sandbox")
@@ -179,6 +219,18 @@ func (o *Orchestrator) CreateSandbox(
 	}
 
 	if waitForStart != nil {
+		// A joined request rides whatever start is already in flight — which may
+		// be a memory restore (e.g. a traffic-triggered auto-resume) that an
+		// explicit memory:false must never be silently answered with.
+		if demandFilesystemBoot {
+			return sandbox.Sandbox{}, &api.APIError{
+				Code:      http.StatusConflict,
+				ErrorCode: ErrCodeStartInFlight,
+				ClientMsg: "Sandbox is already starting; memory: false cannot be applied to a start already in flight — retry once it is running or paused",
+				Err:       fmt.Errorf("filesystem-boot resume of '%s' cannot join an in-flight start", sandboxID),
+			}
+		}
+
 		// Mark as a joined request for telemetry purposes
 		joined.Mark(ctx)
 
@@ -300,10 +352,21 @@ func (o *Orchestrator) CreateSandbox(
 			Network:                 sbxNetwork,
 			TotalDiskSizeMb:         ut.FromPtr(sbxData.Build.TotalDiskSizeMb),
 			VolumeMounts:            sbxData.VolumeMounts,
+			Iam:                     iamToProto(sbxData.Iam),
 		},
 		StartTime: timestamppb.New(startTime),
 		EndTime:   timestamppb.New(endTime),
 	}
+	if sbxData.FilesystemBoot {
+		// Left absent otherwise, so requests without the rescue are
+		// byte-identical to before the field existed.
+		sbxRequest.FilesystemBoot = new(true)
+	}
+
+	cpuRequirement := o.resolveCPURequirement(ctx, sandboxID, team, sbxData)
+	// Recorded before placement runs: a placement the pin starved is the case
+	// worth querying.
+	telemetry.SetAttributes(ctx, attribute.String("placement.cpu_model_pinned", cpuRequirement.PinnedModel))
 
 	var node *nodemanager.Node
 
@@ -312,7 +375,7 @@ func (o *Orchestrator) CreateSandbox(
 
 		clusterID := clusters.WithClusterFallback(team.ClusterID)
 		node = o.GetNode(clusterID, *sbxData.NodeID)
-		if node != nil && node.Status() != api.NodeStatusReady {
+		if node != nil && !node.CanAcceptNewRequests() {
 			node = nil
 		}
 	}
@@ -322,7 +385,7 @@ func (o *Orchestrator) CreateSandbox(
 
 	allLabels, labelFilteringEnabled := o.generateRequiredNodeLabels(ctx, sandboxID, team, sbxData)
 
-	placed, err := placement.PlaceSandbox(ctx, o.placementAlgorithm, clusterNodes, node, sbxRequest, builds.ToMachineInfo(sbxData.Build), labelFilteringEnabled, allLabels)
+	placed, err := placement.PlaceSandbox(ctx, o.placementAlgorithm, clusterNodes, node, sbxRequest, cpuRequirement, labelFilteringEnabled, allLabels)
 	if err != nil {
 		if isResume && placed.TimedOut {
 			// Remap by the snapshot's own sandbox ID: when forking, the started
@@ -334,11 +397,7 @@ func (o *Orchestrator) CreateSandbox(
 			o.maybeRemapResumeOriginNode(ctx, snapshotSandboxID, team, sbxData.NodeID, placed.WarmedNode)
 		}
 
-		return sandbox.Sandbox{}, &api.APIError{
-			Code:      http.StatusInternalServerError,
-			ClientMsg: "Failed to place sandbox",
-			Err:       fmt.Errorf("failed to place sandbox: %w", err),
-		}
+		return sandbox.Sandbox{}, placementAPIError(err)
 	}
 
 	node = placed.Node
@@ -359,6 +418,18 @@ func (o *Orchestrator) CreateSandbox(
 	startTime = time.Now()
 	endTime = startTime.Add(timeout)
 
+	// The record carries the version the sandbox actually RUNS when the
+	// orchestrator echoes it: the declared build version resolved through the
+	// firecracker-versions flag at start and frozen for the sandbox's
+	// lifetime. Version-gated paths branch on resolvedFCVersion — a resolved
+	// version is exact, the declared fallback (old orchestrators) is only an
+	// approximation of the running binary.
+	recordFCVersion := placed.Response.GetResolvedFirecrackerVersion()
+	resolvedFCVersion := recordFCVersion != ""
+	if !resolvedFCVersion {
+		recordFCVersion = sbxData.Build.FirecrackerVersion
+	}
+
 	sbx = sandbox.NewSandbox(
 		sandboxID,
 		sbxData.TemplateID,
@@ -375,7 +446,7 @@ func (o *Orchestrator) CreateSandbox(
 		*sbxData.Build.TotalDiskSizeMb,
 		sbxData.Build.RamMb,
 		sbxData.Build.KernelVersion,
-		sbxData.Build.FirecrackerVersion,
+		recordFCVersion,
 		*sbxData.Build.EnvdVersion,
 		node.ID,
 		node.ClusterID,
@@ -389,7 +460,39 @@ func (o *Orchestrator) CreateSandbox(
 		sbxData.Network,
 		trafficAccessToken,
 		nodemanager.ConvertOrchestratorMountsToDatabaseMounts(sbxData.VolumeMounts),
+		sbxData.Iam,
 	)
+	sbx.FirecrackerVersionResolved = resolvedFCVersion
+
+	// An orchestrator that predates the filesystem_boot field ignores it and
+	// memory-restores; only the echo proves the demand was honored. Kill the
+	// wrong-path VM on the node (the snapshot row is untouched) and fail loudly
+	// rather than hand back a silent memory restore.
+	if demandFilesystemBoot && !placed.Response.GetFilesystemBootApplied() {
+		// Torn down synchronously: the 503 invites a retry, and an async kill
+		// would race it with the sandbox ID still live on the node.
+		killErr := o.removeSandboxFromNode(
+			context.WithoutCancel(ctx),
+			sbx,
+			sandbox.StateActionKill,
+			sandbox.KillReasonUnknown,
+			false, // kill: no snapshot
+			false,
+		)
+		if killErr != nil {
+			logger.L().Error(ctx, "Error removing memory-restored sandbox after unhonored filesystem-boot demand",
+				zap.Error(killErr),
+				logger.WithSandboxID(sbx.SandboxID),
+			)
+		}
+
+		return sandbox.Sandbox{}, &api.APIError{
+			Code:      http.StatusServiceUnavailable,
+			ErrorCode: ErrCodeFilesystemBootUnconfirmed,
+			ClientMsg: "This cluster cannot resume without memory yet (memory: false); the resume was rolled back and the snapshot is untouched — retry shortly",
+			Err:       fmt.Errorf("filesystem-boot demand for '%s' not confirmed by node %s", sandboxID, node.ID),
+		}
+	}
 
 	err = o.sandboxStore.Add(ctx, sbx, &creationMeta)
 	if err != nil {
@@ -405,6 +508,7 @@ func (o *Orchestrator) CreateSandbox(
 				sandbox.StateActionKill,
 				sandbox.KillReasonUnknown,
 				false, // kill: no snapshot
+				false,
 			)
 			if killErr != nil {
 				logger.L().Error(ctx, "Error removing sandbox",
@@ -480,6 +584,29 @@ func (o *Orchestrator) maybeRemapResumeOriginNode(ctx context.Context, sandboxID
 		zap.String("old_origin_node_id", oldNodeID),
 		zap.String("new_origin_node_id", newNode.ID),
 	)
+}
+
+// resolveCPURequirement builds the CPU constraint placement filters nodes with.
+//
+// A memory restore may move to the newer models IsCompatibleWith treats as
+// supersets. A filesystem-only snapshot is instead confined to one CPU model,
+// keeping the cold-boot resume on a single generation while that path is
+// unproven across them. FsOnlyResumeCPUModelFlag names the model, and empty
+// returns filesystem-only resumes to the shared rule.
+func (o *Orchestrator) resolveCPURequirement(ctx context.Context, sandboxID string, team *teamtypes.Team, sbxData SandboxMetadata) placement.CPURequirement {
+	requirement := placement.CPURequirement{Build: builds.ToMachineInfo(sbxData.Build)}
+
+	if !sbxData.FilesystemOnlySnapshot {
+		return requirement
+	}
+
+	requirement.PinnedModel = o.featureFlagsClient.StringFlag(ctx, featureflags.FsOnlyResumeCPUModelFlag,
+		featureflags.TeamContext(team.ID.String()),
+		featureflags.SandboxContext(sandboxID),
+		featureflags.ClusterContext(clusters.WithClusterFallback(team.ClusterID)),
+	)
+
+	return requirement
 }
 
 func (o *Orchestrator) generateRequiredNodeLabels(ctx context.Context, sandboxID string, team *teamtypes.Team, sbxData SandboxMetadata) ([]string, bool) {

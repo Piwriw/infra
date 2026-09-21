@@ -139,7 +139,7 @@ func (s *Storage) Close(ctx context.Context) {
 }
 
 // Reconcile returns a list of sandboxes that are considered orphans on the current node.
-func (s *Storage) Reconcile(ctx context.Context, sbxs []sandboxtypes.Sandbox, nodeID string) []sandboxtypes.Sandbox {
+func (s *Storage) Reconcile(ctx context.Context, sbxs []sandboxtypes.NodeSandbox, nodeID string) []sandboxtypes.NodeSandbox {
 	if len(sbxs) == 0 {
 		return nil
 	}
@@ -148,7 +148,7 @@ func (s *Storage) Reconcile(ctx context.Context, sbxs []sandboxtypes.Sandbox, no
 
 	// Filter out sandboxes that are too young to be considered orphans.
 	type candidate struct {
-		sbx sandboxtypes.Sandbox
+		sbx sandboxtypes.NodeSandbox
 		key string
 	}
 
@@ -169,7 +169,8 @@ func (s *Storage) Reconcile(ctx context.Context, sbxs []sandboxtypes.Sandbox, no
 		return nil
 	}
 
-	// Pipeline per-team MGET calls.
+	// Pipeline per-team MGET calls, each capped at sandboxScanBatchSize keys
+	// so every command's work and reply size stay bounded.
 	pipe := s.redisClient.Pipeline()
 
 	type batchInfo struct {
@@ -179,13 +180,17 @@ func (s *Storage) Reconcile(ctx context.Context, sbxs []sandboxtypes.Sandbox, no
 
 	var batches []batchInfo
 	for _, candidates := range teamCandidates {
-		keys := make([]string, len(candidates))
-		for i, c := range candidates {
-			keys[i] = c.key
-		}
+		for start := 0; start < len(candidates); start += sandboxScanBatchSize {
+			chunk := candidates[start:min(start+sandboxScanBatchSize, len(candidates))]
 
-		cmd := pipe.MGet(ctx, keys...)
-		batches = append(batches, batchInfo{cmd: cmd, candidates: candidates})
+			keys := make([]string, len(chunk))
+			for i, c := range chunk {
+				keys[i] = c.key
+			}
+
+			cmd := pipe.MGet(ctx, keys...)
+			batches = append(batches, batchInfo{cmd: cmd, candidates: chunk})
+		}
 	}
 
 	_, err := pipe.Exec(ctx)
@@ -199,7 +204,7 @@ func (s *Storage) Reconcile(ctx context.Context, sbxs []sandboxtypes.Sandbox, no
 		return nil
 	}
 
-	var orphans []sandboxtypes.Sandbox
+	var orphans []sandboxtypes.NodeSandbox
 	for _, batch := range batches {
 		results := batch.cmd.Val()
 		for i, raw := range results {

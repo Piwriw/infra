@@ -12,14 +12,18 @@ import (
 	"github.com/caarlos0/env/v11"
 	"github.com/golang-jwt/jwt/v5"
 
-	"github.com/e2b-dev/infra/packages/auth/pkg/auth"
+	sharedauth "github.com/e2b-dev/infra/packages/auth/pkg/auth"
 )
 
 const (
 	// ServiceDiscoveryProviderNomad queries Nomad's HTTP API (the original / Nomad-based deploy).
 	ServiceDiscoveryProviderNomad = "nomad"
-	// ServiceDiscoveryProviderKubernetes queries the in-cluster K8s API (the K8s deploy).
+	// ServiceDiscoveryProviderKubernetes lists pods via the K8s API (the K8s deploy).
 	ServiceDiscoveryProviderKubernetes = "kubernetes"
+	// ServiceDiscoveryProviderNomadKubernetes queries both and returns the
+	// deduplicated union. Used while orchestrators and template managers run on
+	// both platforms at once.
+	ServiceDiscoveryProviderNomadKubernetes = "nomad+kubernetes"
 	// ServiceDiscoveryProviderLocal returns a single statically configured
 	// orchestrator address. Used to develop the API against the darwin dummy
 	// orchestrator on macOS, where neither Nomad nor Kubernetes is available.
@@ -30,20 +34,34 @@ type Config struct {
 	AdminToken string `env:"ADMIN_TOKEN"`
 
 	AnalyticsCollectorAPIToken string `env:"ANALYTICS_COLLECTOR_API_TOKEN"`
-	AnalyticsCollectorHost     string `env:"ANALYTICS_COLLECTOR_HOST"`
+	// AnalyticsCollectorHost is the hostname, or "host:port" address, of the
+	// analytics collector. Without a port, 443 is used. Empty disables
+	// analytics reporting entirely.
+	AnalyticsCollectorHost string `env:"ANALYTICS_COLLECTOR_HOST"`
+	// AnalyticsCollectorTLS controls whether the collector connection uses
+	// TLS. Set to false only for a plaintext collector on loopback, as the
+	// local development one is; the API token is sent unencrypted then.
+	AnalyticsCollectorTLS bool `env:"ANALYTICS_COLLECTOR_TLS" envDefault:"true"`
 
 	ClickhouseConnectionString  string   `env:"CLICKHOUSE_CONNECTION_STRING"`
 	ClickhouseConnectionStrings []string `env:"CLICKHOUSE_CONNECTION_STRINGS" envSeparator:";"`
 
 	LokiPassword string `env:"LOKI_PASSWORD"`
-	LokiURL      string `env:"LOKI_URL,required"`
-	LokiUser     string `env:"LOKI_USER"`
+	// LokiURL is optional: without it the api has no Loki client, and sandbox
+	// and build log reads must be routed to ClickHouse by logs-read-config.
+	LokiURL  string `env:"LOKI_URL"`
+	LokiUser string `env:"LOKI_USER"`
 
-	// ServiceDiscoveryProvider selects how the API discovers orchestrator and template-manager instances.
+	// ServiceDiscoveryProvider selects how the API discovers orchestrator and
+	// template-manager instances. Left unset it is nomad, except in a local
+	// environment, which has no Nomad agent — see serviceDiscoveryProvider. It
+	// carries no envDefault precisely so that "unset" stays distinguishable
+	// from "set to nomad", which an operator running a local Nomad agent needs.
 	// Allowed values:
-	//   "nomad"      (default) - query the local Nomad agent's HTTP API.
-	//   "kubernetes"           - list pods via the in-cluster K8s API.
-	ServiceDiscoveryProvider string `env:"SERVICE_DISCOVERY_PROVIDER" envDefault:"nomad"`
+	//   "nomad"            (default) - query the local Nomad agent's HTTP API.
+	//   "kubernetes"                 - list pods via the K8s API.
+	//   "nomad+kubernetes"           - the deduplicated union of both.
+	ServiceDiscoveryProvider string `env:"SERVICE_DISCOVERY_PROVIDER"`
 
 	NomadAddress string `env:"NOMAD_ADDRESS" envDefault:"http://localhost:4646"`
 	NomadToken   string `env:"NOMAD_TOKEN"`
@@ -52,7 +70,8 @@ type Config struct {
 	// Nomad-native service names whose registrations enumerate orchestrator
 	// instances (GET /v1/service/<name> per name, results unioned). Every
 	// orchestrator jobspec registers one of these services, regardless of
-	// job type or node pool. Used when ServiceDiscoveryProvider=nomad.
+	// job type or node pool. Used when ServiceDiscoveryProvider is nomad or
+	// nomad+kubernetes.
 	NomadOrchestratorServiceNames []string `env:"NOMAD_ORCHESTRATOR_SERVICE_NAMES" envDefault:"orchestrator" envSeparator:","`
 
 	// NomadOrchestratorLegacyDiscoveryEnabled enables a node-pool-based
@@ -63,7 +82,8 @@ type Config struct {
 	// Address (pre-port-label-fix), which service discovery skips as
 	// unroutable, and removes any rollout ordering constraint between the
 	// API and orchestrator releases. Set to false once no legacy orchestrator
-	// jobs remain. Used when ServiceDiscoveryProvider=nomad.
+	// jobs remain. Used when ServiceDiscoveryProvider is nomad or
+	// nomad+kubernetes.
 	NomadOrchestratorLegacyDiscoveryEnabled bool `env:"NOMAD_ORCHESTRATOR_LEGACY_DISCOVERY_ENABLED" envDefault:"true"`
 
 	// LocalOrchestratorAddress is the "host:port" address of a statically
@@ -72,7 +92,10 @@ type Config struct {
 	// dummy orchestrator.
 	LocalOrchestratorAddress string `env:"LOCAL_ORCHESTRATOR_ADDRESS" envDefault:"127.0.0.1:5008"`
 
-	// Used when ServiceDiscoveryProvider=kubernetes.
+	// Used when ServiceDiscoveryProvider is kubernetes or nomad+kubernetes.
+	// Empty K8sAPIEndpoint uses the pod's own ServiceAccount and only works
+	// inside the cluster; set it to reach a cluster from outside, on Google ADC.
+	K8sAPIEndpoint                     string `env:"K8S_API_ENDPOINT"`
 	K8sNamespace                       string `env:"K8S_NAMESPACE"                           envDefault:"default"`
 	K8sOrchestratorPodLabelSelector    string `env:"K8S_ORCHESTRATOR_POD_LABEL_SELECTOR"     envDefault:"app.kubernetes.io/name=orchestrator"`
 	K8sTemplateManagerPodLabelSelector string `env:"K8S_TEMPLATE_MANAGER_POD_LABEL_SELECTOR" envDefault:"app.kubernetes.io/name=template-manager"`
@@ -81,16 +104,17 @@ type Config struct {
 	DBMaxOpenConnections     int32  `env:"DB_MAX_OPEN_CONNECTIONS"                      envDefault:"40"`
 	DBMinIdleConnections     int32  `env:"DB_MIN_IDLE_CONNECTIONS"                      envDefault:"5"`
 
-	AuthDBConnectionString            string `env:"AUTH_DB_CONNECTION_STRING"`
-	AuthDBReadReplicaConnectionString string `env:"AUTH_DB_READ_REPLICA_CONNECTION_STRING"`
-	AuthDBMinIdleConnections          int32  `env:"AUTH_DB_MIN_IDLE_CONNECTIONS"           envDefault:"5"`
-	AuthDBMaxOpenConnections          int32  `env:"AUTH_DB_MAX_OPEN_CONNECTIONS"           envDefault:"20"`
+	AuthDBConnectionString   string `env:"AUTH_DB_CONNECTION_STRING"`
+	AuthDBMinIdleConnections int32  `env:"AUTH_DB_MIN_IDLE_CONNECTIONS" envDefault:"5"`
+	AuthDBMaxOpenConnections int32  `env:"AUTH_DB_MAX_OPEN_CONNECTIONS" envDefault:"20"`
 
 	PosthogAPIKey string `env:"POSTHOG_API_KEY"`
 
 	RedisURL         string `env:"REDIS_URL"`
 	RedisClusterURL  string `env:"REDIS_CLUSTER_URL"`
 	RedisTLSCABase64 string `env:"REDIS_TLS_CA_BASE64"`
+	RedisTLSEnabled  bool   `env:"REDIS_TLS_ENABLED"`
+	RedisPassword    string `env:"REDIS_PASSWORD"`
 	RedisPoolSize    int    `env:"REDIS_POOL_SIZE"     envDefault:"160"`
 
 	APIInternalGrpcPort uint16 `env:"API_INTERNAL_GRPC_PORT" envDefault:"5009"`
@@ -100,11 +124,26 @@ type Config struct {
 
 	SandboxAccessTokenHashSeed string `env:"SANDBOX_ACCESS_TOKEN_HASH_SEED"`
 
+	// SecretsStoreBackendGrpcAddress is the "host:port" address of the secrets
+	// store management backend. Optional: when empty the API keeps serving
+	// every other route and answers the secret management routes with the same
+	// forbidden response the feature gate produces.
+	SecretsStoreBackendGrpcAddress string `env:"SECRETS_STORE_BACKEND_GRPC_ADDRESS"`
+
 	VolumesToken VolumesTokenConfig
 
-	AuthProvider auth.ProviderConfig `env:"AUTH_PROVIDER_CONFIG"`
+	AuthProvider      sharedauth.ProviderConfig `env:"AUTH_PROVIDER_CONFIG"`
+	AdminAuthProvider sharedauth.ProviderConfig `env:"ADMIN_AUTH_PROVIDER_CONFIG"`
 
-	DefaultPersistentVolumeType string `env:"DEFAULT_PERSISTENT_VOLUME_TYPE"`
+	DefaultPersistentVolumeType     string `env:"DEFAULT_PERSISTENT_VOLUME_TYPE"`
+	PlaceholderPersistentVolumeType string `env:"PLACEHOLDER_PERSISTENT_VOLUME_TYPE" envDefault:"__DEFAULT_VOLUME_TYPE__"`
+
+	// DefaultPersistentVolumeTypeByRegion is the per-region default volume type,
+	// e.g. "us-west3:zonalfilestore-us-west3". A team's region is resolved from
+	// the region= node labels of the nodes its scheduling labels select; Terraform
+	// derives this map from the volume types themselves and fails the plan when a
+	// region with several types lacks an explicit default.
+	DefaultPersistentVolumeTypeByRegion map[string]string `env:"DEFAULT_PERSISTENT_VOLUME_TYPE_BY_REGION"`
 
 	DomainName string `env:"DOMAIN_NAME" envDefault:""`
 }
@@ -198,8 +237,8 @@ var (
 	ErrUnknownKeyType       = errors.New("unknown JWT signing key type")
 
 	parserFuncs = map[reflect.Type]env.ParserFunc{
-		reflect.TypeFor[auth.ProviderConfig](): func(v string) (any, error) {
-			return auth.ParseProviderConfig(v)
+		reflect.TypeFor[sharedauth.ProviderConfig](): func(v string) (any, error) {
+			return sharedauth.ParseProviderConfig(v)
 		},
 		reflect.TypeFor[JWTSigningKey](): func(v string) (any, error) {
 			keyPieces := strings.SplitN(v, ":", 2)
@@ -249,7 +288,7 @@ func Parse() (Config, error) {
 		config.AuthDBConnectionString = config.PostgresConnectionString
 	}
 
-	if !slices.Contains([]string{ServiceDiscoveryProviderNomad, ServiceDiscoveryProviderKubernetes, ServiceDiscoveryProviderLocal}, config.ServiceDiscoveryProvider) {
+	if !slices.Contains([]string{"", ServiceDiscoveryProviderNomad, ServiceDiscoveryProviderKubernetes, ServiceDiscoveryProviderNomadKubernetes, ServiceDiscoveryProviderLocal}, config.ServiceDiscoveryProvider) {
 		return config, newFailureError(
 			FailureConditionInvalidServiceDiscoveryProvider,
 			fmt.Sprintf("invalid service discovery provider: %s", config.ServiceDiscoveryProvider),

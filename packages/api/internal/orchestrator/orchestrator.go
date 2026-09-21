@@ -16,7 +16,6 @@ import (
 	"github.com/e2b-dev/infra/packages/api/internal/cfg"
 	"github.com/e2b-dev/infra/packages/api/internal/clusters"
 	"github.com/e2b-dev/infra/packages/api/internal/metrics"
-	"github.com/e2b-dev/infra/packages/api/internal/orchestrator/discovery"
 	"github.com/e2b-dev/infra/packages/api/internal/orchestrator/evictor"
 	"github.com/e2b-dev/infra/packages/api/internal/orchestrator/nodemanager"
 	"github.com/e2b-dev/infra/packages/api/internal/orchestrator/placement"
@@ -24,10 +23,10 @@ import (
 	redisreservations "github.com/e2b-dev/infra/packages/api/internal/sandbox/reservations/redis"
 	redisbackend "github.com/e2b-dev/infra/packages/api/internal/sandbox/storage/redis"
 	sqlcdb "github.com/e2b-dev/infra/packages/db/client"
-	"github.com/e2b-dev/infra/packages/shared/pkg/env"
 	"github.com/e2b-dev/infra/packages/shared/pkg/featureflags"
 	"github.com/e2b-dev/infra/packages/shared/pkg/logger"
 	e2bcatalog "github.com/e2b-dev/infra/packages/shared/pkg/sandbox-catalog"
+	"github.com/e2b-dev/infra/packages/shared/pkg/servicediscovery"
 	"github.com/e2b-dev/infra/packages/shared/pkg/smap"
 	"github.com/e2b-dev/infra/packages/shared/pkg/telemetry"
 	"github.com/e2b-dev/infra/packages/shared/pkg/utils"
@@ -44,7 +43,7 @@ type SnapshotCacheInvalidator interface {
 
 type Orchestrator struct {
 	httpClient                    *http.Client
-	nodeDiscovery                 discovery.Discovery
+	nodeDiscovery                 servicediscovery.Discoverer
 	sandboxStore                  *sandbox.Store
 	nodes                         *smap.Map[*nodemanager.Node]
 	placementAlgorithm            *placement.BestOfK
@@ -59,6 +58,7 @@ type Orchestrator struct {
 	sandboxCountGaugeRegistration metric.Registration
 	createdSandboxesCounter       metric.Int64Counter
 	resumeOriginNodeRemapCounter  metric.Int64Counter
+	pauseRefusalRestoreCounter    metric.Int64Counter
 	teamMetricsObserver           *metrics.TeamObserver
 	accessTokenGenerator          *sandbox.AccessTokenGenerator
 	createdCounter                metric.Int64Counter
@@ -67,8 +67,23 @@ type Orchestrator struct {
 	snapshotUpsertSem *utils.AdjustableSemaphore
 	redisStorage      *redisbackend.Storage
 
+	// localClusterOwnsOrchestrators makes connectToClusterNode register
+	// local-cluster instances that report the Orchestrator role as nodes.
+	//
+	// It is only set when the node discovery loop is disabled (see
+	// skipNomadSync in New), which is the case in the local environment: there
+	// the local clusters registry is the single source of orchestrator nodes.
+	//
+	// Otherwise local-cluster orchestrators are owned by the node discovery
+	// path (connectToNode), which identifies nodes by the ID they report over
+	// the Info RPC, while the clusters registry identifies instances by their
+	// discovery item ID. An instance serving both the orchestrator and the
+	// template-builder role would then register twice under two different node
+	// IDs and have its capacity and sandboxes counted twice.
+	localClusterOwnsOrchestrators bool
+
 	// connectGroup deduplicates concurrent dial+register attempts for the same
-	// physical node. It is keyed by NomadNodeShortID (Nomad-managed nodes) or
+	// physical node. It is keyed by WorkloadID (Nomad-managed nodes) or
 	// scopedNodeID(clusterID, instanceNodeID) (cluster nodes) and is held inside
 	// connectToNode / connectToClusterNode, so it guards every connection path
 	// regardless of what triggered the attempt.
@@ -87,7 +102,8 @@ func New(
 	ctx context.Context,
 	config cfg.Config,
 	tel *telemetry.Client,
-	nodeDiscovery discovery.Discovery,
+	nodeDiscovery servicediscovery.Discoverer,
+	localRegistryOwnsOrchestrators bool,
 	posthogClient *analyticscollector.PosthogClient,
 	redisClient redis.UniversalClient,
 	sqlcDB *sqlcdb.Client,
@@ -100,6 +116,7 @@ func New(
 	analyticsInstance, err := analyticscollector.NewAnalytics(
 		config.AnalyticsCollectorHost,
 		config.AnalyticsCollectorAPIToken,
+		config.AnalyticsCollectorTLS,
 	)
 	if err != nil {
 		logger.L().Error(ctx, "Error initializing Analytics client", zap.Error(err))
@@ -133,6 +150,14 @@ func New(
 	}
 	go redisStorage.Start(ctx)
 
+	// The local clusters registry is the only source of orchestrator nodes
+	// exactly when the discovery provider is the static local one: there both
+	// planes are the same single instance and the registry registers it. Under
+	// nomad or kubernetes the node plane lists orchestrators itself, local
+	// environment or not — deriving this from the environment instead of the
+	// resolved provider builds a node plane nothing ever consults.
+	skipNomadSync := localRegistryOwnsOrchestrators
+
 	o := Orchestrator{
 		httpClient:           httpClient,
 		analytics:            analyticsInstance,
@@ -152,15 +177,19 @@ func New(
 		createdCounter: createdCounter,
 
 		snapshotUpsertSem: snapshotUpsertSem,
+
+		// Without the node discovery loop, the local clusters registry is the
+		// only source of orchestrator nodes.
+		localClusterOwnsOrchestrators: skipNomadSync,
 	}
 
 	o.sandboxStore = sandbox.NewStore(
 		redisStorage,
 		redisreservations.NewReservationStorage(redisClient, redisStorage.Notifier()),
 		sandbox.Callbacks{
-			AddSandboxToRoutingTable: o.addSandboxToRoutingTable,
+			AddSandboxToRoutingTable: o.addSandboxToRoutingTableOrLog,
 			AsyncNewlyCreatedSandbox: o.handleNewlyCreatedSandbox,
-			RemoveSandboxFromNode:    o.killOrphanSandbox,
+			KillOrphanSandbox:        o.killOrphanSandbox,
 		},
 	)
 
@@ -180,9 +209,6 @@ func New(
 
 	o.teamMetricsObserver = teamMetricsObserver
 
-	// For local development and testing, we skip the Nomad sync
-	// Local cluster is used for single-node setups instead
-	skipNomadSync := env.IsLocal()
 	go o.keepInSync(ctx, o.sandboxStore, skipNomadSync)
 
 	if err := o.setupMetrics(tel.MeterProvider); err != nil {

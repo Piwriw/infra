@@ -16,7 +16,6 @@ import (
 	"github.com/e2b-dev/infra/packages/api/internal/orchestrator/nodemanager"
 	orchestratorgrpc "github.com/e2b-dev/infra/packages/shared/pkg/grpc/orchestrator"
 	"github.com/e2b-dev/infra/packages/shared/pkg/grpc/orchestrator-info"
-	"github.com/e2b-dev/infra/packages/shared/pkg/machineinfo"
 )
 
 // BenchmarkConfig contains configuration for realistic benchmark scenarios
@@ -308,11 +307,7 @@ func toNodeManagerNodes(simNodes []NodeSimulator) []*nodemanager.Node {
 func runBenchmark(b *testing.B, algorithm Algorithm, config BenchmarkConfig, nodeFactory NodeFactory) *BenchmarkMetrics {
 	b.Helper()
 
-	parentCtx := b.Context()
-	if parentCtx == nil {
-		parentCtx = context.Background()
-	}
-	ctx, cancel := context.WithTimeout(parentCtx, config.BenchmarkDuration)
+	ctx, cancel := context.WithTimeout(b.Context(), config.BenchmarkDuration)
 	defer cancel()
 
 	// Create nodes using factory
@@ -423,7 +418,7 @@ func runBenchmark(b *testing.B, algorithm Algorithm, config BenchmarkConfig, nod
 							SandboxId: sbx.ID,
 							Vcpu:      sbx.RequestedCPU,
 							RamMb:     sbx.RequestedMemory,
-						}}, machineinfo.MachineInfo{}, false, nil)
+						}}, CPURequirement{}, false, nil)
 
 						placementTime := time.Since(placementStart)
 						sbx.PlacementLatency = placementTime
@@ -649,11 +644,7 @@ func BenchmarkPlacementDistribution(b *testing.B) {
 		b.Run(alg.name, func(b *testing.B) {
 			b.Logf("Running distribution test for %s with LaggyNodes...", alg.name)
 
-			parentCtx := b.Context()
-			if parentCtx == nil {
-				parentCtx = context.Background()
-			}
-			ctx, cancel := context.WithTimeout(parentCtx, config.BenchmarkDuration)
+			ctx, cancel := context.WithTimeout(b.Context(), config.BenchmarkDuration)
 			defer cancel()
 
 			// 1. Create nodes using NewLaggyNode (default: only update internal real state, not Metrics)
@@ -723,7 +714,7 @@ func BenchmarkPlacementDistribution(b *testing.B) {
 									Vcpu:      s.RequestedCPU,
 									RamMb:     s.RequestedMemory,
 								},
-							}, machineinfo.MachineInfo{}, false, nil)
+							}, CPURequirement{}, false, nil)
 
 							if err == nil && result.Node != nil {
 								if simNode, ok := nodeMap[result.Node.ID]; ok {

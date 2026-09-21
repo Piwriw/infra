@@ -2,15 +2,24 @@ package featureflags
 
 import (
 	"context"
-	"fmt"
+	"net"
+	"net/url"
 	"os"
+	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/launchdarkly/go-sdk-common/v3/ldcontext"
 	"github.com/launchdarkly/go-sdk-common/v3/ldvalue"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 
 	"github.com/e2b-dev/infra/packages/shared/pkg/env"
+	"github.com/e2b-dev/infra/packages/shared/pkg/fcversion"
+	"github.com/e2b-dev/infra/packages/shared/pkg/utils"
 )
 
 // kinds
@@ -26,6 +35,7 @@ const (
 	TeamKind             ldcontext.Kind = "team"
 	UserKind             ldcontext.Kind = "user"
 	ClusterKind          ldcontext.Kind = "cluster"
+	InstanceGroupKind    ldcontext.Kind = "instance-group"
 	deploymentKind       ldcontext.Kind = "deployment"
 	TierKind             ldcontext.Kind = "tier"
 	ServiceKind          ldcontext.Kind = "service"
@@ -92,6 +102,24 @@ func (f BoolFlag) Fallback() bool {
 	return f.fallback
 }
 
+// envBoolOr reads key as a bool, falling back when it is unset or unparseable.
+// It exists so a bool flag's fallback can be overridden on a cluster with no
+// LaunchDarkly (dev), where a flag otherwise resolves to a value only a rebuild
+// can change — the same reason EnvdUpgradeTargetFlag reads its fallback from the
+// environment.
+func envBoolOr(key string, fallback bool) bool {
+	raw := env.GetEnv(key, "")
+	if raw == "" {
+		return fallback
+	}
+	parsed, err := strconv.ParseBool(raw)
+	if err != nil {
+		return fallback
+	}
+
+	return parsed
+}
+
 func NewBoolFlag(name string, fallback bool) BoolFlag {
 	flag := BoolFlag{name: name, fallback: fallback}
 	builder := launchDarklyOfflineStore.Flag(flag.name).VariationForAll(fallback)
@@ -121,6 +149,25 @@ var (
 	UseNFSCacheForBuildingTemplatesFlag = NewBoolFlag("use-nfs-for-building-templates", env.IsDevelopment())
 	CreateStorageCacheSpansFlag         = NewBoolFlag("create-storage-cache-spans", env.IsDevelopment())
 	OrchAcceptsCombinedHostFlag         = NewBoolFlag("orch-accepts-combined-host", false)
+	WorkspacesEnabledFlag               = NewBoolFlag("workspacesEnabled", false)
+
+	// FsFreezeViaExecFlag freezes the guest rootfs with `fsfreeze -f /` run through
+	// the envd exec API before a filesystem-only pause, for guests whose envd
+	// predates the native /fsfreeze endpoint. Off = those guests fall back to a
+	// plain guest sync (today's behavior). Falls back to sync per-pause if the
+	// guest lacks fsfreeze or the freeze fails.
+	FsFreezeViaExecFlag = NewBoolFlag("fsfreeze-via-exec", false)
+
+	// FsOnlyResumeAPIFlag accepts memory:false on resume/connect of a
+	// memory-inclusive snapshot (an explicit cold-boot rescue). Off = the
+	// request is rejected, never silently downgraded to a memory restore.
+	FsOnlyResumeAPIFlag = NewBoolFlag("fs-only-resume-api", false)
+
+	// PrebootFsRecoveryFlag runs a jailed filesystem recovery before every cold
+	// boot of a rootfs that was not frozen at pause (fs_quiesced absent/false).
+	// Separate from FsOnlyResumeAPIFlag because it also changes the behavior of
+	// existing filesystem-only cold boots whose pause fell back to sync.
+	PrebootFsRecoveryFlag = NewBoolFlag("preboot-fs-recovery", false)
 
 	// StorageSoftDeleteCheckFlag enables reading the storage-index soft-delete
 	// tombstone on header load (one extra GCS Attrs on cold load). Off = no overhead.
@@ -133,6 +180,52 @@ var (
 	// pass the fd over the UFFD socket; the orchestrator then mmaps it
 	// directly instead of using process_vm_readv on pause.
 	UseMemFdFlag = NewBoolFlag("use-memfd", true)
+
+	// UseSyncWPFlag asks Firecracker (via use_sync_wp on snapshot load) to
+	// register guest memory for SYNCHRONOUS userfault write-protect events,
+	// which the orchestrator's serve loop resolves, instead of the kernel's
+	// in-place WP_ASYNC clears. Foundation for the copy-on-write background
+	// memory snapshot. Default off = WP_ASYNC, today's behavior. Enable only
+	// where the deployed FC accepts the use_sync_wp field: FC rejects unknown
+	// fields on snapshot load, so a mismatch fails the resume loudly.
+	UseSyncWPFlag = NewBoolFlag("use-sync-wp", false)
+
+	// InPlaceCheckpointFlag makes Checkpoint pause, snapshot and resume the
+	// SAME Firecracker process (in-place) instead of resuming a fresh sandbox
+	// from the new build. Only honored for sandboxes resumed with
+	// UseSyncWPFlag on: in-place skips the snapshot re-load that re-arms
+	// write-protection, so dirty tracking across repeated checkpoints relies
+	// on the sync-WP serve loop; resume-fresh stays the fallback for async
+	// sandboxes and when this flag is off.
+	InPlaceCheckpointFlag = NewBoolFlag("in-place-checkpoint", false)
+
+	// DeferMemoryExportFlag makes the in-place checkpoint export guest
+	// memory through the CoW window instead of the synchronous dirty-RAM
+	// copy: the dirty set is write-protect-armed while the VM is paused, the
+	// guest resumes immediately, and pages are captured in the background
+	// (first guest write to an uncaptured page copies the pre-image before
+	// the write proceeds). Only takes effect on the in-place path with a
+	// sync-WP UFFD backend. When the VM's balloon runs continuous free-page
+	// REPORTING, reporting is PAUSED for the window's lifetime (a REMOVE
+	// zapping an uncaptured page would export zeros where pause-time content
+	// is owed); requires an FC build with /balloon/reporting — pause failures
+	// fall back to the synchronous copy. (The synchronous pre-pause
+	// free-page-hinting drain settles before the dirty readout and needs no
+	// pause.) Default off = today's synchronous copy.
+	DeferMemoryExportFlag = NewBoolFlag("defer-memory-export", false)
+
+	// SyncWPTrackerDirtyFlag derives the pause-time dirty set from the
+	// orchestrator's page tracker (installs + synchronous WP-fault
+	// promotions) instead of Firecracker's GetDirtyMemory pagemap scan,
+	// skipping that RPC entirely. Only consulted for sandboxes resumed with
+	// UseSyncWPFlag on — under WP_ASYNC the kernel clears protections
+	// in-place and the tracker never sees guest writes. Evaluated fresh at
+	// each pause, so flipping it off immediately reverts running sandboxes to
+	// the pagemap source (kill switch). Burn-in gate before enabling: the
+	// dirty-source divergence log (emitted while this flag is off) must
+	// show pagemap_only == 0 for sync-WP sandboxes — a nonzero count means
+	// the tracker missed a write and would corrupt the snapshot.
+	SyncWPTrackerDirtyFlag = NewBoolFlag("sync-wp-tracker-dirty", false)
 
 	// MemfdBackgroundCopyFlag streams the memfd into the snapshot cache on
 	// a goroutine so Pause returns as soon as the diff metadata is written.
@@ -156,17 +249,55 @@ var (
 		"fetchRunWindowPages":            0,
 	}))
 
+	// MemfdDedupInflightServeFlag lets a resume that overlaps an in-flight
+	// memfile dedup serve dirty pages straight from the still-mapped memfd
+	// instead of blocking until dedup finishes. It gates both windows: serving
+	// via a provisional local header while dedup is still computing the deduped
+	// header, and serving during the dedup drain before the compacted diff is
+	// ready. Only affects the memfd-dedup path; off restores the prior
+	// wait-for-dedup behavior.
+	MemfdDedupInflightServeFlag = NewBoolFlag("memfd-dedup-inflight-serve", false)
+
 	// PeerToPeerChunkTransferFlag enables peer-to-peer chunk routing.
 	PeerToPeerChunkTransferFlag = NewBoolFlag("peer-to-peer-chunk-transfer", false)
 	// PeerToPeerAsyncCheckpointFlag makes Checkpoint upload fire-and-forget instead
 	// of synchronous. Only safe to enable after PeerToPeerChunkTransferFlag is ON.
 	PeerToPeerAsyncCheckpointFlag = NewBoolFlag("peer-to-peer-async-checkpoint", false)
 
-	PersistentVolumesFlag            = NewBoolFlag("can-use-persistent-volumes", env.IsDevelopment())
-	SandboxLabelBasedSchedulingFlag  = NewBoolFlag("sandbox-label-based-scheduling", false)
-	OptimisticResourceAccountingFlag = NewBoolFlag("sandbox-placement-optimistic-resource-accounting", false)
-	FreePageReportingFlag            = NewBoolFlag("free-page-reporting", false)
-	FreezeUserCgroupFlag             = NewBoolFlag("freeze-user-cgroup", env.IsDevelopment())
+	// DeferRootfsExportFlag moves the rootfs diff seal (the reflink, which forces a
+	// synchronous host->NVMe writeback) off the pause critical path. On the
+	// suspend (pause) path, pause() ejects the cache and stops the sandbox, then
+	// reflinks the diff in the background — nothing reads the diff until a later
+	// resume. On the in-place checkpoint path, pause() swaps a fresh writable
+	// cache in, resumes the VM, seals the frozen old cache in the background and
+	// folds it back into the writable cache when done. Off by default; falls
+	// back to the synchronous export when off or on a non-NBD provider.
+	DeferRootfsExportFlag = NewBoolFlag("defer-rootfs-export", false)
+
+	PersistentVolumesFlag           = NewBoolFlag("can-use-persistent-volumes", env.IsDevelopment())
+	SandboxLabelBasedSchedulingFlag = NewBoolFlag("sandbox-label-based-scheduling", false)
+	FreePageReportingFlag           = NewBoolFlag("free-page-reporting", false)
+	FreezeUserCgroupFlag            = NewBoolFlag("freeze-user-cgroup", env.IsDevelopment())
+	// FreezeGuestHierarchyFlag selects the hierarchy walk over the static user/pty list,
+	// i.e. whether cgroups the customer created anywhere in the tree are frozen before a
+	// pause. Default off: it changes which cgroups are stopped, which is a behaviour
+	// change on the pause path.
+	//
+	// Evaluated here rather than in envd because envd has no LaunchDarkly, so the mode
+	// travels on the /freeze call. That also means it can be ON at pause and OFF at the
+	// following resume, which is why the thaw discovers what is frozen instead of
+	// recomputing what should have been.
+	FreezeGuestHierarchyFlag = NewBoolFlag("freeze-guest-hierarchy", false)
+
+	// FreezeGuestHierarchyMaxCgroupsFlag bounds one hierarchy sweep. A safety guard, not
+	// a performance one -- the walk is breadth-bounded along a 2-deep chain, so a normal
+	// guest visits tens. It exists for a pathological or hostile hierarchy, the guest
+	// being the threat model, and truncation is reported rather than swallowed.
+	//
+	// Safe to lower; the THAW's bound (in envd) is separate and must never be lowered,
+	// because a thaw that truncates below what a freeze covered strands a guest frozen.
+	FreezeGuestHierarchyMaxCgroupsFlag = NewIntFlag("freeze-guest-hierarchy-max-cgroups", 512)
+
 	// CollapseEnvdHeapFlag makes the orchestrator ask envd to collapse its own
 	// anonymous heap into 2 MiB hugepages just before pause, reducing the number
 	// of distinct frames envd faults on resume. Off by default; rolled out via LD.
@@ -179,6 +310,25 @@ var (
 	// helps, so this can be tuned per rollout without redeploying. The fallback
 	// (returned when LD is unavailable or the flag is unset) is the default.
 	CollapseEnvdHeapTimeoutMsFlag = NewIntFlag("collapse-envd-heap-timeout-ms", 10000) // 10s in milliseconds
+
+	// FreezeUserCgroupTimeoutMsFlag bounds the pre-pause freeze call that
+	// FreezeUserCgroupFlag enables, in milliseconds. The call waits for the workload's
+	// cgroups to actually stop, and quiesce latency is the guest's cost, not ours: a
+	// cgroup whose tasks are idle confirms in single-digit milliseconds, one in
+	// continuous I/O has been measured taking seconds. The default keeps the historical
+	// budget; raise it once the freeze metrics show how often it is the binding
+	// constraint. envd is told to confirm within a margin of this, so one knob moves
+	// both halves.
+	//
+	// The value bounds pause latency directly: a sandbox that will not quiesce holds the
+	// pause for this long before we give up on it. That is the cost being traded against
+	// snapshotting a running workload, and it is why raising it wants evidence.
+	//
+	// Effective ceiling of 10s. The shared sandbox HTTP client caps every request at that,
+	// so a larger value here is silently truncated to it while the failure is still
+	// recorded against the value set here. Tracked separately; until it is lifted, a value
+	// above 10s buys nothing and makes the timeout metric misleading.
+	FreezeUserCgroupTimeoutMsFlag = NewIntFlag("freeze-user-cgroup-timeout-ms", 2000) // 2s in milliseconds
 
 	// VolumeFallbackToUnmatchedNodesFlag allows volume operations to fall back to
 	// orchestrator nodes that don't advertise the volume's type label when every
@@ -194,8 +344,20 @@ var (
 	SandboxVolumeLabelBasedSchedulingFlag = NewBoolFlag("sandbox-volume-label-based-scheduling", false)
 
 	NetworkTransformRulesFlag = NewBoolFlag("network-transform-rules", env.IsDevelopment())
+	MaxNetworkRuleDomains     = NewIntFlag("max-network-rule-domains", 10)
 
 	BYOPProxyEnabledFlag = NewBoolFlag("byop-proxy-enabled", env.IsDevelopment())
+
+	// SandboxIamTokensFlag gates the sandbox IAM workload token configuration
+	// (iam.tokens) per team during beta.
+	SandboxIamTokensFlag = NewBoolFlag("enable-sandbox-iam-tokens", env.IsDevelopment())
+
+	// CustomerSecretsFlag gates the customer-facing secret management routes
+	// per project during rollout. It falls back to off, so a deployment that
+	// cannot reach LaunchDarkly keeps the routes dark.
+	CustomerSecretsFlag = NewBoolFlag("customer-secrets", false)
+
+	DisableLegacyTeamMutationsFlag = NewBoolFlag("disable-legacy-team-mutations", false)
 
 	// V4HeaderForUncompressedFlag forces the V4 header layout on uncompressed
 	// uploads. Independent of compress-config: it changes the header format,
@@ -219,22 +381,13 @@ var (
 	// On by default; acts as a kill switch if a heal pass misbehaves.
 	ExpirationIndexHealerFlag = NewBoolFlag("expiration-index-healer", true)
 
-	// DisableE2BAccessTokenProvisioningFlag stops POST /access-tokens from issuing
-	// new E2B access tokens (sk_e2b_) once enabled. E2B_ACCESS_TOKEN is deprecated
-	// in favor of E2B_API_KEY; the CLI now authenticates via Hydra JWTs. Off by
-	// default so issuance keeps working until the deprecation cutover.
-	DisableE2BAccessTokenProvisioningFlag = NewBoolFlag("disable-e2b-access-token-provisioning", false)
-
-	// DisableE2BAccessTokenAuthFlag stops the API and docker-reverse-proxy
-	// (V1 build docker login) from accepting E2B access tokens (sk_e2b_) for
-	// authentication once enabled. E2B_ACCESS_TOKEN is deprecated in favor of
-	// E2B_API_KEY; existing tokens stop working on the deprecation cutover
-	// (Aug 1, 2026). Off by default. Evaluated per-user so rejection can be
-	// rolled out gradually via LD targeting.
-	DisableE2BAccessTokenAuthFlag = NewBoolFlag("disable-e2b-access-token-auth", false)
-
 	// BuildEnsureFreeDiskSpace grows the rootfs after build steps and before finalize.
 	BuildEnsureFreeDiskSpace = NewBoolFlag("build-ensure-free-disk-space", false)
+
+	// BuildExt4DirIndex keeps the htree directory index that mkfs.ext4 enables by
+	// default on the rootfs. Read at mkfs time, so it governs only rootfs images
+	// built after the flip.
+	BuildExt4DirIndex = NewBoolFlag("build-ext4-dir-index", false)
 )
 
 // envdTimeoutFallbackMs reads ENVD_TIMEOUT (Go duration string, e.g. "10s")
@@ -283,7 +436,7 @@ var (
 	// The LD keys keep the legacy "gcloud-" prefix, but the limits apply to uploads on all storage providers.
 	StorageConcurrentUploadLimit  = NewIntFlag("gcloud-concurrent-upload-limit", 8)
 	StorageMaxUploadTasks         = NewIntFlag("gcloud-max-tasks", 16)
-	ClickhouseBatcherMaxBatchSize = NewIntFlag("clickhouse-batcher-max-batch-size", 100)
+	ClickhouseBatcherMaxBatchSize = NewIntFlag("clickhouse-batcher-max-batch-size", 1000)
 	ClickhouseBatcherMaxDelay     = NewIntFlag("clickhouse-batcher-max-delay", 1000) // 1s in milliseconds
 	ClickhouseBatcherQueueSize    = NewIntFlag("clickhouse-batcher-queue-size", 1000)
 	BestOfKSampleSize             = NewIntFlag("best-of-k-sample-size", 3)                           // Default K=3
@@ -294,13 +447,50 @@ var (
 	// GuestSyncTimeoutMs overrides the mandatory pre-pause guest-sync deadline
 	// for filesystem-only snapshots, in milliseconds. 0 (default) derives the
 	// timeout from guest RAM; a positive value pins it.
-	GuestSyncTimeoutMs            = NewIntFlag("guest-sync-timeout-milliseconds", 0)
-	MaxCacheWriterConcurrencyFlag = NewIntFlag("max-cache-writer-concurrency", 10)
+	GuestSyncTimeoutMs = NewIntFlag("guest-sync-timeout-milliseconds", 0)
+	// PauseAdmissionGraceMs gates the pause/checkpoint snapshot-admission
+	// pre-flight, in milliseconds. Negative (default) disables the pre-flight;
+	// 0 probes the parent header's readiness without waiting; a positive value
+	// waits up to that long before refusing retryably.
+	PauseAdmissionGraceMs = NewIntFlag("pause-admission-grace-milliseconds", -1)
+	// PauseRefusalRestoreFlag gates the API-side restore of a retryably
+	// refused pause: record kept, routing re-registered, state back to
+	// Running. Off (default), a refused pause still ends today's way — the
+	// record is removed, the live sandbox is reaped as an orphan shortly
+	// after, and the pause endpoint answers today's generic error rather than
+	// a 503 whose retry could not succeed.
+	PauseRefusalRestoreFlag = NewBoolFlag("pause-refusal-restore", false)
+	// OrchestratorRoutingPublishFlag makes the orchestrator write the sandbox
+	// routing record (sandbox:routing:{id}) on MarkRunning and delete it on
+	// MarkStopping. Runs next to the API-owned sandbox:catalog:{id} record.
+	OrchestratorRoutingPublishFlag = NewBoolFlag("orchestrator-routing-publish", false)
+	// OrchestratorRoutingPrioritizedFlag makes client-proxy resolve the node
+	// from the orchestrator-owned sandbox:routing:{id} record instead of the
+	// API-owned sandbox:catalog:{id} record. Turn on only after
+	// OrchestratorRoutingPublishFlag has been on for one max sandbox length.
+	OrchestratorRoutingPrioritizedFlag = NewBoolFlag("orchestrator-routing-prioritized", false)
+	MaxCacheWriterConcurrencyFlag      = NewIntFlag("max-cache-writer-concurrency", 10)
 
 	// BuildCacheMaxUsagePercentage the maximum percentage of the cache disk storage
 	// that can be used before the cache starts evicting items.
 	BuildCacheMaxUsagePercentage = NewIntFlag("build-cache-max-usage-percentage", 85)
 	BuildProvisionVersion        = NewIntFlag("build-provision-version", 0)
+
+	// BuildEnvdMemoryProtection, when enabled at build time, renders a fixed
+	// memory.min/memory.low request for envd, the same on every template, and
+	// installs a system.slice drop-in requesting the same, so the kernel grants
+	// envd's protection instead of prorating it to nothing. Evaluated once per
+	// build with the template and team contexts. When on, the request it
+	// renders enters the base-layer cache key of every build that renders the
+	// rootfs files, so such a build never reuses a layer built off, and off
+	// keeps the key those layers are already stored under wherever
+	// BuildProvisionVersion is set explicitly (a build from another template
+	// inherits its parent's layer and files, whatever its own flag). Where that
+	// flag is at its fallback the provision version is a hash of the baked
+	// files, which the drop-in template changes once, so those deployments
+	// rebuild their base layers on landing whatever this flag says.
+	// Disabled by default: the unit keeps the request it carries today.
+	BuildEnvdMemoryProtection = NewBoolFlag("build-envd-memory-protection", false)
 
 	// NBDConnectionsPerDevice the number of NBD socket connections per device
 	NBDConnectionsPerDevice = NewIntFlag("nbd-connections-per-device", 1)
@@ -320,6 +510,37 @@ var (
 	// MemoryPrefetchMaxCopyWorkers is the maximum number of parallel copy workers per sandbox for memory prefetching.
 	// Copy uses uffd syscalls, so we limit parallelism to avoid overwhelming the system.
 	MemoryPrefetchMaxCopyWorkers = NewIntFlag("memory-prefetch-max-copy-workers", 8)
+
+	// MemoryPrefetchCoalesceMaxMB caps how many contiguous prefetch blocks are
+	// merged into a single source.Slice fetch (in MiB of extent size). 0
+	// disables coalescing: every block is fetched individually, matching
+	// today's behavior. The copy phase is unaffected either way — it always
+	// installs one page at a time, because Userfaultfd.Prefault installs a
+	// single page per call.
+	MemoryPrefetchCoalesceMaxMB = NewIntFlag("memory-prefetch-coalesce-max-mb", 0)
+
+	// ResumePrefetchSourceFlag selects which trace the resume prefetcher
+	// replays:
+	//   "init"     — only the build-time / harvested read-hot init trace
+	//                (meta.Prefetch.Memory), prefaulted. Preserves today's
+	//                behavior, so this is the default and a no-op-equivalent.
+	//   "last-cycle" — only the sandbox's own pause diff (the pages the last
+	//                resume→pause cycle wrote), derived from the memfile header
+	//                and replayed fetch-only.
+	//   "both"     — init first (prefaulted), then last-cycle (fetch-only) behind
+	//                a barrier, so the large last-cycle fetch stays off the
+	//                resume-critical path.
+	//   "off"      — kill switch, no resume prefetch.
+	// Unknown values fall back to "init".
+	ResumePrefetchSourceFlag = NewStringFlag("resume-prefetch-source", "init")
+
+	// ResumeLastCyclePrefetchMaxMiBFlag caps how much of the last-cycle diff a single
+	// resume prefetches, in MiB. -1 (the default, negative = no limit per the
+	// codebase convention) is uncapped; the recorded diff is small by
+	// construction, so this exists to throttle the heavy-churn tail against the
+	// shared object-store pool without a redeploy. A non-negative N keeps the
+	// first N MiB of blocks in offset order and leaves the rest to demand-fault.
+	ResumeLastCyclePrefetchMaxMiBFlag = NewIntFlag("resume-last-cycle-prefetch-max-mib", -1)
 
 	// PauseResumePrefetchHarvestFlag makes the orchestrator, after a pause
 	// snapshot is durable, run a throwaway warm resume of the just-written
@@ -373,6 +594,17 @@ var (
 	// and are picked up by the next eviction tick. Must be > 0; non-positive
 	// values are ignored at refresh time.
 	MaxConcurrentEvictions = NewIntFlag("max-concurrent-evictions", 256)
+
+	// AutoPauseOverstayBudgetMs is how long the evictor keeps retrying a memory
+	// snapshot for an expired auto-pause sandbox the node refuses, counted from
+	// the first refusal of the current episode, before it requests a
+	// filesystem-only snapshot instead (no memory parent, so it cannot be
+	// refused for one). Same sign convention as PauseAdmissionGraceMs:
+	// negative = never degrade (retry for as long as the node refuses), 0 = no
+	// retries (degrade at the first refusal), positive = the budget. Only ever
+	// consulted on a refusal, and refusals only reach the evictor with
+	// PauseRefusalRestoreFlag on, so it is inert until that flag is.
+	AutoPauseOverstayBudgetMs = NewIntFlag("auto-pause-overstay-budget-milliseconds", 120000)
 
 	// MaxConcurrentSnapshotUpserts limits concurrent UpsertSnapshot calls (pause + snapshot template paths).
 	// 0 or negative disables throttling (unlimited concurrency).
@@ -471,28 +703,147 @@ func NewStringFlag(name string, fallback string) StringFlag {
 
 const (
 	DefaultKernelVersion = "vmlinux-6.1.158"
+
+	// DefaultEnvdVersion is the envd new template builds bake when neither the
+	// build-envd-version flag nor DEFAULT_ENVD_VERSION says otherwise:
+	// "promoted" selects the node-local promoted binary (HOST_ENVD_PATH), the
+	// behavior every build has always had, so deployments without
+	// LaunchDarkly (dev, self-host) are unaffected.
+	DefaultEnvdVersion = "promoted"
 )
 
-// The Firecracker version the last tag + the short SHA (so we can build our dev previews)
+// The Firecracker version per release line: legacy lines pin
+// last-tag_short-SHA dev builds; e2b lines (vX.Y-<e2b-major>) pin releases
+// published by the Publish fc-versions workflow.
 // TODO: The short tag here has only 7 characters — the one from our build pipeline will likely have exactly 8 so this will break.
 const (
 	DefaultFirecrackerV1_10Version = "v1.10.1_30cbb07"
 	DefaultFirecrackerV1_12Version = "v1.12.1_210cbac"
 	DefaultFirecrackerV1_14Version = "v1.14.1_431f1fc"
-	DefaultFirecrackerVersion      = DefaultFirecrackerV1_14Version
+	// The v1.14-0 release line. 0.2.0 introduces the in-place checkpoint's
+	// balloon reporting-pause API; filesystem-only snapshots ship with every
+	// e2b release from 0.1.0 — the per-feature floors live in fcversion.
+	DefaultFirecrackerV1_14_0Version = "v1.14-0.2.0"
+	// New template builds get the current release; existing builds keep
+	// resolving within their own line below (cross-line upgrades are an
+	// operator decision via the firecracker-versions flag, never a baked
+	// default — the map invariant key == LDKey(value) enforces it).
+	DefaultFirecrackerVersion = DefaultFirecrackerV1_14_0Version
 )
 
 var FirecrackerVersionMap = map[string]string{
-	"v1.10": DefaultFirecrackerV1_10Version,
-	"v1.12": DefaultFirecrackerV1_12Version,
-	"v1.14": DefaultFirecrackerV1_14Version,
+	"v1.10":   DefaultFirecrackerV1_10Version,
+	"v1.12":   DefaultFirecrackerV1_12Version,
+	"v1.14":   DefaultFirecrackerV1_14Version,
+	"v1.14-0": DefaultFirecrackerV1_14_0Version,
 }
 
 // BuildIoEngine Sync is used by default as there seems to be a bad interaction between Async and a lot of io operations.
 var (
-	BuildFirecrackerVersion     = NewStringFlag("build-firecracker-version", env.GetEnv("DEFAULT_FIRECRACKER_VERSION", DefaultFirecrackerVersion))
-	BuildKernelVersion          = NewStringFlag("build-kernel-version", env.GetEnv("DEFAULT_KERNEL_VERSION", DefaultKernelVersion))
-	BuildIoEngine               = NewStringFlag("build-io-engine", "Sync")
+	BuildFirecrackerVersion = NewStringFlag("build-firecracker-version", env.GetEnv("DEFAULT_FIRECRACKER_VERSION", DefaultFirecrackerVersion))
+	BuildKernelVersion      = NewStringFlag("build-kernel-version", env.GetEnv("DEFAULT_KERNEL_VERSION", DefaultKernelVersion))
+	// BuildEnvdVersion selects which staged envd binary a template build bakes
+	// into the rootfs — the envd counterpart of BuildKernelVersion /
+	// BuildFirecrackerVersion, same default mechanism. "promoted" (the
+	// fallback) is the node-local promoted binary; a concrete version id
+	// (e.g. v0.7.0, or a git SHA while those age out) selects a staged binary
+	// (the flat envd.<id> sibling or the release bucket's <id>/envd layout,
+	// see build/core/envd.ResolveBuildBinary). A pinned target that is not
+	// staged FAILS the build rather than silently baking a different envd —
+	// feature gates key on the baked version, so a silent substitute
+	// misgates. The build-site LD context carries template/team, so cohort
+	// canaries come for free.
+	BuildEnvdVersion = NewStringFlag("build-envd-version", env.GetEnv("DEFAULT_ENVD_VERSION", DefaultEnvdVersion))
+	BuildIoEngine    = NewStringFlag("build-io-engine", "Sync")
+
+	// BuildKernelCmdlineArgs supplies extra guest kernel command line parameters at
+	// template build time, keyed on team, as a command line fragment:
+	//
+	//	psi=1
+	//	psi=1 nokaslr
+	//
+	// Empty (the default) is the command line every sandbox has always booted with, so a
+	// team that is not targeted is unaffected. Adding a parameter is a flag edit — no
+	// orchestrator change and no deploy.
+	//
+	// Parsed the way the kernel parses a command line: whitespace separates parameters,
+	// the first '=' separates a name from its value, and a parameter with no '=' has an
+	// empty value. The orchestrator rejects the whole fragment if it sets a parameter it
+	// reserves (init, clocksource, root, ip, console, rootflags, panic, reboot, loglevel,
+	// quiet — see packages/orchestrator/pkg/sandbox/fc), falling back to the default
+	// command line rather than failing the build. The parsed parameters are recorded in
+	// the template's metadata and replayed when a filesystem-only snapshot cold-boots, so
+	// a snapshot keeps booting the way it was built even if this flag later changes.
+	BuildKernelCmdlineArgs = NewStringFlag("build-kernel-cmdline-args", "")
+
+	// EnvdUpgradeTargetFlag drives the resume-time envd live-upgrade.
+	// Multivariate string:
+	//   "off"        (fallback) — no upgrade; dev has no LD so this is inert & safe.
+	//   "promoted"   — track the node-local promoted envd (HOST_ENVD_PATH); upgrade
+	//                  whenever it differs from the sandbox's built-with version
+	//                  (no per-publish flag edits needed).
+	//   "<version>"  — pin a specific staged binary, in either layout beside the
+	//                  promoted one: the flat /fc-envd/envd.<version> sibling or
+	//                  the release bucket's /fc-envd/<version>/envd directory.
+	//                  Release names may carry dots and hyphens (v0.7.0,
+	//                  v0.8.0-rc1); legacy git-SHA suffixes keep resolving while
+	//                  the old envd.<sha> objects age out.
+	// The resume-site LD context carries envd-version/team/template, so %-ramp
+	// and cohort canaries come for free. The fallback is env-overridable
+	// (ENVD_UPGRADE_TARGET) so it can be exercised where there is no LD (dev),
+	// mirroring build-firecracker-version's DEFAULT_FIRECRACKER_VERSION.
+	EnvdUpgradeTargetFlag = NewStringFlag("envd-upgrade-target", env.GetEnv("ENVD_UPGRADE_TARGET", "off"))
+	// EnvdOfflineUpgradeTargetFlag drives the OFFLINE envd upgrade of a
+	// filesystem-only snapshot: at cold-boot resume the rootfs binary is rewritten
+	// (jailed debugfs) before the guest boots, reaching envd too old to self-upgrade
+	// (< MinEnvdVersionForUpgrade). Same value grammar and resolver as
+	// EnvdUpgradeTargetFlag ("off" / "promoted" / "<version>"); a SEPARATE flag so
+	// the newer/riskier offline mechanism ramps independently of the live path. The
+	// fallback is env-overridable (ENVD_OFFLINE_UPGRADE_TARGET) for dev, where there
+	// is no LD. Default off.
+	EnvdOfflineUpgradeTargetFlag = NewStringFlag("envd-offline-upgrade-target", env.GetEnv("ENVD_OFFLINE_UPGRADE_TARGET", "off"))
+
+	// EnvdBinaryCacheFlag serves the envd upgrade paths from a node-local copy of
+	// the host envd binary instead of re-reading it from the gcsfuse mount: the
+	// version probe, the live delivery to a running envd, and the offline rootfs
+	// swap's staging copy. Off keeps every one of those reading the source
+	// directly, which is the behaviour before this flag existed.
+	//
+	// It gates a caching optimisation, not a new mechanism, so the risk it
+	// isolates is the cache serving a stale binary — an upgrade delivering
+	// something other than the version it recorded. That is recoverable (the
+	// version arbiter refuses to record a success it cannot confirm) but worth a
+	// kill switch that needs no deploy. Falls back on in development, where there
+	// is no LD and the path would otherwise never be exercised.
+	// The fallback is env-overridable (ENVD_BINARY_CACHE) so the cached and
+	// uncached paths can be compared on a cluster with no LaunchDarkly, where the
+	// alternative is two binary deploys.
+	//
+	// Ramp it on a NODE-SCOPED key only: deployment (the domain, so effectively the
+	// cluster), instance-group, or orchestrator (the node, carrying its build as an
+	// attribute). Those are what the orchestrator attaches to every evaluation, so
+	// all three read sites agree on them. A sandbox- or team-keyed rule is absent
+	// at the startup warm, which runs before any sandbox exists -- such a rule
+	// still gates both upgrade paths but silently disables the pre-warm, so every
+	// node's first eligible resume defers. A template-keyed rule matches the
+	// offline path only, since the live path carries the template as an attribute
+	// of the sandbox context rather than as a context of its own. None of that is a
+	// limitation worth lifting: the subject of this flag is a cache shared by every
+	// sandbox on the node, so the node, its group and its cluster are the cohorts
+	// that mean anything.
+	EnvdBinaryCacheFlag = NewBoolFlag("envd-binary-cache", envBoolOr("ENVD_BINARY_CACHE", env.IsDevelopment()))
+	// FsOnlyResumeCPUModelFlag restricts where a filesystem-only snapshot may be
+	// resumed: placement keeps only nodes reporting this CPU model, on top of the
+	// build-compatibility rule every sandbox is already subject to. The value is
+	// a bare CPU model as /proc/cpuinfo reports it — machineinfo.IceLakeModel is
+	// "106" (n2), machineinfo.EmeraldRapidsModel is "207" (n4).
+	//
+	// Empty (the default) turns the restriction off, leaving filesystem-only
+	// snapshots on the cross-generation rule a memory restore uses. A deployment
+	// with no LaunchDarkly therefore keeps placing them exactly as before, rather
+	// than needing an LD rule to unpin itself. Memory snapshots never read it.
+	FsOnlyResumeCPUModelFlag = NewStringFlag("fs-only-resume-cpu-model", "")
+
 	DefaultPersistentVolumeType = NewStringFlag("default-persistent-volume-type", "")
 	BuildNodeInfo               = NewJSONFlag("preferred-build-node", ldvalue.Null())
 	FirecrackerVersions         = NewJSONFlag("firecracker-versions", ldvalue.FromJSONMarshal(FirecrackerVersionMap))
@@ -508,27 +859,531 @@ var (
 	ClickhouseWriteFanoutFlag = NewBoolFlag("clickhouse-write-fanout", false)
 )
 
+// LogsWriteConfigFlag controls where sandbox/external logs are written, so
+// operators can retarget log destinations from LaunchDarkly without a redeploy.
+//
+// Shape:
+//
+//	{
+//	  "mode": "primary_only" | "primary_and_shadow",
+//	  "primary_url": "http://localhost:30006",
+//	  "shadow_urls": ["http://localhost:4321/logs"],
+//	  "timeout_ms": 2000,
+//	  "max_inflight_shadow_writes": 1024
+//	}
+//
+// Semantics:
+//   - null/missing/invalid  -> fall back to the legacy collector address only.
+//   - "primary_only"        -> write to primary_url only.
+//   - "primary_and_shadow"  -> write to primary_url; fire-and-forget shadow_urls
+//     (shadow failures never affect the primary result).
+//   - Empty primary_url in a non-disabled mode is invalid -> legacy fallback.
+//   - shadow_urls must be an array of <= maxLogWriteShadowURLs safe string URLs.
+//   - timeout_ms <= 0 or too large is clamped to a safe range.
+//   - max_inflight_shadow_writes <= 0 defaults to defaultMaxInflightShadowWrites.
+//   - Only http URLs pointing at local/private hosts or allowed internal DNS
+//     suffixes are allowed; anything else is rejected and the whole config falls
+//     back to legacy.
+//
+// The fallback collector address is a runtime env value the flag cannot know,
+// so the default is Null() and the code substitutes the legacy address.
+var LogsWriteConfigFlag = NewJSONFlag("logs-write-config", ldvalue.Null())
+
+// LogsReadConfigFlag selects the backend used to read sandbox/build logs.
+// false reads from Loki (unchanged behavior); true reads from the ClickHouse
+// sandbox_logs table. The fallback comes from LOGS_READ_CONFIG and defaults to
+// false, so a deployment without LaunchDarkly, or one whose LaunchDarkly has
+// no value for the flag, reads where the variable says; a LaunchDarkly value
+// wins when there is one.
+var LogsReadConfigFlag = NewBoolFlag("logs-read-config", logsReadConfigFallback())
+
+// logsReadConfigFallback reads LOGS_READ_CONFIG. Unset or unparseable means
+// false, the way envdTimeoutFallbackMs treats ENVD_TIMEOUT.
+func logsReadConfigFallback() bool {
+	return parseLogsReadConfig(os.Getenv("LOGS_READ_CONFIG"))
+}
+
+func parseLogsReadConfig(raw string) bool {
+	value, err := strconv.ParseBool(strings.TrimSpace(raw))
+
+	return err == nil && value
+}
+
+// Log write routing modes for LogsWriteConfigFlag.
+const (
+	LogsWriteModePrimaryOnly      = "primary_only"
+	LogsWriteModePrimaryAndShadow = "primary_and_shadow"
+)
+
+const (
+	// defaultLogWriteTimeout is used when timeout_ms is missing/invalid.
+	defaultLogWriteTimeout = 2000 * time.Millisecond
+	// maxLogWriteTimeout caps operator-provided timeouts.
+	maxLogWriteTimeout = 10000 * time.Millisecond
+	// maxLogWriteShadowURLs caps fanout configured from LaunchDarkly.
+	maxLogWriteShadowURLs = 4
+	// defaultMaxInflightShadowWrites is used when max_inflight_shadow_writes is missing/invalid.
+	defaultMaxInflightShadowWrites = 1024
+)
+
+var (
+	logRoutingMeter                = otel.Meter("github.com/e2b-dev/infra/packages/shared/pkg/featureflags")
+	logWriteConfigResolutionMetric = mustLogRoutingCounter(
+		"log_write_config_resolution_count",
+		"Number of logs-write-config resolutions by outcome and fallback reason",
+	)
+)
+
+func mustLogRoutingCounter(name, description string) metric.Int64Counter {
+	counter, err := logRoutingMeter.Int64Counter(name, metric.WithDescription(description))
+	if err != nil {
+		return nil
+	}
+
+	return counter
+}
+
+// LogWriteConfig is the resolved, validated log write routing configuration.
+// The zero value (PrimaryURL set by the resolver) preserves legacy behavior.
+type LogWriteConfig struct {
+	// PrimaryURL is the synchronous, success-controlling destination.
+	PrimaryURL string
+	// ShadowURLs are best-effort, fire-and-forget destinations.
+	ShadowURLs []string
+	// Timeout bounds each individual log write request.
+	Timeout time.Duration
+	// MaxInflightShadowWrites bounds concurrent best-effort shadow writes.
+	MaxInflightShadowWrites int64
+}
+
+// ResolveLogWriteConfig reads LogsWriteConfigFlag and returns a validated
+// LogWriteConfig. On any missing/malformed/unsafe input it falls back to
+// writing only to fallbackURL (today's behavior).
+func ResolveLogWriteConfig(ctx context.Context, ff *Client, fallbackURL string, contexts ...ldcontext.Context) LogWriteConfig {
+	// The legacy fallback (flag null/invalid) preserves pre-flag behavior: it
+	// leaves Timeout at 0 so callers skip the per-request WithTimeout and rely
+	// solely on the HTTP client's own timeout, exactly as before this flag
+	// existed. defaultLogWriteTimeout only applies to explicitly-configured
+	// flags with a missing/invalid timeout_ms.
+	legacy := LogWriteConfig{
+		PrimaryURL:              strings.TrimSpace(fallbackURL),
+		Timeout:                 0,
+		MaxInflightShadowWrites: defaultMaxInflightShadowWrites,
+	}
+
+	if ff == nil {
+		recordLogWriteConfigResolution(ctx, "legacy", "nil_client", "")
+
+		return legacy
+	}
+
+	value := ff.JSONFlag(ctx, LogsWriteConfigFlag, contexts...)
+	if value.IsNull() {
+		recordLogWriteConfigResolution(ctx, "legacy", "null", "")
+
+		return legacy
+	}
+	if value.Type() != ldvalue.ObjectType {
+		recordLogWriteConfigResolution(ctx, "legacy", "non_object", "")
+
+		return legacy
+	}
+
+	modeValue := value.GetByKey("mode")
+	if modeValue.Type() != ldvalue.StringType {
+		recordLogWriteConfigResolution(ctx, "legacy", "mode_not_string", "")
+
+		return legacy
+	}
+	mode := strings.TrimSpace(modeValue.StringValue())
+	switch mode {
+	case LogsWriteModePrimaryOnly, LogsWriteModePrimaryAndShadow:
+		// handled below
+	default:
+		// unknown/missing mode -> legacy fallback
+		recordLogWriteConfigResolution(ctx, "legacy", "unknown_mode", mode)
+
+		return legacy
+	}
+
+	primaryValue := value.GetByKey("primary_url")
+	if primaryValue.Type() != ldvalue.StringType {
+		recordLogWriteConfigResolution(ctx, "legacy", "primary_not_string", mode)
+
+		return legacy
+	}
+	primary := strings.TrimSpace(primaryValue.StringValue())
+	if !isSafeLogURL(primary) {
+		recordLogWriteConfigResolution(ctx, "legacy", "unsafe_primary", mode)
+
+		return legacy
+	}
+
+	var shadows []string
+	if mode == LogsWriteModePrimaryAndShadow {
+		raw := value.GetByKey("shadow_urls")
+		if !raw.IsNull() {
+			if raw.Type() != ldvalue.ArrayType {
+				recordLogWriteConfigResolution(ctx, "legacy", "shadow_not_array", mode)
+
+				return legacy
+			}
+			if raw.Count() > maxLogWriteShadowURLs {
+				recordLogWriteConfigResolution(ctx, "legacy", "too_many_shadows", mode)
+
+				return legacy
+			}
+
+			seen := map[string]struct{}{primary: {}}
+			for i := range raw.Count() {
+				item := raw.GetByIndex(i)
+				if item.Type() != ldvalue.StringType {
+					recordLogWriteConfigResolution(ctx, "legacy", "shadow_not_string", mode)
+
+					return legacy
+				}
+				u := strings.TrimSpace(item.StringValue())
+				// An unsafe shadow URL invalidates the whole config: fail safe to
+				// legacy rather than silently exfiltrating to an external host.
+				if !isSafeLogURL(u) {
+					recordLogWriteConfigResolution(ctx, "legacy", "unsafe_shadow", mode)
+
+					return legacy
+				}
+				if _, ok := seen[u]; ok {
+					continue
+				}
+				seen[u] = struct{}{}
+				shadows = append(shadows, u)
+			}
+		}
+	}
+
+	recordLogWriteConfigResolution(ctx, "configured", "", mode)
+
+	return LogWriteConfig{
+		PrimaryURL:              primary,
+		ShadowURLs:              shadows,
+		Timeout:                 clampLogWriteTimeout(value),
+		MaxInflightShadowWrites: clampMaxInflightShadowWrites(value),
+	}
+}
+
+func recordLogWriteConfigResolution(ctx context.Context, outcome, reason, mode string) {
+	if logWriteConfigResolutionMetric == nil {
+		return
+	}
+
+	logWriteConfigResolutionMetric.Add(ctx, 1, metric.WithAttributes(
+		attribute.String("outcome", outcome),
+		attribute.String("reason", reason),
+		attribute.String("mode", mode),
+	))
+}
+
+// clampLogWriteTimeout reads timeout_ms and clamps it to a safe range.
+func clampLogWriteTimeout(value ldvalue.Value) time.Duration {
+	ms := value.GetByKey("timeout_ms").IntValue()
+	if ms <= 0 {
+		return defaultLogWriteTimeout
+	}
+
+	d := time.Duration(ms) * time.Millisecond
+	if d > maxLogWriteTimeout {
+		return maxLogWriteTimeout
+	}
+
+	return d
+}
+
+func clampMaxInflightShadowWrites(value ldvalue.Value) int64 {
+	maxInflight := value.GetByKey("max_inflight_shadow_writes").IntValue()
+	if maxInflight <= 0 {
+		return defaultMaxInflightShadowWrites
+	}
+
+	return int64(maxInflight)
+}
+
+var allowedLogHostSuffixes = []string{
+	".service.consul",
+	".consul",
+	".svc.cluster.local",
+	".svc",
+	".local",
+	".internal",
+}
+
+// isSafeLogURL allows only http URLs pointing at loopback, link-local, private
+// IPs, or internal service-discovery DNS suffixes. This keeps log routing on
+// local/private infrastructure and prevents exfiltration to arbitrary external
+// endpoints via the flag.
+func isSafeLogURL(raw string) bool {
+	if raw == "" {
+		return false
+	}
+
+	u, err := url.Parse(raw)
+	if err != nil || u.Scheme != "http" || u.Host == "" {
+		return false
+	}
+
+	host := u.Hostname()
+	switch host {
+	case "localhost", "127.0.0.1", "::1":
+		return true
+	}
+
+	hostLower := strings.ToLower(host)
+	for _, suffix := range allowedLogHostSuffixes {
+		if strings.HasSuffix(hostLower, suffix) {
+			return true
+		}
+	}
+
+	ip := net.ParseIP(host)
+	if ip == nil {
+		// Non-IP host without an explicitly allowed internal suffix -> reject.
+		return false
+	}
+
+	return ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast()
+}
+
+// Named under orchestrator.* (the resolver's sole caller) so it passes the
+// otel collector's include-only metric allow-list.
+const firecrackerVersionResolutionMetricName = "orchestrator.firecracker.version_resolution"
+
+var firecrackerVersionResolutionMetric = mustLogRoutingCounter(
+	firecrackerVersionResolutionMetricName,
+	"Number of firecracker version resolutions by outcome, fallback reason, map key and served version",
+)
+
+// The version attribute is set only on hits, where it is a flag-map value.
+// The raw stored string never becomes a label: it carries per-build entropy
+// that LDKey strips to the release line, so fallbacks record only the key.
+func recordFirecrackerResolved(ctx context.Context, key, version string) {
+	addFirecrackerResolution(ctx, "resolved", "", key, version)
+}
+
+func recordFirecrackerFallback(ctx context.Context, reason, key string) {
+	addFirecrackerResolution(ctx, "fallback", reason, key, "")
+}
+
+func addFirecrackerResolution(ctx context.Context, outcome, reason, key, version string) {
+	if firecrackerVersionResolutionMetric == nil {
+		return
+	}
+
+	firecrackerVersionResolutionMetric.Add(ctx, 1, metric.WithAttributes(
+		attribute.String("outcome", outcome),
+		attribute.String("reason", reason),
+		attribute.String("key", key),
+		attribute.String("version", version),
+	))
+}
+
 // ResolveFirecrackerVersion resolves the firecracker version using the FirecrackerVersions feature flag.
-// The buildVersion format is "v1.12.1_210cbac" — we extract "v1.12" as the lookup key.
+// The stored version's LD key (e.g. "v1.12" for "v1.12.1_210cbac", "v1.14-0"
+// for "v1.14-0.1.0") is looked up in the flag map; on parse failure or a
+// missing key the stored version is returned unchanged.
 func ResolveFirecrackerVersion(ctx context.Context, ff *Client, buildVersion string) string {
-	parts := strings.Split(buildVersion, "_")
-	if len(parts) < 2 {
+	info, err := fcversion.New(buildVersion)
+	if err != nil {
+		recordFirecrackerFallback(ctx, "parse_error", "")
+
 		return buildVersion
 	}
 
-	versionParts := strings.Split(strings.TrimPrefix(parts[0], "v"), ".")
-	if len(versionParts) < 2 {
+	key, ok := info.LDKey()
+	if !ok {
+		recordFirecrackerFallback(ctx, "no_ld_key", "")
+
 		return buildVersion
 	}
 
-	key := fmt.Sprintf("v%s.%s", versionParts[0], versionParts[1])
 	versions := ff.JSONFlag(ctx, FirecrackerVersions).AsValueMap()
 
 	if resolved, ok := versions.Get(key).AsOptionalString().Get(); ok {
+		// An empty map value would blank the binary path fleet-wide; serve
+		// the stored version instead and make the misconfiguration loud.
+		if resolved == "" {
+			recordFirecrackerFallback(ctx, "empty_value", key)
+
+			return buildVersion
+		}
+		recordFirecrackerResolved(ctx, key, resolved)
+
 		return resolved
 	}
 
+	recordFirecrackerFallback(ctx, "key_absent", key)
+
 	return buildVersion
+}
+
+// ResolveEnvdUpgrade decides whether a resuming sandbox's envd should be swapped
+// for a newer node-local build, per EnvdUpgradeTargetFlag, and returns the local
+// path of the target binary ("" = no upgrade). It is the resume-time analog of
+// ResolveFirecrackerVersion.
+//
+// hostEnvdPath is the promoted binary (cfg HostEnvdPath, e.g. /fc-envd/envd);
+// versioned binaries live beside it as envd.<version> (legacy uploads:
+// envd.<sha>). getVersion resolves a
+// binary's baked version (orchestrator's build/core/envd.GetEnvdVersion) — it is
+// injected so this shared package does not depend on the orchestrator.
+//
+// The "should we upgrade?" test compares baked version *strings* (built-with vs
+// the target's version). This is sufficient because CLAUDE.md mandates bumping
+// packages/envd/pkg/version.go on every behavioral change; if that ever stops
+// holding, a same-version binary swap would be skipped and this must switch to
+// comparing by git SHA.
+// It returns the target binary's path and baked version ("" path = no upgrade),
+// plus a reason for the no-upgrade case — off | not_staged | invalid_target |
+// getversion_failed | same_version | downgrade, and "" when an upgrade IS returned
+// — so the caller can tell a benign no-op (off / same_version) from a
+// misconfigured target (not_staged from a bad SHA, a target that is not a bare
+// identifier, getversion_failed, a refused downgrade).
+func ResolveEnvdUpgrade(
+	ctx context.Context,
+	target string,
+	builtWithVersion string,
+	hostEnvdPath string,
+	getVersion func(context.Context, string) (string, error),
+) (path, version, reason string) {
+	return resolveEnvdUpgradePath(ctx, target, builtWithVersion, hostEnvdPath, getVersion)
+}
+
+// EnvdUpgradeTarget reads the live-upgrade target flag. Split from ResolveEnvdUpgrade so a
+// caller can test the cheap, in-memory gates before the resolver stats up to three paths and
+// execs the candidate binary for its version — work a resume that is going to be gated
+// anyway should not pay for.
+func EnvdUpgradeTarget(ctx context.Context, ff *Client) string {
+	return ff.StringFlag(ctx, EnvdUpgradeTargetFlag)
+}
+
+// EnvdUpgradeTargetDisabled reports whether a target value names no target at all. One
+// definition, shared with the resolver, so an early-out at the call site and the resolver's
+// own "off" answer cannot disagree about which values mean disabled.
+func EnvdUpgradeTargetDisabled(target string) bool {
+	return target == "" || target == envdUpgradeTargetOff
+}
+
+// ResolveEnvdOfflineUpgrade is the offline-swap analog of ResolveEnvdUpgrade
+// same pure decision, keyed on EnvdOfflineUpgradeTargetFlag so the
+// offline path ramps independently of the live one. builtWithVersion is the
+// snapshot's recorded envd version (there is no running envd at cold-boot swap
+// time), so — unlike the live path, which keys on the reported LiveEnvdVersion —
+// the built-with never advances across an upgrade and this resolver keeps
+// returning the same target on every resume until a re-pause re-bakes the
+// version (an accepted, idempotent per-resume re-fire).
+func ResolveEnvdOfflineUpgrade(
+	ctx context.Context,
+	ff *Client,
+	builtWithVersion string,
+	hostEnvdPath string,
+	getVersion func(context.Context, string) (string, error),
+	evalContexts ...ldcontext.Context,
+) (path, version, reason string) {
+	return resolveEnvdUpgradePath(ctx, ff.StringFlag(ctx, EnvdOfflineUpgradeTargetFlag, evalContexts...), builtWithVersion, hostEnvdPath, getVersion)
+}
+
+// resolveEnvdUpgradePath is the pure decision, split out so it can be unit-tested
+// without a LaunchDarkly client (the flag value is passed directly). It returns
+// the target path and its baked version, or ("", "", <reason>) for no upgrade.
+// envdUpgradeTargetRe constrains a concrete EnvdUpgradeTargetFlag value to a
+// bare version-ish identifier — a git SHA or a release name like v0.7.0. Dots
+// and hyphens are admitted, but no path separators and no leading dot, so the
+// value can't traverse out of the envd staging directory when joined into the
+// candidate path.
+var envdUpgradeTargetRe = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9.-]*$`)
+
+// envdUpgradeTargetOff is the flag value that names no target.
+const envdUpgradeTargetOff = "off"
+
+func resolveEnvdUpgradePath(
+	ctx context.Context,
+	target string,
+	builtWithVersion string,
+	hostEnvdPath string,
+	getVersion func(context.Context, string) (string, error),
+) (path, version, reason string) {
+	candidate, reason := EnvdUpgradeCandidate(target, hostEnvdPath)
+	if reason != "" {
+		return "", "", reason
+	}
+
+	targetVersion, err := getVersion(ctx, candidate)
+	if err != nil || targetVersion == "" {
+		return "", "", "getversion_failed"
+	}
+	if targetVersion == builtWithVersion {
+		return "", "", "same_version" // already on the target (idempotent re-resume)
+	}
+	// Upgrade only: refuse to swap in an older envd. A staged binary that is not
+	// strictly newer than the sandbox's built-with version would otherwise be a
+	// live downgrade on resume. (Rollback, if ever needed, must be an explicit
+	// separate mechanism.)
+	if newer, verr := utils.IsGTEVersion(targetVersion, builtWithVersion); verr != nil || !newer {
+		return "", "", "downgrade"
+	}
+
+	return candidate, targetVersion, ""
+}
+
+// EnvdUpgradeCandidate maps an upgrade-target flag value to the binary it names,
+// without probing it. Split out so the node-local binary cache can pre-warm the
+// path a resume will actually ask for: a target naming a concrete version resolves
+// to a staged sibling, not to hostEnvdPath, so warming hostEnvdPath alone leaves a
+// version-pinned ramp with no pre-warm at all while still paying for one.
+//
+// Returns ("", reason) when no upgrade applies -- the same reason strings
+// resolveEnvdUpgradePath reports -- and (candidate, "") when there is a binary to
+// probe. Everything past this point costs an exec of that binary, which is what
+// the caller may want to keep off its critical path.
+func EnvdUpgradeCandidate(target, hostEnvdPath string) (candidate, reason string) {
+	if EnvdUpgradeTargetDisabled(target) {
+		return "", "off"
+	}
+
+	switch target {
+	case "promoted":
+		candidate = hostEnvdPath
+	default:
+		// A concrete version id -> the staged binary next to the promoted one,
+		// in either layout: the flat "envd.<id>" sibling or the release
+		// bucket's "<id>/envd" directory. The flag value becomes both a
+		// filesystem path and an exec target (version probing runs
+		// `<candidate> -version`), so reject anything that isn't a bare
+		// identifier: a value with path separators (e.g. "../../bin/sh") would
+		// otherwise escape the staging directory and run an arbitrary host
+		// binary.
+		if !envdUpgradeTargetRe.MatchString(target) {
+			return "", "invalid_target"
+		}
+		dir := filepath.Dir(hostEnvdPath)
+		for _, c := range []string{filepath.Join(dir, "envd."+target), filepath.Join(dir, target, "envd")} {
+			if _, err := os.Stat(c); err == nil {
+				candidate = c
+
+				break
+			}
+		}
+	}
+
+	if candidate == "" {
+		// Not staged on this node in either layout — e.g. a bad target /
+		// rubbish flag value, or a node that has not fetched the target yet.
+		return "", "not_staged"
+	}
+
+	if _, err := os.Stat(candidate); err != nil {
+		// The promoted binary is absent (e.g. a version-free central mount
+		// with no unversioned object).
+		return "", "not_staged"
+	}
+
+	return candidate, ""
 }
 
 // defaultTrackedTemplates is the default map of template aliases tracked for metrics.

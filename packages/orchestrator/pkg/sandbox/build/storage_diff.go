@@ -23,6 +23,7 @@ import (
 const (
 	refreshCauseProactive        = "proactive"
 	refreshCausePeerTransitioned = "peer_transitioned"
+	refreshCauseZeroEntryMiss    = "zero_entry_miss"
 )
 
 // source carries the StorageDiff's current routing state. upstream is always
@@ -45,6 +46,21 @@ func isPeerRouted(v any) bool {
 	_, ok := v.(peerclient.PeerRouted)
 
 	return ok
+}
+
+// zeroEntryRefreshCause maps a size lookup that a zero Builds entry could not
+// answer to the cause of the header refresh that recovers it, or "" when the
+// error is not recoverable that way.
+func zeroEntryRefreshCause(err error) string {
+	var transErr *storage.PeerTransitionedError
+	switch {
+	case errors.Is(err, storage.ErrObjectNotExist):
+		return refreshCauseZeroEntryMiss
+	case errors.As(err, &transErr):
+		return refreshCausePeerTransitioned
+	default:
+		return ""
+	}
 }
 
 type StorageDiff struct {
@@ -144,10 +160,11 @@ func (b *File) createDiff(ctx context.Context, buildID uuid.UUID) (Diff, error) 
 	switch {
 	case hasEntry:
 		// bd.FrameData is per-mapping trimmed, not the ancestor's full table —
-		// don't latch it; first read will refresh. Exception: a zero bd is the
-		// LoadHeader backfill marker for an uncompressed V3-or-older ancestor;
-		// UncompressedFullFrameTable IS that ancestor's full table, latch it
-		// to skip a refresh whose header file may not exist.
+		// don't latch it; first read will refresh. Exception: a zero bd marks
+		// an uncompressed V3-or-older ancestor; UncompressedFullFrameTable IS
+		// that ancestor's full table, latch it to skip a refresh whose header
+		// file may not exist. If the mark proves false, the size lookup below
+		// recovers via the build's own header.
 		upstream, dataPath, err = b.openDataFile(ctx, buildID, bd.FrameData.CompressionType())
 		if err != nil {
 			return nil, err
@@ -158,10 +175,11 @@ func (b *File) createDiff(ctx context.Context, buildID uuid.UUID) (Diff, error) 
 		}
 
 	default:
-		// hasEntry=false implies a peer-served header (LoadHeader backfills
-		// missing entries for storage-loaded headers, so storage paths always
-		// hit one of the hasEntry cases). Probe basic-name to detect peer
-		// routing; on miss/transition refresh from storage.
+		// hasEntry=false: a peer-served incomplete header, or a V4+ header whose
+		// Builds section lost an ancestor (LoadHeader leaves the gap absent on
+		// purpose — see backfillMissingV3UncompressedBuilds). Probe basic-name to
+		// detect peer routing; otherwise refresh from storage to resolve the
+		// build's real path and frame table.
 		upstream, dataPath, err = b.openDataFile(ctx, buildID, storage.CompressionNone)
 		if err != nil {
 			return nil, err
@@ -206,6 +224,22 @@ func (b *File) createDiff(ctx context.Context, buildID uuid.UUID) (Diff, error) 
 
 	if size == 0 {
 		size, err = upstream.Size(ctx)
+		if cause := zeroEntryRefreshCause(err); hasEntry && initialFT == storage.UncompressedFullFrameTable && cause != "" {
+			// The zero entry claimed an uncompressed V3-era ancestor, but the
+			// basic-name object cannot answer: it does not exist, or the peer
+			// serving it is gone. Resolve the build's own header like the
+			// no-entry branch instead of failing every fault permanently.
+			loaded, lerr := refreshHeader(ctx, b.persistence, buildID, b.fileType, cause)
+			if lerr == nil {
+				upstream, size, initialFT, dataPath, err = openFromLoadedHeader(ctx, b.persistence, loaded, b.fileType)
+				if err == nil && size == 0 {
+					size, err = upstream.Size(ctx)
+				}
+			} else {
+				// Report why the recovery failed, not just the object miss.
+				err = errors.Join(err, lerr)
+			}
+		}
 		if err != nil {
 			return nil, fmt.Errorf("createDiff: size lookup for build %s: %w", buildID, err)
 		}

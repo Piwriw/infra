@@ -7,15 +7,6 @@ PROVIDER ?= gcp
 AWS_BUCKET_PREFIX ?= $(PREFIX)$(AWS_ACCOUNT_ID)-
 GCP_BUCKET_PREFIX ?= $(GCP_PROJECT_ID)-
 
-.PHONY: provider-login
-provider-login:
-	$(MAKE) -C iac/provider-$(PROVIDER) provider-login
-
-.PHONY: init
-init:
-	./scripts/confirm.sh $(TERRAFORM_ENVIRONMENT)
-	$(MAKE) -C iac/provider-$(PROVIDER) init
-
 # Setup production environment variables, this is used only for E2B.dev production
 # Uses Infisical CLI to read secrets from Infisical Vault
 # To update them, use the Infisical UI directly
@@ -23,50 +14,6 @@ init:
 .PHONY: download-prod-env
 download-prod-env:
 	@  ./scripts/download-prod-env.sh ${ENV}
-
-.PHONY: plan
-plan:
-	$(MAKE) -C iac/provider-$(PROVIDER) plan
-
-# Deploy all jobs in Nomad
-.PHONY: plan-only-jobs
-plan-only-jobs:
-	$(MAKE) -C iac/provider-$(PROVIDER) plan-only-jobs
-
-# Deploy a specific job name in Nomad
-# When job name is specified, all '-' are replaced with '_' in the job name
-.PHONY: plan-only-jobs/%
-plan-only-jobs/%:
-	$(MAKE) -C iac/provider-$(PROVIDER) plan-only-jobs/$(subst -,_,$(notdir $@))
-
-.PHONY: plan-without-jobs
-plan-without-jobs:
-	$(MAKE) -C iac/provider-$(PROVIDER) plan-without-jobs
-
-.PHONY: state-migrate
-state-migrate:
-	$(MAKE) -C iac/provider-$(PROVIDER) state-migrate
-
-.PHONY: apply-init
-apply-init:
-	$(MAKE) -C iac/provider-$(PROVIDER) apply-init
-
-.PHONY: apply
-apply:
-	./scripts/confirm.sh $(TERRAFORM_ENVIRONMENT)
-	$(MAKE) -C iac/provider-$(PROVIDER) apply
-
-# Shortcut to importing resources into Terraform state (e.g. after creating resources manually or switching between different branches for the same environment)
-.PHONY: import
-import:
-	./scripts/confirm.sh $(TERRAFORM_ENVIRONMENT)
-	$(MAKE) -C iac/provider-$(PROVIDER) import
-
-# Shortcut to moving resources in Terraform state
-.PHONY: move
-move:
-	./scripts/confirm.sh $(TERRAFORM_ENVIRONMENT)
-	$(MAKE) -C iac/provider-$(PROVIDER) move
 
 .PHONY: build
 build/%:
@@ -76,7 +23,6 @@ build/%:
 build-and-upload:build-and-upload/api
 build-and-upload:build-and-upload/client-proxy
 build-and-upload:build-and-upload/dashboard-api
-build-and-upload:build-and-upload/docker-reverse-proxy
 build-and-upload:build-and-upload/clean-nfs-cache
 build-and-upload:build-and-upload/orchestrator
 build-and-upload:build-and-upload/template-manager
@@ -105,30 +51,43 @@ ifeq ($(PROVIDER),aws)
 	mkdir -p ./.kernels
 	mkdir -p ./.firecrackers
 	mkdir -p ./.busybox
-	aws s3 cp s3://e2b-prod-public-builds/kernels/ ./.kernels/ --recursive --no-sign-request --endpoint-url https://storage.googleapis.com
-	aws s3 cp s3://e2b-prod-public-builds/firecrackers/ ./.firecrackers/ --recursive --no-sign-request --endpoint-url https://storage.googleapis.com
-	aws s3 cp s3://e2b-prod-public-builds/busybox/ ./.busybox/ --recursive --no-sign-request --endpoint-url https://storage.googleapis.com
+	aws s3 cp s3://e2b-artifact-binaries/kernels/ ./.kernels/ --recursive --no-sign-request --endpoint-url https://storage.googleapis.com
+	aws s3 cp s3://e2b-artifact-binaries/firecrackers/ ./.firecrackers/ --recursive --no-sign-request --endpoint-url https://storage.googleapis.com
+	aws s3 cp s3://e2b-artifact-binaries/busybox/ ./.busybox/ --recursive --no-sign-request --endpoint-url https://storage.googleapis.com
 	aws s3 cp ./.kernels/ s3://${AWS_BUCKET_PREFIX}fc-kernels/ --recursive --profile ${AWS_PROFILE}
 	aws s3 cp ./.firecrackers/ s3://${AWS_BUCKET_PREFIX}fc-versions/ --recursive --profile ${AWS_PROFILE}
 	aws s3 cp ./.busybox/ s3://${AWS_BUCKET_PREFIX}fc-busybox/ --recursive --profile ${AWS_PROFILE}
 	rm -rf ./.kernels
 	rm -rf ./.firecrackers
 	rm -rf ./.busybox
+else ifeq ($(PROVIDER),azure)
+	mkdir -p ./.kernels
+	mkdir -p ./.firecrackers
+	mkdir -p ./.busybox
+	gcloud storage cp -r "gs://e2b-artifact-binaries/kernels/*" ./.kernels/
+	gcloud storage cp -r "gs://e2b-artifact-binaries/firecrackers/*" ./.firecrackers/
+	gcloud storage cp -r "gs://e2b-artifact-binaries/busybox/*" ./.busybox/
+	az storage blob upload-batch --auth-mode login --overwrite --account-name $(AZURE_STORAGE_ACCOUNT_NAME) --destination fc-kernels --source ./.kernels
+	az storage blob upload-batch --auth-mode login --overwrite --account-name $(AZURE_STORAGE_ACCOUNT_NAME) --destination fc-versions --source ./.firecrackers
+	az storage blob upload-batch --auth-mode login --overwrite --account-name $(AZURE_STORAGE_ACCOUNT_NAME) --destination fc-busybox --source ./.busybox
+	rm -rf ./.kernels
+	rm -rf ./.firecrackers
+	rm -rf ./.busybox
 else
-	gsutil cp -r gs://e2b-prod-public-builds/kernels/* gs://$(GCP_BUCKET_PREFIX)fc-kernels/
-	gsutil cp -r gs://e2b-prod-public-builds/firecrackers/* gs://$(GCP_BUCKET_PREFIX)fc-versions/
-	gsutil cp -r gs://e2b-prod-public-builds/busybox/* gs://$(GCP_BUCKET_PREFIX)fc-busybox/
+	gsutil cp -r gs://e2b-artifact-binaries/kernels/* gs://$(GCP_BUCKET_PREFIX)fc-kernels/
+	gsutil cp -r gs://e2b-artifact-binaries/firecrackers/* gs://$(GCP_BUCKET_PREFIX)fc-versions/
+	gsutil cp -r gs://e2b-artifact-binaries/busybox/* gs://$(GCP_BUCKET_PREFIX)fc-busybox/
 endif
 
 .PHONY: download-public-kernels
 download-public-kernels:
 	mkdir -p ./packages/fc-kernels
-	gsutil cp -r gs://e2b-prod-public-builds/kernels/* ./packages/fc-kernels/
+	gsutil cp -r gs://e2b-artifact-binaries/kernels/* ./packages/fc-kernels/
 
 .PHONY: download-public-firecrackers
 download-public-firecrackers:
 	mkdir -p ./packages/fc-versions/builds/
-	gsutil -m cp -r gs://e2b-prod-public-builds/firecrackers/* ./packages/fc-versions/builds/
+	gsutil -m cp -r gs://e2b-artifact-binaries/firecrackers/* ./packages/fc-versions/builds/
 	find ./packages/fc-versions/builds/ -name firecracker -exec chmod +x {} \;
 
 .PHONY: generate
@@ -167,14 +126,6 @@ set-env:
 switch-env:
 	@ printf "Switching from `tput setaf 1``tput bold`$(shell cat .last_used_env)`tput sgr0` to `tput setaf 2``tput bold`$(ENV)`tput sgr0`\n\n"
 	$(MAKE) set-env ENV=$(ENV)
-	make -C iac/provider-$(PROVIDER) switch
-
-.PHONY: setup-ssh
-setup-ssh:
-	@ printf "Setting up SSH for env: `tput setaf 2``tput bold`$(ENV)`tput sgr0`\n"
-	@ gcloud compute config-ssh --remove
-	@ gcloud compute config-ssh --project $(GCP_PROJECT_ID) --quiet
-	@ printf "SSH setup complete\n"
 
 .PHONY: test
 test:
@@ -184,16 +135,11 @@ test:
 
 .PHONY: test-integration
 test-integration:
-	$(MAKE) -C tests/integration test
-
-.PHONY: connect-orchestrator
-connect-orchestrator:
-	$(MAKE) -C tests/integration connect-orchestrator
+	$(MAKE) -C tests/integration test-shard
 
 .PHONY: fmt
 fmt:
 	golangci-lint fmt
-	terraform fmt -recursive
 
 .PHONY: lint
 lint:
@@ -210,10 +156,3 @@ tidy:
 .PHONY: local-infra
 local-infra:
 	$(MAKE) -C packages/local-dev local-infra
-
-.PHONY: gcloud-ingress-dashboard
-gcloud-ingress-dashboard:
-ifndef INSTANCE
-	$(error usage: make gcloud-ingress-dashboard INSTANCE=<instance>)
-endif
-	gcloud compute ssh $(INSTANCE) -- -NL 8900:localhost:8900

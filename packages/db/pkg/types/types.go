@@ -85,13 +85,27 @@ type SandboxNetworkEgressConfig struct {
 const AllowPublicAccessDefault = true
 
 type SandboxNetworkIngressConfig struct {
-	AllowPublicAccess *bool   `json:"allowPublicAccess,omitempty"`
-	MaskRequestHost   *string `json:"maskRequestHost,omitempty"`
+	AllowPublicAccess *bool    `json:"allowPublicAccess,omitempty"`
+	MaskRequestHost   *string  `json:"maskRequestHost,omitempty"`
+	HTTPSPorts        []uint32 `json:"httpsPorts,omitempty"`
 }
 
 type SandboxNetworkConfig struct {
 	Egress  *SandboxNetworkEgressConfig  `json:"egress,omitempty"`
 	Ingress *SandboxNetworkIngressConfig `json:"ingress,omitempty"`
+}
+
+// HasEgressProxy reports whether a customer-supplied SOCKS5 egress proxy is
+// configured. The address is the single source of truth: credentials are
+// optional and are never set without it.
+func (c *SandboxNetworkConfig) HasEgressProxy() bool {
+	return c != nil && c.Egress != nil && c.Egress.EgressProxyAddress != ""
+}
+
+// HasEgressProxyAuth reports whether the egress proxy is configured with
+// RFC 1929 credentials.
+func (c *SandboxNetworkConfig) HasEgressProxyAuth() bool {
+	return c.HasEgressProxy() && c.Egress.EgressProxyUsername != ""
 }
 
 type SandboxVolumeMountConfig struct {
@@ -113,6 +127,21 @@ type SandboxAutoResumeConfig struct {
 	Timeout uint64                  `json:"timeout,omitempty"`
 }
 
+// SandboxIam is the sandbox workload identity configuration carried with the
+// sandbox. A nil value means workload identity is disabled.
+type SandboxIam struct {
+	// Tokens holds the named workload-token definitions, keyed by token name.
+	Tokens map[string]SandboxIamToken `json:"tokens,omitempty"`
+}
+
+// SandboxIamToken is a named workload-token definition. filePath is
+// intentionally not stored: only absent/null is accepted at admission, so there
+// is nothing to persist.
+type SandboxIamToken struct {
+	Audience  string `json:"audience"`
+	TokenType string `json:"tokenType"`
+}
+
 type PausedSandboxConfig struct {
 	Version      string                      `json:"version"`
 	Network      *SandboxNetworkConfig       `json:"network,omitempty"`
@@ -132,6 +161,12 @@ type PausedSandboxConfig struct {
 	// pause/resume cycle. Distinct from FilesystemOnly, which records the kind of
 	// *this* snapshot. Pre-existing rows omit the key and decode to false.
 	AutoPauseFilesystemOnly bool `json:"autoPauseFilesystemOnly,omitempty"`
+
+	// Iam preserves the sandbox workload identity configuration across
+	// pause/resume. A resumed sandbox gets a freshly generated execution ID, so
+	// any workload identity is rederived from the current execution rather than a
+	// stored subject. Pre-existing rows omit the key and decode to nil.
+	Iam *SandboxIam `json:"iam,omitempty"`
 }
 
 func (c PausedSandboxConfig) Value() (driver.Value, error) {

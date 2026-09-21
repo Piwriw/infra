@@ -111,6 +111,8 @@ func run() int {
 		RedisURL:         config.RedisURL,
 		RedisClusterURL:  config.RedisClusterURL,
 		RedisTLSCABase64: config.RedisTLSCABase64,
+		RedisTLSEnabled:  config.RedisTLSEnabled,
+		RedisPassword:    config.RedisPassword,
 		PoolSize:         config.RedisPoolSize,
 	})
 	if err != nil {
@@ -126,6 +128,7 @@ func run() int {
 	}()
 
 	catalog := e2bcatalog.NewRedisSandboxCatalog(redisClient)
+	orchestratorCatalog := e2bcatalog.NewRedisSandboxRoutingCatalog(redisClient)
 
 	info := &internal.ServiceInfo{}
 	info.SetStatus(ctx, internal.Healthy)
@@ -162,7 +165,9 @@ func run() int {
 		tel.MeterProvider,
 		serviceName,
 		config.ProxyPort,
+		config.OrchestratorProxyPort,
 		catalog,
+		orchestratorCatalog,
 		pausedSandboxResumer,
 		featureFlagsClient,
 	)

@@ -40,7 +40,20 @@ const (
 	reservedBlocksPercentage = int64(0)
 )
 
-func Make(ctx context.Context, rootfsPath string, sizeMb int64, blockSize int64) error {
+// e2fsck exit statuses are a bitmask (e2fsck(8), "EXIT CODE"); bits not
+// named here are always failures.
+const (
+	e2fsckErrorsCorrected   = 1
+	e2fsckRebootRecommended = 2
+)
+
+// MakeOptions carries the mkfs.ext4 choices that vary from build to build.
+type MakeOptions struct {
+	// DirIndex keeps the htree directory index mkfs.ext4 enables by default.
+	DirIndex bool
+}
+
+func Make(ctx context.Context, rootfsPath string, sizeMb int64, blockSize int64, opts MakeOptions) error {
 	ctx, tuneSpan := tracer.Start(ctx, "make-ext4")
 	defer tuneSpan.End()
 
@@ -48,26 +61,31 @@ func Make(ctx context.Context, rootfsPath string, sizeMb int64, blockSize int64)
 		return errors.New("block size must be greater than inodes ratio")
 	}
 
+	// Explicit feature list for the rootfs. Defaults (resize_inode, sparse_super,
+	// has_journal, metadata_csum) are kept; we toggle only what we want to add or
+	// strip below.
+	features := []string{
+		"^64bit",
+		"^dir_nlink",
+		"ext_attr",
+		"extent",
+		"extra_isize",
+		"filetype",
+		"flex_bg",
+		"huge_file",
+		// Pack file data <~160 B inside the inode to avoid a 4 KiB data block per tiny file.
+		"inline_data",
+		"large_file",
+		"sparse_super2",
+	}
+	if !opts.DirIndex {
+		// dir_index is a mkfs.ext4 base feature, so turning it off means stripping it.
+		features = append(features, "^dir_index")
+	}
+
 	cmd := exec.CommandContext(ctx,
 		"mkfs.ext4",
-		"-O", strings.Join([]string{
-			// Explicit feature list for the rootfs. Defaults (resize_inode,
-			// sparse_super, has_journal, metadata_csum) are kept; we toggle
-			// only what we want to add or strip below.
-			"^64bit",
-			"^dir_index",
-			"^dir_nlink",
-			"ext_attr",
-			"extent",
-			"extra_isize",
-			"filetype",
-			"flex_bg",
-			"huge_file",
-			// Pack file data <~160 B inside the inode to avoid a 4 KiB data block per tiny file.
-			"inline_data",
-			"large_file",
-			"sparse_super2",
-		}, ","),
+		"-O", strings.Join(features, ","),
 		"-b", strconv.FormatInt(blockSize, 10),
 		"-m", strconv.FormatInt(reservedBlocksPercentage, 10),
 		"-i", strconv.FormatInt(inodesRatio, 10),
@@ -245,24 +263,29 @@ func CheckIntegrity(ctx context.Context, rootfsPath string, fix bool) (out strin
 	}()
 
 	LogMetadata(ctx, rootfsPath)
-	accExitCode := 0
+	acceptedStatus := 0
 	args := "-nfv"
 	if fix {
-		// 0 - No errors
-		// 1 - File system errors corrected
-		// 2 - File system errors corrected, a system should be rebooted
-		accExitCode = 2
+		acceptedStatus = e2fsckErrorsCorrected | e2fsckRebootRecommended
 		args = "-pfv"
 	}
 	cmd := exec.CommandContext(ctx, "e2fsck", args, rootfsPath)
 	output, err := cmd.CombinedOutput()
-	if cmd.ProcessState != nil {
-		span.SetAttributes(attribute.Int("filesystem.e2fsck.exit_code", cmd.ProcessState.ExitCode()))
-	}
-	if err != nil {
-		exitCode := cmd.ProcessState.ExitCode()
 
-		if exitCode > accExitCode {
+	exitCode := -1
+	if cmd.ProcessState != nil {
+		exitCode = cmd.ProcessState.ExitCode()
+		span.SetAttributes(attribute.Int("filesystem.e2fsck.exit_code", exitCode))
+	}
+
+	if err != nil {
+		// Negative means e2fsck never ran to completion (failed to start or was
+		// signaled); an unchecked filesystem must not pass as healthy.
+		if exitCode < 0 {
+			return string(output), fmt.Errorf("error running e2fsck: %w\n%s", err, output)
+		}
+
+		if exitCode&^acceptedStatus != 0 {
 			return string(output), fmt.Errorf("error running e2fsck [exit %d]\n%s", exitCode, output)
 		}
 	}
@@ -294,24 +317,6 @@ func ReplayJournal(ctx context.Context, rootfsPath string) (out string, err erro
 	}
 
 	return strings.TrimSpace(string(output)), nil
-}
-
-func ReadFile(ctx context.Context, rootfsPath string, filePath string) (string, error) {
-	_, statSpan := tracer.Start(ctx, "ext4-read-file")
-	defer statSpan.End()
-
-	_, err := os.Lstat(rootfsPath)
-	if err != nil {
-		return "2", fmt.Errorf("rootfs file does not exist: %w", err)
-	}
-
-	cmd := exec.CommandContext(ctx, "debugfs", "-R", fmt.Sprintf("cat \"%s\"", filePath), rootfsPath)
-	out, err := cmd.Output()
-	if err != nil {
-		return "2", fmt.Errorf("error reading file %s: %w", filePath, err)
-	}
-
-	return string(out), nil
 }
 
 func RemoveFile(ctx context.Context, rootfsPath string, filePath string) error {

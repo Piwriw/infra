@@ -17,20 +17,20 @@ import (
 
 const nodeHealthCheckTimeout = time.Second * 2
 
-func (o *Orchestrator) connectToNode(ctx context.Context, discovered nodemanager.NomadServiceDiscovery) error {
+func (o *Orchestrator) connectToNode(ctx context.Context, discovered nodemanager.NodePlaneInstance) error {
 	ctx, childSpan := tracer.Start(ctx, "connect-to-node")
 	defer childSpan.End()
 
-	_, err, _ := o.connectGroup.Do(discovered.NomadNodeShortID, func() (any, error) {
+	_, err, _ := o.connectGroup.Do(discovered.WorkloadID, func() (any, error) {
 		// Re-check inside the singleflight to prevent race issues due to overwriting existing nodes in the map
-		if o.GetNodeByNomadShortID(discovered.NomadNodeShortID) != nil {
+		if o.GetNodeByWorkloadID(discovered.WorkloadID) != nil {
 			return nil, nil
 		}
 
 		connectCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), nodeConnectTimeout)
 		defer cancel()
 
-		orchestratorNode, err := nodemanager.New(connectCtx, o.tel.TracerProvider, o.tel.MeterProvider, discovered, o.featureFlagsClient)
+		orchestratorNode, err := nodemanager.New(connectCtx, o.tel.TracerProvider, o.tel.MeterProvider, discovered)
 		if err != nil {
 			return nil, err
 		}
@@ -43,9 +43,32 @@ func (o *Orchestrator) connectToNode(ctx context.Context, discovered nodemanager
 	return err
 }
 
+// registersClusterOrchestrators reports whether instances discovered through
+// the clusters registry of the given cluster may be registered as orchestrator
+// nodes.
+//
+// Unless the node discovery loop is disabled (see
+// localClusterOwnsOrchestrators), local-cluster orchestrators are owned by the
+// node discovery path (connectToNode), which identifies nodes by the ID they
+// report over the Info RPC. The local clusters registry only exists to find
+// template builders and identifies instances by their discovery item ID, so an
+// instance serving both roles — a single process started with
+// ORCHESTRATOR_SERVICES=orchestrator,template-manager, as in local dev — would
+// otherwise register twice under two different node IDs and have its capacity
+// and sandboxes counted twice.
+//
+// Remote clusters are always registered from their own registry.
+func (o *Orchestrator) registersClusterOrchestrators(clusterID uuid.UUID) bool {
+	return clusterID != consts.LocalClusterID || o.localClusterOwnsOrchestrators
+}
+
 func (o *Orchestrator) connectToClusterNode(ctx context.Context, cluster *clusters.Cluster, i *clusters.Instance) {
 	ctx, span := tracer.Start(ctx, "connect-to-cluster-node")
 	defer span.End()
+
+	if !o.registersClusterOrchestrators(cluster.ID) {
+		return
+	}
 
 	// connectGroup is keyed by scopedNodeID so that concurrent callers targeting
 	// the same cluster instance share a single dial attempt.
@@ -60,7 +83,7 @@ func (o *Orchestrator) connectToClusterNode(ctx context.Context, cluster *cluste
 		connectCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), nodeConnectTimeout)
 		defer cancel()
 
-		orchestratorNode, err := nodemanager.NewClusterNode(connectCtx, i.GetClient(), cluster.ID, cluster.SandboxDomain, i, o.featureFlagsClient)
+		orchestratorNode, err := nodemanager.NewClusterNode(connectCtx, i.GetClient(), cluster.ID, cluster.SandboxDomain, i)
 		if err != nil {
 			logger.L().Error(ctx, "Failed to create node", zap.Error(err))
 
@@ -100,18 +123,19 @@ func (o *Orchestrator) scopedNodeID(clusterID uuid.UUID, nodeID string) string {
 // because callers use it directly to dial the orchestrator gRPC server.
 //
 // (Name kept for blast-radius reasons; renaming touches >20 sites.)
-func (o *Orchestrator) listNomadNodes(ctx context.Context) ([]nodemanager.NomadServiceDiscovery, error) {
-	nodes, err := o.nodeDiscovery.ListNodes(ctx)
+func (o *Orchestrator) listNomadNodes(ctx context.Context) ([]nodemanager.NodePlaneInstance, error) {
+	instances, err := o.nodeDiscovery.ListInstances(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	result := make([]nodemanager.NomadServiceDiscovery, 0, len(nodes))
-	for _, n := range nodes {
-		result = append(result, nodemanager.NomadServiceDiscovery{
-			NomadNodeShortID:    n.ShortID,
-			OrchestratorAddress: n.OrchestratorAddress,
-			IPAddress:           n.IPAddress,
+	result := make([]nodemanager.NodePlaneInstance, 0, len(instances))
+	for _, i := range instances {
+		result = append(result, nodemanager.NodePlaneInstance{
+			WorkloadID:          i.WorkloadID,
+			OrchestratorAddress: i.Address(),
+			IPAddress:           i.IPAddress,
+			Backend:             i.Backend,
 		})
 	}
 
@@ -163,7 +187,12 @@ func (o *Orchestrator) getOrConnectNode(ctx context.Context, clusterID uuid.UUID
 		connectCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), cacheSyncTime)
 		defer cancel()
 
-		if clusterID == consts.LocalClusterID {
+		// The periodic loop already treats the local clusters registry as the
+		// only source of orchestrator nodes when it owns them; this path has to
+		// agree, or the same process registers twice — once under the node ID
+		// it reports over gRPC and once under its discovery item ID — and has
+		// its capacity and sandboxes counted twice.
+		if clusterID == consts.LocalClusterID && !o.localClusterOwnsOrchestrators {
 			o.discoverNomadNodes(connectCtx)
 		} else {
 			o.discoverClusterNode(connectCtx, clusterID)
@@ -192,11 +221,11 @@ func (o *Orchestrator) discoverNomadNodes(ctx context.Context) {
 	defer wg.Wait()
 
 	for _, n := range nomadNodes {
-		if o.GetNodeByNomadShortID(n.NomadNodeShortID) == nil {
+		if o.GetNodeByWorkloadID(n.WorkloadID) == nil {
 			wg.Go(func() {
 				if err := o.connectToNode(ctx, n); err != nil {
 					logger.L().Error(ctx, "Error connecting to Nomad node on demand",
-						zap.Error(err), zap.String("nomad_short_id", n.NomadNodeShortID))
+						zap.Error(err), zap.String("nomad_short_id", n.WorkloadID))
 				}
 			})
 		}
@@ -245,9 +274,9 @@ func (o *Orchestrator) GetClusterNodes(clusterID uuid.UUID) []*nodemanager.Node 
 }
 
 // Deprecated: use GetNode instead
-func (o *Orchestrator) GetNodeByNomadShortID(id string) *nodemanager.Node {
+func (o *Orchestrator) GetNodeByWorkloadID(id string) *nodemanager.Node {
 	for _, n := range o.nodes.Items() {
-		if n.NomadNodeShortID == id {
+		if n.WorkloadID == id {
 			return n
 		}
 	}

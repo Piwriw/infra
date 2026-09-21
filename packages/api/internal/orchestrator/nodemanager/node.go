@@ -16,32 +16,54 @@ import (
 	"github.com/e2b-dev/infra/packages/api/internal/api"
 	"github.com/e2b-dev/infra/packages/api/internal/clusters"
 	"github.com/e2b-dev/infra/packages/shared/pkg/consts"
-	"github.com/e2b-dev/infra/packages/shared/pkg/featureflags"
 	"github.com/e2b-dev/infra/packages/shared/pkg/logger"
 	"github.com/e2b-dev/infra/packages/shared/pkg/machineinfo"
 	"github.com/e2b-dev/infra/packages/shared/pkg/smap"
 )
 
-const UnknownNomadNodeShortID = "unknown"
+// nodeSource is the discovery source a node came from. The zero value is
+// deliberately invalid: a node has to say where it came from, rather than
+// having it inferred from whichever identity field happens to be unset.
+type nodeSource uint8
 
-type NomadServiceDiscovery struct {
-	NomadNodeShortID string
+const (
+	sourceUnset nodeSource = iota
+	sourceNodePlane
+	sourceClusterRegistry
+)
+
+type NodePlaneInstance struct {
+	WorkloadID string
 
 	OrchestratorAddress string
 	IPAddress           string
+	Backend             string
 }
 
 type Node struct {
-	// Deprecated
-	NomadNodeShortID string
+	source nodeSource
+
+	// WorkloadID is set only by the node plane; the cluster registry keys on
+	// the machine instead.
+	WorkloadID string
 
 	ID            string
 	ClusterID     uuid.UUID
 	IPAddress     string
 	SandboxDomain *string
 
+	// Backend is the discovery lister this node was found through.
+	Backend string
+
 	client *clusters.GRPCClient
 	status StatusInfo
+
+	// unreachableSince is the time of the first local observation of a full
+	// sync-cycle failure against this node, cleared by the next successful
+	// cycle. Deliberately separate from status: a node whose orchestrator
+	// answers the sync and self-reports Unhealthy is responsive, and must not
+	// count as unreachable.
+	unreachableSince time.Time
 
 	metrics   Metrics
 	metricsMu sync.RWMutex
@@ -52,9 +74,6 @@ type Node struct {
 
 	PlacementMetrics PlacementMetrics
 
-	// featureflags is the feature flags client for feature flag checks
-	featureflags *featureflags.Client
-
 	mutex sync.RWMutex
 }
 
@@ -62,8 +81,7 @@ func New(
 	ctx context.Context,
 	tracerProvider trace.TracerProvider,
 	meterProvider metric.MeterProvider,
-	discoveredNode NomadServiceDiscovery,
-	ff *featureflags.Client,
+	discoveredNode NodePlaneInstance,
 ) (*Node, error) {
 	client, err := NewClient(tracerProvider, meterProvider, discoveredNode.OrchestratorAddress)
 	if err != nil {
@@ -96,11 +114,13 @@ func New(
 	}
 
 	n := &Node{
-		NomadNodeShortID: discoveredNode.NomadNodeShortID,
-		ClusterID:        consts.LocalClusterID,
-		ID:               nodeInfo.GetNodeId(),
-		IPAddress:        discoveredNode.IPAddress,
-		SandboxDomain:    nil,
+		source:        sourceNodePlane,
+		WorkloadID:    discoveredNode.WorkloadID,
+		ClusterID:     consts.LocalClusterID,
+		ID:            nodeInfo.GetNodeId(),
+		IPAddress:     discoveredNode.IPAddress,
+		SandboxDomain: nil,
+		Backend:       discoveredNode.Backend,
 
 		client: client,
 		status: StatusInfo{Status: nodeStatus, ChangedAt: nodeStatusChangedAt},
@@ -111,8 +131,6 @@ func New(
 			createSuccess:       atomic.Uint64{},
 			createFails:         atomic.Uint64{},
 		},
-
-		featureflags: ff,
 	}
 
 	n.UpdateMetricsFromServiceInfoResponse(nodeInfo)
@@ -122,7 +140,7 @@ func New(
 	return n, nil
 }
 
-func NewClusterNode(ctx context.Context, client *clusters.GRPCClient, clusterID uuid.UUID, sandboxDomain *string, i *clusters.Instance, ff *featureflags.Client) (*Node, error) {
+func NewClusterNode(ctx context.Context, client *clusters.GRPCClient, clusterID uuid.UUID, sandboxDomain *string, i *clusters.Instance) (*Node, error) {
 	info := i.GetInfo()
 	status, ok := OrchestratorToApiNodeStateMapper[info.Status]
 	if !ok {
@@ -137,9 +155,10 @@ func NewClusterNode(ctx context.Context, client *clusters.GRPCClient, clusterID 
 	}
 
 	n := &Node{
-		NomadNodeShortID: UnknownNomadNodeShortID,
-		ClusterID:        clusterID,
-		ID:               i.NodeID,
+		source:    sourceClusterRegistry,
+		ClusterID: clusterID,
+		Backend:   i.Backend,
+		ID:        i.NodeID,
 		// API control-plane calls still use the cluster gRPC proxy, but edge/client
 		// proxies need the node IP address for data-plane sandbox traffic.
 		IPAddress:     i.LocalIPAddress,
@@ -150,10 +169,9 @@ func NewClusterNode(ctx context.Context, client *clusters.GRPCClient, clusterID 
 			createFails:         atomic.Uint64{},
 		},
 
-		client:       client,
-		status:       StatusInfo{Status: status, ChangedAt: info.StatusChangedAt},
-		meta:         nodeMetadata,
-		featureflags: ff,
+		client: client,
+		status: StatusInfo{Status: status, ChangedAt: info.StatusChangedAt},
+		meta:   nodeMetadata,
 	}
 
 	nodeClient, ctx := n.GetClient(ctx)
@@ -172,7 +190,7 @@ func NewClusterNode(ctx context.Context, client *clusters.GRPCClient, clusterID 
 }
 
 func (n *Node) Close(ctx context.Context) error {
-	if n.IsNomadManaged() {
+	if n.DiscoveredByNodePlane() {
 		logger.L().Info(ctx, "Closing local node", logger.WithNodeID(n.ID))
 		if err := n.client.Close(); err != nil {
 			logger.L().Error(ctx, "Error closing client to node", zap.Error(err), logger.WithNodeID(n.ID))
@@ -190,19 +208,18 @@ func (n *Node) GetClient(ctx context.Context) (*clusters.GRPCClient, context.Con
 	return n.client, ctx
 }
 
-func (n *Node) IsNomadManaged() bool {
-	return n.NomadNodeShortID != UnknownNomadNodeShortID
+// DiscoveredByNodePlane reports whether the node came from the node-plane
+// listing rather than the cluster registry. Only the node plane can validate
+// membership against a fresh listing, so only it may evict on absence.
+func (n *Node) DiscoveredByNodePlane() bool {
+	return n.source == sourceNodePlane
 }
 
 func (n *Node) IsClusterNode() bool {
 	return n.ClusterID != consts.LocalClusterID
 }
 
-func (n *Node) OptimisticAdd(ctx context.Context, res SandboxResources) {
-	if n.featureflags != nil && !n.featureflags.BoolFlag(ctx, featureflags.OptimisticResourceAccountingFlag) {
-		return
-	}
-
+func (n *Node) OptimisticAdd(res SandboxResources) {
 	n.metricsMu.Lock()
 	defer n.metricsMu.Unlock()
 
@@ -212,10 +229,6 @@ func (n *Node) OptimisticAdd(ctx context.Context, res SandboxResources) {
 }
 
 func (n *Node) OptimisticRemove(ctx context.Context, res SandboxResources) {
-	if n.featureflags != nil && !n.featureflags.BoolFlag(ctx, featureflags.OptimisticResourceAccountingFlag) {
-		return
-	}
-
 	n.metricsMu.Lock()
 	defer n.metricsMu.Unlock()
 

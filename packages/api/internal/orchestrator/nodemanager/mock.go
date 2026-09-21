@@ -2,6 +2,7 @@ package nodemanager
 
 import (
 	"context"
+	"errors"
 	"math/rand"
 	"sync/atomic"
 	"time"
@@ -9,10 +10,10 @@ import (
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/e2b-dev/infra/packages/api/internal/api"
 	"github.com/e2b-dev/infra/packages/api/internal/clusters"
-	"github.com/e2b-dev/infra/packages/shared/pkg/featureflags"
 	"github.com/e2b-dev/infra/packages/shared/pkg/grpc/orchestrator"
 	infogrpc "github.com/e2b-dev/infra/packages/shared/pkg/grpc/orchestrator-info"
 	templatemanager "github.com/e2b-dev/infra/packages/shared/pkg/grpc/template-manager"
@@ -27,14 +28,84 @@ type mockInfoClient struct {
 	infogrpc.InfoServiceClient
 }
 
+// ServiceInfo is a mock implementation that answers as a healthy orchestrator.
+func (n *mockInfoClient) ServiceInfo(_ context.Context, _ *emptypb.Empty, _ ...grpc.CallOption) (*infogrpc.ServiceInfoResponse, error) {
+	return &infogrpc.ServiceInfoResponse{
+		NodeId:        "mock-node",
+		ServiceId:     "mock-instance",
+		ServiceStatus: infogrpc.ServiceInfoStatus_Healthy,
+	}, nil
+}
+
+// mockSandboxClientFailingList fails the sandbox list call. This is how a live
+// node fails a sync while still proving it is reachable: ServiceInfo answers
+// and only the list call errors.
+type mockSandboxClientFailingList struct {
+	orchestrator.SandboxServiceClient
+}
+
+func (n *mockSandboxClientFailingList) List(_ context.Context, _ *emptypb.Empty, _ ...grpc.CallOption) (*orchestrator.SandboxListResponse, error) {
+	return nil, errors.New("listing sandboxes failed")
+}
+
+// WithFailingSandboxList makes the node answer ServiceInfo but fail every
+// sandbox list call.
+func WithFailingSandboxList() TestOptions {
+	return func(node *TestNode) {
+		node.client.Sandbox = &mockSandboxClientFailingList{}
+	}
+}
+
+// mockInfoClientSilent never answers, standing in for a node this replica
+// genuinely cannot reach.
+type mockInfoClientSilent struct {
+	infogrpc.InfoServiceClient
+}
+
+func (n *mockInfoClientSilent) ServiceInfo(_ context.Context, _ *emptypb.Empty, _ ...grpc.CallOption) (*infogrpc.ServiceInfoResponse, error) {
+	return nil, errors.New("unreachable")
+}
+
+// WithSilentInfoClient makes every ServiceInfo call fail.
+func WithSilentInfoClient() TestOptions {
+	return func(node *TestNode) {
+		node.client.Info = &mockInfoClientSilent{}
+	}
+}
+
 // mockSandboxClient implements orchestrator.SandboxServiceClient
 type mockSandboxClient struct {
 	orchestrator.SandboxServiceClient
 }
 
-// Create is a mock implementation that always returns success
-func (n *mockSandboxClient) Create(_ context.Context, _ *orchestrator.SandboxCreateRequest, _ ...grpc.CallOption) (*orchestrator.SandboxCreateResponse, error) {
+// MockResolvedFirecrackerVersion is the resolved version the default mock
+// Create echoes — deliberately distinct from any declared build version in
+// the tests, so assertions can prove the record stores the ECHO rather than
+// silently keeping the declared value.
+const MockResolvedFirecrackerVersion = "v1.14-9.9.9"
+
+// Create is a mock implementation that always returns success, echoing the
+// filesystem-boot demand and the resolved Firecracker version like a current
+// orchestrator build.
+func (n *mockSandboxClient) Create(_ context.Context, req *orchestrator.SandboxCreateRequest, _ ...grpc.CallOption) (*orchestrator.SandboxCreateResponse, error) {
+	return &orchestrator.SandboxCreateResponse{
+		FilesystemBootApplied:      req.GetFilesystemBoot(),
+		ResolvedFirecrackerVersion: MockResolvedFirecrackerVersion,
+	}, nil
+}
+
+// mockLegacySandboxClient mimics an orchestrator that predates the
+// filesystem_boot field: it succeeds but never echoes the applied boot path.
+type mockLegacySandboxClient struct {
+	orchestrator.SandboxServiceClient
+}
+
+func (n *mockLegacySandboxClient) Create(_ context.Context, _ *orchestrator.SandboxCreateRequest, _ ...grpc.CallOption) (*orchestrator.SandboxCreateResponse, error) {
 	return &orchestrator.SandboxCreateResponse{}, nil
+}
+
+func (n *mockLegacySandboxClient) Delete(_ context.Context, _ *orchestrator.SandboxDeleteRequest, _ ...grpc.CallOption) (*emptypb.Empty, error) {
+	return &emptypb.Empty{}, nil
 }
 
 // mockTemplateClient implements templatemanager.TemplateServiceClient
@@ -73,6 +144,12 @@ func newMockGRPCClient() *clusters.GRPCClient {
 
 type TestOptions func(node *TestNode)
 
+func WithLegacySandboxClient() TestOptions {
+	return func(node *TestNode) {
+		node.client.Sandbox = &mockLegacySandboxClient{}
+	}
+}
+
 func WithSandboxSleepingClient(baseSandboxCreateTime time.Duration) TestOptions {
 	return func(node *TestNode) {
 		node.client.Sandbox = &mockSandboxClientWithSleep{
@@ -86,6 +163,13 @@ func WithCPUInfo(cpuArch, cpuFamily, cpuModel string) TestOptions {
 		node.machineInfo.CPUArchitecture = cpuArch
 		node.machineInfo.CPUFamily = cpuFamily
 		node.machineInfo.CPUModel = cpuModel
+	}
+}
+
+// WithOrchestratorVersion sets the orchestrator release the test node reports.
+func WithOrchestratorVersion(version string) TestOptions {
+	return func(node *TestNode) {
+		node.meta.Version = version
 	}
 }
 
@@ -117,13 +201,6 @@ func WithSandboxCreateError(err error) TestOptions {
 		node.client.Sandbox = &mockSandboxClientWithError{
 			err: err,
 		}
-	}
-}
-
-// WithFeatureFlags sets a custom feature flags client for the test node
-func WithFeatureFlags(ff *featureflags.Client) TestOptions {
-	return func(node *TestNode) {
-		node.featureflags = ff
 	}
 }
 

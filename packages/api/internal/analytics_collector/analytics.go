@@ -22,6 +22,12 @@ const (
 
 	infraVersionKey = "infra_version"
 	infraVersion    = "v1"
+
+	// duplicates the team group key: PostHog is not promoting $groups.team to $group_0
+	teamIDKey = "team_id"
+
+	jsSDKUserAgentPrefix     = "e2b-js-sdk/"
+	pythonSDKUserAgentPrefix = "e2b-python-sdk/"
 )
 
 type PosthogClient struct {
@@ -75,7 +81,7 @@ func (p *PosthogClient) CreateAnalyticsTeamEvent(ctx context.Context, teamID, ev
 	err := p.client.Enqueue(posthog.Capture{
 		DistinctId: placeholderTeamGroupUser,
 		Event:      event,
-		Properties: properties.Set(infraVersionKey, infraVersion),
+		Properties: properties.Set(infraVersionKey, infraVersion).Set(teamIDKey, teamID),
 		Groups: posthog.NewGroups().
 			Set("team", teamID),
 	})
@@ -88,7 +94,7 @@ func (p *PosthogClient) CreateAnalyticsUserEvent(ctx context.Context, userID str
 	err := p.client.Enqueue(posthog.Capture{
 		DistinctId: userID,
 		Event:      event,
-		Properties: properties.Set(infraVersionKey, infraVersion),
+		Properties: properties.Set(infraVersionKey, infraVersion).Set(teamIDKey, teamID),
 		Groups: posthog.NewGroups().
 			Set("team", teamID),
 	})
@@ -111,5 +117,41 @@ func (p *PosthogClient) GetPackageToPosthogProperties(header *http.Header) posth
 		Set("sdk_runtime", header.Get("sdk_runtime")).
 		Set("system", header.Get("system"))
 
+	if userAgent := header.Get("User-Agent"); userAgent != "" {
+		properties = properties.Set("user_agent", userAgent)
+
+		if name, version, ok := integrationFromUserAgent(userAgent); ok {
+			properties = properties.
+				Set("integration", name).
+				Set("integration_version", version)
+		}
+	}
+
 	return properties
+}
+
+// integrationFromUserAgent extracts the integration wrapping the E2B SDK from
+// a User-Agent like "e2b-js-sdk/1.2.3 e2b-cli/1.0.5": the first "name/version"
+// token following an SDK token. Requiring the SDK token first prevents
+// misreading browser User-Agents (e.g. "Mozilla/5.0 ...") as integrations.
+func integrationFromUserAgent(userAgent string) (name, version string, ok bool) {
+	sawSDK := false
+
+	for token := range strings.FieldsSeq(userAgent) {
+		if strings.HasPrefix(token, jsSDKUserAgentPrefix) || strings.HasPrefix(token, pythonSDKUserAgentPrefix) {
+			sawSDK = true
+
+			continue
+		}
+
+		if !sawSDK {
+			continue
+		}
+
+		if name, version, found := strings.Cut(token, "/"); found && name != "" && version != "" {
+			return name, version, true
+		}
+	}
+
+	return "", "", false
 }

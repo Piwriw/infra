@@ -12,6 +12,7 @@ import "github.com/e2b-dev/infra/packages/api/internal/sandbox/sandboxtypes"
 // Domain types.
 type (
 	Sandbox     = sandboxtypes.Sandbox
+	NodeSandbox = sandboxtypes.NodeSandbox
 	State       = sandboxtypes.State
 	StateAction = sandboxtypes.StateAction
 	KillReason  = sandboxtypes.KillReason
@@ -22,6 +23,7 @@ type (
 	InvalidStateTransitionError = sandboxtypes.InvalidStateTransitionError
 	LimitExceededError          = sandboxtypes.LimitExceededError
 	NotRunningError             = sandboxtypes.NotRunningError
+	PauseQueueExhaustedError    = sandboxtypes.PauseQueueExhaustedError
 )
 
 // State constants.
@@ -52,6 +54,8 @@ var (
 	ErrNotFound           = sandboxtypes.ErrNotFound
 	ErrEvictionInProgress = sandboxtypes.ErrEvictionInProgress
 	ErrEvictionNotNeeded  = sandboxtypes.ErrEvictionNotNeeded
+	ErrExecutionMismatch  = sandboxtypes.ErrExecutionMismatch
+	ErrTransitionRestored = sandboxtypes.ErrTransitionRestored
 
 	AllowedTransitions = sandboxtypes.AllowedTransitions
 

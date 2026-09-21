@@ -137,7 +137,6 @@ func run() int {
 	authDB, err := authdb.NewClient(
 		ctx,
 		config.AuthDBConnectionString,
-		config.AuthDBReadReplicaConnectionString,
 		pool.WithMaxConnections(8),
 	)
 	if err != nil {
@@ -175,6 +174,8 @@ func run() int {
 		RedisURL:         config.RedisURL,
 		RedisClusterURL:  config.RedisClusterURL,
 		RedisTLSCABase64: config.RedisTLSCABase64,
+		RedisTLSEnabled:  config.RedisTLSEnabled,
+		RedisPassword:    config.RedisPassword,
 	})
 	if err != nil {
 		l.Error(ctx, "Initializing Redis client", zap.Error(err))
@@ -218,7 +219,7 @@ func run() int {
 
 	identityService, err := identity.NewService(
 		map[string]identity.Directory{oryIssuer: oryDirectory},
-		identity.NewQueriesLinkage(authDB.Write),
+		identity.NewQueriesLinkage(authDB.Queries),
 	)
 	if err != nil {
 		l.Error(ctx, "Initializing identity service", zap.Error(err))
@@ -247,16 +248,29 @@ func run() int {
 	}
 	swagger.Servers = nil
 
+	adminVerifier, err := sharedauth.NewJWKSVerifier(ctx, config.AdminAuthProvider, authClient)
+	if err != nil {
+		l.Error(ctx, "initializing admin JWT verifier", zap.Error(err))
+
+		return 1
+	}
+
+	if adminVerifier == nil {
+		l.Warn(ctx, "ADMIN_AUTH_PROVIDER_CONFIG is not configured; /v1/management endpoints will reject requests with 401")
+	}
+
 	authenticationFunc := sharedauth.CreateAuthenticationFunc(
 		[]sharedauth.Authenticator{
+			sharedauth.NewApiKeyAuthenticator(apiStore.GetTeamFromAPIKey),
 			sharedauth.NewAdminApiKeyAuthenticator(config.AdminToken),
+			sharedauth.NewAdminJWTAuthenticator(adminVerifier),
 			sharedauth.NewAuthProviderBearerAuthenticator(apiStore.GetUserIDFromAuthProviderToken),
 			sharedauth.NewAuthProviderTeamAuthenticator(apiStore.GetTeamFromAuthProviderToken),
 		},
 		nil,
 	)
 
-	s := newHTTPServer(config.Port, l, tel, swagger, authenticationFunc, apiStore)
+	s := newHTTPServer(config.Port, l, tel, swagger, authenticationFunc, featureFlags, apiStore)
 
 	signalCtx, sigCancel := signal.NotifyContext(ctx, syscall.SIGTERM, syscall.SIGINT)
 	defer sigCancel()
@@ -297,7 +311,8 @@ func newHTTPServer(
 	tel *telemetry.Client,
 	swagger *openapi3.T,
 	authenticationFunc openapi3filter.AuthenticationFunc,
-	apiStore *handlers.APIStore,
+	featureFlags *featureflags.Client,
+	store api.ServerInterface,
 ) *http.Server {
 	r := gin.New()
 	r.Use(gin.Recovery())
@@ -309,6 +324,7 @@ func newHTTPServer(
 		"Content-Length",
 		"Content-Type",
 		sharedauth.HeaderAuthorization,
+		sharedauth.HeaderAPIKey,
 		sharedauth.HeaderAdminToken,
 		sharedauth.HeaderTeamID,
 	}
@@ -366,9 +382,10 @@ func newHTTPServer(
 			}),
 	)
 
+	r.Use(dashboardmiddleware.DisableLegacyTeamMutations(featureFlags))
 	r.Use(dashboardmiddleware.EnforceBlockedTeam())
 
-	api.RegisterHandlers(r, apiStore)
+	api.RegisterHandlers(r, store)
 
 	s := &http.Server{
 		Handler:           r,

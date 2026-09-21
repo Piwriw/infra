@@ -7,10 +7,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -37,12 +39,15 @@ import (
 	"github.com/e2b-dev/infra/packages/orchestrator/pkg/template/build/config"
 	"github.com/e2b-dev/infra/packages/orchestrator/pkg/template/build/metrics"
 	artifactsregistry "github.com/e2b-dev/infra/packages/shared/pkg/artifacts-registry"
+	"github.com/e2b-dev/infra/packages/shared/pkg/consts"
 	"github.com/e2b-dev/infra/packages/shared/pkg/dockerhub"
+	"github.com/e2b-dev/infra/packages/shared/pkg/fcversion"
 	"github.com/e2b-dev/infra/packages/shared/pkg/featureflags"
 	"github.com/e2b-dev/infra/packages/shared/pkg/logger"
 	sbxlogger "github.com/e2b-dev/infra/packages/shared/pkg/logger/sandbox"
 	"github.com/e2b-dev/infra/packages/shared/pkg/storage"
 	"github.com/e2b-dev/infra/packages/shared/pkg/templates"
+	"github.com/e2b-dev/infra/packages/shared/pkg/utils"
 )
 
 const (
@@ -90,6 +95,7 @@ func TestSmokeAllFCVersions(t *testing.T) { //nolint:paralleltest // subtests sh
 					VCpuCount:          2,
 					MemoryMB:           512,
 					DiskSizeMB:         512,
+					FreeDiskSizeMB:     512,
 					HugePages:          true,
 					KernelVersion:      featureflags.DefaultKernelVersion,
 					FirecrackerVersion: fcVersion,
@@ -141,6 +147,11 @@ func TestSmokeAllFCVersions(t *testing.T) { //nolint:paralleltest // subtests sh
 			require.NoError(t, err, "resume failed for FC %s", fcVersion)
 			t.Logf("resumed in %s", time.Since(t0))
 
+			// Phase 3: freeze and thaw the live guest rootfs. (envd readiness
+			// is already guaranteed: ResumeSandbox runs WaitForEnvd before
+			// returning unless SkipEnvdWait is set.)
+			assertFsFreezeQuiescesRootfs(t, ctx, sbx, token)
+
 			sbx.Close(context.WithoutCancel(ctx))
 		})
 	}
@@ -158,8 +169,8 @@ type testInfra struct {
 
 func (ti *testInfra) close(ctx context.Context) {
 	cleanCtx := context.WithoutCancel(ctx)
-	for i := len(ti.closers) - 1; i >= 0; i-- {
-		ti.closers[i](cleanCtx)
+	for _, closer := range slices.Backward(ti.closers) {
+		closer(cleanCtx)
 	}
 }
 
@@ -236,7 +247,7 @@ func newTestInfra(t *testing.T, ctx context.Context) *testInfra {
 	ti.closers = append(ti.closers, func(ctx context.Context) { sandboxProxy.Close(ctx) })
 
 	// Factory + Builder
-	factory := sandbox.NewFactory(orcConfig.BuilderConfig, networkPool, devicePool, flags, hoststats.NewNoopDelivery(), cgroup.NewNoopManager(), network.NewNoopEgressProxy(), sandbox.NoopNetworkAssignHook{}, sandboxes)
+	factory := sandbox.NewFactory(ctx, orcConfig.BuilderConfig, networkPool, devicePool, flags, hoststats.NewNoopDelivery(), cgroup.NewNoopManager(), network.NewNoopEgressProxy(), sandbox.NoopNetworkAssignHook{}, sandboxes)
 	ti.factory = factory
 
 	buildMetrics, _ := metrics.NewBuildMetrics(noop.MeterProvider{})
@@ -261,6 +272,15 @@ func checkPrerequisites(t *testing.T) {
 
 	if _, err := os.Stat("/dev/kvm"); err != nil {
 		t.Skip("/dev/kvm not available")
+	}
+
+	// Firecracker host assets, shipped with the orchestrator host image.
+	builderConfig, err := cfg.ParseBuilder()
+	require.NoError(t, err)
+
+	busybox := filepath.Join(builderConfig.HostBusyboxDir, builderConfig.BusyboxVersion, runtime.GOARCH, "busybox")
+	if _, err := os.Stat(busybox); err != nil {
+		t.Skipf("busybox binary %q not available; set HOST_BUSYBOX_DIR/BUSYBOX_VERSION", busybox)
 	}
 }
 
@@ -308,14 +328,19 @@ func findOrBuildEnvd(t *testing.T) string {
 func locateEnvdSource(t *testing.T) string {
 	t.Helper()
 
-	// Walk up from the test directory to find packages/envd
 	wd, err := os.Getwd()
 	require.NoError(t, err)
 
+	// The monorepo keeps envd at go/oss/envd, the public layout at
+	// packages/envd.
+	layouts := [][]string{{"go", "oss", "envd"}, {"packages", "envd"}}
+
 	for dir := wd; dir != "/"; dir = filepath.Dir(dir) {
-		candidate := filepath.Join(dir, "packages", "envd", "main.go")
-		if _, err := os.Stat(candidate); err == nil {
-			return filepath.Join(dir, "packages", "envd")
+		for _, layout := range layouts {
+			candidate := filepath.Join(append([]string{dir}, layout...)...)
+			if _, err := os.Stat(filepath.Join(candidate, "main.go")); err == nil {
+				return candidate
+			}
 		}
 	}
 
@@ -326,10 +351,10 @@ func locateEnvdSource(t *testing.T) string {
 
 func setupLocalDirs(t *testing.T, dataDir string) {
 	t.Helper()
-	for _, d := range []string{"kernels", "templates", "sandbox", "orchestrator", "snapshot-cache", "fc-versions", "build-cache"} {
+	for _, d := range []string{"kernels", "templates", "sandbox", "orchestrator", "fc-versions", "build-cache"} {
 		require.NoError(t, os.MkdirAll(filepath.Join(dataDir, d), 0o755))
 	}
-	for _, d := range []string{"build", "build-templates", "sandbox", "snapshot-cache", "template"} {
+	for _, d := range []string{"build", "build-templates", "sandbox", "template"} {
 		require.NoError(t, os.MkdirAll(filepath.Join(dataDir, "orchestrator", d), 0o755))
 	}
 }
@@ -353,9 +378,7 @@ func setupEnvVars(t *testing.T, dataDir, envdPath string) {
 		"LOCAL_BUILD_CACHE_STORAGE_BASE_PATH": abs(filepath.Join(dataDir, "build-cache")),
 		"ORCHESTRATOR_BASE_PATH":              abs(filepath.Join(dataDir, "orchestrator")),
 		"SANDBOX_DIR":                         abs(filepath.Join(dataDir, "sandbox")),
-		"SNAPSHOT_CACHE_DIR":                  abs(filepath.Join(dataDir, "snapshot-cache")),
 		"STORAGE_PROVIDER":                    "Local",
-		"USE_LOCAL_NAMESPACE_STORAGE":         "true",
 	}
 
 	for k, v := range vars {
@@ -368,12 +391,31 @@ func setupEnvVars(t *testing.T, dataDir, envdPath string) {
 func downloadKernel(t *testing.T, dataDir string) {
 	t.Helper()
 	dst := filepath.Join(dataDir, "kernels", featureflags.DefaultKernelVersion, artifact.KernelFileName)
-	url := fmt.Sprintf("https://storage.googleapis.com/e2b-prod-public-builds/kernels/%s/%s", featureflags.DefaultKernelVersion, artifact.KernelFileName)
+	url := fmt.Sprintf("https://storage.googleapis.com/e2b-artifact-binaries/kernels/%s/%s", featureflags.DefaultKernelVersion, artifact.KernelFileName)
 	downloadFile(t, url, dst, 0o644)
 }
 
 func downloadFC(t *testing.T, dataDir, version string) {
 	t.Helper()
+
+	dst := filepath.Join(dataDir, "fc-versions", version, artifact.FirecrackerBinaryName)
+
+	// e2b-format releases (vX.Y-a.b.c) are published by the release pipeline
+	// to the public artifact bucket — the corresponding GitHub release
+	// holding the same assets is private, so the bucket is the only
+	// unauthenticated source. Fetch the HOST's arch (the bucket carries
+	// amd64 and arm64) into the arch path that setupFC/the fc config
+	// resolve first.
+	if info, err := fcversion.New(version); err == nil {
+		if _, isE2B := info.E2BVersion(); isE2B {
+			arch := utils.TargetArch()
+			archDst := filepath.Join(dataDir, "fc-versions", version, arch, artifact.FirecrackerBinaryName)
+			url := fmt.Sprintf("https://storage.googleapis.com/e2b-artifact-binaries/firecrackers/%s/%s/firecracker", version, arch)
+			downloadFile(t, url, archDst, 0o755)
+
+			return
+		}
+	}
 
 	// Old releases in https://github.com/e2b-dev/fc-versions/releases don't build
 	// x86_64 and aarch64 binaries. They just build the former and the asset's name
@@ -384,7 +426,6 @@ func downloadFC(t *testing.T, dataDir, version string) {
 		assetName = artifact.FirecrackerBinaryName
 	}
 
-	dst := filepath.Join(dataDir, "fc-versions", version, artifact.FirecrackerBinaryName)
 	url := fmt.Sprintf("https://github.com/e2b-dev/fc-versions/releases/download/%s/%s", version, assetName)
 	downloadFile(t, url, dst, 0o755)
 }
@@ -416,4 +457,234 @@ func downloadFile(t *testing.T, url, dst string, perm os.FileMode) {
 
 	_, err = io.Copy(f, resp.Body)
 	require.NoError(t, err)
+}
+
+// --- fsfreeze ---------------------------------------------------------------
+
+const (
+	// rootfsProbeDir is on the guest root filesystem — the one /fsfreeze
+	// quiesces. /tmp can be a separate tmpfs, which freezing the rootfs would not
+	// touch, so probes have to target the rootfs to observe anything.
+	rootfsProbeDir = "/var/tmp"
+
+	// frozenWriteWindow is how long a write is given to prove it is blocked. A
+	// write to a frozen filesystem blocks until thaw, so any completion at all
+	// means the freeze did not take; the wait only has to outlast an unblocked
+	// write.
+	frozenWriteWindow = 3 * time.Second
+
+	// thawedWriteTimeout bounds that same write once thawed.
+	thawedWriteTimeout = 60 * time.Second
+
+	envdRequestTimeout = 30 * time.Second
+)
+
+// assertFsFreezeQuiescesRootfs drives envd's /fsfreeze and /fsthaw against the
+// live guest and checks the property the filesystem-only pause rests on: freezing
+// does not merely flush the rootfs, it stops writes, so nothing can be
+// acknowledged between the flush and the VM pause.
+//
+// It reaches envd at the sandbox slot IP, the way the orchestrator does. The
+// sandbox proxy does not route control-plane routes, so this is the only side
+// from which they can be driven — which is why the assertion lives here rather
+// than in the integration suite.
+//
+// Writes and reads go through envd's public file API, so a blocked write is
+// observed exactly as a caller would experience one. That envd serves them at all
+// while its own root filesystem is frozen is the other half of the claim: it is
+// what lets envd answer the thaw on the pause-failure rollback path.
+func assertFsFreezeQuiescesRootfs(t *testing.T, ctx context.Context, sbx *sandbox.Sandbox, accessToken string) {
+	t.Helper()
+
+	assertFsFreezeQuiescesRootfsAt(t, ctx, fmt.Sprintf("http://%s:%d", sbx.Slot.HostIPString(), consts.DefaultEnvdServerPort), accessToken)
+}
+
+// assertFsFreezeQuiescesRootfsAt is the body of assertFsFreezeQuiescesRootfs
+// against an arbitrary envd address, so the probe's own control flow — detecting
+// a write that never returns, and releasing it on every exit path — is testable
+// without a guest. See fsfreeze_probe_test.go.
+func assertFsFreezeQuiescesRootfsAt(t *testing.T, ctx context.Context, envdURL, accessToken string) {
+	t.Helper()
+
+	// Outlasts the blocked write so the client does not give up before the thaw
+	// releases it, which would look like a completion.
+	client := &http.Client{Timeout: thawedWriteTimeout + envdRequestTimeout}
+
+	// The pre-freeze write retries transport errors: the first call after a
+	// snapshot resume can be reset by the guest. Every observed CI failure
+	// was a read-phase reset (the handshake completed, then the connection
+	// died) on this first call, while envd itself was up — the resume's own
+	// /init, on its own connection, had already succeeded. Production
+	// tolerates this window because its first-contact paths retry; a
+	// one-shot client turned it into a flake. The frozen write below must
+	// NOT retry — blocking is its assertion.
+	readable := rootfsProbeDir + "/smoke-before-freeze"
+	status, err := retryTransportErrors(ctx, envdRequestTimeout, func() (int, error) {
+		return writeGuestFile(ctx, client, envdURL, accessToken, readable, "before freeze")
+	})
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, status, "a rootfs write should succeed before the freeze")
+
+	status, err = postEnvd(ctx, client, envdURL, accessToken, "/fsfreeze")
+	require.NoError(t, err)
+	require.Equal(t, http.StatusNoContent, status, "freezing the guest rootfs should succeed")
+
+	// A write to a frozen filesystem blocks in the kernel and cannot be
+	// interrupted, so it is left running and collected after the thaw. Closing
+	// after the send lets the cleanup below wait on the same channel whether or
+	// not the body already collected the result.
+	blocked := make(chan int, 1)
+
+	go func() {
+		defer close(blocked)
+
+		blockedStatus, blockedErr := writeGuestFile(ctx, client, envdURL, accessToken, rootfsProbeDir+"/smoke-while-frozen", "released by thaw")
+		if blockedErr != nil {
+			t.Logf("write released by the thaw failed: %v", blockedErr)
+		}
+
+		blocked <- blockedStatus
+	}()
+
+	thawed := false
+
+	defer func() {
+		// However this exits, leave the rootfs writable: sbx.Close has to tear
+		// down a VM whose filesystem is not wedged.
+		//
+		// On its own context, because the reason for the exit may well be that ctx
+		// was cancelled — a thaw that gives up because the deadline already passed
+		// is the one case that strands a frozen guest.
+		if !thawed {
+			cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), envdRequestTimeout)
+			defer cancel()
+
+			if _, err := postEnvd(cleanupCtx, client, envdURL, accessToken, "/fsthaw"); err != nil {
+				t.Errorf("thawing the guest rootfs during cleanup failed: %v", err)
+			}
+		}
+
+		select {
+		case <-blocked:
+		case <-time.After(thawedWriteTimeout):
+			t.Error("the write blocked by the freeze never completed after the thaw")
+		}
+	}()
+
+	select {
+	case blockedStatus := <-blocked:
+		t.Fatalf("a write to the frozen rootfs completed with HTTP %d; the freeze did not take", blockedStatus)
+	case <-time.After(frozenWriteWindow):
+	}
+
+	// Reads are unaffected — freezing is a write barrier — and serving this at all
+	// shows envd is still responsive with its own filesystem frozen. This read is
+	// forced onto a FRESH dial (the client's only pooled connection is held by
+	// the blocked write above), making it the next-most-exposed call after the
+	// pre-freeze write, so it retries the same way; reads are idempotent. The
+	// freeze/thaw POSTs are deliberately not retried: they reuse pooled
+	// connections, no observed failure has ever hit anything but the first
+	// post-resume call, and blindly retrying a state-flipping POST is unsound
+	// (a lost-response retry can observe its own success as an error).
+	status, err = retryTransportErrors(ctx, envdRequestTimeout, func() (int, error) {
+		return readGuestFile(ctx, client, envdURL, accessToken, readable)
+	})
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, status, "reads should still work while the rootfs is frozen")
+
+	status, err = postEnvd(ctx, client, envdURL, accessToken, "/fsthaw")
+	require.NoError(t, err)
+	require.Equal(t, http.StatusNoContent, status, "thawing the guest rootfs should succeed")
+
+	thawed = true
+
+	select {
+	case blockedStatus := <-blocked:
+		require.Equal(t, http.StatusOK, blockedStatus, "the write blocked by the freeze should succeed once thawed")
+	case <-time.After(thawedWriteTimeout):
+		t.Fatal("the write blocked by the freeze did not complete after the thaw")
+	}
+}
+
+// postEnvd calls one of envd's control routes. These are the calls the sandbox
+// proxy refuses; reaching envd directly at the slot IP is the orchestrator's own
+// path to them.
+//
+// Kept free of testing assertions so it is safe to call from a goroutine.
+func postEnvd(ctx context.Context, client *http.Client, envdURL, accessToken, route string) (int, error) {
+	reqCtx, cancel := context.WithTimeout(ctx, envdRequestTimeout)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(reqCtx, http.MethodPost, envdURL+route, http.NoBody)
+	if err != nil {
+		return 0, err
+	}
+
+	return doEnvd(client, req, accessToken)
+}
+
+// retryTransportErrors reruns an envd call while it fails at the transport
+// layer, for up to budget. Immediately after a snapshot resume the guest can
+// reset connections it has already accepted: every observed CI failure was a
+// read-phase reset (handshake completed, so NOT a dial-phase stale-tuple
+// refusal) on the first call after a resume, never on a later one. Retrying
+// past that window is how production's first-contact paths cross it. Use
+// only for calls that are safe to rerun.
+func retryTransportErrors(ctx context.Context, budget time.Duration, call func() (int, error)) (int, error) {
+	deadline := time.Now().Add(budget)
+	for {
+		status, err := call()
+		if err == nil || time.Now().After(deadline) || ctx.Err() != nil {
+			return status, err
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
+}
+
+// writeGuestFile uploads content to path on the guest as root, through envd's
+// public file API. Writing as root keeps the probe off any assumption about which
+// unprivileged user a template ships.
+func writeGuestFile(ctx context.Context, client *http.Client, envdURL, accessToken, path, content string) (int, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, envdURL+"/files?"+guestFileQuery(path), strings.NewReader(content))
+	if err != nil {
+		return 0, err
+	}
+
+	// envd takes the body verbatim only for application/octet-stream; anything
+	// else is parsed as multipart.
+	req.Header.Set("Content-Type", "application/octet-stream")
+
+	return doEnvd(client, req, accessToken)
+}
+
+func readGuestFile(ctx context.Context, client *http.Client, envdURL, accessToken, path string) (int, error) {
+	reqCtx, cancel := context.WithTimeout(ctx, envdRequestTimeout)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(reqCtx, http.MethodGet, envdURL+"/files?"+guestFileQuery(path), http.NoBody)
+	if err != nil {
+		return 0, err
+	}
+
+	return doEnvd(client, req, accessToken)
+}
+
+func guestFileQuery(path string) string {
+	return url.Values{"path": {path}, "username": {"root"}}.Encode()
+}
+
+func doEnvd(client *http.Client, req *http.Request, accessToken string) (int, error) {
+	req.Header.Set("X-Access-Token", accessToken)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return 0, err
+	}
+	defer resp.Body.Close()
+
+	// Drain so the connection can be reused; the guest is on the other side of a
+	// freeze and connections are not free.
+	_, _ = io.Copy(io.Discard, resp.Body)
+
+	return resp.StatusCode, nil
 }

@@ -21,11 +21,13 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/e2b-dev/infra/packages/api/internal/api"
-	"github.com/e2b-dev/infra/packages/api/internal/orchestrator/discovery"
+	"github.com/e2b-dev/infra/packages/api/internal/clusters"
 	"github.com/e2b-dev/infra/packages/api/internal/orchestrator/nodemanager"
 	"github.com/e2b-dev/infra/packages/shared/pkg/consts"
 	infogrpc "github.com/e2b-dev/infra/packages/shared/pkg/grpc/orchestrator-info"
 	"github.com/e2b-dev/infra/packages/shared/pkg/logger"
+	"github.com/e2b-dev/infra/packages/shared/pkg/servicediscovery"
+	"github.com/e2b-dev/infra/packages/shared/pkg/servicediscovery/nomad"
 	"github.com/e2b-dev/infra/packages/shared/pkg/smap"
 	"github.com/e2b-dev/infra/packages/shared/pkg/telemetry"
 )
@@ -34,7 +36,7 @@ import (
 // needed for node lookup / discovery tests. Production fields (sandboxStore,
 // analytics, redis, etc.) are left nil because the code paths under test never
 // touch them.
-func newTestOrchestrator(t *testing.T, nomad *nomadapi.Client) *Orchestrator {
+func newTestOrchestrator(t *testing.T, nomadClient *nomadapi.Client) *Orchestrator {
 	t.Helper()
 
 	ctx := t.Context()
@@ -42,7 +44,7 @@ func newTestOrchestrator(t *testing.T, nomad *nomadapi.Client) *Orchestrator {
 
 	return &Orchestrator{
 		nodes:         smap.New[*nodemanager.Node](),
-		nodeDiscovery: discovery.NewNomad(nomad, []string{"orchestrator"}),
+		nodeDiscovery: nomad.NewServices(nomadClient, []string{"orchestrator"}),
 		tel:           telemetry.NewNoopClient(),
 	}
 }
@@ -77,17 +79,12 @@ func (s *fakeInfoServer) ServiceInfo(context.Context, *emptypb.Empty) (*infogrpc
 	}, nil
 }
 
-// startFakeOrchestratorGRPC starts a gRPC server that responds to ServiceInfo
-// requests. When addr is empty it listens on an ephemeral port; otherwise it
-// binds to the given address (e.g. "127.0.0.1:5008").
-func startFakeOrchestratorGRPC(t *testing.T, nodeID string, addr string) {
+// startFakeOrchestratorGRPC starts a fake ServiceInfo server on an ephemeral
+// port and returns it; a fixed port flakes on shared runners.
+func startFakeOrchestratorGRPC(t *testing.T, nodeID string) int {
 	t.Helper()
 
-	if addr == "" {
-		addr = "127.0.0.1:0"
-	}
-
-	lis, err := (&net.ListenConfig{}).Listen(t.Context(), "tcp", addr)
+	lis, err := (&net.ListenConfig{}).Listen(t.Context(), "tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 
 	srv := grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
@@ -95,6 +92,8 @@ func startFakeOrchestratorGRPC(t *testing.T, nodeID string, addr string) {
 
 	go srv.Serve(lis)
 	t.Cleanup(srv.GracefulStop)
+
+	return lis.Addr().(*net.TCPAddr).Port
 }
 
 // TestGetOrConnectNode_CacheHit verifies that when a node is already in the
@@ -225,7 +224,7 @@ func TestGetOrConnectNode_ConcurrentCacheMiss_SharesDiscovery(t *testing.T) {
 }
 
 // TestConnectToNode_SingleflightDedup verifies that concurrent connectToNode
-// calls for the same NomadNodeShortID share a single connection attempt
+// calls for the same WorkloadID share a single connection attempt
 func TestConnectToNode_SingleflightDedup(t *testing.T) {
 	t.Parallel()
 
@@ -233,8 +232,8 @@ func TestConnectToNode_SingleflightDedup(t *testing.T) {
 
 	// grpc.NewClient is lazy — it returns immediately — and nodemanager.New
 	// then fails at the ServiceInfo RPC call
-	discovery := nodemanager.NomadServiceDiscovery{
-		NomadNodeShortID:    "abcdef12",
+	discovery := nodemanager.NodePlaneInstance{
+		WorkloadID:          "abcdef12",
 		OrchestratorAddress: "127.0.0.1:1",
 		IPAddress:           "127.0.0.1",
 	}
@@ -267,21 +266,16 @@ func TestConnectToNode_SingleflightDedup(t *testing.T) {
 //  3. This API instance has NOT yet synced (node is absent from o.nodes).
 //  4. A handler calls getOrConnectNode for a sandbox on that node.
 //
-// The fake gRPC server listens on consts.OrchestratorAPIPort, matching the
-// port carried by the mocked service registration.
+// The fake gRPC server and the mocked service registration share an ephemeral
+// port, so nomad discovery dials the right listener.
 func TestGetOrConnectNode_CacheMiss_DiscoversAndConnects(t *testing.T) {
 	t.Parallel()
 
 	orchestratorNodeID := "orch-node-42"
 	nomadFullID := "aabbccdd11223344aabbccdd11223344aabbccdd"
 
-	// 1. Start a fake gRPC server on consts.OrchestratorAPIPort so that the
-	//    address built by listNomadNodes matches our listener.
-	listenAddr := fmt.Sprintf("127.0.0.1:%d", consts.OrchestratorAPIPort)
-	startFakeOrchestratorGRPC(t, orchestratorNodeID, listenAddr)
+	port := startFakeOrchestratorGRPC(t, orchestratorNodeID)
 
-	// 2. Mock Nomad HTTP API returning a single service registration at
-	//    127.0.0.1.
 	nomadClient := newNomadMock(t, func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/v1/service/orchestrator" {
 			resp := []*nomadapi.ServiceRegistration{
@@ -290,7 +284,7 @@ func TestGetOrConnectNode_CacheMiss_DiscoversAndConnects(t *testing.T) {
 					ServiceName: "orchestrator",
 					NodeID:      nomadFullID,
 					Address:     "127.0.0.1",
-					Port:        int(consts.OrchestratorAPIPort),
+					Port:        port,
 				},
 			}
 			w.Header().Set("Content-Type", "application/json")
@@ -312,7 +306,8 @@ func TestGetOrConnectNode_CacheMiss_DiscoversAndConnects(t *testing.T) {
 	node := o.getOrConnectNode(t.Context(), consts.LocalClusterID, orchestratorNodeID)
 	require.NotNil(t, node, "getOrConnectNode must discover and connect the node via Nomad")
 	assert.Equal(t, orchestratorNodeID, node.ID)
-	assert.Equal(t, nomadFullID[:consts.NodeIDLength], node.NomadNodeShortID)
+	assert.Equal(t, nomadFullID[:consts.NodeIDLength], node.WorkloadID)
+	assert.Equal(t, servicediscovery.BackendNomad, node.Backend, "the discovering backend's platform must reach the node catalog")
 }
 
 // TestRegisterNode_NoDuplicates verifies that registerNode is idempotent
@@ -335,4 +330,171 @@ func TestRegisterNode_NoDuplicates(t *testing.T) {
 
 	wg.Wait()
 	assert.Equal(t, 5, o.nodes.Count())
+}
+
+// TestRegistersClusterOrchestrators covers which discovery path owns
+// orchestrator nodes. Local-cluster instances are owned by the node discovery
+// path (connectToNode) and must not be registered a second time from the
+// clusters registry — except when the node discovery loop is disabled
+// (ENVIRONMENT=local), where the clusters registry is the only source of
+// orchestrator nodes and skipping it would leave the API with zero nodes.
+func TestRegistersClusterOrchestrators(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name                          string
+		clusterID                     uuid.UUID
+		localClusterOwnsOrchestrators bool
+		want                          bool
+	}{
+		{
+			name:                          "local cluster with node discovery running",
+			clusterID:                     consts.LocalClusterID,
+			localClusterOwnsOrchestrators: false,
+			want:                          false,
+		},
+		{
+			name:                          "local cluster without node discovery",
+			clusterID:                     consts.LocalClusterID,
+			localClusterOwnsOrchestrators: true,
+			want:                          true,
+		},
+		{
+			name:                          "remote cluster with node discovery running",
+			clusterID:                     uuid.New(),
+			localClusterOwnsOrchestrators: false,
+			want:                          true,
+		},
+		{
+			name:                          "remote cluster without node discovery",
+			clusterID:                     uuid.New(),
+			localClusterOwnsOrchestrators: true,
+			want:                          true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			o := newTestOrchestrator(t, nil)
+			o.localClusterOwnsOrchestrators = tt.localClusterOwnsOrchestrators
+
+			assert.Equal(t, tt.want, o.registersClusterOrchestrators(tt.clusterID))
+		})
+	}
+}
+
+// TestConnectToClusterNode_SkipsLocalCluster verifies that the ownership check
+// short-circuits connectToClusterNode before it touches the instance. The nil
+// instance is intentional: it makes a regression to unconditional registration
+// fail loudly instead of silently duplicating the node.
+func TestConnectToClusterNode_SkipsLocalCluster(t *testing.T) {
+	t.Parallel()
+
+	o := newTestOrchestrator(t, nil)
+	o.localClusterOwnsOrchestrators = false
+
+	o.connectToClusterNode(t.Context(), &clusters.Cluster{ID: consts.LocalClusterID}, nil)
+
+	assert.Zero(t, o.nodes.Count())
+}
+
+// fixedDiscovery returns a canned instance list, so a test can drive the node
+// plane with a backend value the Nomad listers cannot produce.
+type fixedDiscovery struct {
+	instances []servicediscovery.Instance
+}
+
+func (d *fixedDiscovery) ListInstances(context.Context) ([]servicediscovery.Instance, error) {
+	return d.instances, nil
+}
+
+func (d *fixedDiscovery) Start(context.Context) {}
+
+func (d *fixedDiscovery) Stop(context.Context) {}
+
+// Both hops of the tag — discovered instance to node-plane instance, and that
+// to the catalog node — are satisfied by a constant while the only test driving
+// them discovers through Nomad. Hardcoding "nomad" at either site was green.
+func TestGetOrConnectNode_CarriesTheDiscoveryBackendToTheCatalog(t *testing.T) {
+	t.Parallel()
+
+	for name, platform := range map[string]string{
+		"nomad":      servicediscovery.BackendNomad,
+		"kubernetes": servicediscovery.BackendKubernetes,
+	} {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			nodeID := "orch-" + name
+			port := startFakeOrchestratorGRPC(t, nodeID)
+
+			o := &Orchestrator{
+				nodes: smap.New[*nodemanager.Node](),
+				nodeDiscovery: &fixedDiscovery{instances: []servicediscovery.Instance{{
+					WorkloadID: "workload-" + name,
+					IPAddress:  "127.0.0.1",
+					Port:       uint16(port),
+					Backend:    platform,
+				}}},
+				tel: telemetry.NewNoopClient(),
+			}
+
+			node := o.getOrConnectNode(t.Context(), consts.LocalClusterID, nodeID)
+			require.NotNil(t, node)
+			assert.Equal(t, platform, node.Backend)
+		})
+	}
+}
+
+// countingDiscovery records whether the node plane was consulted.
+type countingDiscovery struct {
+	calls atomic.Int64
+}
+
+func (d *countingDiscovery) ListInstances(context.Context) ([]servicediscovery.Instance, error) {
+	d.calls.Add(1)
+
+	return nil, nil
+}
+
+func (d *countingDiscovery) Start(context.Context) {}
+
+func (d *countingDiscovery) Stop(context.Context) {}
+
+// When the local clusters registry owns orchestrator nodes, the on-demand path
+// must not also discover them through the node plane. Both would register the
+// same process — once under the node ID it reports over gRPC, once under its
+// discovery item ID — and its capacity and sandboxes would count twice. The
+// periodic loop already honours this; the on-demand path used to be a no-op
+// only because the node plane happened to fail in a local environment.
+func TestGetOrConnectNode_LocalRegistryOwnershipSkipsTheNodePlane(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]struct {
+		registryOwns bool
+		wantCalls    int64
+	}{
+		"registry owns orchestrators: the node plane is not consulted": {registryOwns: true, wantCalls: 0},
+		"registry does not own them: the node plane is":                {registryOwns: false, wantCalls: 1},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			discovery := &countingDiscovery{}
+			o := &Orchestrator{
+				nodes:                         smap.New[*nodemanager.Node](),
+				nodeDiscovery:                 discovery,
+				clusters:                      clusters.NewTestPool(),
+				localClusterOwnsOrchestrators: tt.registryOwns,
+			}
+
+			o.getOrConnectNode(t.Context(), consts.LocalClusterID, "absent-node")
+
+			assert.Equal(t, tt.wantCalls, discovery.calls.Load())
+		})
+	}
 }

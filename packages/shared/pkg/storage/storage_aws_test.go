@@ -321,7 +321,7 @@ func (b *s3TestBackend) object(t *testing.T, client *s3.Client, key string) *aws
 
 	t.Cleanup(func() {
 		// t.Context() is done by cleanup time; use a fresh one.
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		ctx, cancel := context.WithTimeout(context.WithoutCancel(t.Context()), 30*time.Second)
 		defer cancel()
 		if err := obj.Delete(ctx); err != nil {
 			t.Logf("cleanup: failed to delete s3://%s/%s: %v", b.bucket, key, err)
@@ -679,4 +679,14 @@ func TestS3UncompressedStoreFile(t *testing.T) {
 	_, err = obj.WriteTo(t.Context(), &got)
 	require.NoError(t, err)
 	require.Equal(t, sha256.Sum256(data), sha256.Sum256(got.Bytes()))
+}
+
+func TestAWSDeleteObjectsWithPrefixRejectsEmptyPrefix(t *testing.T) {
+	t.Parallel()
+
+	s := &awsStorage{bucketName: "test-bucket"}
+
+	err := s.DeleteObjectsWithPrefix(t.Context(), "")
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "empty prefix")
 }

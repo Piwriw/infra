@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"slices"
 	"time"
 
 	"github.com/google/uuid"
@@ -15,7 +14,6 @@ import (
 	"github.com/e2b-dev/infra/packages/api/internal/sandbox/sandboxtypes"
 	"github.com/e2b-dev/infra/packages/shared/pkg/logger"
 	redis_utils "github.com/e2b-dev/infra/packages/shared/pkg/redis"
-	"github.com/e2b-dev/infra/packages/shared/pkg/utils"
 )
 
 // Add stores a sandbox in Redis atomically with its team index entry.
@@ -121,60 +119,34 @@ func (s *Storage) Remove(ctx context.Context, teamID uuid.UUID, sandboxID string
 	return nil
 }
 
-// TeamItems retrieves sandboxes for a specific team, filtered by states and options
+// TeamItems retrieves sandboxes for a specific team, filtered by states (all
+// states when empty).
+//
+// The team index is read with SSCAN and the records fetched in MGET batches of
+// sandboxScanBatchSize, which caps each command's work and reply size
+// regardless of how many sandboxes the team has.
+//
+// This is not a consistent snapshot, and neither was reading the whole index
+// at once: records removed between the index read and the record fetch are
+// skipped, and SSCAN may emit a member twice, which scannedItems drops.
+// Callers already sort the result and treat it as best effort.
 func (s *Storage) TeamItems(ctx context.Context, teamID uuid.UUID, states []sandboxtypes.State) ([]sandboxtypes.Sandbox, error) {
-	// Get sandbox IDs from team index
-	teamKey := GetSandboxStorageTeamIndexKey(teamID.String())
-	sandboxIDs, err := s.redisClient.SMembers(ctx, teamKey).Result()
+	items := newScannedItems(states)
+
+	err := s.forEachTeamSandboxBatch(ctx, teamID.String(), func(_ string, batch []sandboxtypes.Sandbox) error {
+		items.add(batch)
+
+		return nil
+	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to get sandbox IDs from team index: %w", err)
+		return nil, err
 	}
 
-	if len(sandboxIDs) == 0 {
+	if items.out == nil {
 		return []sandboxtypes.Sandbox{}, nil
 	}
 
-	// Build keys and batch fetch with MGET
-	team := teamID.String()
-	keys := utils.Map(sandboxIDs, func(id string) string {
-		return getSandboxKey(team, id)
-	})
-
-	results, err := s.redisClient.MGet(ctx, keys...).Result()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get sandboxes from Redis: %w", err)
-	}
-
-	// Deserialize and filter
-	var sandboxes []sandboxtypes.Sandbox
-	for _, rawResult := range results {
-		if rawResult == nil {
-			continue // Stale index entry - sandbox was deleted
-		}
-
-		var sbx sandboxtypes.Sandbox
-		result, ok := rawResult.(string)
-		if !ok {
-			logger.L().Error(ctx, "Invalid sandbox data type in Redis")
-
-			continue
-		}
-
-		if err := json.Unmarshal([]byte(result), &sbx); err != nil {
-			logger.L().Error(ctx, "Failed to unmarshal sandbox", zap.Error(err))
-
-			continue
-		}
-
-		// Filter by state if states are specified
-		if len(states) > 0 && !slices.Contains(states, sbx.State) {
-			continue
-		}
-
-		sandboxes = append(sandboxes, sbx)
-	}
-
-	return sandboxes, nil
+	return items.out, nil
 }
 
 // Update modifies a sandbox atomically

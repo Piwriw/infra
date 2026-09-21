@@ -42,13 +42,6 @@ func main() {
 
 	teamUUID := uuid.New()
 
-	accessToken, err := keys.GenerateKey(keys.AccessTokenPrefix)
-	if err != nil {
-		fmt.Println("Error generating access token:", err)
-
-		return
-	}
-
 	teamAPIKey, err := keys.GenerateKey(keys.ApiKeyPrefix)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
@@ -60,7 +53,6 @@ func main() {
 	fmt.Println("Seeding database with:")
 	fmt.Printf("  Email: %s\n", email)
 	fmt.Printf("  Team ID: %s\n", teamUUID)
-	fmt.Printf("  Access Token: %s\n", accessToken.PrefixedRawValue)
 	fmt.Printf("  Team API Key: %s\n", teamAPIKey.PrefixedRawValue)
 	fmt.Println()
 
@@ -71,7 +63,7 @@ func main() {
 	}
 	defer db.Close()
 
-	authDb, err := authdb.NewClient(ctx, connectionString, connectionString)
+	authDb, err := authdb.NewClient(ctx, connectionString)
 	if err != nil {
 		panic(err)
 	}
@@ -140,7 +132,7 @@ VALUES ($1, $2)
 		panic(err)
 	}
 
-	err = authDb.Write.UpsertPublicUser(ctx, userID)
+	err = authDb.UpsertPublicUser(ctx, userID)
 	if err != nil {
 		panic(err)
 	}
@@ -163,32 +155,6 @@ VALUES ($1, $2, $3)
 		panic(err)
 	}
 
-	// Create access token
-	tokenWithoutPrefix := strings.TrimPrefix(accessToken.PrefixedRawValue, keys.AccessTokenPrefix)
-	accessTokenBytes, err := hex.DecodeString(tokenWithoutPrefix)
-	if err != nil {
-		panic(err)
-	}
-	accessTokenHash := hasher.Hash(accessTokenBytes)
-	accessTokenMask, err := keys.MaskKey(keys.AccessTokenPrefix, tokenWithoutPrefix)
-	if err != nil {
-		panic(err)
-	}
-	_, err = authDb.Write.CreateAccessToken(
-		ctx, authqueries.CreateAccessTokenParams{
-			ID:                    uuid.New(),
-			UserID:                userID,
-			AccessTokenHash:       accessTokenHash,
-			AccessTokenPrefix:     accessTokenMask.Prefix,
-			AccessTokenLength:     int32(accessTokenMask.ValueLength),
-			AccessTokenMaskPrefix: accessTokenMask.MaskedValuePrefix,
-			AccessTokenMaskSuffix: accessTokenMask.MaskedValueSuffix,
-			Name:                  "Seed Access Token",
-		})
-	if err != nil {
-		panic(err)
-	}
-
 	// Create team api key
 	keyWithoutPrefix := strings.TrimPrefix(teamAPIKey.PrefixedRawValue, keys.ApiKeyPrefix)
 	apiKeyBytes, err := hex.DecodeString(keyWithoutPrefix)
@@ -200,7 +166,7 @@ VALUES ($1, $2, $3)
 	if err != nil {
 		panic(err)
 	}
-	_, err = authDb.Write.CreateTeamAPIKey(ctx, authqueries.CreateTeamAPIKeyParams{
+	_, err = authDb.CreateTeamAPIKey(ctx, authqueries.CreateTeamAPIKeyParams{
 		TeamID:           teamUUID,
 		CreatedBy:        &userID,
 		ApiKeyHash:       apiKeyHash,

@@ -18,7 +18,6 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
-	"github.com/gin-contrib/cors"
 	limits "github.com/gin-contrib/size"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -36,6 +35,7 @@ import (
 	"github.com/e2b-dev/infra/packages/api/internal/utils"
 	"github.com/e2b-dev/infra/packages/auth/pkg/auth"
 	sqlcdb "github.com/e2b-dev/infra/packages/db/client"
+	"github.com/e2b-dev/infra/packages/shared/pkg/apierrors"
 	"github.com/e2b-dev/infra/packages/shared/pkg/env"
 	"github.com/e2b-dev/infra/packages/shared/pkg/factories"
 	"github.com/e2b-dev/infra/packages/shared/pkg/featureflags"
@@ -98,7 +98,7 @@ var (
 	expectedMigrationTimestamp string
 )
 
-func NewGinServer(ctx context.Context, config cfg.Config, tel *telemetry.Client, l logger.Logger, apiStore *handlers.APIStore, redisClient redis.UniversalClient, ff *featureflags.Client, swagger *openapi3.T, port int) *http.Server {
+func NewGinServer(ctx context.Context, config cfg.Config, tel *telemetry.Client, l logger.Logger, apiStore *handlers.APIStore, adminJWTVerifier *auth.JWKSVerifier, redisClient redis.UniversalClient, ff *featureflags.Client, swagger *openapi3.T, port int) *http.Server {
 	// Clear out the servers array in the swagger spec, that skips validating
 	// that server names match. We don't know how this thing will be run.
 	swagger.Servers = nil
@@ -111,6 +111,10 @@ func NewGinServer(ctx context.Context, config cfg.Config, tel *telemetry.Client,
 	r.UseRawPath = true
 
 	r.Use(gin.Recovery())
+
+	// Every secrets response is uncacheable, whichever layer answers. Must run
+	// before anything that can write a response.
+	r.Use(customMiddleware.NoStoreSecrets())
 
 	r.Use(
 		// We use custom otel gin middleware because we want to log 4xx errors in the otel
@@ -157,42 +161,25 @@ func NewGinServer(ctx context.Context, config cfg.Config, tel *telemetry.Client,
 		sharedmiddleware.RequestTimeout(requestTimeout), //nolint:contextcheck // Gin middleware sets context via c.Request.WithContext
 	)
 
-	corsConfig := cors.DefaultConfig()
-	// Allow all origins
-	corsConfig.AllowAllOrigins = true
-	corsConfig.AllowHeaders = []string{
-		// Default headers
-		"Origin",
-		"Content-Length",
-		"Content-Type",
-		"User-Agent",
-		// API Key header
-		"Authorization",
-		"X-API-Key",
-		auth.HeaderTeamID,
-		// Custom headers sent from SDK
-		"browser",
-		"lang",
-		"lang_version",
-		"machine",
-		"os",
-		"package_version",
-		"processor",
-		"publisher",
-		"release",
-		"sdk_runtime",
-		"system",
+	r.Use(customMiddleware.CORS())
+
+	// Access tokens are removed. Registered before the OpenAPI validator
+	// middleware (which rejects paths missing from the spec) so old clients
+	// get a clear 410 instead of a 404.
+	accessTokensGone := func(c *gin.Context) {
+		apierrors.SendAPIStoreError(c, http.StatusGone, "E2B_ACCESS_TOKEN is deprecated and no longer supported. Use an API key (E2B_API_KEY) instead. See https://e2b.dev/docs/migration/access-token-deprecation")
 	}
-	r.Use(cors.New(corsConfig))
+	r.POST("/access-tokens", accessTokensGone)
+	r.DELETE("/access-tokens/:accessTokenID", accessTokensGone)
 
 	// Create a team API Key auth validator
 	AuthenticationFunc := auth.CreateAuthenticationFunc(
 		[]auth.Authenticator{
 			auth.NewApiKeyAuthenticator(apiStore.GetTeamFromAPIKey),
-			auth.NewAccessTokenAuthenticator(apiStore.GetUserFromAccessToken),
 			auth.NewAuthProviderBearerAuthenticator(apiStore.GetUserIDFromAuthProviderToken),
 			auth.NewAuthProviderTeamAuthenticator(apiStore.GetTeamFromAuthProviderToken),
 			auth.NewAdminApiKeyAuthenticator(config.AdminToken),
+			auth.NewAdminJWTAuthenticator(adminJWTVerifier),
 			auth.NewAdminTeamAuthenticator(apiStore.GetTeamFromAdminToken),
 		},
 		metricsMiddleware.SetProcessingStartTime,
@@ -305,18 +292,6 @@ func run() int {
 	defer l.Sync()
 	logger.ReplaceGlobals(ctx, l)
 
-	sbxLoggerExternal := sbxlogger.NewLogger(
-		ctx,
-		tel.LogsProvider,
-		sbxlogger.SandboxLoggerConfig{
-			ServiceName:      serviceName,
-			IsInternal:       false,
-			CollectorAddress: env.LogsCollectorAddress(),
-		},
-	)
-	defer sbxLoggerExternal.Sync()
-	sbxlogger.SetSandboxLoggerExternal(sbxLoggerExternal)
-
 	sbxLoggerInternal := sbxlogger.NewLogger(
 		ctx,
 		tel.LogsProvider,
@@ -417,6 +392,8 @@ func run() int {
 		RedisURL:         config.RedisURL,
 		RedisClusterURL:  config.RedisClusterURL,
 		RedisTLSCABase64: config.RedisTLSCABase64,
+		RedisTLSEnabled:  config.RedisTLSEnabled,
+		RedisPassword:    config.RedisPassword,
 		PoolSize:         config.RedisPoolSize,
 	})
 	if err != nil {
@@ -435,11 +412,37 @@ func run() int {
 	featureFlags.SetServiceName(serviceName)
 	featureFlags.SetDeploymentName(config.DomainName)
 
+	// External sandbox logger routes through LaunchDarkly (LogsWriteConfigFlag),
+	// falling back to the fixed collector address. Created here so it can use the
+	// feature flags client.
+	sbxLoggerExternal := sbxlogger.NewLogger(
+		ctx,
+		tel.LogsProvider,
+		sbxlogger.SandboxLoggerConfig{
+			ServiceName:      serviceName,
+			IsInternal:       false,
+			CollectorAddress: env.LogsCollectorAddress(),
+			FeatureFlags:     featureFlags,
+		},
+	)
+	defer sbxLoggerExternal.Sync()
+	sbxlogger.SetSandboxLoggerExternal(sbxLoggerExternal)
+
 	// Create an instance of our handler which satisfies the generated interface
 	//  (use the outer context rather than the signal handling
 	//   context so it doesn't exit first.)
 	apiStore := handlers.NewAPIStore(ctx, tel, redisClient, featureFlags, config)
 	cleanupFns = append(cleanupFns, apiStore.Close)
+
+	adminJWTVerifier, err := auth.NewJWKSVerifier(ctx, config.AdminAuthProvider, http.DefaultClient)
+	if err != nil {
+		l.Error(ctx, "initializing admin JWT verifier", zap.Error(err))
+
+		return 1
+	}
+	if adminJWTVerifier == nil {
+		l.Warn(ctx, "ADMIN_AUTH_PROVIDER_CONFIG is not configured; admin JWT requests will return 401")
+	}
 
 	grpcAddr := fmt.Sprintf("0.0.0.0:%d", config.APIInternalGrpcPort)
 	grpcListener, err := (&net.ListenConfig{}).Listen(ctx, "tcp", grpcAddr)
@@ -467,7 +470,7 @@ func run() int {
 	proxygrpc.RegisterSandboxServiceServer(edgeGrpcServer, handlers.NewSandboxService(apiStore, true, clientProxyOAuthVerifier))
 
 	// Pass ctx so in-flight requests survive the serve goroutines' exit during graceful shutdown.
-	s := NewGinServer(ctx, config, tel, l, apiStore, redisClient, featureFlags, swagger, port)
+	s := NewGinServer(ctx, config, tel, l, apiStore, adminJWTVerifier, redisClient, featureFlags, swagger, port)
 
 	// ////////////////////////
 	//

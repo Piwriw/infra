@@ -125,6 +125,9 @@ type Result struct {
 // 8. Snapshot
 // 9. Upload template (and all not yet uploaded layers)
 func (b *Builder) Build(ctx context.Context, paths storage.Paths, cfg config.TemplateConfig, logsCore zapcore.Core) (r *Result, e error) {
+	// The caller's span (template-background-build for gRPC builds); captured
+	// before we open our own so the result attribute lands on both.
+	parentSpan := trace.SpanFromContext(ctx)
 	ctx, childSpan := tracer.Start(ctx, "build")
 	defer childSpan.End()
 
@@ -135,26 +138,31 @@ func (b *Builder) Build(ctx context.Context, paths storage.Paths, cfg config.Tem
 		featureflags.TeamContext(cfg.TeamID),
 	)
 
-	// Record build duration and result at the end
+	// Record build duration and result at the end. This defer is registered
+	// first so it runs last, after the deferred WrapContextAsUserError below has
+	// produced the final error; the metric label and the span attribute are
+	// derived from that same final error so they can never disagree.
 	startTime := time.Now()
 	defer func() {
 		duration := time.Since(startTime)
 		success := e == nil && r != nil
 		b.metrics.RecordBuildDuration(ctx, duration, success)
 
+		resultType := ClassifyBuildResult(r, e)
+		b.metrics.RecordBuildResult(ctx, cfg.TeamID, resultType)
 		if success {
-			b.metrics.RecordBuildResult(ctx, cfg.TeamID, metrics.BuildResultSuccess)
 			b.metrics.RecordRootfsSize(ctx, units.MBToBytes(r.RootfsSizeMB))
-		} else {
-			// Determine if the error is a user error or internal error
-			var resultType metrics.BuildResultType
-			if builderrors.IsUserError(e) {
-				resultType = metrics.BuildResultUserError
-			} else {
-				resultType = metrics.BuildResultInternalError
-			}
-			b.metrics.RecordBuildResult(ctx, cfg.TeamID, resultType)
 		}
+
+		// Stamp the classification on the build span and on the caller's span
+		// (template-background-build for gRPC builds) so any span in the trace
+		// can be filtered by build.result without knowing which span carries an
+		// Error status. Child spans keep Error status for every failed
+		// operation, including user command failures; this attribute is the
+		// only place that says whose fault it was.
+		resultAttr := metrics.BuildResultAttribute(resultType)
+		childSpan.SetAttributes(resultAttr)
+		parentSpan.SetAttributes(resultAttr)
 	}()
 
 	cacheScope := cfg.CacheScope
@@ -222,7 +230,20 @@ func (b *Builder) Build(ctx context.Context, paths storage.Paths, cfg config.Tem
 		}
 	}(context.WithoutCancel(ctx))
 
-	envdVersion, err := envd.GetEnvdVersion(ctx, b.config.HostEnvdPath)
+	// The envd baked into this build is selected per build by the
+	// build-envd-version flag (default: the node-local promoted binary),
+	// exactly like BuildKernelVersion / BuildFirecrackerVersion — a version
+	// roll is a flag change, never a process restart or node change. The ctx
+	// carries the template/team LD context, so cohort canaries work. The
+	// resolved path is threaded to every consumer through the BuildContext's
+	// BuilderConfig copy.
+	envdTarget := b.featureFlags.StringFlag(ctx, featureflags.BuildEnvdVersion)
+	hostEnvdPath, err := envd.ResolveBuildBinary(ctx, envdTarget, b.config.HostEnvdPath)
+	if err != nil {
+		return nil, fmt.Errorf("error resolving envd binary for build: %w", err)
+	}
+
+	envdVersion, err := envd.GetEnvdVersion(ctx, hostEnvdPath)
 	if err != nil {
 		return nil, fmt.Errorf("error getting envd version: %w", err)
 	}
@@ -257,8 +278,11 @@ func (b *Builder) Build(ctx context.Context, paths storage.Paths, cfg config.Tem
 		}
 	}()
 
+	builderConfig := b.config
+	builderConfig.HostEnvdPath = hostEnvdPath
+
 	buildContext := buildcontext.BuildContext{
-		BuilderConfig:  b.config,
+		BuilderConfig:  builderConfig,
 		Config:         cfg,
 		Template:       paths,
 		UploadErrGroup: uploadErrGroup,
@@ -266,9 +290,24 @@ func (b *Builder) Build(ctx context.Context, paths storage.Paths, cfg config.Tem
 		CacheScope:     cacheScope,
 		IsV1Build:      isV1Build,
 		Version:        cfg.Version,
+		Rootfs:         resolveRootfsOptions(ctx, b.featureFlags, cfg),
 	}
 
 	return runBuild(ctx, l, buildContext, b)
+}
+
+// resolveRootfsOptions evaluates, once per build, the flags that shape the
+// baked rootfs files; buildcontext.RootfsOptions says why once. It uses the
+// template and team contexts, as the provision version does.
+func resolveRootfsOptions(ctx context.Context, featureFlags *featureflags.Client, cfg config.TemplateConfig) buildcontext.RootfsOptions {
+	return buildcontext.RootfsOptions{
+		EnvdMemoryProtection: featureFlags.BoolFlag(
+			ctx,
+			featureflags.BuildEnvdMemoryProtection,
+			featureflags.TemplateContext(cfg.TemplateID),
+			featureflags.TeamContext(cfg.TeamID),
+		),
+	}
 }
 
 func (b *Builder) useNFSCache(ctx context.Context) (string, bool) {

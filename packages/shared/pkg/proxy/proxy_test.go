@@ -8,6 +8,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"os"
 	"sync"
@@ -218,6 +219,71 @@ func TestProxyRoutesToTargetServer(t *testing.T) {
 	assert.Equal(t, uint64(1), proxy.TotalPoolConnections(), "proxy should have established one connection")
 }
 
+func TestProxyRoutesToHTTPSBackendWithSelfSignedCertificate(t *testing.T) {
+	t.Parallel()
+
+	backend := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, err := w.Write([]byte("secure backend"))
+		assert.NoError(t, err)
+	}))
+	t.Cleanup(backend.Close)
+
+	backendURL, err := url.Parse(backend.URL)
+	require.NoError(t, err)
+
+	proxy, port, err := newTestProxy(t, func(*http.Request) (*pool.Destination, error) {
+		return &pool.Destination{
+			Url:                   backendURL,
+			SandboxId:             "test-sandbox",
+			RequestLogger:         logger.NewNopLogger(),
+			ConnectionKey:         "https-backend",
+			InsecureSkipTLSVerify: true,
+		}, nil
+	})
+	require.NoError(t, err)
+	t.Cleanup(func() { require.NoError(t, proxy.Close()) })
+
+	resp, err := httpGet(t, fmt.Sprintf("http://127.0.0.1:%d", port))
+	require.NoError(t, err)
+	t.Cleanup(func() { require.NoError(t, resp.Body.Close()) })
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+	assert.Equal(t, "secure backend", string(body))
+}
+
+// The 502 is the point: the same backend that the sibling test reaches must be
+// unreachable without the flag.
+func TestProxyRejectsHTTPSBackendWithoutInsecureSkipTLSVerify(t *testing.T) {
+	t.Parallel()
+
+	backend := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, err := w.Write([]byte("secure backend"))
+		assert.NoError(t, err)
+	}))
+	t.Cleanup(backend.Close)
+
+	backendURL, err := url.Parse(backend.URL)
+	require.NoError(t, err)
+
+	proxy, port, err := newTestProxy(t, func(*http.Request) (*pool.Destination, error) {
+		return &pool.Destination{
+			Url:           backendURL,
+			SandboxId:     "test-sandbox",
+			RequestLogger: logger.NewNopLogger(),
+			ConnectionKey: "https-backend-verified",
+		}, nil
+	})
+	require.NoError(t, err)
+	t.Cleanup(func() { require.NoError(t, proxy.Close()) })
+
+	resp, err := httpGet(t, fmt.Sprintf("http://127.0.0.1:%d", port))
+	require.NoError(t, err)
+	t.Cleanup(func() { require.NoError(t, resp.Body.Close()) })
+
+	assert.Equal(t, http.StatusBadGateway, resp.StatusCode)
+}
+
 func TestProxyResumePermissionDeniedErrorTemplate(t *testing.T) {
 	t.Parallel()
 
@@ -335,6 +401,69 @@ func TestProxySandboxStillTransitioningErrorTemplate(t *testing.T) {
 		require.NoError(t, err)
 		assert.Contains(t, string(body), "Sandbox Still Transitioning")
 		assert.Contains(t, string(body), "test-sandbox")
+	})
+}
+
+func TestProxyInternalRouteErrorTemplate(t *testing.T) {
+	t.Parallel()
+
+	getDestination := func(r *http.Request) (*pool.Destination, error) {
+		return nil, NewErrInternalRoute("test-sandbox", r.URL.Path)
+	}
+
+	proxy, port, err := newTestProxy(t, getDestination)
+	require.NoError(t, err)
+	t.Cleanup(func() {
+		proxy.Close()
+	})
+
+	t.Run("json for non-browser", func(t *testing.T) {
+		t.Parallel()
+		proxyURL := fmt.Sprintf("http://127.0.0.1:%d/init", port)
+		resp, err := httpGet(t, proxyURL)
+		require.NoError(t, err)
+		t.Cleanup(func() {
+			_ = resp.Body.Close()
+		})
+
+		require.Equal(t, http.StatusNotFound, resp.StatusCode)
+		require.Equal(t, "application/json; charset=utf-8", resp.Header.Get("Content-Type"))
+
+		var response struct {
+			SandboxID string `json:"sandboxId"`
+			Message   string `json:"message"`
+			Path      string `json:"path"`
+			Code      int    `json:"code"`
+		}
+		err = json.NewDecoder(resp.Body).Decode(&response)
+		require.NoError(t, err)
+		assert.Equal(t, "This endpoint is reserved for the E2B control plane and is not reachable through the sandbox URL", response.Message)
+		assert.Equal(t, "/init", response.Path)
+		assert.Equal(t, http.StatusNotFound, response.Code)
+		assert.Empty(t, response.SandboxID, "the response should not name the sandbox")
+	})
+
+	t.Run("html for browser", func(t *testing.T) {
+		t.Parallel()
+		proxyURL := fmt.Sprintf("http://127.0.0.1:%d/init", port)
+		headers := http.Header{
+			"User-Agent": {"Mozilla/5.0 (Windows NT 10.0; Win64; x64)"},
+		}
+
+		resp, err := httpGetWithHeaders(t, proxyURL, headers)
+		require.NoError(t, err)
+		t.Cleanup(func() {
+			_ = resp.Body.Close()
+		})
+
+		require.Equal(t, http.StatusNotFound, resp.StatusCode)
+		require.Equal(t, "text/html; charset=utf-8", resp.Header.Get("Content-Type"))
+
+		body, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+		assert.Contains(t, string(body), "Endpoint Not Available")
+		assert.Contains(t, string(body), "/init")
+		assert.NotContains(t, string(body), "test-sandbox")
 	})
 }
 

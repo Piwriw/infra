@@ -112,7 +112,7 @@ func (s *Slot) CreateNetwork(ctx context.Context) (retErr error) {
 	// a full (idempotent) RemoveNetwork to reclaim them; deleting only the
 	// namespace would orphan those rules. On failure the anchor is kept and we
 	// abort so the slot is retried later instead of leaking.
-	available, err := isNamespaceAvailable(s.NamespaceID())
+	available, err := isNamespaceAvailable(NetNamespacesDir, s.NamespaceID())
 	if err != nil {
 		return fmt.Errorf("cannot check for stale namespace: %w", err)
 	}
@@ -273,12 +273,16 @@ func (s *Slot) CreateNetwork(ctx context.Context) (retErr error) {
 	}
 
 	// Marker for downstream L3 firewalls. 0 disables; see SANDBOX_EGRESS_DSCP.
-	if s.config.SandboxEgressDSCP > 0 {
-		err = tables.Append("mangle", "POSTROUTING", "-o", s.VpeerName(), "-j", "DSCP", "--set-dscp", strconv.Itoa(int(s.config.SandboxEgressDSCP)))
+	// Slots are pooled: this seeds the untenanted class, Pool.Get re-stamps
+	// for builds, recycle restores it.
+	dscp := s.config.untenantedDSCP()
+	if dscp > 0 {
+		err = tables.Append("mangle", "POSTROUTING", s.dscpMangleRuleArgs(dscp)...)
 		if err != nil {
 			return fmt.Errorf("error creating DSCP mangle rule on vpeer: %w", err)
 		}
 	}
+	s.egressDSCP.Store(uint32(dscp))
 
 	err = s.InitializeFirewall()
 	if err != nil {

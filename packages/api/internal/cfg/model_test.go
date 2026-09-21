@@ -33,6 +33,14 @@ func TestParse(t *testing.T) {
 		assert.ErrorContains(t, err, `environment variable "POSTGRES_CONNECTION_STRING" should not be empty`)
 	})
 
+	t.Run("LOKI_URL is optional", func(t *testing.T) { //nolint:paralleltest // cannot call t.Setenv and t.Parallel
+		removeEnv(t, "LOKI_URL")
+
+		config, err := Parse()
+		require.NoError(t, err)
+		assert.Empty(t, config.LokiURL)
+	})
+
 	t.Run("base64 signing key can be parsed", func(t *testing.T) {
 		content := []byte{1, 2, 3, 4, 5, 6}
 		encoded := base64.StdEncoding.EncodeToString(content)
@@ -41,6 +49,49 @@ func TestParse(t *testing.T) {
 		result, err := Parse()
 		require.NoError(t, err)
 		assert.Equal(t, content, result.VolumesToken.SigningKey)
+	})
+
+	t.Run("default persistent volume type by region is parsed as a map", func(t *testing.T) {
+		t.Setenv("DEFAULT_PERSISTENT_VOLUME_TYPE_BY_REGION", "us-west3:zonalfilestore-us-west3,other:other-type")
+
+		result, err := Parse()
+		require.NoError(t, err)
+		assert.Equal(t, map[string]string{
+			"us-west3": "zonalfilestore-us-west3",
+			"other":    "other-type",
+		}, result.DefaultPersistentVolumeTypeByRegion)
+	})
+
+	t.Run("secrets store backend address is optional and has no default", func(t *testing.T) { //nolint:paralleltest // cannot call t.Setenv and t.Parallel
+		removeEnv(t, "SECRETS_STORE_BACKEND_GRPC_ADDRESS")
+
+		result, err := Parse()
+		require.NoError(t, err)
+		assert.Empty(t, result.SecretsStoreBackendGrpcAddress)
+	})
+
+	t.Run("secrets store backend address is read when set", func(t *testing.T) {
+		t.Setenv("SECRETS_STORE_BACKEND_GRPC_ADDRESS", "secrets-backend:5000")
+
+		result, err := Parse()
+		require.NoError(t, err)
+		assert.Equal(t, "secrets-backend:5000", result.SecretsStoreBackendGrpcAddress)
+	})
+
+	t.Run("composed service discovery provider is accepted", func(t *testing.T) {
+		t.Setenv("SERVICE_DISCOVERY_PROVIDER", ServiceDiscoveryProviderNomadKubernetes)
+
+		result, err := Parse()
+		require.NoError(t, err)
+		assert.Equal(t, "nomad+kubernetes", result.ServiceDiscoveryProvider)
+	})
+
+	t.Run("kubernetes api endpoint is read from the environment", func(t *testing.T) {
+		t.Setenv("K8S_API_ENDPOINT", "https://dns-endpoint.example")
+
+		result, err := Parse()
+		require.NoError(t, err)
+		assert.Equal(t, "https://dns-endpoint.example", result.K8sAPIEndpoint)
 	})
 
 	t.Run("invalid service discovery provider exposes failure condition", func(t *testing.T) {

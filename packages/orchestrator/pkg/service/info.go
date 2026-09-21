@@ -33,8 +33,9 @@ type ServiceInfo struct {
 	Labels      []string
 	MachineInfo machineinfo.MachineInfo
 
-	status   ServiceStatus
-	statusMu sync.RWMutex
+	status          ServiceStatus
+	statusMu        sync.RWMutex
+	outstandingWork int64
 }
 
 var serviceRolesMapper = map[cfg.ServiceType]orchestratorinfo.ServiceInfoRole{
@@ -49,14 +50,63 @@ func (s *ServiceInfo) GetStatus() ServiceStatus {
 	return s.status
 }
 
+// Child work must be registered before its parent releases ownership.
+func (s *ServiceInfo) TrackWork() func() {
+	s.statusMu.Lock()
+	s.outstandingWork++
+	s.statusMu.Unlock()
+
+	return s.finishWork
+}
+
+func (s *ServiceInfo) finishWork() {
+	s.statusMu.Lock()
+	defer s.statusMu.Unlock()
+
+	s.outstandingWork--
+}
+
+func (s *ServiceInfo) OutstandingWork() int64 {
+	s.statusMu.RLock()
+	defer s.statusMu.RUnlock()
+
+	return s.outstandingWork
+}
+
 func (s *ServiceInfo) SetStatus(ctx context.Context, status orchestratorinfo.ServiceInfoStatus) {
 	s.statusMu.Lock()
 	defer s.statusMu.Unlock()
+
+	s.setStatus(ctx, status)
+}
+
+func (s *ServiceInfo) OverrideStatus(ctx context.Context, status orchestratorinfo.ServiceInfoStatus) bool {
+	s.statusMu.Lock()
+	defer s.statusMu.Unlock()
+
+	// Only process shutdown may enter ShuttingDown.
+	if status == orchestratorinfo.ServiceInfoStatus_ShuttingDown {
+		return false
+	}
+
+	if s.status.Status == orchestratorinfo.ServiceInfoStatus_Draining && status == orchestratorinfo.ServiceInfoStatus_Standby {
+		return false
+	}
+
+	return s.setStatus(ctx, status)
+}
+
+func (s *ServiceInfo) setStatus(ctx context.Context, status orchestratorinfo.ServiceInfoStatus) bool {
+	if s.status.Status == orchestratorinfo.ServiceInfoStatus_ShuttingDown && status != s.status.Status {
+		return false
+	}
 
 	if s.status.Status != status {
 		logger.L().Info(ctx, "Service status changed", zap.String("status", status.String()))
 		s.status = ServiceStatus{Status: status, ChangedAt: time.Now()}
 	}
+
+	return true
 }
 
 func NewInfoContainer(clientId string, version string, commit string, instanceID string, machineInfo machineinfo.MachineInfo, config cfg.Config) *ServiceInfo {

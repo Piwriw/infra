@@ -186,7 +186,7 @@ func BenchmarkConcurrentResume(b *testing.B) {
 	}
 
 	// kernel download
-	linuxKernelURL, err := url.JoinPath("https://storage.googleapis.com/e2b-prod-public-builds/kernels/", kernelVersion, "vmlinux.bin")
+	linuxKernelURL, err := url.JoinPath("https://storage.googleapis.com/e2b-artifact-binaries/kernels/", kernelVersion, "vmlinux.bin")
 	require.NoError(b, err)
 	linuxKernelFilename := filepath.Join(kernelsDir, kernelVersion, "vmlinux.bin")
 	downloadKernel(b, linuxKernelFilename, linuxKernelURL)
@@ -199,14 +199,12 @@ func BenchmarkConcurrentResume(b *testing.B) {
 	b.Setenv("LOCAL_TEMPLATE_STORAGE_BASE_PATH", abs(filepath.Join(persistenceDir, "templates")))
 	b.Setenv("ORCHESTRATOR_BASE_PATH", tempDir)
 	b.Setenv("SANDBOX_DIR", abs(sandboxDir))
-	b.Setenv("SNAPSHOT_CACHE_DIR", abs(filepath.Join(tempDir, "snapshot-cache")))
 	b.Setenv("STORAGE_PROVIDER", "Local")
-	b.Setenv("USE_LOCAL_NAMESPACE_STORAGE", "true")
 
 	config, err := cfg.Parse()
 	require.NoError(b, err)
 
-	for _, subdir := range []string{"build", "build-templates", "sandbox", "snapshot-cache", "template"} {
+	for _, subdir := range []string{"build", "build-templates", "sandbox", "template"} {
 		require.NoError(b, os.MkdirAll(filepath.Join(tempDir, subdir), 0o755))
 	}
 
@@ -266,6 +264,7 @@ func BenchmarkConcurrentResume(b *testing.B) {
 
 	sandboxes := sandbox.NewSandboxesMap()
 	sandboxFactory := sandbox.NewFactory(
+		b.Context(),
 		config.BuilderConfig, networkPool, devicePool,
 		featureFlags, hoststats.NewNoopDelivery(), cgroupManager, network.NewNoopEgressProxy(), sandbox.NoopNetworkAssignHook{}, sandboxes,
 	)
@@ -348,6 +347,7 @@ func BenchmarkConcurrentResume(b *testing.B) {
 			MemoryMB:           sandboxConfig.RamMB,
 			StartCmd:           "echo 'start cmd debug' && sleep .1 && echo 'done starting command debug'",
 			DiskSizeMB:         sandboxConfig.TotalDiskSizeMB,
+			FreeDiskSizeMB:     sandboxConfig.TotalDiskSizeMB,
 			HugePages:          sandboxConfig.HugePages,
 			KernelVersion:      kernelVersion,
 			FirecrackerVersion: fcVersion,
