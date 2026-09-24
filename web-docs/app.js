@@ -388,39 +388,40 @@
     state.requestId += 1;
     setRailVisible(false);
     elements.rawLink.classList.add('is-hidden');
-    elements.breadcrumb.innerHTML = '<strong>系统地图</strong>';
+    elements.breadcrumb.innerHTML = '<strong>Local 模式</strong>';
     updateActiveNavigation();
 
     const totalMinutes = catalog.core.reduce((sum, doc) => sum + doc.duration, 0);
     const lastId = readText(STORAGE.lastDoc);
-    const resumeDoc = docById.get(lastId) || catalog.core[0];
+    const hasLastDoc = docById.has(lastId);
+    const resumeDoc = hasLastDoc ? docById.get(lastId) : catalog.core[0];
     const planeDocs = {
-      control: ['api', 'auth', 'dashboard-api', 'db'],
-      runtime: ['client-proxy', 'orchestrator', 'envd'],
-      foundation: ['shared', 'clickhouse', 'iac', 'docker-reverse-proxy', 'nomad-nodepool-apm', 'local-dev-observability']
+      control: ['local-map', 'local-start'],
+      runtime: ['local-flows', 'template-build', 'client-proxy', 'sandbox-lifecycle', 'envd'],
+      foundation: ['local-dependencies', 'snapshots', 'volumes']
     };
 
     elements.page.innerHTML = `
       <div class="home-page">
         <section class="home-hero" aria-labelledby="home-title">
           <div>
-            <p class="eyebrow">Source-guided learning map</p>
-            <h1 id="home-title">E2B Infra Core Atlas</h1>
-            <p class="hero-copy">从一次 Sandbox 请求出发，沿控制面、流量入口、microVM 运行时和部署观测链，建立可回到源码验证的项目心智模型。</p>
+            <p class="eyebrow">Local setup and source guide</p>
+            <h1 id="home-title">E2B Infra Local 模式</h1>
+            <p class="hero-copy">从本地依赖和启动顺序开始，跟踪沙箱如何创建、恢复并接收流量；需要操作步骤时以仓库根目录的 DEV-LOCAL.md 为准。</p>
             <div class="hero-actions">
               <button class="action-button" type="button" data-doc-id="${escapeAttribute(resumeDoc.id)}">
-                <i data-lucide="${lastId ? 'book-open' : 'play'}"></i>
-                <span>${lastId ? `继续：${escapeHtml(resumeDoc.shortTitle)}` : '从项目全景开始'}</span>
+                <i data-lucide="${hasLastDoc ? 'book-open' : 'play'}"></i>
+                <span>${hasLastDoc ? `继续：${escapeHtml(resumeDoc.shortTitle)}` : '从本地拓扑开始'}</span>
               </button>
               <button class="action-button secondary" type="button" data-doc-id="sandbox-lifecycle">
                 <i data-lucide="route"></i>
-                <span>查看 Sandbox 生命周期</span>
+                <span>查看沙箱运行链路</span>
               </button>
             </div>
           </div>
           <div class="hero-stats" aria-label="学习资料统计">
-            <div class="hero-stat"><strong>${catalog.core.length}</strong><span>核心组件</span></div>
-            <div class="hero-stat"><strong>${catalog.deep.length}</strong><span>深挖专题</span></div>
+            <div class="hero-stat"><strong>${catalog.core.length}</strong><span>Local 入门</span></div>
+            <div class="hero-stat"><strong>${catalog.deep.length}</strong><span>源码专题</span></div>
             <div class="hero-stat"><strong>${catalog.flows.length}</strong><span>端到端链路</span></div>
             <div class="hero-stat"><strong>${formatDuration(totalMinutes)}</strong><span>核心阅读</span></div>
           </div>
@@ -432,28 +433,28 @@
 
         <section class="home-section" aria-labelledby="planes-title">
           <div class="section-heading">
-            <h2 id="planes-title">三个平面，一套运行系统</h2>
-            <p>控制面决定身份、资源和生命周期；数据面承载高频沙箱流量与执行；支撑面提供协议、状态、部署和观测。</p>
+            <h2 id="planes-title">本地运行需要哪些部分</h2>
+            <p>API 负责管理请求，orchestrator 运行 microVM，client-proxy 转发沙箱流量；Snapshots 保存可恢复状态，Volumes 保存跨沙箱使用的文件。</p>
           </div>
           <div class="plane-map">
-            ${renderPlane('01', '控制面', '谁能创建什么、资源放到哪里、生命周期如何变化。', planeDocs.control)}
-            ${renderPlane('02', '数据面', '请求怎样抵达 microVM，进程和文件怎样被操作。', planeDocs.runtime)}
-            ${renderPlane('03', '支撑面', '服务怎样共享契约、保存指标并部署到真实集群。', planeDocs.foundation)}
+            ${renderPlane('01', '管理面', 'API、PostgreSQL 和 Redis 协作创建并追踪沙箱。', planeDocs.control)}
+            ${renderPlane('02', '运行面', 'Orchestrator 启动 microVM，proxy 和 envd 承接沙箱流量。', planeDocs.runtime)}
+            ${renderPlane('03', '状态与持久数据', 'PostgreSQL、Redis、Snapshots 和 Volumes 分别保存业务元数据、路由状态与文件。', planeDocs.foundation)}
           </div>
         </section>
 
         <section class="home-section" aria-labelledby="flows-title">
           <div class="section-heading">
-            <h2 id="flows-title">沿真实链路理解组件</h2>
-            <p>组件目录说明边界，端到端链路说明协作。选择一条链路，从每个责任交接点进入对应文档。</p>
+            <h2 id="flows-title">沿本地请求链路学习</h2>
+            <p>选择创建、访问或恢复流程，查看每个服务负责的步骤并进入对应源码专题。</p>
           </div>
           <div class="flow-console" id="flow-console"></div>
         </section>
 
         <section class="home-section" aria-labelledby="paths-title">
           <div class="section-heading">
-            <h2 id="paths-title">按问题选择阅读路径</h2>
-            <p>核心速通先建地图，其余路径把组件导读与既有深度文档组合起来。</p>
+            <h2 id="paths-title">按目标选择阅读路径</h2>
+            <p>先启动本地环境，再按需要深入沙箱运行、模板构建或可观测性。</p>
           </div>
           <div class="path-grid">
             ${catalog.paths.map((path, index) => renderPathCard(path, index)).join('')}
@@ -462,8 +463,8 @@
 
         <section class="home-section" aria-labelledby="curriculum-title">
           <div class="section-heading">
-            <h2 id="curriculum-title">核心组件课程</h2>
-            <p>每篇先确定系统位置，再看装配、核心对象、主链路、不变量、边界与源码入口。</p>
+            <h2 id="curriculum-title">Local 模式入门</h2>
+            <p>从拓扑、启动、沙箱链路到依赖排障，按顺序完成本地学习。</p>
           </div>
           <div class="curriculum">
             ${catalog.phases.map(renderCurriculumPhase).join('')}
@@ -599,7 +600,7 @@
       elements.page.innerHTML = `
         <div class="document-page${doc.format === 'chapter' ? ' is-source-chapter' : ''}">
           <header class="doc-header">
-            <div class="doc-kind"><span>${doc.format === 'chapter' ? 'Source chapter' : doc.kind === 'core' ? 'Core component' : 'Deep dive'}</span><span>${escapeHtml(phaseLabel || '专题')}</span></div>
+            <div class="doc-kind"><span>${doc.format === 'chapter' ? 'Source chapter' : doc.kind === 'core' ? 'Local guide' : 'Source reference'}</span><span>${escapeHtml(phaseLabel || '专题')}</span></div>
             <h1>${escapeHtml(doc.title)}</h1>
             <p class="doc-summary">${escapeHtml(doc.summary)}</p>
             <div class="doc-meta-row">
@@ -737,7 +738,7 @@
         <div class="rail-label"><span>On this page</span><span>${String(headings.length).padStart(2, '0')}</span></div>
         <div class="rail-meta">
           <div class="rail-meta-item"><span>READ</span><strong>${doc.duration} min</strong></div>
-          <div class="rail-meta-item"><span>TYPE</span><strong>${doc.format === 'chapter' ? 'CHAPTER' : doc.kind === 'core' ? 'CORE' : 'DEEP'}</strong></div>
+          <div class="rail-meta-item"><span>TYPE</span><strong>${doc.format === 'chapter' ? 'CHAPTER' : doc.kind === 'core' ? 'GUIDE' : 'REFERENCE'}</strong></div>
         </div>
         <nav class="toc-list" aria-label="本文目录">
           ${headings.map(heading => `<a class="toc-link level-${heading.tagName.slice(1)}" href="${escapeAttribute(buildDocumentHash(doc.id, heading.id))}" data-toc-id="${escapeAttribute(heading.id)}">${escapeHtml(heading.dataset.headingTitle || heading.textContent.replace(/^#/, '').trim())}</a>`).join('')}
@@ -873,7 +874,7 @@
         <div class="error-panel">
           <h1>学习文档不存在</h1>
           <p>目录中没有 “${escapeHtml(id || '')}”。</p>
-          <button class="action-button" type="button" data-route-home><i data-lucide="map"></i><span>返回系统地图</span></button>
+          <button class="action-button" type="button" data-route-home><i data-lucide="map"></i><span>返回 Local 学习地图</span></button>
         </div>
       </div>
     `;

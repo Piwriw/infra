@@ -2,19 +2,17 @@
 
 > 本文档详细描述 E2B Infrastructure 中 **Client Proxy**(`packages/client-proxy/`)的设计、架构、转发逻辑、与 API / Orchestrator 的协作、auto-resume 流程、连接池与 graceful shutdown。
 >
-> 适用于希望理解 E2B 数据面流量(sandbox HTTP / WebSocket)如何从公网转发到 Firecracker microVM 的工程师。
+> 适用于希望理解本地数据面流量(sandbox HTTP / WebSocket)如何从 client-proxy 转发到 Firecracker microVM 的开发者。
 >
 > **相关文档**:
-> - [`api-module.md`](api-module.md) — API 服务(控制面、Edge gRPC server)
-> - [`sandbox-management.md`](sandbox-management.md) — Sandbox 管理面
-> - [`node-module.md`](node-module.md) — 节点 / 集群 / 服务发现
-> - [`template-module.md`](template-module.md) — Template 模版系统
+> - [Local 模式服务拓扑](./local-mode-map.md)
+> - [沙箱创建与访问链路](./local-mode-flows.md)
+> - [Sandbox 生命周期](./sandbox-lifecycle.md)
+> - [Volumes 持久化卷](./volumes.md)
+> - [Snapshots 快照](./snapshots.md)
+> - [Envd Guest Agent](./envd-module.md)
 >
 > 行号均按 tag `2026.30` 核对。已同步至 2026.30(2026-09-10)。
-
-> ⛔ **2026.30 部署侧退役提示**:提交 `8a1c48884`（`chore(deploy): retire Nomad-based deployment ahead of a new deploy path`）把 **`iac/` 整棵树（172 个文件,含 `iac/provider-gcp/`、`iac/provider-aws/`、`iac/modules/job-*/`）** 全部删除,根目录 `self-host.md` 也已删除（⚠️ `packages/docker-reverse-proxy/` 的 19 个文件是更早的 `d153bbe9d`,2026-08-06,不是这批）;根 `Makefile` 移除了所有 Terraform/Nomad 目标,`.github/workflows/` 移除了 `publish.yml` / `release-please.yml` / `validate-iac.yml`。
->
-> 因此**本文中所有 `iac/**` 路径在 2026.30 都已不存在,链接不可点**,保留为历史档案(主要出现在 §1.2、§7.1、§7.2、§10.3、§11.4、§11.5、§13.6)。**`packages/client-proxy/` 服务本身仍然存在**——只是它的 Nomad job spec(`iac/modules/job-client-proxy/...`)没了。`packages/nomad-nodepool-apm/` **仍然存在**,不受影响。
 
 > ⚠️ **2026.30 本模块的三处实质变更**:
 > 1. **双 Redis catalog**:新增 orchestrator-owned `sandbox:routing:{id}` 数据源,按 flag `orchestrator-routing-prioritized` 逐请求选择(见 §6.5)。
@@ -55,13 +53,8 @@ Client Proxy 是 E2B 数据面的"前门"。客户端 SDK 拿到 sandboxID 之�
                    客户端 SDK / 浏览器
                           │
                           ▼
-                    ┌──────────┐
-                    │ Traefik  │  (Nomad ingress,catch-all 路由)
-                    └────┬─────┘
-                         │
-                         ▼
                 ┌──────────────────┐
-                │  Client Proxy    │  ← 本文档
+                │  Client Proxy    │  :3002
                 │  (packages/      │
                 │   client-proxy)  │
                 └────────┬─────────┘
@@ -87,7 +80,7 @@ Client Proxy 是 E2B 数据面的"前门"。客户端 SDK 拿到 sandboxID 之�
 | Go module | [`packages/client-proxy/go.mod`](../packages/client-proxy/go.mod) |
 | Dockerfile | [`packages/client-proxy/Dockerfile`](../packages/client-proxy/Dockerfile) |
 | Makefile | [`packages/client-proxy/Makefile`](../packages/client-proxy/Makefile) |
-| Nomad job 模板 | [`iac/modules/job-client-proxy/jobs/client-proxy.hcl`](../iac/modules/job-client-proxy/jobs/client-proxy.hcl) |
+| 本地配置 | [`.env.local`](../packages/client-proxy/.env.local) |
 | CHANGELOG | [`packages/client-proxy/CHANGELOG.md`](../packages/client-proxy/CHANGELOG.md) |
 
 服务总规模:**801 行** Go 代码(含测试 1024 行)—— 是 E2B 后端最小的服务之一。复杂的转发逻辑都复用 `packages/shared/pkg/proxy/`。
@@ -103,15 +96,15 @@ Client Proxy 是 E2B 数据面的"前门"。客户端 SDK 拿到 sandboxID 之�
 | 用途 | 默认端口 | 配置项 |
 | --- | --- | --- |
 | HTTP proxy(对外,sandbox 数据面) | 3002 | `PROXY_PORT` |
-| Health server(只对 Nomad) | 3003 | `HEALTH_PORT` |
+| Health server | 3003 | `HEALTH_PORT` |
 
-> 注:GCP 生产环境的端口由 Terraform `client_proxy_port` / `client_proxy_health_port` 变量决定,默认 proxy=3002、health=3001(见 §11)。`PROXY_PORT` / `HEALTH_PORT` 环境变量由 Nomad 在 `env` stanza 里从 `NOMAD_PORT_*` 注入。
+本地默认流量入口为 `http://localhost:3002`，健康检查地址为 `http://localhost:3003/health`。
 
 ### 1.5 与 API / Orchestrator 的边界
 
 | 流量类型 | 走哪 |
 | --- | --- |
-| 控制面 REST API(创建/列出/删除 sandbox 等) | 直连 **API 服务**(端口 80) |
+| 控制面 REST API(创建/列出/删除 sandbox 等) | 直连 **API 服务**(本地端口 3000) |
 | Sandbox 内 HTTP 服务(数据面) | 走 **Client Proxy**(端口 3002) |
 | Auto-resume(sandbox 已 paused,首次访问时唤醒) | Client Proxy → API edge gRPC(5109)→ Orchestrator |
 
@@ -662,27 +655,7 @@ func selectCatalog(ctx context.Context, featureFlags *featureflags.Client,
 
 ### 7.1 路由
 
-Client Proxy **没有路由表**,catch-all 所有 HTTP 方法 + path。Traefik 在 Nomad job 里用 `PathPrefix("/")` + `priority=100` 把所有未匹配的请求路由到这里(见 [`iac/modules/job-client-proxy/jobs/client-proxy.hcl:46-55`](../iac/modules/job-client-proxy/jobs/client-proxy.hcl)):
-
-```hcl
-service {
-  name = "client-proxy"
-  port = "proxy"
-  tags = [
-    "traefik.enable=true",
-    "traefik.http.routers.client-proxy.entrypoints=${entrypoints}",
-    "traefik.http.routers.client-proxy.rule=PathPrefix(`/`)",
-    "traefik.http.routers.client-proxy.ruleSyntax=v2",
-    "traefik.http.routers.client-proxy.priority=100",
-    "traefik.http.services.client-proxy.loadbalancer.server.port=$${NOMAD_PORT_proxy}"
-  ]
-}
-```
-
-`entrypoints` 由 `exposure_type` 决定:
-- `public` → `web`(对公网开放)
-- `private` → `internal`(只内网)
-- `both` → `web,internal`(默认)
+Client Proxy **没有业务路由表**，接收所有 HTTP 方法和 path，再按 Host 或请求头里的沙箱 ID 与端口选择目标。Local 模式下客户端直接访问 `localhost:3002`，不需要 Traefik 或 Nomad ingress。
 
 ### 7.2 健康检查路由
 
@@ -701,7 +674,7 @@ healthHandler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 })
 ```
 
-Nomad service check:`/health` 每 3s,timeout 3s(见 [`client-proxy.hcl:57-64`](../iac/modules/job-client-proxy/jobs/client-proxy.hcl))。
+本地可直接请求 `http://localhost:3003/health` 检查进程状态。
 
 ### 7.3 HTML 错误页
 
@@ -855,7 +828,7 @@ func (a oauthGrpcResumeAuth) authorize(ctx context.Context) (context.Context, er
 - `Enabled()` 三件套(ClientID/ClientSecret/TokenURL)任一非空就视为"配置了",然后三者必须齐全。
 - 没配 → `noopGrpcResumeAuth{}`(空实现,authorize 直接返 ctx)。
 - 每次 Resume 都 `Token()` 取一次新 token(`clientcredentials` 内部缓存)。
-- Token scope 严格 = `sandboxes:lifecycle`,API 端会校验这个 scope(见 [`api-module.md` §5.3](api-module.md))。
+- Token scope 严格 = `sandboxes:lifecycle`,API 端会校验这个 scope；API 本地配置和服务发现见 [Local 模式服务拓扑](./local-mode-map.md)。
 
 ### 8.5 Connection observer
 
@@ -1031,38 +1004,6 @@ shutdownDrainingWait  = 15 * time.Second
 shutdownUnhealthyWait = 15 * time.Second
 ```
 
-### 10.4 proxy.Shutdown 超时 24h
-
-```go
-// main.go:262
-proxyShutdownCtx, proxyShutdownCtxCancel := context.WithTimeout(ctx, 24*time.Hour)
-```
-
-为什么是 24h?因为 client-proxy 持有长连接(WebSocket / sandbox 长任务),最多可以让一个连接挂这么久。Nomad job 的 `kill_timeout = "24h"`(见 §11.4)与这个上限对齐:
-
-```hcl
-# iac/modules/job-client-proxy/jobs/client-proxy.hcl:89-91
-%{ if update_stanza }
-  kill_timeout = "24h"
-%{ endif }
-```
-
-**注意**:`kill_timeout` 只在 `update_stanza` 启用时注入。冷关闭(整个 job 销毁)走默认 Nomad 行为。
-
-### 10.5 与 API graceful shutdown 的对比
-
-| 项 | API | Client Proxy |
-| --- | --- | --- |
-| 健康状态 | `atomic.Bool Healthy`(2 态) | `ServiceInfo.status`(3 态) |
-| `/health` 行为 | Healthy=false → 503 | status≠Healthy → 503 |
-| Drain 等待 | 15s(等 GCP LB) | 15s(等 LB)+ 15s(等"已 unhealthy"传播) |
-| Shutdown 超时 | 75s(请求级) | 24h(连接级) |
-| 阶段 | Healthy=false → drain → Shutdown → pprof → cleanup | Draining → drain → Unhealthy → proxy.Shutdown → health.Shutdown → closers |
-
-API 的 shutdown 是"请求级"(70s requestTimeout + 5s slack),Client Proxy 是"连接级"(允许长连接排空 24h)。两者反映"控制面 vs 数据面"的根本差异。
-
----
-
 ## 十一、配置与环境变量
 
 ### 11.1 配置文件
@@ -1113,8 +1054,6 @@ func Parse() (Config, error) {
 | `HEALTH_PORT` | 3003 | 健康检查端口 |
 | `PROXY_PORT` | 3002 | HTTP proxy 端口(sandbox 数据面) |
 | `ORCHESTRATOR_PROXY_PORT`(2026.30 新增) | 5007 | client-proxy → orchestrator proxy 的目标端口。**为 0 时启动失败** |
-
-> ⛔ 2026.29 版本的本文注写着"这两个端口实际由 Nomad 的 `NOMAD_PORT_proxy` / `NOMAD_PORT_health` 决定,在 `client-proxy.hcl:104-105` 注入"——该 Nomad job spec 随 `iac/` 在 2026.30 一并删除(见文首退役提示),链接不可点。
 
 #### Redis
 
@@ -1170,7 +1109,7 @@ if apiGRPCAddress != "" {
 
 | Env var | 来源 | 用途 |
 | --- | --- | --- |
-| `NODE_ID` | `env.GetNodeID()` | 节点唯一 ID(Nomad 注入 `node.unique.id`),缺失即 fatal |
+| `NODE_ID` | `env.GetNodeID()` | 节点唯一 ID；`make run-local` 使用当前主机名 |
 | `LAUNCH_DARKLY_API_KEY` | `featureflags.NewClient` | 缺则用 offline test data |
 | `OTEL_COLLECTOR_GRPC_ENDPOINT` | `telemetry.New` | 缺则 telemetry 走 noop |
 | `E2B_DEBUG` | `env.IsDebug()` | 调试模式 |
@@ -1183,167 +1122,6 @@ go build -o bin/client-proxy -ldflags "-X=main.commitSHA=$(COMMIT_SHA)" .
 ```
 
 只注入 `commitSHA`,不像 API 那样还有 `expectedMigrationTimestamp`(client-proxy 不访问 DB,不需要 schema 版本校验)。
-
-### 11.4 Nomad job 关键 stanza
-
-> ⛔ **2026.30 起本节描述的 Nomad job 已不存在**:`iac/modules/job-client-proxy/` 随 `iac/` 整体删除。下面保留 2026.29 的 stanza 内容作为历史档案(它解释了 §11.2 里 `PROXY_PORT` / `HEALTH_PORT` 的历史来源),**链接不可点**。
-
-文件:[`iac/modules/job-client-proxy/jobs/client-proxy.hcl`](../iac/modules/job-client-proxy/jobs/client-proxy.hcl)
-
-```hcl
-job "client-proxy" {
-  node_pool = "${node_pool}"
-  priority  = 80                              # 比 API(90)低
-
-  group "client-proxy" {
-    restart {
-      attempts = 2                             # 10 min 内最多 2 次重启
-      interval = "10m"
-      delay    = "10s"
-      mode     = "fail"
-    }
-
-    reschedule {                               # 重启失败后,reschedule 到其他 node
-      delay          = "30s"
-      delay_function = "exponential"
-      max_delay      = "10m"
-      unlimited      = true
-    }
-
-    count = ${count}
-    constraint { operator = "distinct_hosts", value = "true" }
-
-    network {
-      port "proxy"  { static = "${proxy_port}" }
-      port "health" { static = "${health_port}" }
-    }
-
-    # update stanza 可选(由 var.update_stanza 决定)
-    update {
-      max_parallel      = ${update_max_parallel}
-      canary            = ${update_max_parallel}
-      min_healthy_time  = "10s"
-      healthy_deadline  = "30s"
-      auto_promote      = true
-      progress_deadline = "24h"
-    }
-
-    task "start" {
-      driver = "docker"
-      kill_timeout = "24h"                      # 与 proxy.Shutdown 的 24h 对齐
-      kill_signal  = "SIGTERM"
-
-      resources {
-        memory_max = ${memory_mb * 1.5}
-        memory     = ${memory_mb}
-        cpu        = ${cpu_count * 1000}        # MHz
-      }
-
-      env {
-        NODE_ID     = "$${node.unique.id}"
-        NODE_IP     = "$${attr.unique.network.ip-address}"
-        HEALTH_PORT = "$${NOMAD_PORT_health}"
-        PROXY_PORT  = "$${NOMAD_PORT_proxy}"
-      }
-
-      config {
-        network_mode = "host"
-        image        = "${image}"
-        ports        = ["proxy", "health"]
-      }
-    }
-  }
-}
-```
-
-### 11.5 Terraform 调用
-
-> ⛔ **2026.30 起本节的 Terraform 全部不存在**:`iac/modules/job-client-proxy/`、`iac/provider-gcp/nomad/main.tf`、`iac/provider-gcp/variables.tf`、`iac/provider-aws/nomad/main.tf` 均随 `iac/` 整体删除。保留为历史档案,**链接不可点**。
-
-模块入口:[`iac/modules/job-client-proxy/main.tf`](../iac/modules/job-client-proxy/main.tf)
-
-```hcl
-locals {
-  entrypoints = (
-    var.exposure_type == "both" ? "web,internal" :
-    var.exposure_type == "private" ? "internal" :
-    "web"
-  )
-}
-
-resource "nomad_job" "client_proxy" {
-  jobspec = templatefile("${path.module}/jobs/client-proxy.hcl", {
-    update_stanza       = var.update_stanza
-    count               = var.client_proxy_count
-    cpu_count           = var.client_proxy_cpu_count
-    memory_mb           = var.client_proxy_memory_mb
-    update_max_parallel = var.client_proxy_update_max_parallel
-    node_pool           = var.node_pool
-    proxy_port          = var.proxy_port
-    health_port         = var.health_port
-    image               = var.image
-    job_env_vars        = local.job_env_vars
-    entrypoints         = local.entrypoints
-  })
-}
-```
-
-GCP provider 调用([`iac/provider-gcp/nomad/main.tf:116-131`](../iac/provider-gcp/nomad/main.tf)):
-
-```hcl
-module "client_proxy" {
-  source                          = "../../modules/job-client-proxy"
-  client_proxy_count              = var.client_proxy_count
-  client_proxy_cpu_count          = var.client_proxy_resources_cpu_count
-  client_proxy_memory_mb          = var.client_proxy_resources_memory_mb
-  client_proxy_update_max_parallel = var.client_proxy_update_max_parallel
-  proxy_port  = var.client_proxy_session_port
-  health_port = var.client_proxy_health_port
-  image       = data.google_artifact_registry_docker_image.client_proxy_image.self_link
-  job_env_vars = var.client_proxy_env_vars
-  ...
-}
-```
-
-GCP 默认值([`iac/provider-gcp/variables.tf`](../iac/provider-gcp/variables.tf)):
-
-| Variable | 默认 |
-| --- | --- |
-| `client_proxy_count` | 1 |
-| `client_proxy_resources_memory_mb` | 1024 |
-| `client_proxy_resources_cpu_count` | 1 |
-| `client_proxy_update_max_parallel` | 1 |
-| `client_proxy_port.port` | 3002 |
-| `client_proxy_health_port.port` | 3001 |
-
-AWS provider 调用([`iac/provider-aws/nomad/main.tf:89-98`](../iac/provider-aws/nomad/main.tf))类似,但 image 来自 `data.aws_ecr_image.client_proxy.image_uri`。
-
-### 11.6 Released-image 部署模式
-
-Makefile `build-and-upload` 支持两种模式:
-
-```makefile
-# packages/client-proxy/Makefile:50-65
-.PHONY: build-and-upload
-build-and-upload:
-ifeq ($(strip $(CLIENT_PROXY_VERSION)),)
-    # 现有流程:从源码构建,push 到客户自己的 core repo
-    $(eval COMMIT_SHA := $(shell git rev-parse --short HEAD))
-    @docker buildx build --platform $(BUILD_PLATFORM) --tag $(IMAGE_REGISTRY) --tag $(IMAGE_REGISTRY):$(COMMIT_SHA) --push --build-arg COMMIT_SHA="$(COMMIT_SHA)" -f ./Dockerfile ..
-else
-    # Released-image 流程:从 E2B artifacts registry 拉预构建版本,retag/push
-    @echo "Using released client-proxy $(CLIENT_PROXY_VERSION) from $(E2B_ARTIFACTS_REGISTRY)"
-    docker pull --platform $(BUILD_PLATFORM) $(E2B_ARTIFACTS_REGISTRY):$(CLIENT_PROXY_VERSION)
-    docker tag $(E2B_ARTIFACTS_REGISTRY):$(CLIENT_PROXY_VERSION) $(IMAGE_REGISTRY):latest
-    docker tag $(E2B_ARTIFACTS_REGISTRY):$(CLIENT_PROXY_VERSION) $(IMAGE_REGISTRY):$(CLIENT_PROXY_VERSION)
-    docker push $(IMAGE_REGISTRY):latest
-    docker push $(IMAGE_REGISTRY):$(CLIENT_PROXY_VERSION)
-endif
-```
-
-`E2B_ARTIFACTS_REGISTRY ?= us-docker.pkg.dev/e2b-artifacts/client-proxy/client-proxy` —— 由 release-please workflow 在打 tag 时发布。客户可以通过 `CLIENT_PROXY_VERSION=v0.1.0` 跳过本地构建。
-
----
 
 ## 十二、Feature Flags
 
@@ -1441,19 +1219,6 @@ Client Proxy **没有专门的 LD context middleware**(不像 API 那样在 gin 
 | [`packages/shared/pkg/grpc/connobserver.go`](../packages/shared/pkg/grpc/connobserver.go) | §8.5 |
 | [`packages/shared/pkg/grpc/channelz.go`](../packages/shared/pkg/grpc/channelz.go) | §3.2 |
 
-### 13.6 部署
-
-> ⛔ **本小节全部 6 个路径在 2026.30 已随 `iac/` 整体删除**,链接不可点,保留为历史档案。`packages/client-proxy/` 服务本身仍在。
-
-| 文件 | 主节 |
-| --- | --- |
-| [`iac/modules/job-client-proxy/main.tf`](../iac/modules/job-client-proxy/main.tf) ⛔ | §11.5 |
-| [`iac/modules/job-client-proxy/variables.tf`](../iac/modules/job-client-proxy/variables.tf) ⛔ | §11.5 |
-| [`iac/modules/job-client-proxy/jobs/client-proxy.hcl`](../iac/modules/job-client-proxy/jobs/client-proxy.hcl) ⛔ | §7.1, §11.4 |
-| [`iac/provider-gcp/nomad/main.tf`](../iac/provider-gcp/nomad/main.tf) ⛔ | §11.5 |
-| [`iac/provider-gcp/variables.tf`](../iac/provider-gcp/variables.tf) ⛔ | §11.5 |
-| [`iac/provider-aws/nomad/main.tf`](../iac/provider-aws/nomad/main.tf) ⛔ | §11.5 |
-
 ### 13.7 测试
 
 | 文件 | 行数 | 主节 |
@@ -1481,7 +1246,7 @@ Client Proxy **没有专门的 LD context middleware**(不像 API 那样在 gin 
 9. **三阶段 graceful shutdown(Healthy → Draining → Unhealthy)**:每阶段 sleep 15s 让上游 LB / Traefik 有时间感知状态变化,避免在排空期间接收新请求。
 10. **`kill_timeout = 24h`** 与 `proxy.Shutdown(24h)` 对齐:允许长连接(WebSocket / sandbox 长任务)完整排空。
 11. **gRPC address 二选一**:`API_INTERNAL_GRPC_ADDRESS`(insecure,内网)优先,`API_EDGE_GRPC_ADDRESS`(TLS + OAuth)fallback。都没配时仍能启动(catalog miss 一律 502)。
-12. **OAuth client credentials 用 `sandboxes:lifecycle` scope**:API 端严格校验这个 scope,见 [`api-module.md` §5.3.3](api-module.md)。
+12. **OAuth client credentials 用 `sandboxes:lifecycle` scope**:API 端严格校验这个 scope。
 13. **gRPC metadata 透传 traffic access token**:客户端 HTTP 请求的 `e2b-traffic-access-token` / `X-Access-Token` header 被透传到 API → orchestrator → envd,用于 sandbox 内部的访问控制。
 14. **HTML 错误页**:8 种错误场景各有 embedded HTML 模板,让浏览器用户看到可读的错误信息而不是 raw JSON。
 15. **Traefik catch-all 路由 `PathPrefix("/")` priority=100**:确保所有未匹配的请求(sandbox 数据面)都路由到 client-proxy,而 API / dashboard-api 的具体路径用更高 priority 抢占。
@@ -1499,14 +1264,9 @@ CHANGELOG([`packages/client-proxy/CHANGELOG.md`](../packages/client-proxy/CHANGE
 
 之前提到 `local-dev: rename API_GRPC_ADDRESS to API_INTERNAL_GRPC_ADDRESS in local dev env (#2589)`——意味着历史上 client-proxy 用过通用名 `API_GRPC_ADDRESS`,后改名以区分 internal/edge。
 
-### 14.3 服务发现:从 Consul 到 Redis Catalog
+### 14.3 Local 模式的服务地址
 
-历史上 client-proxy 用过 Consul 做服务发现,但**当前实现完全没有 Consul/Nomad service discovery**。所有"哪个 sandbox 在哪"的信息都通过 **Redis sandbox catalog** 解析。
-
-唯一与 Nomad 的耦合是:
-- `NODE_ID` 从 `node.unique.id` 注入
-- `NOMAD_PORT_*` 注入端口
-- Traefik 通过 Nomad service 注册发现 client-proxy 实例
+沙箱运行节点由 Redis catalog 记录；client-proxy 不会逐个发现 orchestrator。Local 配置用静态服务地址将流量发给本机节点，相关变量见 [`packages/client-proxy/.env.local`](../packages/client-proxy/.env.local)。
 
 ---
 
@@ -1669,17 +1429,13 @@ const (
 
 ### 16.5 相关文档
 
-- [`api-module.md`](api-module.md) — API 服务
-- [`sandbox-management.md`](sandbox-management.md) — Sandbox 管理面
-- [`node-module.md`](node-module.md) — 节点 / 集群 / 服务发现
-- [`template-module.md`](template-module.md) — Template 模版系统
-- [`volumes.md`](volumes.md) — 持久化卷
-- [`snapshots.md`](snapshots.md) — Pause / Resume 与 snapshot
+- [Local 模式服务拓扑](./local-mode-map.md)
+- [沙箱创建与访问链路](./local-mode-flows.md)
+- [Volumes 持久化卷](./volumes.md)
+- [Snapshots 快照](./snapshots.md)
 - [`sandbox-lifecycle.md`](./sandbox-lifecycle.md) — Sandbox 生命周期
 - [`envd-module.md`](./envd-module.md) — Envd 模块导览
 
 ---
 
-> 文档版本:2026-09-10。已同步至 **2026.30**(2026.29 为上一版)。基于 tag `2026.30` 核对全部行号,涵盖 `packages/client-proxy/` 全部子系统 + 关键共享包(`packages/shared/pkg/proxy/`、`sandbox-catalog/`、`grpc/proxy/`)。后续演进(auto-resume 协议变化、双 catalog rollout、released-image 流程更新)请同步更新本文档。
->
-> ⛔ 注意:本文所有 `iac/**` 路径在 2026.30 已随 `iac/` 目录整体删除(见文首退役提示)。
+> 文档版本:2026-09-10。已同步至 **2026.30**。行号以 tag `2026.30` 为准，涵盖 `packages/client-proxy/` 与关键共享包(`packages/shared/pkg/proxy/`、`sandbox-catalog/`、`grpc/proxy/`)。

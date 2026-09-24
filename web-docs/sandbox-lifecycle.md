@@ -2,7 +2,7 @@
 
 > 范围:从用户调用 `POST /sandboxes` 创建沙箱,到 firecracker microVM 启动、网络/NBD/uffd 就绪、envd 握手;再到 pause / resume / refresh / timeout / kill 的端到端流程。涉及 `packages/api/internal/handlers/sandbox*.go`、`packages/api/internal/orchestrator/`、`packages/api/internal/sandbox/`(运行态 store)、`packages/orchestrator/pkg/sandbox/`(orchestrator 端 VM 管理)、`packages/orchestrator/orchestrator.proto`(gRPC 协议)与 `packages/client-proxy/`(数据面)。
 >
-> 本文聚焦「一个沙箱实例的诞生、运行、暂停、恢复、死亡」这一主链路。沙箱列表查询、metrics/logs、模板缓存策略、多集群拓扑分别见 `sandbox-management.md`、`sandbox-api-module.md`、`template-cache-module.md`(待写)、`clusters-module.md`。
+> 本文聚焦「一个沙箱实例的诞生、运行、暂停、恢复、死亡」这一主链路。本地服务拓扑和启动顺序见 [`Local 模式服务拓扑`](./local-mode-map.md) 与 [`Local 模式启动顺序`](./local-mode-start.md)；相关源码分别位于 `packages/api/internal/handlers/`、`packages/orchestrator/pkg/sandbox/` 和 `packages/api/internal/clusters/`。
 
 ## 目录
 
@@ -75,8 +75,6 @@
 
 ### 0.3 基础设施失效
 
-⛔ `iac/` 目录在 2026.30 被整体删除（172 个文件 → 0，commit `8a1c4888`「chore(deploy): retire Nomad-based deployment ahead of a new deploy path」），根目录 `self-host.md` 随之删除。⚠️ `packages/docker-reverse-proxy/`（19 个文件 → 0）是**另一个更早的提交** `d153bbe9d`（2026-08-06）删的，不在 `8a1c4888` 这批里。本文正文中若出现 `../iac/**` 引用，一律视为历史档案。`packages/nomad-nodepool-apm/` 仍然存在。
-
 ---
 
 ## 一、概述
@@ -136,11 +134,11 @@ E2B 的「沙箱」(sandbox)是一个**运行中的 Firecracker microVM 实例**
 
 | 主题 | 文档 |
 |---|---|
-| 列表查询、过滤、分页 | `sandbox-management.md` |
-| Sandbox 的 metrics/logs HTTP 端点 | `sandbox-api-module.md` |
-| 模板 rootfs 缓存策略 | `template-cache-module.md`(待写)|
-| 沙箱快照(snapshot)实现细节 | `snapshots.md` |
-| 多集群路由与 builder 节点 | `clusters-module.md` |
+| 列表查询、过滤、分页 | `packages/api/internal/handlers/sandbox_*.go` |
+| Sandbox 的 metrics/logs HTTP 端点 | `packages/api/internal/handlers/` |
+| 模板 rootfs 缓存策略 | `packages/orchestrator/pkg/sandbox/template/` |
+| 沙箱快照(snapshot)实现细节 | `packages/orchestrator/pkg/sandbox/` |
+| 多集群路由与 builder 节点 | `packages/api/internal/clusters/` |
 | **沙箱实例的生命周期** | **本文** |
 
 ---
@@ -254,11 +252,11 @@ OpenAPI 端点(`spec/openapi.yml`):
 | `/sandboxes/{id}/refreshes` | POST | `PostSandboxesSandboxIDRefreshes`(`sandbox_refresh.go:18`)| 延长 EndTime |
 | `/sandboxes/{id}/timeout` | POST | `PostSandboxesSandboxIDTimeout`(`sandbox_timeout.go:17`)| 设置/缩短 EndTime |
 | `/sandboxes/{id}/network` | PUT | `PutSandboxesSandboxIDNetwork`(`sandbox_network_update.go:21`)| 更新 egress/ingress 规则 |
-| `/admin/teams/{tid}/sandboxes/kill` | POST | 见 `admin-module.md` | 管理员批量 kill |
+| `/admin/teams/{tid}/sandboxes/kill` | POST | `packages/api/internal/handlers/` | 管理员批量 kill |
 
 ### 安全方案
 
-所有 sandbox 端点都接受 4 种 scheme 组合(ApiKeyAuth / AccessTokenAuth / AuthProviderBearerAuth+AuthProviderTeamAuth / AdminApiKeyAuth+AdminTeamAuth),与 `/v2/templates` 一致(见 `template-build-flow.md` §3)。
+所有 sandbox 端点都通过 API 的认证中间件校验调用凭证；本地种子 API key 的准备步骤见 [`DEV-LOCAL.md`](../DEV-LOCAL.md)。
 
 ---
 
@@ -304,7 +302,7 @@ type Orchestrator struct {
 - `discoverNomadNodes`(client.go:180) — 通过 Nomad 服务发现本集群所有节点
 - `discoverClusterNode`(client.go:209) — 通过 cluster 的 edge API 发现远端节点
 
-详见 `clusters-module.md` §7。
+本地节点发现由 `packages/api/internal/handlers/` 选择 `local` provider，节点定义位于 `packages/shared/pkg/servicediscovery/`。
 
 ---
 
@@ -582,7 +580,7 @@ HostKernelPath(version, arch) = ${HostKernelsDir}/{version}/{arch}/{artifact.Ker
 FirecrackerPath(version, arch) = ${FirecrackerVersionsDir}/{version}/{arch}/firecracker
 ```
 
-模板构建时(`template-build-flow.md` §17.1)由 `BuildFirecrackerVersion` / `BuildKernelVersion` feature flag 决定,运行时 sandbox 沿用其模板的版本。
+模板构建时由 `BuildFirecrackerVersion` / `BuildKernelVersion` feature flag 决定 Firecracker 与 Kernel 版本,运行时 sandbox 沿用其模板的版本。
 
 ---
 
@@ -777,7 +775,7 @@ type Template interface {
 
 `Storage` struct(`template/storage.go:25`)包装 `block.Device`,实现 `ReadAt` / `Slice` / `Size`,从 GCS 按需读取。NBD 层只负责暴露成 `/dev/nbdX`,GCS 拉取/缓存由 `template/` 层负责。
 
-详见 `template-cache-module.md`(待写)。
+模板缓存实现位于 `packages/orchestrator/pkg/sandbox/template/`。
 
 ---
 
@@ -1136,7 +1134,7 @@ func evictSandbox(sbx *Sandbox) {
 |---|---|---|
 | `DELETE /sandboxes/{id}` | `Request` | `sandbox_kill.go:39` |
 | Evictor 超时(`AutoPause=false`) | `Timeout` | `evict.go:161` |
-| `POST /admin/teams/.../sandboxes/kill` | `Admin` | 见 `admin-module.md` |
+| `POST /admin/teams/.../sandboxes/kill` | `Admin` | API 管理 handler |
 | Orchestrator 重启发现 orphan | `Orphaned` | `delete_instance.go:201` `killOrphanSandbox` |
 | 模板被删 | `BaseTemplateMissing` | (内部清理)|
 
@@ -1692,7 +1690,7 @@ host 上的 iptables MASQUERADE + nftables Firewall 控制出入站。`DenyEgres
 |---|---|
 | `Request` | `DELETE /sandboxes/{id}`(`sandbox_kill.go:39`)|
 | `Timeout` | `evict.go:161`(AutoPause=false 时)|
-| `Admin` | `POST /admin/teams/{tid}/sandboxes/kill`(见 admin-module.md)|
+| `Admin` | `POST /admin/teams/{tid}/sandboxes/kill`(API 管理 handler)|
 | `Orphaned` | `killOrphanSandbox`(`delete_instance.go:201`)|
 | `BaseTemplateMissing` | 模板删除触发的清理 |
 | `Unknown` | 默认值,生产不应出现 |

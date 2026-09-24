@@ -4,11 +4,10 @@
 >
 > envd 是每个 E2B Firecracker microVM 内必驻的"代理进程",承担进程管理、文件系统操作、端口转发、日志收集、cgroup 管理等职责,是 SDK 与 sandbox 内部世界交互的桥梁。
 >
-> **相关文档**:
-> - [`template-module.md`](template-module.md) — Template 模版系统(envd 自身的版本与 template 绑定)
-> - [`sandbox-management.md`](sandbox-management.md) — Sandbox 管理(orchestrator 通过 gRPC 调 envd)
-> - [`snapshots.md`](snapshots.md) — Snapshot / pause / resume(envd 配合 freeze/collapse)
-> - [`orchestrator-module.md`](orchestrator-module.md) — Orchestrator(对 envd 的反向调用)
+> **本地学习入口**:
+> - [Local 模式服务拓扑](./local-mode-map.md)
+> - [沙箱创建与访问链路](./local-mode-flows.md)
+> - [Sandbox 生命周期专题](./sandbox-lifecycle.md)
 
 ---
 
@@ -22,7 +21,7 @@
 | --- | --- | --- |
 | [`packages/envd/pkg/version.go`](../packages/envd/pkg/version.go) | `Version = "0.6.10"` | `Version = "0.8.0"`(`version.go:3`,带 `// x-release-please-version` 注解) |
 
-`0.6.10 → 0.8.0` 之间还经历了 **0.6.11 → 0.6.12 → 0.6.13 → 0.7.0** 四轮 bump,每一轮都对应行为变更(`version.go` 的注释要求"任何行为变更都必须 bump,注释/文档变更不算")。逐版本链条与对应 commit 见 [envd-package.md §1.3](envd-package.md)。
+Envd 版本在 [`packages/envd/pkg/version.go`](../packages/envd/pkg/version.go) 中维护；行为变更时需同步更新版本号。
 
 ### 新增能力
 
@@ -69,7 +68,7 @@
 - 新增的 `spec/upgrade/handover.proto` **只定义 message,不定义 service**,所以 2026.30 **没有新增 Connect RPC service**。
 - `spec/buf.gen.yaml`、`spec/buf.gen.shared.yaml`、`spec/generate.go` 未变。
 
-> ⚠️ "离线替换 envd"(`envd-offline-upgrade-target` feature flag + 在 jailed 环境用 `debugfs` 改写 `/usr/bin/envd`)是 **orchestrator 侧**行为,不在 envd 进程内实现,因此本文不展开;细节见 [snapshots.md §7.4](snapshots.md)。envd 侧只提供 §13.5 描述的在线 `POST /upgrade`。
+> ⚠️ "离线替换 envd"(`envd-offline-upgrade-target` feature flag + 在 jailed 环境用 `debugfs` 改写 `/usr/bin/envd`)是 **orchestrator 侧**行为,不在 envd 进程内实现;快照恢复上下文见 [Sandbox 生命周期专题](./sandbox-lifecycle.md)。envd 侧只提供 §13.5 描述的在线 `POST /upgrade`。
 
 ---
 
@@ -1938,7 +1937,7 @@ orchestrator ── POST /upgrade(body = 新 envd 二进制)──▶ 旧 envd
 | `guest_frozen_cgroups` | guest 自己冻的 cgroup 路径,供 thaw 时保留 |
 | `defaults` | `HandoverDefaults`:user、workdir、has_workdir |
 
-> ⛔ 与"离线替换 envd"区分:`envd-offline-upgrade-target` flag + `debugfs` 改写 rootfs 里的 `/usr/bin/envd` 是 **orchestrator 侧**行为(cold boot 时生效),不在 envd 进程内,本文不展开;见 [snapshots.md §7.4](snapshots.md)。
+> ⛔ 与"离线替换 envd"区分:`envd-offline-upgrade-target` flag + `debugfs` 改写 rootfs 里的 `/usr/bin/envd` 是 **orchestrator 侧**行为(cold boot 时生效),不在 envd 进程内,本文不展开;见 [Sandbox 生命周期专题](./sandbox-lifecycle.md)。
 
 ---
 

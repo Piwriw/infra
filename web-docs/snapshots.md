@@ -2,7 +2,7 @@
 
 > 范围:从 HTTP API、数据库、orchestrator gRPC、Firecracker、envd 全链路梳理"快照"功能。
 > 数据来源:代码与迁移文件,已同步至 2026.30(2026-09-10)。行号均按 tag `2026.30` 核对。
-> 配套文档:数据库字段见 [`database-schema.md`](./database-schema.md),sandbox 创建/模板拉取见 `sandbox-lifecycle.md` / `template-module.md`。
+> 数据库定义位于 `packages/db/migrations/` 与 `packages/db/queries/`；sandbox 创建和恢复路径见[沙箱生命周期](./sandbox-lifecycle.md)，本地启动步骤见 [`DEV-LOCAL.md`](../DEV-LOCAL.md)。
 
 ---
 
@@ -136,11 +136,11 @@ GET /snapshots?limit=100&next_token=<base64>
 
 | 表 | 角色 |
 | --- | --- |
-| [`snapshots`](./database-schema.md#snapshots) | 每次 pause/checkpoint 一行,记录 sandbox 暂停状态 |
-| [`snapshot_templates`](./database-schema.md#snapshot_templates) | 提升为可复用模板的快照,以 `env_id` 为主键 |
-| [`envs`](./database-schema.md#envs) | 快照模板会创建一个 `source='snapshot_template'` 的新 env;Pause 创建 `source='snapshot'` 的 env |
-| [`env_builds`](./database-schema.md#env_builds) | 每次 pause 创建一个新 build,**从源 build 复制 CPU info** |
-| [`env_build_assignments`](./database-schema.md#env_build_assignments) | link env 与 build,带 tag |
+| `snapshots` | 每次 pause/checkpoint 一行,记录 sandbox 暂停状态 |
+| `snapshot_templates` | 提升为可复用模板的快照,以 `env_id` 为主键 |
+| `envs` | 快照模板会创建一个 `source='snapshot_template'` 的新 env;Pause 创建 `source='snapshot'` 的 env |
+| `env_builds` | 每次 pause 创建一个新 build,**从源 build 复制 CPU info** |
+| `env_build_assignments` | link env 与 build,带 tag |
 
 ### 3.2 关键 SQL 查询
 
@@ -844,6 +844,8 @@ orchestrator 端 `packages/orchestrator/pkg/sandbox/template/cache.go:221` 把�
 
 ## 9. 配置项与 Feature Flags
 
+**Local 模式的产物目录。** orchestrator 用 `cfg.TemplateStorage()` 创建模板与沙箱快照共用的持久化 provider。当前 [`packages/orchestrator/.env.local`](../packages/orchestrator/.env.local) 配置 `STORAGE_PROVIDER=Local` 和 `LOCAL_TEMPLATE_STORAGE_BASE_PATH=./tmp/local-template-storage`，因此模板、pause/checkpoint 产生的快照产物保存在本地文件系统；`LOCAL_BUILD_CACHE_STORAGE_BASE_PATH` 是单独的模板构建缓存目录。Local 操作步骤见[模板构建专题](./local-mode-template-build.md)。
+
 ### 9.1 Feature Flags(LaunchDarkly)
 
 | Flag | 默认 | 影响 |
@@ -1033,7 +1035,7 @@ tests/periodic-test/snapshot-and-resume.ts  ← 周期性回归测试
 Pause 让 sandbox 进入 paused 状态(后续可 resume,但没有独立模板);Checkpoint 是"full-memory snapshot + 立即原地 resume",**原 sandbox 继续运行**。`/snapshots` 会在 checkpoint 外再创建或关联可复用模板,而 `/fork` 只刷新原 sandbox 的 snapshot row 并从中创建新 ID。
 
 **Q2: 为什么 `env_builds.env_id` 无 FK?**
-详见 [`database-schema.md` § 8.4](./database-schema.md#84-env--build-多对多去-fk-的反范式)。snapshot 流程也复用此设计:`CreateTemplateBuildAssignment` 显式写 `env_build_assignments`,触发器回填 `env_builds.env_id`。
+Schema 关系定义在 `packages/db/migrations/`；snapshot 流程也复用此设计:`CreateTemplateBuildAssignment` 显式写 `env_build_assignments`,触发器回填 `env_builds.env_id`。
 
 **Q3: 同一 sandbox 多次 pause 怎么办?**
 `snapshots.sandbox_id` 是 UNIQUE 的。`UpsertSnapshot` 用 `ON CONFLICT (sandbox_id) DO UPDATE`:首次创建 env+snapshot+build;后续只更新 snapshot 字段(metadata/origin_node_id/config)+ 新建一个 build。

@@ -679,6 +679,8 @@ PERSISTENT_VOLUME_MOUNTS=nfs:/data/nfs,local-ssd:/mnt/ssd
 ```
 解析后存为 `map[string]string`,key 是 volume type,value 是根目录绝对路径。`cfg` 启动时 `filepath.Clean + Abs + Stat` 校验每个挂载点,不存在就启动失败。
 
+**Local 开发配置**：当前 [`packages/orchestrator/.env.local`](../packages/orchestrator/.env.local) 将 `test-volume-type` 映射到 `./.data/test-volume`，并把它设为默认卷类型。`make -C packages/orchestrator run-local` 会先创建这个目录；orchestrator 按启动时的工作目录把相对路径转成绝对路径，并检查目录存在。每个卷随后落在该根目录下独立的 `team-<uuid>/vol-<uuid>/` 子目录中。
+
 **路径布局**:
 ```
 <data/nfs>/                       ← volume type root

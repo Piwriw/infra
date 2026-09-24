@@ -1,8 +1,8 @@
-# E2B 数据库表字段与关联关系参考
+# Local 模式数据字典：PostgreSQL、ClickHouse 与 Redis
 
-> 数据来源:`packages/db/migrations/` 下 133 个 goose 迁移,已同步至 `20260826075153_add_free_disk_limit_columns.sql`。
-> 本文档聚焦**每个表的字段作用**与**跨表关联关系**,并在迁移轨迹、索引和触发器章节中记录 schema 的演进细节。
-> 已按 2026.30 迁移状态校对(2026-09-10)。
+> PostgreSQL、ClickHouse 的表结构以各自 `migrations/` 下的迁移为准；Redis 部分按 key 定义和读写代码整理。
+> PostgreSQL 已同步至 `packages/db/migrations/20260826075153_add_free_disk_limit_columns.sql`；ClickHouse 已同步至 `packages/clickhouse/migrations/20260818120000_add_sandbox_egress.sql`。
+> 页面面向 Local 模式学习：解释字段/key 的业务含义和本地服务如何使用它们。没有迁移创建方的外部 key 会单独注明。
 >
 > **2026.30 变动**(2026.29 → 2026.30,迁移 111 → 133 个):
 > - ⛔ `access_tokens` 表与 `generate_access_token()` 函数被 `DROP`(§4);用户级凭证路径只剩 `team_api_keys`。
@@ -51,6 +51,8 @@
 - [9. 索引与触发器一览](#9-索引与触发器一览)
 - [10. 常见查询模式](#10-常见查询模式)
 - [11. 并发与一致性要点](#11-并发与一致性要点)
+- [12. ClickHouse 表与字段](#12-clickhouse-表与字段)
+- [13. Redis key 与值结构](#13-redis-key-与值结构)
 - [附录:迁移文件命名规范](#附录迁移文件命名规范)
 
 ---
@@ -1686,6 +1688,240 @@ projection.project_limits  (project_id)           PRIMARY KEY (project_id)
 两张表都是 `ON DELETE CASCADE` 到 `public.teams(id)`,且 `project_id` 即主键(`project_members` 为复合主键),因此不存在同一 project 的重复 fence 行。`CHECK (revision > 0)` 让"未初始化"无法用 0 表示——行不存在才是未初始化。
 
 ---
+
+## 12. ClickHouse 表与字段
+
+本节列出当前迁移最终保留的表。`*_local` 是各分片上的 MergeTree 数据表；同名不带 `_local` 的表通常是 `Distributed` 路由入口，字段从 local 表继承。两个 OTel 入口是例外：`metrics_gauge`、`metrics_sum` 使用 `Null` 引擎，接收数据后由 Materialized View 分流，不保存明细。
+
+| 表 | 类型 | 用途 | 保留策略 / 分片 |
+| --- | --- | --- | --- |
+| `metrics_gauge` | OTel `Null` 入口 | 接收 gauge 指标并触发下游 MV | 不落盘 |
+| `metrics_sum` | OTel `Null` 入口 | 接收 sum 指标并触发下游 MV | 不落盘 |
+| `sandbox_metrics_gauge_local` / `sandbox_metrics_gauge` | MergeTree / Distributed | 沙箱级 gauge 指标 | 7 天；按 `sandbox_id` 分片 |
+| `team_metrics_gauge_local` / `team_metrics_gauge` | MergeTree / Distributed | 团队级 gauge 指标 | 90 天；按 `team_id` 分片 |
+| `team_metrics_sum_local` / `team_metrics_sum` | MergeTree / Distributed | 团队级 sum 指标 | 90 天；按 `team_id` 分片 |
+| `sandbox_events_local` / `sandbox_events` | MergeTree / Distributed | 沙箱生命周期与业务事件 | 每行 `events_ttl_days`，默认 7 天；按 `sandbox_id` 分片 |
+| `sandbox_host_stats_local` / `sandbox_host_stats` | MergeTree / Distributed | Firecracker 与 cgroup 资源统计 | 7 天；按 `sandbox_id` 分片 |
+| `webhook_deliveries_local` / `webhook_deliveries` | MergeTree / Distributed | Webhook 投递记录 | 7 天；按 `team_id` 分片 |
+| `sandbox_logs_local` / `sandbox_logs` | MergeTree / Distributed | 沙箱和模板构建日志 | 按服务端 `ingested_at` 保留 7 天；按 `team_id` 分片 |
+| `sandbox_egress_local` / `sandbox_egress` | MergeTree / Distributed | 沙箱出站连接的防火墙裁决 | 按服务端 `ingested_at` 保留 7 天；按 `sandbox_id` 分片 |
+
+Materialized View 本身负责转换和分流，不需要单独维护一份业务字段定义。
+
+### 12.1 OTel 指标入口
+
+`metrics_gauge` 与 `metrics_sum` 使用 OpenTelemetry 指标模型。两者的共同字段如下：
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `ResourceAttributes` | `Map(LowCardinality(String), String)` | Resource 维度，如服务、team、sandbox 标识 |
+| `ResourceSchemaUrl` | `String` | Resource 属性 schema URL |
+| `ScopeName` / `ScopeVersion` | `String` | instrumentation scope 名称和版本 |
+| `ScopeAttributes` | `Map(LowCardinality(String), String)` | instrumentation scope 附加属性 |
+| `ScopeDroppedAttrCount` | `UInt32` | 被丢弃的 scope 属性数量 |
+| `ScopeSchemaUrl` | `String` | Scope 属性 schema URL |
+| `ServiceName` | `LowCardinality(String)` | 服务名 |
+| `MetricName` | gauge 为 `LowCardinality(String)`；sum 为 `String` | 指标名 |
+| `MetricDescription` / `MetricUnit` | `String` | 指标说明和单位 |
+| `Attributes` | `Map(LowCardinality(String), String)` | 数据点维度；MV 从这里提取 `team_id`、`sandbox_id` 等 |
+| `StartTimeUnix` / `TimeUnix` | `DateTime64(9)` | 数据点起始时间和采样时间 |
+| `Value` | `Float64` | 指标数值 |
+| `Flags` | `UInt32` | OTel 数据点标志 |
+| `Exemplars` | `Nested(FilteredAttributes Map(LowCardinality(String), String), TimeUnix DateTime64(9), Value Float64, SpanId String, TraceId String)` | exemplar 与 trace 的关联信息 |
+
+`metrics_sum` 还包含 `AggregationTemporality Int32`（聚合时间语义）和 `IsMonotonic Boolean`（是否单调递增）。两张入口表使用 `Null` 引擎：写入会触发 MV，但入口表本身不保存历史行。当前 `metrics_gauge_local` 已被 `20250721084412_routing.sql` 移除，不属于最终 schema。
+
+### 12.2 沙箱与团队指标
+
+| 表 | 字段 | 类型 | 含义 |
+| --- | --- | --- | --- |
+| `sandbox_metrics_gauge_local` | `timestamp` | `DateTime64(9)` | 采样时间 |
+|  | `sandbox_id` | `String` | 沙箱 ID |
+|  | `team_id` | `String` | 所属 team ID（从 OTel attribute 提取） |
+|  | `build_id` | `String DEFAULT ''` | 创建沙箱所用 build ID |
+|  | `sandbox_type` | `LowCardinality(String) DEFAULT 'sandbox'` | sandbox 类型 |
+|  | `metric_name` | `LowCardinality(String)` | 指标名 |
+|  | `value` | `Float64` | 指标值 |
+| `team_metrics_gauge_local`、`team_metrics_sum_local` | `timestamp` | `DateTime64(9)` | 采样时间 |
+|  | `team_id` | `String` | 所属 team ID |
+|  | `metric_name` | `LowCardinality(String)` | 指标名 |
+|  | `value` | `Float64` | gauge 或 sum 指标值 |
+
+`sandbox_metrics_gauge_mv` 从 `metrics_gauge` 选择 `MetricName LIKE 'e2b.sandbox.%'` 的数据；`team_metrics_gauge_mv` 和 `team_metrics_sum_mv` 选择 `MetricName LIKE 'e2b.team.%'`。它们把 OTel 字段映射到以上业务列，并写入对应 Distributed 表。
+
+沙箱指标按 `(sandbox_id, metric_name, timestamp)` 排序，保留 7 天；团队指标按 `(team_id, metric_name, timestamp)` 排序，保留 90 天（迁移 `20250822155059`）。三类表按日期分区；MergeTree 数据表使用 `ttl_only_drop_parts = 1`。
+
+### 12.3 沙箱事件
+
+`sandbox_events_local`（`sandbox_events` Distributed 表结构相同）：
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `id` | `UUID DEFAULT generateUUIDv4()` | 事件行 ID |
+| `timestamp` | `DateTime64(9)` | 事件发生时间 |
+| `sandbox_id` | `String` | 沙箱 ID |
+| `sandbox_execution_id` | `String` | 本次沙箱执行实例 ID |
+| `sandbox_template_id` | `String` | 模板 ID |
+| `sandbox_build_id` | `String` | build ID |
+| `sandbox_team_id` | `UUID` | team ID |
+| `event_category` / `event_label` | `LowCardinality(String)` | 事件分类及标签 |
+| `type` | `LowCardinality(String)` | 规范化事件类型，例如 `sandbox.lifecycle.created` |
+| `version` | `String DEFAULT 'v1'` | 事件 schema 版本；历史生命周期事件已迁移到 `v2` |
+| `event_data` | `Nullable(String)` | 可选事件内容 |
+| `events_ttl_days` | `Int64 DEFAULT 7` | 此行保留天数，供团队事件保留配置使用 |
+
+表按 `(sandbox_id, timestamp)` 排序、按 timestamp 分区。TTL 按每行的 `events_ttl_days` 计算，因此关闭 `ttl_only_drop_parts`，由 TTL merge 清除过期行。按 `sandbox_team_id` 过滤的查询还可使用 `proj_team_id` projection。
+
+### 12.4 主机统计、Webhook 与日志
+
+**`sandbox_host_stats_local`**（`sandbox_host_stats` Distributed 表结构相同）记录 VM 和 cgroup 的定期采样：
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `timestamp` | `DateTime64(9)` | 采样时间 |
+| `sandbox_id` / `sandbox_execution_id` | `String` | 沙箱与执行实例标识 |
+| `sandbox_template_id` / `sandbox_build_id` | `String` | 模板与 build 标识 |
+| `sandbox_team_id` | `UUID` | team 标识 |
+| `sandbox_type` | `LowCardinality(String) DEFAULT 'sandbox'` | sandbox 类型 |
+| `sandbox_vcpu_count` / `sandbox_memory_mb` | `Int64` | 配置的 vCPU 数和内存 MB |
+| `firecracker_cpu_user_time` / `firecracker_cpu_system_time` | `Float64` | Firecracker 进程累计 user/system CPU 时间 |
+| `firecracker_memory_rss` / `firecracker_memory_vms` | `UInt64` | Firecracker RSS 与虚拟内存字节数 |
+| `cgroup_cpu_usage_usec` / `cgroup_cpu_user_usec` / `cgroup_cpu_system_usec` | `UInt64 DEFAULT 0` | cgroup 累计 CPU 使用量（微秒） |
+| `cgroup_memory_usage_bytes` / `cgroup_memory_peak_bytes` | `UInt64 DEFAULT 0` | cgroup 当前/峰值内存字节数 |
+| `delta_cgroup_cpu_usage_usec` / `delta_cgroup_cpu_user_usec` / `delta_cgroup_cpu_system_usec` | `UInt64 DEFAULT 0` | 相邻采样区间的 CPU 使用增量 |
+| `interval_us` | `UInt64 DEFAULT 0` | 两次增量采样之间的微秒数 |
+
+该表按 `(sandbox_id, timestamp)` 排序、按 timestamp 分区，保留 7 天。
+
+**`webhook_deliveries_local`**（分布式入口 `webhook_deliveries`）按 `(team_id, webhook_id, timestamp, id)` 排序，保留 7 天：
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `id` / `team_id` / `webhook_id` / `event_id` | `UUID` | 投递、team、webhook、事件标识 |
+| `timestamp` | `DateTime64(9)` | 投递时间 |
+| `sandbox_id` | `String` | 关联沙箱 ID |
+| `event_type` / `delivery_status` | `LowCardinality(String)` | 事件类型和投递状态 |
+| `duration_ms` | `UInt32` | 投递耗时毫秒 |
+| `request_body` / `request_headers` / `request_url` | `String` | 请求内容、请求头和 URL |
+| `response_body` / `response_headers` | `Nullable(String)` | 响应内容和响应头 |
+| `response_http_status_code` | `Nullable(UInt16)` | HTTP 响应状态码 |
+| `error_class` | `LowCardinality(String)` | 错误分类 |
+| `error_message` | `Nullable(String)` | 可选错误文本 |
+
+**`sandbox_logs_local`**（分布式入口 `sandbox_logs`）按 `(team_id, sandbox_id, timestamp)` 排序，按服务端写入的 `ingested_at` 分区并保留 7 天：
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `timestamp` | `DateTime64(9)` | 日志事件时间 |
+| `ingested_at` | `DateTime64(9) DEFAULT now64(9)` | ClickHouse 接收时间，负责分区和 TTL |
+| `team_id` | `UUID` | 所属 team |
+| `sandbox_id` / `template_id` / `build_id` | `String` | 沙箱、模板与构建标识 |
+| `service` / `category` / `level` | `LowCardinality(String)` | 服务、类别和级别 |
+| `message` / `raw` / `fields` | `String` | 展示文本、原始内容和结构化字段文本 |
+
+日志表有 `idx_build_id` bloom filter，以及用于子串搜索的 `idx_message_ngram`。
+
+### 12.5 出站网络裁决
+
+`sandbox_egress_local`（分布式入口 `sandbox_egress`）记录防火墙给出的一次出站决策及该 flush 区间的汇总：
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `first_seen` / `last_seen` | `DateTime64(9)` | 节点看到该目的连接的首末时间 |
+| `ingested_at` | `DateTime64(9) DEFAULT now64(9)` | ClickHouse 接收时间；分区和 TTL 使用它 |
+| `team_id` | `UUID` | 所属 team |
+| `sandbox_id` / `sandbox_execution_id` | `String` | 沙箱与执行实例标识 |
+| `sandbox_template_id` / `sandbox_build_id` | `String` | 模板与 build 标识 |
+| `sandbox_type` / `protocol` | `LowCardinality(String)` | sandbox 类型和网络协议 |
+| `destination_ip` | `String` | 目的 IP 原始文本；保持 String 以便 IPv4 CIDR 判断正确 |
+| `destination_port` | `UInt16` | 目的端口 |
+| `server_name` | `Nullable(String)` | TLS SNI 或 HTTP Host；缺少时为 NULL |
+| `decision` / `match_type` | `LowCardinality(String)` | 放行/拒绝结果及命中的规则类型 |
+| `connections` | `UInt64` | 此行聚合的连接数 |
+
+表按 `(team_id, sandbox_id, destination_ip, destination_port, last_seen)` 排序，按 `ingested_at` 保留 7 天；另有目的 IP、server name 和 sandbox ID 的 bloom filter。行代表防火墙判定，不等于上游连接成功；统计连接量应累加 `connections`。仓库有建表迁移，但没有该表的写入实现。
+
+### 12.6 源码位置与退役表
+
+- ClickHouse schema：[`packages/clickhouse/migrations/`](../packages/clickhouse/migrations/)
+- Local ClickHouse 容器与迁移入口：[`packages/local-dev/`](../packages/local-dev/)
+- 沙箱日志读路径：[`packages/clickhouse/pkg/sandboxlogs/`](../packages/clickhouse/pkg/sandboxlogs/)
+- `product_usage` 在 `20251017213617_remove_product_usage.sql` 的 Up 迁移中被删除，不属于当前表集。
+
+## 13. Redis key 与值结构
+
+Redis 保存运行中沙箱的权威状态、路由目录、短期协调数据和缓存。通用 key 分段使用冒号；同一 team 的沙箱数据带 `{teamID}` hash tag，使 Lua 脚本、MGET 和事务需要访问的 key 落在同一 Redis Cluster slot。多数状态 key 没有独立 TTL，由生命周期清理代码删除或维护索引。
+
+### 13.1 沙箱运行状态与索引
+
+| Key pattern | Redis 类型 | 值 / 用途 | 过期或清理 |
+| --- | --- | --- | --- |
+| `sandbox:storage:{teamID}:sandboxes:{sandboxID}` | String（JSON） | 一个运行中沙箱的完整 `sandboxtypes.Sandbox` 记录 | 写入时不设置 TTL；结束时删除 |
+| `sandbox:storage:{teamID}:index` | Set | 该 team 的 sandbox ID 集合，供列表和配额计数 | 与沙箱记录一起增删 |
+| `sandbox:storage:global:expiration` | Sorted Set | member 为 `teamID:sandboxID:executionID`，score 为 `EndTime` 的 Unix 毫秒；供过期扫描 | 无 TTL；扫描时清理过期、孤立或失效 execution 项 |
+| `sandbox:storage:global:teams` | Sorted Set | member 为 team ID，score 为最近写入时的 Unix 秒；供跨 team 扫描 | 无 TTL；扫描时清理空 team 项 |
+
+沙箱 JSON 的字段定义在 [`sandboxtypes.Sandbox`](../packages/api/internal/sandbox/sandboxtypes/sandbox.go)：sandbox/template/build/execution/team/node/cluster ID、状态、开始与结束时间、CPU/内存/磁盘配置、Firecracker 和 envd 版本、网络、volume mounts、自动暂停/恢复、IAM 配置和访问令牌字段。Redis 这份记录是运行状态的来源；PostgreSQL 保存模板、构建、快照等长期元数据。访问令牌属于运行时状态，排障时不要把原始值贴入日志或文档。
+
+### 13.2 沙箱创建预留与状态转换
+
+| Key pattern | Redis 类型 | 值 / 用途 | TTL |
+| --- | --- | --- | --- |
+| `sandbox:storage:{teamID}:reservations:pending` | Sorted Set | 正在创建的 sandbox ID；score 是预留时 Unix 秒，Lua 脚本用它原子检查并发上限 | key 不设 TTL；预留超过 90 秒会在后续预留操作中清理 |
+| `sandbox:storage:{teamID}:reservations:{sandboxID}:result` | String（JSON） | 创建结果：sandbox 数据，或可跨 API 实例传递的错误字段 | 30 秒 |
+| `sandbox:storage:{teamID}:transition:{sandboxID}` | String | 当前状态转换的 UUID，防止并发 pause/resume/kill 等操作冲突 | 70 秒 |
+| `sandbox:storage:{teamID}:transition:{sandboxID}:{transitionID}` | String | 状态转换结果；空字符串表示成功，非空文本为错误 | 30 秒 |
+
+`reservations:pending` 和 result key 由 Lua 脚本一起检查、更新；转换脚本会在沙箱状态更新时设置 transition key。这样多个 API 实例能协调同一 sandbox 的创建或生命周期操作。
+
+### 13.3 路由、锁与 Pub/Sub
+
+| Key / channel / payload pattern | 类型 | 内容与用途 |
+| --- | --- | --- |
+| `sandbox:catalog:{sandboxID}` | String（JSON） | API 写入的默认路由记录；字段为 `orchestrator_id`、`orchestrator_ip`、`execution_id`、`sandbox_started_at`、`sandbox_max_length_in_hours` |
+| `sandbox:routing:{sandboxID}` | String（JSON） | feature flag 启用时由 orchestrator 写入的并行路由记录，结构同上；client-proxy 可按 flag 读取 |
+| `sandbox:storage:notify` | Pub/Sub channel | 统一通知通道；消息 payload 是具体 transition / reservation routing key |
+| `sandbox:storage:{teamID}:transition:{sandboxID}:{transitionID}:notify` | Pub/Sub payload | 唤醒等待同一次 sandbox 状态转换结果的 goroutine；它不是独立 Pub/Sub channel |
+| `sandbox:storage:{teamID}:reservations:{sandboxID}:notify` | Pub/Sub payload | 唤醒等待 sandbox 创建预留结果的 goroutine；同样通过统一 channel 发布 |
+| `lock:<key>` | String lock | `redislock` 使用的分布式锁前缀，保护缓存回填或沙箱状态修改；锁有自己的短 TTL |
+| `lock:lock:<resource-key>:notify` | Pub/Sub payload | storage locker 对 `lock:<resource-key>` 再加路由前缀后，在 `sandbox:storage:notify` channel 上发送的锁释放通知 |
+| `orchestrator.upload.done.<buildID>` | Pub/Sub channel | build 文件上传完成通知；空 payload 表示成功，非空 payload 是错误文本 |
+
+路由记录设置的 TTL 为 sandbox 最大运行时长，正常停止时会按 `execution_id` 比较后删除，避免旧实例误删新实例的路由。
+
+### 13.4 缓存 key
+
+缓存 key 的通用格式是 `{prefix}:{lookup-key}`，value 为 JSON String；共享 `RedisCache` 在 cache miss 时回源，并按配置 TTL 写入。
+
+| Key pattern | 缓存内容 | TTL / 刷新间隔 |
+| --- | --- | --- |
+| `auth:team:<lookup-key>` | API key hash、`team-<teamID>` 或 `<userID>-<teamID>` 对应的鉴权 team 信息 | 5 分钟 / 1 分钟 |
+| `template:info:{templateID}:tag` | 模板、team、cluster、指定 tag 对应的 build | 5 分钟 / 1 分钟 |
+| `template:build:{buildID}` | build 状态、reason、版本、所属模板/team/cluster/node | 5 分钟 / 1 分钟 |
+| `template:alias:{namespace/alias}` | alias 到 template ID 的映射；不存在的 alias 也缓存 tombstone | 5 分钟 / 1 分钟 |
+| `template:metadata:{templateID}` | 模板 public 标志、team 和 cluster 元数据 | 5 分钟 / 1 分钟 |
+| `snapshot:last:{sandboxID}` | sandbox 最近一次 snapshot、关联 build、alias 和 name | 5 分钟 / 1 分钟 |
+| `sandbox:team-running-counts:all` | 所有 team 的运行中 sandbox 数量快照 | 30 秒 / 5 秒 |
+
+缓存刷新锁会在 cache key 前加 `lock:`，避免多个 API 实例同时回源重建同一条目。`template:info` 的 template ID 使用 `{...}` hash tag，使同一模板不同 tag 的 key 可在 Redis Cluster 中同槽批量清理。
+
+### 13.5 限流、peer 路由与事件流
+
+| Key | 类型 | 内容与用途 |
+| --- | --- | --- |
+| `ratelimit:{teamID}:{route}` | Redis rate limiter 内部 key | feature flag 配置的按 team、路由限流状态；未配置该路由时不启用限流 |
+| `peer:<buildID>` | String | 正在上传的 build 文件所在 orchestrator 地址；TTL 由上传窗口传入，上传完成后主动删除 |
+| `sandbox.events.stream` | Stream | sandbox 事件流；每条 entry 有 `payload` 字段，值是 JSON 编码的事件 |
+| `wh:<teamID>` | 存在性门控 key | Redis Stream delivery 先检查此 key 是否存在，存在才写事件；当前仓库代码只检查它，没有找到其写入实现 |
+
+### 13.6 Redis 源码位置
+
+- 沙箱状态、索引、转换与通知：[`packages/api/internal/sandbox/storage/redis/`](../packages/api/internal/sandbox/storage/redis/)
+- 创建预留：[`packages/api/internal/sandbox/reservations/redis/`](../packages/api/internal/sandbox/reservations/redis/)
+- 路由目录：[`packages/shared/pkg/sandbox-catalog/catalog_redis.go`](../packages/shared/pkg/sandbox-catalog/catalog_redis.go)
+- 通用 Redis 缓存和锁：[`packages/shared/pkg/cache/redis.go`](../packages/shared/pkg/cache/redis.go)、[`packages/shared/pkg/redis/`](../packages/shared/pkg/redis/)
+- Redis event stream：[`packages/shared/pkg/events/delivery_redis_streams.go`](../packages/shared/pkg/events/delivery_redis_streams.go)
+- Peer build 路由：[`packages/orchestrator/pkg/sandbox/template/peerclient/registry.go`](../packages/orchestrator/pkg/sandbox/template/peerclient/registry.go)
 
 ## 附录:迁移文件命名规范
 
